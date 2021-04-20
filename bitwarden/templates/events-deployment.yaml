@@ -1,0 +1,47 @@
+{{- if .Values.eventsInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.eventsDeploymentName }}
+{{- if .Values.eventsDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.eventsDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: events
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.eventsDeploymentLabels }}
+{{ toYaml .Values.eventsDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.eventsDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: events
+  template:
+    metadata:
+{{- if .Values.eventsPodAnnotations }}
+      annotations:
+{{ toYaml .Values.eventsPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: events
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.eventsPodLabels }}
+{{ toYaml .Values.eventsPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.eventsContainerName }}
+          image: "{{ .Values.eventsContainerImageRepository }}:{{ .Values.eventsContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.eventsContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.eventsServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.eventsServiceTargetPort }}
+{{- end }}

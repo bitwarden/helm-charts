@@ -1,0 +1,54 @@
+{{- if .Values.webInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.webDeploymentName }}
+{{- if .Values.webDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.webDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.webDeploymentLabels }}
+{{ toYaml .Values.webDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.webDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+{{- if .Values.webPodAnnotations }}
+      annotations:
+{{ toYaml .Values.webPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.webPodLabels }}
+{{ toYaml .Values.webPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.webContainerName }}
+          image: "{{ .Values.webContainerImageRepository }}:{{ .Values.webContainerImageTag | default .Values.webVersion }}"
+          imagePullPolicy: {{ .Values.webContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.webServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.webServiceTargetPort }}
+          volumeMounts:
+            - name: web
+              mountPath: /etc/bitwarden/web
+      volumes:
+        - name: web
+          secret:
+            secretName: {{ .Values.webVolumeSecretName }}
+{{- end }}

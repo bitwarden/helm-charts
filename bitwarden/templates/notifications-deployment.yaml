@@ -1,0 +1,47 @@
+{{- if .Values.notificationsInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.notificationsDeploymentName }}
+{{- if .Values.notificationsDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.notificationsDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: notifications
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.notificationsDeploymentLabels }}
+{{ toYaml .Values.notificationsDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.notificationsDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: notifications
+  template:
+    metadata:
+{{- if .Values.notificationsPodAnnotations }}
+      annotations:
+{{ toYaml .Values.notificationsPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: notifications
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.notificationsPodLabels }}
+{{ toYaml .Values.notificationsPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.notificationsContainerName }}
+          image: "{{ .Values.notificationsContainerImageRepository }}:{{ .Values.notificationsContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.notificationsContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.notificationsServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.notificationsServiceTargetPort }}
+{{- end }}

@@ -1,0 +1,47 @@
+{{- if .Values.iconsInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.iconsDeploymentName }}
+{{- if .Values.iconsDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.iconsDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: icons
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.iconsDeploymentLabels }}
+{{ toYaml .Values.iconsDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.iconsDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: icons
+  template:
+    metadata:
+{{- if .Values.iconsPodAnnotations }}
+      annotations:
+{{ toYaml .Values.iconsPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: icons
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.iconsPodLabels }}
+{{ toYaml .Values.iconsPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.iconsContainerName }}
+          image: "{{ .Values.iconsContainerImageRepository }}:{{ .Values.iconsContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.iconsContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.iconsServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.iconsServiceTargetPort }}
+{{- end }}

@@ -1,0 +1,59 @@
+{{- if .Values.portalInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.portalDeploymentName }}
+{{- if .Values.portalDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.portalDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: portal
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.portalDeploymentLabels }}
+{{ toYaml .Values.portalDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.portalDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: portal
+  template:
+    metadata:
+{{- if .Values.portalPodAnnotations }}
+      annotations:
+{{ toYaml .Values.portalPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: portal
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.portalPodLabels }}
+{{ toYaml .Values.portalPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.portalContainerName }}
+          image: "{{ .Values.portalContainerImageRepository }}:{{ .Values.portalContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.portalContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.portalServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.portalServiceTargetPort }}
+          volumeMounts:
+            - name: dataprotection
+              mountPath: /etc/bitwarden/core/aspnet-dataprotection
+            - name: licenses
+              mountPath: /etc/bitwarden/core/licenses
+      volumes:
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ .Values.licensesVolumeClaimName }}
+{{- end }}

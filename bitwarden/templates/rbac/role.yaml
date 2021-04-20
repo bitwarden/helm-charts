@@ -1,0 +1,29 @@
+{{- if .Values.rbacEnabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ template "bitwarden.fullname" . }}
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "-2"
+    helm.sh/hook-delete-policy: hook-succeeded
+{{- if .Values.rbacRoleAnnotations }}
+{{ toYaml .Values.rbacRoleAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: rbac
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.rbacRoleLabels }}
+{{ toYaml .Values.rbacRoleLabels | indent 4 }}
+{{- end }}
+rules:
+  - apiGroups:
+    - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - create
+      - get
+      - patch
+{{- end -}}

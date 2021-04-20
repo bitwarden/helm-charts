@@ -1,0 +1,59 @@
+{{- if .Values.adminInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.adminDeploymentName }}
+{{- if .Values.adminDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.adminDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: admin
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.adminDeploymentLabels }}
+{{ toYaml .Values.adminDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.adminDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: admin
+  template:
+    metadata:
+{{- if .Values.adminPodAnnotations }}
+      annotations:
+{{ toYaml .Values.adminPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: admin
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.adminPodLabels }}
+{{ toYaml .Values.adminPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.adminContainerName }}
+          image: "{{ .Values.adminContainerImageRepository }}:{{ .Values.adminContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.adminContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.adminServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.adminServiceTargetPort }}
+          volumeMounts:
+            - name: dataprotection
+              mountPath: /etc/bitwarden/core/aspnet-dataprotection
+            - name: licenses
+              mountPath: /etc/bitwarden/core/licenses
+      volumes:
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ .Values.licensesVolumeClaimName }}
+{{- end }}
