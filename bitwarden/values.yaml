@@ -263,7 +263,7 @@ rbacRoleBindingLabels: {}
 
 ## Database Type
 ## - The database type that will be used
-## - Can either be "container" or "rds"
+## - Can either be "container" or "mssql"
 ##
 databaseType: container
 
@@ -447,29 +447,29 @@ mssqlLogVolumeSize: 10Gi
 ##
 mssqlLogVolumeClaimName: mssql-log
 
-##############################
-#  If databaseType == "rds"  #
-##############################
+################################
+#  If databaseType == "mssql"  #
+################################
 
-## RDS Instance Hostname
-## - The hostname of the database instance
+## Database Hostname
+## - The hostname of the database
 ##
-# rdsHostname: hostname.region.rds.amazonaws.com
+# dbHostname: database-hostname.domain.com
 
-## RDS Instance Port
-## - The port to connect on for the database instance
+## Database Port
+## - The port the database is listening for connections on
 ##
-# rdsPort: 1433
+# dbPort: 1433
 
-## RDS Instance Admin User
-## - The admin user of the RDS instance
+## Database Admin User
+## - The admin user of the database
 ##
-# rdsUser: admin
+# dbUser: admin
 
-## RDS Instance Admin Password
-## - The super admin password of the RDS instance
+## Databbase Admin Password
+## - The admin password of the database
 ##
-# rdsPassword: password
+# dbPassword: password
 
 #########################################
 #  Shared Volume Configuration Options  #

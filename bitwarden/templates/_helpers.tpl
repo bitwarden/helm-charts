@@ -47,12 +47,12 @@ The name of the service account to use
 {{- end -}}
 
 {{/*
-The database connection string for RDS
+The database connection string
 */}}
-{{- define "bitwarden.rdsConnectionString" -}}
+{{- define "bitwarden.dbConnectionString" -}}
 {{ printf "Data Source=tcp:%s,%v;Initial Catalog=vault;Persist Security Info=False;User ID=%s;Password=%s;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True"
-   .Values.rdsHostname
-   .Values.rdsPort
-   .Values.rdsUser
-   .Values.rdsPassword }}
+   .Values.dbHostname
+   .Values.dbPort
+   .Values.dbUser
+   .Values.dbPassword }}
 {{- end -}}

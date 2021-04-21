@@ -85,11 +85,11 @@ spec:
               }
             }
           ";
-{{- if eq .Values.databaseType "rds" }}
+{{- if eq .Values.databaseType "mssql" }}
           kubectl patch configmap {{ .Values.configMapName }} -n {{ .Release.Namespace }} --type="merge" -p "
             {
               \"data\": {
-                \"globalSettings__sqlServer__connectionString\":\"{{ template "bitwarden.rdsConnectionString" . }}\"
+                \"globalSettings__sqlServer__connectionString\":\"{{ template "bitwarden.dbConnectionString" . }}\"
               }
             }
           ";

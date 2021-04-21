@@ -45,11 +45,11 @@ This value file is configured to set up a Bitwarden installation on Amazon EKS. 
     - Ingress Config
       - ingressAnnotations
 
-    - RDS Config
-      - rdsHostname
-      - rdsPort
-      - rdsUser
-      - rdsPassword
+    - Database Config
+      - dbHostname
+      - dbPort
+      - dbUser
+      - dbPassword
 
     - PVC Storage Class Config
       - dataprotectionVolumeStorageClassName
