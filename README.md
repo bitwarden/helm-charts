@@ -14,8 +14,8 @@
 - Request an installation ID and key from https://bitwarden.com/host/
 
 ### Create config file
-**NOTE:** Make sure you are in the `kubernetes-poc` directory.  
-1. Run `helm show values bitwarden-chart > config.yaml`.
+1. Clone repo and then `cd` into the directory.
+1. Run `helm show values bitwarden > config.yaml`.
 1. Edit the `config.yaml` file and fill out the values.  Required values that must be replaced:
     - certSSL
     - keySSL
@@ -36,6 +36,7 @@
     - Run `kubectl create namespace bitwarden`.
 
 ### Run Helm Install
-1. Run `helm install bitwarden-rel bitwarden-chart -n bitwarden -f config.yaml`.
-    - This installs a release named `bitwarden-rel`, in the namespace `bitwarden`, using values from `config.yaml`.
+1. Run `helm install bitwarden bitwarden -n bitwarden -f config.yaml`.
+    - This installs a release named `bitwarden`, in the namespace `bitwarden`, using values from `config.yaml`.
     - This may take over a minute to fully come up (some of the services might register as failed in the meantime)
+    - You can see help information for the `helm install` command by running `helm install --help`.
