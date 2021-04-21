@@ -1,0 +1,1578 @@
+# Default values for bitwarden.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+##################################
+# General Configuration Options  #
+##################################
+
+## Core and Web versions to install
+## - Required
+##
+coreVersion: "1.40.0"
+webVersion: "2.19.0"
+
+## Labels to apply to all resources
+## - Optional
+##
+commonLabels: {}
+#  label1: value1
+#  label2: value2
+
+## CA Certificate - Value must be a base64 string
+## - Optional
+##
+# certCA: ""
+
+## CA Certificate Secret Name
+## - Name of the secret containing the CA certificate
+##
+certCASecretName: cacert
+
+## CA Certificate Annotations
+## - Annotations to add to the CA Certificate Secret
+##
+certCAAnnotations: {}
+
+## CA Certificate Labels
+## - Labels to add to the CA Certificate Secret
+##
+certCALabels: {}
+
+## SSL certificate - Value must be a base64 string
+## - Required if not behind SSL reverse proxy
+##
+# certSSL: ""
+
+## SSL key - Value must be a base64 string
+## - Required if not behind SSL reverse proxy
+##
+# keySSL: ""
+
+## Config Map Name
+## - The name of the Config Map to store the Bitwarden configuration
+##
+configMapName: config
+
+## Domain used for Bitwarden installation
+## - Required
+##
+domain: "bitwarden.localhost"
+
+## Bitwarden Installation ID
+## - This value can be generated at https://bitwarden.com/host/
+## - Required
+##
+installationId: ""
+
+## Bitwarden Installation Key
+## - This value can be generated at https://bitwarden.com/host/
+## - Required
+##
+installationKey: ""
+
+## Yubico Client ID
+## - Used for YubiCloud Validation Service or Self-hosted Yubico Validation Server
+## - Optional
+##
+# yubicoClientId: ""
+
+## Yubico Secret Key
+## - Used for YubiCloud Validation Service or Self-hosted Yubico Validation Server
+## - Optional
+##
+# yubicoKey: ""
+
+## Yubico Validation URLs
+## - Primary URL for self-hosted Yubico Validation Server.  Not needed if using YubiCloud Validation Service.
+## - Optional
+##
+# yubicoValidationURLs: []
+
+## Reply To Email
+## - Email address used for invitations, typically no-reply@smtp-host
+## - Required
+##
+replyToEmail: "no-reply@bitwarden.localhost"
+
+## SMTP Host
+## - Your SMTP server hostname (recommended) or IP address
+## - Required
+##
+smtpHost: "smtp.gmail.com"
+
+## SMTP Port
+## - The SMTP port used by the SMTP server
+## - Required
+##
+smtpPort: "587"
+
+## SMTP SSL
+## - Whether your SMTP server uses an encryption protocol
+## - "true" for SSL
+## - "false" for TLS
+## - Required
+##
+smtpSsl: "false"
+
+## SMTP Username
+## - A valid username for the SMTP host
+## - Required
+##
+smtpUsername: "username"
+
+## SMTP Password
+## - A valid password for the SMTP host
+## - Required
+##
+smtpPassword: "password"
+
+## Organization Invite Expiration Hours
+## - Specify the number of hours after which an Organization Invite will expire (120 by default)
+## - Optional
+##
+# organizationInviteExpirationHours: "120"
+
+## Disable User Registration
+## - Specify "true" to disable new users signing up for an account on this instance via the Registration page.
+## - Required
+##
+disableUserRegistration: "false"
+
+## HaveIBeenPwnded (HIBP) API Key
+## - Used for checking password leaks. Available here: https://haveibeenpwned.com/API/Key
+## - Optional
+##
+# hibpApiKey: ""
+
+## Admin Users
+## - Email addresses which may access the System Administrator Portal
+## - Each entry should be separated by a comma
+## - Required
+##
+admins: ""
+
+##################################
+#  Ingress Configuration Options #
+##################################
+
+## Ingress Enabled
+## - If this is set to true, an Ingress resource will be created
+## - Optional
+##
+ingressEnabled: false
+
+## Ingress Name
+## - Name of the Ingress resource
+##
+ingressName: ingress
+
+## Ingress Route Prefix
+## - 
+##
+ingressRoutePrefix: /
+
+## Ingress Annotations
+## - Annotations to add to the Ingress resource
+##
+ingressAnnotations: {}
+
+## Ingress Labels
+## - Labels to add to the Ingress resource
+##
+ingressLabels: {}
+
+## Ingress Class
+## - Class name to use for Ingress resource
+##
+# ingressClassName: public
+
+## Ingress Path Type
+## - Path Type for Ingress resource
+## - Can be Exact, Prefix, or ImplementationSpecific
+# ingressPathType: ImplementationSpecific
+
+## TLS configuration for Ingress
+## Secret name to use for TLS on the Ingress resource
+##
+ingressTLSSecret: tls
+
+## TLS Secret Annotations
+## - Annotations to add to the TLS Secret
+##
+ingressTLSSecretAnnotations: {}
+
+## TLS Secret Labels
+## - Labels to add to the TLS Secret
+##
+ingressTLSSecretLabels: {}
+
+###########################################
+#  Service Account Configuration Options  #
+###########################################
+
+## Service Account Name
+## - The service account the pre install hook pods will use to interact with the Kubernetes API
+## - If set, an existing service account is used
+## - If not set, a service account is created automatically using the fullname template
+##
+serviceAccountName: ""
+
+## Service Account Annotations
+## - Annotations to add to the Service Account resource
+##
+serviceAccountAnnotations: {}
+
+## Service Account Labels
+## - Labels to add to the Service Account resource
+##
+serviceAccountLabels: {}
+
+#####################################################
+#  Role Based Access Control Configuration Options  #
+#####################################################
+
+## RBAC Enabled
+## - Whether Role Based Access Control objects like roles and rolebindings should be created
+##
+rbacEnabled: true
+
+## RBAC Role Annotations
+## - Annotations to add to the RBAC Role resource
+##
+rbacRoleAnnotations: {}
+
+## RBAC Role Labels
+## - Labels to add to the RBAC Role resource
+##
+rbacRoleLabels: {}
+
+## RBAC Role Binding Annotations
+## - Annotations to add to the RBAC Role Binding resource
+##
+rbacRoleBindingAnnotations: {}
+
+## RBAC Role Binding Labels
+## - Labels to add to the RBAC Role Binding resource
+##
+rbacRoleBindingLabels: {}
+
+####################################
+#  Database Configuration Options  #
+####################################
+
+## Database Type
+## - The database type that will be used
+## - Can either be "container" or "mssql"
+##
+databaseType: container
+
+####################################
+#  If databaseType == "container"  #
+####################################
+
+## MSSQL Deployment Name
+## - The name of the MSSQL deployment
+##
+mssqlDeploymentName: mssql
+
+## MSSQL Deployment Annotations
+## - Annotations to add to the MSSQL deployment
+##
+mssqlDeploymentAnnotations: {}
+
+## MSSQL Deployment Labels
+## - Labels to add to the MSSQL deployment
+##
+mssqlDeploymentLabels: {}
+
+## MSSQL Deployment Replica Count
+## - How many pods to create for the MSSQL deployment
+##
+mssqlDeploymentReplicaCount: 1
+
+## MSSQL Deployment Pod Annotations
+## - Annotations to add to the MSSQL deployment pods
+##
+mssqlPodAnnotations: {}
+
+## MSSQL Deployment Pod Labels
+## - Labels to add to the MSSQL deployment pods
+##
+mssqlPodLabels: {}
+
+## MSSQL Deployment Pod Container Name
+## - The name of the containers
+##
+mssqlContainerName: mssql
+
+## MSSQL Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+mssqlContainerImageRepository: bitwarden/mssql
+
+## MSSQL Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+mssqlContainerImageTag: ""
+
+## MSSQL Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+mssqlContainerImagePullPolicy: IfNotPresent
+
+## MSSQL Deployment Pod Container Resource Limits
+## - The containers are limited to the resources below
+##
+mssqlContainerResourceLimits:
+  limits:
+    memory: 2Gi
+
+## MSSQL Service Name
+## - The name of the MSSQL service
+##
+mssqlServiceName: mssql
+
+## MSSQL Service Annotations
+## - Annotations to add to the MSSQL service
+##
+mssqlServiceAnnotations: {}
+
+## MSSQL Service Labels
+## - Labels to add to the MSSQL service
+##
+mssqlServiceLabels: {}
+
+## MSSQL Service Type
+## - Type of the MSSQL service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+mssqlServiceType: ClusterIP
+
+## MSSQL Service Port
+## - The port exposed by the MSSQL service
+##
+mssqlServicePort: 1433
+
+## MSSQL Backups Volume Annotations
+## - Annotations to add to the MSSQL Backups Volume
+##
+mssqlBackupsVolumeAnnotations: {}
+
+## MSSQL Backups Volume Labels
+## - Labels to add to the MSSQL Backups Volume
+##
+mssqlBackupsVolumeLabels: {}
+
+## MSSQL Backups Volume Access Modes
+## - The access modes of the MSSQL Backups volume
+##
+mssqlBackupsVolumeAccessModes:
+  - ReadWriteMany
+
+## MSSQL Backups Volume Storage Class Name
+## - The storage class name of the MSSQL Backups volume
+##
+mssqlBackupsVolumeStorageClassName: ""
+
+## MSSQL Backups Volume Size
+## - The size of the MSSQL Backups volume
+##
+mssqlBackupsVolumeSize: 10Gi
+
+## MSSQL Backups Volume PVC
+## - PVC for the MSSQL Backups volume
+##
+mssqlBackupsVolumeClaimName: mssql-backups
+
+## MSSQL Data Volume Annotations
+## - Annotations to add to the MSSQL Data Volume
+##
+mssqlDataVolumeAnnotations: {}
+
+## MSSQL Data Volume Labels
+## - Labels to add to the MSSQL Data Volume
+##
+mssqlDataVolumeLabels: {}
+
+## MSSQL Data Volume Access Modes
+## - The access modes of the MSSQL Data volume
+##
+mssqlDataVolumeAccessModes:
+  - ReadWriteMany
+
+## MSSQL Data Volume Storage Class Name
+## - The storage class name of the MSSQL Data volume
+##
+mssqlDataVolumeStorageClassName: ""
+
+## MSSQL Data Volume Size
+## - The size of the MSSQL Data volume
+##
+mssqlDataVolumeSize: 10Gi
+
+## MSSQL Data Volume PVC
+## - PVC for the MSSQL Data volume
+##
+mssqlDataVolumeClaimName: mssql-data
+
+## MSSQL Log Volume Annotations
+## - Annotations to add to the MSSQL Log Volume
+##
+mssqlLogVolumeAnnotations: {}
+
+## MSSQL Log Volume Labels
+## - Labels to add to the MSSQL Log Volume
+##
+mssqlLogVolumeLabels: {}
+
+## MSSQL Log Volume Access Modes
+## - The access modes of the MSSQL Log volume
+##
+mssqlLogVolumeAccessModes:
+  - ReadWriteMany
+
+## MSSQL Log Volume Storage Class Name
+## - The storage class name of the MSSQL Log volume
+##
+mssqlLogVolumeStorageClassName: ""
+
+## MSSQL Log Volume Size
+## - The size of the MSSQL Log volume
+##
+mssqlLogVolumeSize: 10Gi
+
+## MSSQL Log Volume PVC
+## - PVC for the MSSQL Log volume
+##
+mssqlLogVolumeClaimName: mssql-log
+
+################################
+#  If databaseType == "mssql"  #
+################################
+
+## Database Hostname
+## - The hostname of the database
+##
+# dbHostname: database-hostname.domain.com
+
+## Database Port
+## - The port the database is listening for connections on
+##
+# dbPort: 1433
+
+## Database Admin User
+## - The admin user of the database
+##
+# dbUser: admin
+
+## Databbase Admin Password
+## - The admin password of the database
+##
+# dbPassword: password
+
+#########################################
+#  Shared Volume Configuration Options  #
+#########################################
+
+## Dataprotection Volume Annotations
+## - Annotations to add to the Dataprotection Volume
+##
+dataprotectionVolumeAnnotations: {}
+
+## Dataprotection Volume Labels
+## - Labels to add to the Dataprotection Volume
+##
+dataprotectionVolumeLabels: {}
+
+## Dataprotection Volume Access Modes
+## - The access modes of the Dataprotection volume
+##
+dataprotectionVolumeAccessModes:
+  - ReadWriteMany
+
+## Dataprotection Volume Storage Class Name
+## - The storage class name of the Dataprotection volume
+##
+dataprotectionVolumeStorageClassName: ""
+
+## Dataprotection Volume Size
+## - The size of the Dataprotection volume
+##
+dataprotectionVolumeSize: 1Gi
+
+## Dataprotection Volume PVC
+## - PVC for the Dataprotection volume
+##
+dataprotectionVolumeClaimName: dataprotection
+
+## Licenses Volume Annotations
+## - Annotations to add to the Licenses Volume
+##
+licensesVolumeAnnotations: {}
+
+## Licenses Volume Labels
+## - Labels to add to the Licenses Volume
+##
+licensesVolumeLabels: {}
+
+## Licenses Volume Access Modes
+## - The access modes of the Licenses volume
+##
+licensesVolumeAccessModes:
+  - ReadWriteMany
+
+## Licenses Volume Storage Class Name
+## - The storage class name of the Licenses volume
+##
+licensesVolumeStorageClassName: ""
+
+## Licenses Volume Size
+## - The size of the Licenses volume
+##
+licensesVolumeSize: 1Gi
+
+## Licenses Volume PVC
+## - PVC for the Licenses volume
+##
+licensesVolumeClaimName: licenses
+
+#####################################
+#  Component Configuration Options  #
+#####################################
+
+###
+###  Admin Component
+###
+
+## Admin Component Install
+## - If true, will deploy the Admin component
+##
+adminInstall: true
+
+## Admin Deployment Name
+## - The name of the Admin deployment
+##
+adminDeploymentName: admin
+
+## Admin Deployment Annotations
+## - Annotations to add to the Admin deployment
+##
+adminDeploymentAnnotations: {}
+
+## Admin Deployment Labels
+## - Labels to add to the Admin deployment
+##
+adminDeploymentLabels: {}
+
+## Admin Deployment Replica Count
+## - How many pods to create for the Admin deployment
+##
+adminDeploymentReplicaCount: 3
+
+## Admin Deployment Pod Annotations
+## - Annotations to add to the Admin deployment pods
+##
+adminPodAnnotations: {}
+
+## Admin Deployment Pod Labels
+## - Labels to add to the Admin deployment pods
+##
+adminPodLabels: {}
+
+## Admin Deployment Pod Container Name
+## - The name of the containers
+##
+adminContainerName: admin
+
+## Admin Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+adminContainerImageRepository: bitwarden/admin
+
+## Admin Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+adminContainerImageTag: ""
+
+## Admin Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+adminContainerImagePullPolicy: IfNotPresent
+
+## Admin Service Name
+## - The name of the Admin service
+##
+adminServiceName: admin
+
+## Admin Service Annotations
+## - Annotations to add to the Admin service
+##
+adminServiceAnnotations: {}
+
+## Admin Service Labels
+## - Labels to add to the Admin service
+##
+adminServiceLabels: {}
+
+## Admin Service Type
+## - Type of the Admin service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+adminServiceType: ClusterIP
+
+## Admin Service Port
+## - The port exposed by the Admin service
+##
+adminServicePort: 5000
+
+## Admin Service Target Port
+## - The port to access on the pods of the Admin deployment
+##
+adminServiceTargetPort: 5000
+
+###
+###  API Component
+###
+
+## API Component Install
+## - If true, will deploy the API component
+##
+apiInstall: true
+  
+## API Deployment Name
+## - The name of the API deployment
+##
+apiDeploymentName: api
+
+## API Deployment Annotations
+## - Annotations to add to the API deployment
+##
+apiDeploymentAnnotations: {}
+
+## API Deployment Labels
+## - Labels to add to the API deployment
+##
+apiDeploymentLabels: {}
+
+## API Deployment Replica Count
+## - How many pods to create for the API deployment
+##
+apiDeploymentReplicaCount: 3
+
+## API Deployment Pod Annotations
+## - Annotations to add to the API deployment pods
+##
+apiPodAnnotations: {}
+
+## API Deployment Pod Labels
+## - Labels to add to the API deployment pods
+##
+apiPodLabels: {}
+
+## API Deployment Pod Container Name
+## - The name of the containers
+##
+apiContainerName: api
+
+## API Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+apiContainerImageRepository: bitwarden/api
+
+## API Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+apiContainerImageTag: ""
+
+## API Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+apiContainerImagePullPolicy: IfNotPresent
+
+## API Service Name
+## - The name of the API service
+##
+apiServiceName: api
+
+## API Service Annotations
+## - Annotations to add to the API service
+##
+apiServiceAnnotations: {}
+
+## API Service Labels
+## - Labels to add to the API service
+##
+apiServiceLabels: {}
+
+## API Service Type
+## - Type of the API service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+apiServiceType: ClusterIP
+
+## API Service Port
+## - The port exposed by the API service
+##
+apiServicePort: 5000
+
+## API Service Target Port
+## - The port to access on the pods of the API deployment
+##
+apiServiceTargetPort: 5000
+
+###
+###  Attachments Component
+###
+
+## Attachments Component Install
+## - If true, will deploy the Attachments component
+##
+attachmentsInstall: true
+
+## Attachments Deployment Name
+## - The name of the Attachments deployment
+##
+attachmentsDeploymentName: attachments
+
+## Attachments Deployment Annotations
+## - Annotations to add to the Attachments deployment
+##
+attachmentsDeploymentAnnotations: {}
+
+## Attachments Deployment Labels
+## - Labels to add to the Attachments deployment
+##
+attachmentsDeploymentLabels: {}
+
+## Attachments Deployment Replica Count
+## - How many pods to create for the Attachments deployment
+##
+attachmentsDeploymentReplicaCount: 3
+
+## Attachments Deployment Pod Annotations
+## - Annotations to add to the Attachments deployment pods
+##
+attachmentsPodAnnotations: {}
+
+## Attachments Deployment Pod Labels
+## - Labels to add to the Attachments deployment pods
+##
+attachmentsPodLabels: {}
+
+## Attachments Deployment Pod Container Name
+## - The name of the containers
+##
+attachmentsContainerName: attachments
+
+## Attachments Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+attachmentsContainerImageRepository: bitwarden/attachments
+
+## Attachments Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+attachmentsContainerImageTag: ""
+
+## Attachments Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+attachmentsContainerImagePullPolicy: IfNotPresent
+
+## Attachments Service Name
+## - The name of the Attachments service
+##
+attachmentsServiceName: attachments
+
+## Attachments Service Annotations
+## - Annotations to add to the Attachments service
+##
+attachmentsServiceAnnotations: {}
+
+## Attachments Service Labels
+## - Labels to add to the Attachments service
+##
+attachmentsServiceLabels: {}
+
+## Attachments Service Type
+## - Type of the Attachments service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+attachmentsServiceType: ClusterIP
+
+## Attachments Service Port
+## - The port exposed by the Attachments service
+##
+attachmentsServicePort: 5000
+
+## Attachments Service Target Port
+## - The port to access on the pods of the Attachments deployment
+##
+attachmentsServiceTargetPort: 5000
+
+## Attachments Volume Annotations
+## - Annotations to add to the Attachments Volume
+##
+attachmentsVolumeAnnotations: {}
+
+## Attachments Volume Labels
+## - Labels to add to the Attachments Volume
+##
+attachmentsVolumeLabels: {}
+
+## Attachments Volume Access Modes
+## - The access modes of the Attachments volume
+##
+attachmentsVolumeAccessModes:
+  - ReadWriteMany
+
+## Attachments Volume Storage Class Name
+## - The storage class name of the Attachments volume
+##
+attachmentsVolumeStorageClassName: ""
+
+## Attachments Volume Size
+## - The size of the Attachments volume
+##
+attachmentsVolumeSize: 1Gi
+
+## Attachments Volume PVC
+## - PVC for the Attachments volume
+##
+attachmentsVolumeClaimName: attachments
+
+###
+###  Events Component
+###
+
+## Events Component Install
+## - If true, will deploy the Events component
+##
+eventsInstall: true
+
+## Events Deployment Name
+## - The name of the Events deployment
+##
+eventsDeploymentName: events
+
+## Events Deployment Annotations
+## - Annotations to add to the Events deployment
+##
+eventsDeploymentAnnotations: {}
+
+## Events Deployment Labels
+## - Labels to add to the Events deployment
+##
+eventsDeploymentLabels: {}
+
+## Events Deployment Replica Count
+## - How many pods to create for the Events deployment
+##
+eventsDeploymentReplicaCount: 3
+
+## Events Deployment Pod Annotations
+## - Annotations to add to the Events deployment pods
+##
+eventsPodAnnotations: {}
+
+## Events Deployment Pod Labels
+## - Labels to add to the Events deployment pods
+##
+eventsPodLabels: {}
+
+## Events Deployment Pod Container Name
+## - The name of the containers
+##
+eventsContainerName: events
+
+## Events Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+eventsContainerImageRepository: bitwarden/events
+
+## Events Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+eventsContainerImageTag: ""
+
+## Events Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+eventsContainerImagePullPolicy: IfNotPresent
+
+## Events Service Name
+## - The name of the Events service
+##
+eventsServiceName: events
+
+## Events Service Annotations
+## - Annotations to add to the Events service
+##
+eventsServiceAnnotations: {}
+
+## Events Service Labels
+## - Labels to add to the Events service
+##
+eventsServiceLabels: {}
+
+## Events Service Type
+## - Type of the Events service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+eventsServiceType: ClusterIP
+
+## Events Service Port
+## - The port exposed by the Events service
+##
+eventsServicePort: 5000
+
+## Events Service Target Port
+## - The port to access on the pods of the Events deployment
+##
+eventsServiceTargetPort: 5000
+
+###
+###  Icons Component
+###
+
+## Icons Component Install
+## - If true, will deploy the Icons component
+##
+iconsInstall: true
+
+## Icons Deployment Name
+## - The name of the Icons deployment
+##
+iconsDeploymentName: icons
+
+## Icons Deployment Annotations
+## - Annotations to add to the Icons deployment
+##
+iconsDeploymentAnnotations: {}
+
+## Icons Deployment Labels
+## - Labels to add to the Icons deployment
+##
+iconsDeploymentLabels: {}
+
+## Icons Deployment Replica Count
+## - How many pods to create for the Icons deployment
+##
+iconsDeploymentReplicaCount: 3
+
+## Icons Deployment Pod Annotations
+## - Annotations to add to the Icons deployment pods
+##
+iconsPodAnnotations: {}
+
+## Icons Deployment Pod Labels
+## - Labels to add to the Icons deployment pods
+##
+iconsPodLabels: {}
+
+## Icons Deployment Pod Container Name
+## - The name of the containers
+##
+iconsContainerName: icons
+
+## Icons Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+iconsContainerImageRepository: bitwarden/icons
+
+## Icons Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+iconsContainerImageTag: ""
+
+## Icons Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+iconsContainerImagePullPolicy: IfNotPresent
+
+## Icons Service Name
+## - The name of the Icons service
+##
+iconsServiceName: icons
+
+## Icons Service Annotations
+## - Annotations to add to the Icons service
+##
+iconsServiceAnnotations: {}
+
+## Icons Service Labels
+## - Labels to add to the Icons service
+##
+iconsServiceLabels: {}
+
+## Icons Service Type
+## - Type of the Icons service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+iconsServiceType: ClusterIP
+
+## Icons Service Port
+## - The port exposed by the Icons service
+##
+iconsServicePort: 5000
+
+## Icons Service Target Port
+## - The port to access on the pods of the Icons deployment
+##
+iconsServiceTargetPort: 5000
+
+###
+###  Identity Component
+###
+
+## Identity Component Install
+## - If true, will deploy the Identity component
+##
+identityInstall: true
+
+## Identity Deployment Name
+## - The name of the Identity deployment
+##
+identityDeploymentName: identity
+
+## Identity Deployment Annotations
+## - Annotations to add to the Identity deployment
+##
+identityDeploymentAnnotations: {}
+
+## Identity Deployment Labels
+## - Labels to add to the Identity deployment
+##
+identityDeploymentLabels: {}
+
+## Identity Deployment Replica Count
+## - How many pods to create for the Identity deployment
+##
+identityDeploymentReplicaCount: 3
+
+## Identity Deployment Pod Annotations
+## - Annotations to add to the Identity deployment pods
+##
+identityPodAnnotations: {}
+
+## Identity Deployment Pod Labels
+## - Labels to add to the Identity deployment pods
+##
+identityPodLabels: {}
+
+## Identity Deployment Pod Container Name
+## - The name of the containers
+##
+identityContainerName: identity
+
+## Identity Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+identityContainerImageRepository: bitwarden/identity 
+
+## Identity Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+identityContainerImageTag: ""
+
+## Identity Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+identityContainerImagePullPolicy: IfNotPresent
+
+## Identity Service Name
+## - The name of the Identity service
+##
+identityServiceName: identity
+
+## Identity Service Annotations
+## - Annotations to add to the Identity service
+##
+identityServiceAnnotations: {}
+
+## Identity Service Labels
+## - Labels to add to the Identity service
+##
+identityServiceLabels: {}
+
+## Identity Service Type
+## - Type of the Identity service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+identityServiceType: ClusterIP
+
+## Identity Service Port
+## - The port exposed by the Identity service
+##
+identityServicePort: 5000
+
+## Identity Service Target Port
+## - The port to access on the pods of the Identity deployment
+##
+identityServiceTargetPort: 5000
+
+## Identity Volume Secret Name
+## - The name of the secret the contains the Identity.pfx certificate
+##
+identityVolumeSecretName: identity
+
+###
+###  Notifications Component
+###
+
+## Notifications Component Install
+## - If true, will deploy the Notifications component
+##
+notificationsInstall: true
+
+## Notifications Deployment Name
+## - The name of the Notifications deployment
+##
+notificationsDeploymentName: notifications
+
+## Notifications Deployment Annotations
+## - Annotations to add to the Notifications deployment
+##
+notificationsDeploymentAnnotations: {}
+
+## Notifications Deployment Labels
+## - Labels to add to the Notifications deployment
+##
+notificationsDeploymentLabels: {}
+
+## Notifications Deployment Replica Count
+## - How many pods to create for the Notifications deployment
+##
+notificationsDeploymentReplicaCount: 3
+
+## Notifications Deployment Pod Annotations
+## - Annotations to add to the Notifications deployment pods
+##
+notificationsPodAnnotations: {}
+
+## Notifications Deployment Pod Labels
+## - Labels to add to the Notifications deployment pods
+##
+notificationsPodLabels: {}
+
+## Notifications Deployment Pod Container Name
+## - The name of the containers
+##
+notificationsContainerName: notifications
+
+## Notifications Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+notificationsContainerImageRepository: bitwarden/notifications
+
+## Notifications Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+notificationsContainerImageTag: ""
+
+## Notifications Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+notificationsContainerImagePullPolicy: IfNotPresent
+
+## Notifications Service Name
+## - The name of the Notifications service
+##
+notificationsServiceName: notifications
+
+## Notifications Service Annotations
+## - Annotations to add to the Notifications service
+##
+notificationsServiceAnnotations: {}
+
+## Notifications Service Labels
+## - Labels to add to the Notifications service
+##
+notificationsServiceLabels: {}
+
+## Notifications Service Type
+## - Type of the Notifications service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+notificationsServiceType: ClusterIP
+
+## Notifications Service Port
+## - The port exposed by the Notifications service
+##
+notificationsServicePort: 5000
+
+## Notifications Service Target Port
+## - The port to access on the pods of the Notifications deployment
+##
+notificationsServiceTargetPort: 5000
+
+###
+###  Portal Component
+###
+
+## Portal Component Install
+## - If true, will deploy the Portal component
+##
+portalInstall: true
+
+## Portal Deployment Name
+## - The name of the Portal deployment
+##
+portalDeploymentName: portal
+
+## Portal Deployment Annotations
+## - Annotations to add to the Portal deployment
+##
+portalDeploymentAnnotations: {}
+
+## Portal Deployment Labels
+## - Labels to add to the Portal deployment
+##
+portalDeploymentLabels: {}
+
+## Portal Deployment Replica Count
+## - How many pods to create for the Portal deployment
+##
+portalDeploymentReplicaCount: 3
+
+## Portal Deployment Pod Annotations
+## - Annotations to add to the Portal deployment pods
+##
+portalPodAnnotations: {}
+
+## Portal Deployment Pod Labels
+## - Labels to add to the Portal deployment pods
+##
+portalPodLabels: {}
+
+## Portal Deployment Pod Container Name
+## - The name of the containers
+##
+portalContainerName: portal
+
+## Portal Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+portalContainerImageRepository: bitwarden/portal
+
+## Portal Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+portalContainerImageTag: ""
+
+## Portal Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+portalContainerImagePullPolicy: IfNotPresent
+
+## Portal Service Name
+## - The name of the Portal service
+##
+portalServiceName: portal
+
+## Portal Service Annotations
+## - Annotations to add to the Portal service
+##
+portalServiceAnnotations: {}
+
+## Portal Service Labels
+## - Labels to add to the Portal service
+##
+portalServiceLabels: {}
+
+## Portal Service Type
+## - Type of the Portal service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+portalServiceType: ClusterIP
+
+## Portal Service Port
+## - The port exposed by the Portal service
+##
+portalServicePort: 5000
+
+## Portal Service Target Port
+## - The port to access on the pods of the Portal deployment
+##
+portalServiceTargetPort: 5000
+
+###
+###  Proxy Component
+###
+
+## Proxy Component Install
+## - If true, will deploy the Proxy component
+##
+proxyInstall: true
+
+## Proxy Deployment Name
+## - The name of the Proxy deployment
+##
+proxyDeploymentName: proxy
+
+## Proxy Deployment Annotations
+## - Annotations to add to the Proxy deployment
+##
+proxyDeploymentAnnotations: {}
+
+## Proxy Deployment Labels
+## - Labels to add to the Proxy deployment
+##
+proxyDeploymentLabels: {}
+
+## Proxy Deployment Replica Count
+## - How many pods to create for the Proxy deployment
+##
+proxyDeploymentReplicaCount: 3
+
+## Proxy Deployment Pod Annotations
+## - Annotations to add to the Proxy deployment pods
+##
+proxyPodAnnotations: {}
+
+## Proxy Deployment Pod Labels
+## - Labels to add to the Proxy deployment pods
+##
+proxyPodLabels: {}
+
+## Proxy Deployment Pod Container Name
+## - The name of the containers
+##
+proxyContainerName: proxy
+
+## Proxy Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+proxyContainerImageRepository: bitwarden/k8s-proxy
+
+## Proxy Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+proxyContainerImageTag: ""
+
+## Proxy Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+proxyContainerImagePullPolicy: IfNotPresent
+
+## Proxy Service Name
+## - The name of the Proxy service
+##
+proxyServiceName: proxy
+
+## Proxy Service Annotations
+## - Annotations to add to the Proxy service
+##
+proxyServiceAnnotations: {}
+
+## Proxy Service Labels
+## - Labels to add to the Proxy service
+##
+proxyServiceLabels: {}
+
+## Proxy Service Type
+## - Type of the Proxy service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+proxyServiceType: ClusterIP
+
+## Proxy Service Port
+## - The port exposed by the Proxy service
+##
+proxyServicePort: 8080
+
+## Proxy Service Target Port
+## - The port to access on the pods of the Proxy deployment
+##
+proxyServiceTargetPort: 8080
+
+## Proxy Volume Config Map Name
+## - The name of the Config Map that contains the NGINX config for the Proxy component
+##
+proxyVolumeConfigMapName: nginx
+
+###
+###  SSO Component
+###
+
+## SSO Component Install
+## - If true, will deploy the SSO component
+##
+ssoInstall: true
+
+## SSO Deployment Name
+## - The name of the SSO deployment
+##
+ssoDeploymentName: sso
+
+## SSO Deployment Annotations
+## - Annotations to add to the SSO deployment
+##
+ssoDeploymentAnnotations: {}
+
+## SSO Deployment Labels
+## - Labels to add to the SSO deployment
+##
+ssoDeploymentLabels: {}
+
+## SSO Deployment Replica Count
+## - How many pods to create for the SSO deployment
+##
+ssoDeploymentReplicaCount: 3
+
+## SSO Deployment Pod Annotations
+## - Annotations to add to the SSO deployment pods
+##
+ssoPodAnnotations: {}
+
+## SSO Deployment Pod Labels
+## - Labels to add to the SSO deployment pods
+##
+ssoPodLabels: {}
+
+## SSO Deployment Pod Container Name
+## - The name of the containers
+##
+ssoContainerName: sso
+
+## SSO Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+ssoContainerImageRepository: bitwarden/sso
+
+## SSO Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+ssoContainerImageTag: ""
+
+## SSO Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+ssoContainerImagePullPolicy: IfNotPresent
+
+## SSO Service Name
+## - The name of the SSO service
+##
+ssoServiceName: sso
+
+## SSO Service Annotations
+## - Annotations to add to the SSO service
+##
+ssoServiceAnnotations: {}
+
+## SSO Service Labels
+## - Labels to add to the SSO service
+##
+ssoServiceLabels: {}
+
+## SSO Service Type
+## - Type of the SSO service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+ssoServiceType: ClusterIP
+
+## SSO Service Port
+## - The port exposed by the SSO service
+##
+ssoServicePort: 5000
+
+## SSO Service Target Port
+## - The port to access on the pods of the SSO deployment
+##
+ssoServiceTargetPort: 5000
+
+###
+###  Web Component
+###
+
+## Web Component Install
+## - If true, will deploy the Web component
+##
+webInstall: true
+
+## Web Deployment Name
+## - The name of the Web deployment
+##
+webDeploymentName: web
+
+## Web Deployment Annotations
+## - Annotations to add to the Web deployment
+##
+webDeploymentAnnotations: {}
+
+## Web Deployment Labels
+## - Labels to add to the Web deployment
+##
+webDeploymentLabels: {}
+
+## Web Deployment Replica Count
+## - How many pods to create for the Web deployment
+##
+webDeploymentReplicaCount: 3
+
+## Web Deployment Pod Annotations
+## - Annotations to add to the Web deployment pods
+##
+webPodAnnotations: {}
+
+## Web Deployment Pod Labels
+## - Labels to add to the Web deployment pods
+##
+webPodLabels: {}
+
+## Web Deployment Pod Container Name
+## - The name of the containers
+##
+webContainerName: web
+
+## Web Deployment Pod Container Image Repository
+## - The image repository to use in the containers
+##
+webContainerImageRepository: bitwarden/web
+
+## Web Deployment Pod Container Image Tag
+## - The image tag to use in the containers
+##
+webContainerImageTag: ""
+
+## Web Deployment Pod Container Image Pull Policy
+## - The image pull policy to use for the containers
+##
+webContainerImagePullPolicy: IfNotPresent
+
+## Web Service Name
+## - The name of the Web service
+##
+webServiceName: web
+
+## Web Service Annotations
+## - Annotations to add to the Web service
+##
+webServiceAnnotations: {}
+
+## Web Service Labels
+## - Labels to add to the Web service
+##
+webServiceLabels: {}
+
+## Web Service Type
+## - Type of the Web service
+## - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+##
+webServiceType: ClusterIP
+
+## Web Service Port
+## - The port exposed by the Web service
+##
+webServicePort: 5000
+
+## Web Service Target Port
+## - The port to access on the pods of the Web deployment
+##
+webServiceTargetPort: 5000
+
+## Web Volume Secret Name
+## - The name of the secret for the Web volume
+##
+webVolumeSecretName: webappid

@@ -1,0 +1,54 @@
+{{- if .Values.attachmentsInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.attachmentsDeploymentName }}
+{{- if .Values.attachmentsDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.attachmentsDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.attachmentsDeploymentLabels }}
+{{ toYaml .Values.attachmentsDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.attachmentsDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: attachments
+  template:
+    metadata:
+{{- if .Values.attachmentsPodAnnotations }}
+      annotations:
+{{ toYaml .Values.attachmentsPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.attachmentsPodLabels }}
+{{ toYaml .Values.attachmentsPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.attachmentsContainerName }}
+          image: "{{ .Values.attachmentsContainerImageRepository }}:{{ .Values.attachmentsContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.attachmentsContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.attachmentsServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.attachmentsServiceTargetPort }}
+          volumeMounts:
+            - name: attachments
+              mountPath: /etc/bitwarden/core/attachments
+      volumes: 
+        - name: attachments
+          persistentVolumeClaim:
+            claimName: {{ .Values.attachmentsVolumeClaimName }}
+{{- end }}

@@ -1,0 +1,25 @@
+{{- if .Values.identityInstall }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.identityServiceName }}
+{{- if .Values.identityServiceAnnotations }}
+  annotations:
+{{ toYaml .Values.identityServiceAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: identity
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.identityServiceLabels }}
+{{ toYaml .Values.identityServiceLabels | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.identityServiceType }}
+  ports:
+    - name: http-port
+      port: {{ .Values.identityServicePort }}
+      targetPort: {{ .Values.identityServiceTargetPort }}
+  selector:
+    app.kubernetes.io/component: identity
+{{- end }}

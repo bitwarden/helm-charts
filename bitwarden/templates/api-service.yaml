@@ -1,0 +1,25 @@
+{{- if .Values.apiInstall }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.apiServiceName }}
+{{- if .Values.apiServiceAnnotations }}
+  annotations:
+{{ toYaml .Values.apiServiceAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: api
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.apiServiceLabels }}
+{{ toYaml .Values.apiServiceLabels | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.apiServiceType }}
+  ports:
+    - name: http-port
+      port: {{ .Values.apiServicePort }}
+      targetPort: {{ .Values.apiServiceTargetPort }}
+  selector:
+    app.kubernetes.io/component: api
+{{- end }}

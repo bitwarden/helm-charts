@@ -1,0 +1,25 @@
+{{- if .Values.webInstall }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.webServiceName }}
+{{- if .Values.webServiceAnnotations }}
+  annotations:
+{{ toYaml .Values.webServiceAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.webServiceLabels }}
+{{ toYaml .Values.webServiceLabels | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.webServiceType }}
+  ports:
+    - name: http-port
+      port: {{ .Values.webServicePort }}
+      targetPort: {{ .Values.webServiceTargetPort }}
+  selector:
+    app.kubernetes.io/component: web
+{{- end }}

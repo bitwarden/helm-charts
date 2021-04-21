@@ -1,0 +1,63 @@
+{{- if eq .Values.databaseType "container" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mssqlDeploymentName }}
+{{- if .Values.mssqlDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.mssqlDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: mssql
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.mssqlDeploymentLabels }}
+{{ toYaml .Values.mssqlDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.mssqlDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: mssql
+  template:
+    metadata:
+{{- if .Values.mssqlPodAnnotations }}
+      annotations:
+{{ toYaml .Values.mssqlPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: mssql
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.mssqlPodLabels }}
+{{ toYaml .Values.mssqlPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.mssqlContainerName }}
+          image: "{{ .Values.mssqlContainerImageRepository }}:{{ .Values.mssqlContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.mssqlContainerImagePullPolicy }}
+          resources:
+{{ toYaml .Values.mssqlContainerResourceLimits | indent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          ports:
+            - containerPort: 1433
+          volumeMounts:
+            - name: mssql-data
+              mountPath: /var/opt/mssql/data
+            - name: mssql-log
+              mountPath: /var/opt/mssql/log
+            - name: mssql-backups
+              mountPath: /etc/bitwarden/mssql/backups
+      volumes:
+        - name: mssql-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.mssqlDataVolumeClaimName }}
+        - name: mssql-log
+          persistentVolumeClaim:
+            claimName: {{ .Values.mssqlLogVolumeClaimName }}
+        - name: mssql-backups
+          persistentVolumeClaim:
+            claimName: {{ .Values.mssqlBackupsVolumeClaimName }}
+{{- end }}

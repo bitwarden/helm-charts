@@ -1,0 +1,64 @@
+{{- if .Values.identityInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.identityDeploymentName }}
+{{- if .Values.identityeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.identityDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: identity
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.identityDeploymentLabels }}
+{{ toYaml .Values.identityDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.identityDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: identity
+  template:
+    metadata:
+{{- if .Values.identityPodAnnotations }}
+      annotations:
+{{ toYaml .Values.identityPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: identity
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.identityPodLabels }}
+{{ toYaml .Values.identityPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.identityContainerName }}
+          image: "{{ .Values.identityContainerImageRepository }}:{{ .Values.identityContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.identityContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.identityServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.identityServiceTargetPort }}
+          volumeMounts:
+            - name: identity
+              mountPath: /etc/bitwarden/identity
+            - name: dataprotection
+              mountPath: /etc/bitwarden/core/aspnet-dataprotection
+            - name: licenses
+              mountPath: /etc/bitwarden/core/licenses
+      volumes:
+        - name: identity
+          secret:
+            secretName: {{ .Values.identityVolumeSecretName }}
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ .Values.licensesVolumeClaimName }}
+{{- end }}

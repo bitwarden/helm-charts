@@ -1,0 +1,25 @@
+{{- if .Values.portalInstall }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.portalServiceName }}
+{{- if .Values.portalServiceAnnotations }}
+  annotations:
+{{ toYaml .Values.portalServiceAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: portal
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.portalServiceLabels }}
+{{ toYaml .Values.portalServiceLabels | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.portalServiceType }}
+  ports:
+    - name: http-port
+      port: {{ .Values.portalServicePort }}
+      targetPort: {{ .Values.portalServiceTargetPort }}
+  selector:
+    app.kubernetes.io/component: portal
+{{- end }}

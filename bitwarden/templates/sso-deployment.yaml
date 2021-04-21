@@ -1,0 +1,64 @@
+{{- if .Values.ssoInstall }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.ssoDeploymentName }}
+{{- if .Values.ssoDeploymentAnnotations }}
+  annotations:
+{{ toYaml .Values.ssoDeploymentAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: sso
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.ssoDeploymentLabels }}
+{{ toYaml .Values.ssoDeploymentLabels | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.ssoDeploymentReplicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: sso
+  template:
+    metadata:
+{{- if .Values.ssoPodAnnotations }}
+      annotations:
+{{ toYaml .Values.ssoPodAnnotations | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: sso
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- if .Values.ssoPodLabels }}
+{{ toYaml .Values.ssoPodLabels | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ .Values.ssoContainerName }}
+          image: "{{ .Values.ssoContainerImageRepository }}:{{ .Values.ssoContainerImageTag | default .Values.coreVersion }}"
+          imagePullPolicy: {{ .Values.ssoContainerImagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          env: 
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.ssoServiceTargetPort }}
+          ports:
+            - containerPort: {{ .Values.ssoServiceTargetPort }}
+          volumeMounts:
+            - name: identity
+              mountPath: /etc/bitwarden/identity
+            - name: dataprotection
+              mountPath: /etc/bitwarden/core/aspnet-dataprotection
+            - name: licenses
+              mountPath: /etc/bitwarden/core/licenses
+      volumes:
+        - name: identity
+          secret:
+            secretName: {{ .Values.identityVolumeSecretName }}
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ .Values.licensesVolumeClaimName }}
+{{- end }}

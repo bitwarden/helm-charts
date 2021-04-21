@@ -1,0 +1,25 @@
+{{- if .Values.adminInstall }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.adminServiceName }}
+{{- if .Values.adminServiceAnnotations }}
+  annotations:
+{{ toYaml .Values.adminServiceAnnotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: admin
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- if .Values.adminServiceLabels }}
+{{ toYaml .Values.adminServiceLabels | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.adminServiceType }}
+  ports:
+    - name: http-port
+      port: {{ .Values.adminServicePort }}
+      targetPort: {{ .Values.adminServiceTargetPort }}
+  selector:
+    app.kubernetes.io/component: admin
+{{- end }}
