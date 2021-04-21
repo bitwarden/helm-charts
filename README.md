@@ -26,7 +26,6 @@
 
 1. Replace any optional values in `config.yaml` for your cluster.  Common sections to replace values include:
     - Ingress
-    - RBAC
     - Database
     - Storage Class for PVCs
     - Replica counts per component
