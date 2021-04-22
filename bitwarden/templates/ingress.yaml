@@ -1,6 +1,8 @@
 {{- if .Values.ingressEnabled }}
 ---
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" }}
+apiVersion: networking.k8s.io/v1
+{{ else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
 apiVersion: networking.k8s.io/v1beta1
 {{ else }}
 apiVersion: extensions/v1beta1
@@ -33,8 +35,15 @@ spec:
             pathType: {{ .Values.ingressPathType }}
 {{- end }}
             backend:
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" }}
+              service:
+                name: {{ .Values.proxyServiceName }}
+                port:
+                  number: {{ .Values.proxyServicePort }}
+{{ else }}
               serviceName: {{ .Values.proxyServiceName }}
               servicePort: {{ .Values.proxyServicePort }}
+{{- end }}
 {{- if .Values.ingressTLSSecret }}
   tls:
     - hosts:
