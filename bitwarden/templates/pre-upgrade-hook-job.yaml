@@ -1,0 +1,58 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-db-upgrade"
+  labels:
+    app.kubernetes.io/component: pre-upgrade-hook
+{{ include "bitwarden.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-db-upgrade"
+      labels:
+        app.kubernetes.io/component: pre-upgrade-hook
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+      containers:
+      - name: setup
+        command: [
+          "dotnet", "Setup.dll"
+        ]
+        args: [
+          "-update", "true",
+          "-db", "true",
+          "-os", "lin",
+          "-corev", "{{ .Values.coreVersion }}",
+          "-webv", "{{ .Values.webVersion }}"
+        ]
+        image: "bitwarden/setup:dev"
+        volumeMounts:
+          - name: temp
+            mountPath: "/bitwarden/env"
+      initContainers:
+      - name: create-global-override
+        command: [
+          "/bin/sh", "-c"
+        ]
+        args: ['
+          for f in /bitwarden/configmap/*; do echo "$(basename $f)=$(cat $f)" >> /bitwarden/env/global.override.env; done;
+        ']
+        image: "busybox"
+        volumeMounts:
+          - name: configmap
+            mountPath: "/bitwarden/configmap"
+          - name: temp
+            mountPath: "/bitwarden/env"
+      restartPolicy: Never
+      volumes:
+        - name: configmap
+          configMap:
+            name: {{ .Values.configMapName }}
+        - name: temp
+          emptyDir:
+            medium: Memory
