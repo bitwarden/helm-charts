@@ -40,13 +40,6 @@ helm.sh/chart: {{ template "bitwarden.chart" . }}
 {{- end -}}
 
 {{/*
-The name of the service account to use
-*/}}
-{{- define "bitwarden.serviceAccountName" -}}
-{{- default (include "bitwarden.fullname" .) .Values.serviceAccountName -}}
-{{- end -}}
-
-{{/*
 The database connection string
 */}}
 {{- define "bitwarden.dbConnectionString" -}}

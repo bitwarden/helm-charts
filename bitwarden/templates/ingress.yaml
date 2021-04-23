@@ -1,6 +1,8 @@
 {{- if .Values.ingressEnabled }}
 ---
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
+{{- if and (eq .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
+apiVersion: networking.k8s.io/v1
+{{ else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
 apiVersion: networking.k8s.io/v1beta1
 {{ else }}
 apiVersion: extensions/v1beta1
@@ -19,10 +21,8 @@ metadata:
 {{ toYaml .Values.ingressLabels | indent 4 }}
 {{- end }}
 spec:
-{{- if or (.Capabilities.APIVersions.Has "networking.k8s.io/v1") (.Capabilities.APIVersions.Has "networking.k8s.io/v1beta1") }}
 {{- if .Values.ingressClassName }}
   ingressClassName: {{ .Values.ingressClassName }}
-{{- end }}
 {{- end }}
   rules:
     - host: {{ .Values.domain }}
@@ -33,8 +33,15 @@ spec:
             pathType: {{ .Values.ingressPathType }}
 {{- end }}
             backend:
+{{- if and (eq .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
+              service:
+                name: {{ .Values.proxyServiceName }}
+                port:
+                  number: {{ .Values.proxyServicePort }}
+{{ else }}
               serviceName: {{ .Values.proxyServiceName }}
               servicePort: {{ .Values.proxyServicePort }}
+{{- end }}
 {{- if .Values.ingressTLSSecret }}
   tls:
     - hosts:

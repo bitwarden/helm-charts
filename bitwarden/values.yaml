@@ -207,56 +207,6 @@ ingressTLSSecretAnnotations: {}
 ##
 ingressTLSSecretLabels: {}
 
-###########################################
-#  Service Account Configuration Options  #
-###########################################
-
-## Service Account Name
-## - The service account the pre install hook pods will use to interact with the Kubernetes API
-## - If set, an existing service account is used
-## - If not set, a service account is created automatically using the fullname template
-##
-serviceAccountName: ""
-
-## Service Account Annotations
-## - Annotations to add to the Service Account resource
-##
-serviceAccountAnnotations: {}
-
-## Service Account Labels
-## - Labels to add to the Service Account resource
-##
-serviceAccountLabels: {}
-
-#####################################################
-#  Role Based Access Control Configuration Options  #
-#####################################################
-
-## RBAC Enabled
-## - Whether Role Based Access Control objects like roles and rolebindings should be created
-##
-rbacEnabled: true
-
-## RBAC Role Annotations
-## - Annotations to add to the RBAC Role resource
-##
-rbacRoleAnnotations: {}
-
-## RBAC Role Labels
-## - Labels to add to the RBAC Role resource
-##
-rbacRoleLabels: {}
-
-## RBAC Role Binding Annotations
-## - Annotations to add to the RBAC Role Binding resource
-##
-rbacRoleBindingAnnotations: {}
-
-## RBAC Role Binding Labels
-## - Labels to add to the RBAC Role Binding resource
-##
-rbacRoleBindingLabels: {}
-
 ####################################
 #  Database Configuration Options  #
 ####################################

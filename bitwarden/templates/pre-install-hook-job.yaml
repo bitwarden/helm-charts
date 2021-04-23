@@ -18,8 +18,6 @@ spec:
         app.kubernetes.io/component: pre-install-hook
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
-      automountServiceAccountToken: true
-      serviceAccountName: {{ include "bitwarden.serviceAccountName" . }}
       initContainers:
       - name: setup
         command: [
