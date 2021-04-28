@@ -1,12 +1,13 @@
 apiVersion: v2
 appVersion: "1.40.0"
-description: A Helm chart for deploying Bitwarden to Kubernetes
+description: A Helm chart for deploying a Bitwarden instance on Kubernetes
 home: https://bitwarden.com/
 icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/512x512.png
 keywords:
 - bitwarden
 - password
 - manager
+- vault
 kubeVersion: '>=1.18.0-0'
 name: bitwarden
 sources:
