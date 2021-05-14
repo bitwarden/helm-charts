@@ -43,9 +43,5 @@ helm.sh/chart: {{ template "bitwarden.chart" . }}
 The database connection string
 */}}
 {{- define "bitwarden.dbConnectionString" -}}
-{{ printf "Data Source=tcp:%s,%v;Initial Catalog=vault;Persist Security Info=False;User ID=%s;Password=%s;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True"
-   .Values.dbHostname
-   .Values.dbPort
-   .Values.dbUser
-   .Values.dbPassword }}
+{{ printf "Data Source=tcp:%s,%v;Initial Catalog=vault;Persist Security Info=False;User ID=%s;Password=%s;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True" .Values.dbHostname .Values.dbPort .Values.dbUser .Values.dbPassword }}
 {{- end -}}
