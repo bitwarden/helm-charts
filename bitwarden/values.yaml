@@ -9,8 +9,8 @@
 ## Core and Web versions to install
 ## - Required
 ##
-coreVersion: "1.40.0"
-webVersion: "2.19.0"
+coreVersion: "1.41.3"
+webVersion: "2.20.2"
 
 ## Labels to apply to all resources
 ## - Optional
