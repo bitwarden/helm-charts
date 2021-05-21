@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.proxyContainerName }}
-          image: "{{ .Values.proxyContainerImageRepository }}:{{ .Values.proxyContainerImageTag | default .Values.webVersion }}"
+          image: "{{ .Values.proxyContainerImageRepository }}:{{ .Values.proxyContainerImageTag | default .Values.coreVersion }}"
           imagePullPolicy: {{ .Values.proxyContainerImagePullPolicy }}
           envFrom:
             - configMapRef:
