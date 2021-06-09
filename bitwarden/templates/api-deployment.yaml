@@ -1,7 +1,7 @@
 {{- if .Values.deployment.api.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.api.kind }}
 metadata:
   name: {{ template "bitwarden.api" . }}
 {{- if .Values.deployment.api.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.api.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.api.kind "Deployment" }}
   replicas: {{ .Values.deployment.api.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: api

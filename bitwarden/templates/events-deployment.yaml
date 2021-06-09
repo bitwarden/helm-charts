@@ -1,7 +1,7 @@
 {{- if .Values.deployment.events.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.events.kind }}
 metadata:
   name: {{ template "bitwarden.events" . }}
 {{- if .Values.deployment.events.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.events.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.events.kind "Deployment" }}
   replicas: {{ .Values.deployment.events.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: events

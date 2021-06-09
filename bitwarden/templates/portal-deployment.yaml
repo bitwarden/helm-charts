@@ -1,7 +1,7 @@
 {{- if .Values.deployment.portal.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.portal.kind }}
 metadata:
   name: {{ template "bitwarden.portal" . }}
 {{- if .Values.deployment.portal.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.portal.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.portal.kind "Deployment" }}
   replicas: {{ .Values.deployment.portal.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: portal

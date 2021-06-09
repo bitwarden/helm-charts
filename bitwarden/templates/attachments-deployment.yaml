@@ -1,7 +1,7 @@
 {{- if .Values.deployment.attachments.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.attachments.kind }}
 metadata:
   name: {{ template "bitwarden.attachments" . }}
 {{- if .Values.deployment.attachments.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.attachments.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.attachments.kind "Deployment" }}
   replicas: {{ .Values.deployment.attachments.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: attachments

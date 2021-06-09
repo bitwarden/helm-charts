@@ -1,7 +1,7 @@
 {{- if .Values.deployment.web.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.web.kind }}
 metadata:
   name: {{ template "bitwarden.web" . }}
 {{- if .Values.deployment.web.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.web.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.web.kind "Deployment" }}
   replicas: {{ .Values.deployment.web.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: web

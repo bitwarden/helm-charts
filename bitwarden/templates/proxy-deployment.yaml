@@ -1,7 +1,7 @@
 {{- if .Values.deployment.proxy.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.proxy.kind }}
 metadata:
   name: {{ template "bitwarden.proxy" . }}
 {{- if .Values.deployment.proxy.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.proxy.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.proxy.kind "Deployment" }}
   replicas: {{ .Values.deployment.proxy.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: proxy

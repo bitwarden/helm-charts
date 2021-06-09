@@ -1,7 +1,7 @@
 {{- if .Values.deployment.icons.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.icons.kind }}
 metadata:
   name: {{ template "bitwarden.icons" . }}
 {{- if .Values.deployment.icons.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.icons.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.icons.kind "Deployment" }}
   replicas: {{ .Values.deployment.icons.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: icons

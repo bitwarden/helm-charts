@@ -1,7 +1,7 @@
 {{- if .Values.deployment.notifications.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.notifications.kind }}
 metadata:
   name: {{ template "bitwarden.notifications" . }}
 {{- if .Values.deployment.notifications.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.notifications.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.notifications.kind "Deployment" }}
   replicas: {{ .Values.deployment.notifications.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: notifications

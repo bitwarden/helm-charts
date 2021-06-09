@@ -1,7 +1,7 @@
 {{- if .Values.deployment.sso.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.sso.kind }}
 metadata:
   name: {{ template "bitwarden.sso" . }}
 {{- if .Values.deployment.sso.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.sso.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.sso.kind "Deployment" }}
   replicas: {{ .Values.deployment.sso.replicas }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: sso

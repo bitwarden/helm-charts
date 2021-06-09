@@ -1,7 +1,7 @@
-{{- if .Values.deployment.admin.enabled }}
+{{- if and .Values.deployment.admin.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.deployment.admin.kind }}
 metadata:
   name: {{ template "bitwarden.admin" . }}
 {{- if .Values.deployment.admin.annotations }}
@@ -15,7 +15,9 @@ metadata:
 {{ toYaml .Values.deployment.admin.labels | indent 4 }}
 {{- end }}
 spec:
+{{- if eq .Values.deployment.admin.kind "Deployment" }}
   replicas: {{ .Values.deployment.admin.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: admin
