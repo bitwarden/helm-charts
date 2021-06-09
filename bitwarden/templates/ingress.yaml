@@ -1,4 +1,4 @@
-{{- if .Values.ingressEnabled }}
+{{- if .Values.ingress.enabled }}
 ---
 {{- if and (eq .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
 apiVersion: networking.k8s.io/v1
@@ -9,43 +9,43 @@ apiVersion: extensions/v1beta1
 {{ end -}}
 kind: Ingress
 metadata:
-  name: {{ .Values.ingressName }}
-{{- if .Values.ingressAnnotations }}
+  name: {{ .Values.ingress.name }}
+{{- if .Values.ingress.annotations }}
   annotations:
-{{ toYaml .Values.ingressAnnotations | indent 4 }}
+{{ toYaml .Values.ingress.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: ingress
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.ingressLabels }}
-{{ toYaml .Values.ingressLabels | indent 4 }}
+{{- if .Values.ingress.labels }}
+{{ toYaml .Values.ingress.labels | indent 4 }}
 {{- end }}
 spec:
-{{- if .Values.ingressClassName }}
-  ingressClassName: {{ .Values.ingressClassName }}
+{{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
 {{- end }}
   rules:
-    - host: {{ .Values.domain }}
+    - host: {{ .Values.general.domain }}
       http:
         paths:
-          - path: {{ .Values.ingressRoutePrefix }}
-{{- if .Values.ingressPathType }}
-            pathType: {{ .Values.ingressPathType }}
+          - path: {{ .Values.ingress.routePrefix }}
+{{- if .Values.ingress.pathType }}
+            pathType: {{ .Values.ingress.pathType }}
 {{- end }}
             backend:
 {{- if and (eq .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
               service:
-                name: {{ .Values.proxyServiceName }}
+                name: {{ template "bitwarden.proxy" . }}
                 port:
-                  number: {{ .Values.proxyServicePort }}
+                  number: {{ .Values.service.proxy.port }}
 {{ else }}
-              serviceName: {{ .Values.proxyServiceName }}
-              servicePort: {{ .Values.proxyServicePort }}
+              serviceName: {{ template "bitwarden.proxy" . }}
+              servicePort: {{ .Values.service.proxy.port }}
 {{- end }}
-{{- if .Values.ingressTLSSecret }}
+{{- if .Values.ingress.tls.secret }}
   tls:
     - hosts:
-      - {{ .Values.domain }}
-      secretName: {{ .Values.ingressTLSSecret }}
+      - {{ .Values.general.domain }}
+      secretName: {{ .Values.ingress.tls.secret }}
 {{- end }}
 {{- end }}

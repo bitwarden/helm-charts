@@ -1,47 +1,47 @@
-{{- if .Values.eventsInstall }}
+{{- if .Values.deployment.events.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.eventsDeploymentName }}
-{{- if .Values.eventsDeploymentAnnotations }}
+  name: {{ template "bitwarden.events" . }}
+{{- if .Values.deployment.events.annotations }}
   annotations:
-{{ toYaml .Values.eventsDeploymentAnnotations | indent 4 }}
+{{ toYaml .Values.deployment.events.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.eventsDeploymentLabels }}
-{{ toYaml .Values.eventsDeploymentLabels | indent 4 }}
+{{- if .Values.deployment.events.labels }}
+{{ toYaml .Values.deployment.events.labels | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.eventsDeploymentReplicaCount }}
+  replicas: {{ .Values.deployment.events.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: events
   template:
     metadata:
-{{- if .Values.eventsPodAnnotations }}
+{{- if .Values.deployment.events.podAnnotations }}
       annotations:
-{{ toYaml .Values.eventsPodAnnotations | indent 8 }}
+{{ toYaml .Values.deployment.events.podAnnotations | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.eventsPodLabels }}
-{{ toYaml .Values.eventsPodLabels | indent 8 }}
+{{- if .Values.deployment.events.podLabels }}
+{{ toYaml .Values.deployment.events.podLabels | indent 8 }}
 {{- end }}
     spec:
       containers:
-        - name: {{ .Values.eventsContainerName }}
-          image: "{{ .Values.eventsContainerImageRepository }}:{{ .Values.eventsContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.eventsContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.events" . }}
+          image: "{{ .Values.deployment.events.image.name }}:{{ .Values.deployment.events.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.deployment.events.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.eventsServiceTargetPort }}
+              value: http://+:{{ .Values.service.events.targetPort }}
           ports:
-            - containerPort: {{ .Values.eventsServiceTargetPort }}
+            - containerPort: {{ .Values.service.events.targetPort }}
 {{- end }}

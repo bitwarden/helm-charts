@@ -1,25 +1,25 @@
-{{- if eq .Values.databaseType "container" }}
+{{- if eq .Values.database.type "container" }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.mssqlServiceName }}
-{{- if .Values.mssqlServiceAnnotations }}
+  name: {{ template "bitwarden.mssql" . }}
+{{- if .Values.service.mssql.annotations }}
   annotations:
-{{ toYaml .Values.mssqlServiceAnnotations | indent 4 }}
+{{ toYaml .Values.service.mssql.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.mssqlServiceLabels }}
-{{ toYaml .Values.mssqlServiceLabels | indent 4 }}
+{{- if .Values.service.mssql.labels }}
+{{ toYaml .Values.service.mssql.labels | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.mssqlServiceType }}
+  type: {{ .Values.service.mssql.type }}
   ports:
     - name: http-port
-      port: {{ .Values.mssqlServicePort }}
-      targetPort: 1433
+      port: {{ .Values.service.mssql.port }}
+      targetPort: {{ .Values.service.mssql.targetPort }}
   selector:
     app.kubernetes.io/component: mssql
 {{- end }}

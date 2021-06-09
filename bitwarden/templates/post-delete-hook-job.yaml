@@ -24,10 +24,10 @@ spec:
           "/bin/sh", "-c"
         ]
         args: ['
-          kubectl delete configmap {{ .Values.proxyVolumeConfigMapName }} -n {{ .Release.Namespace }};
-          kubectl delete configmap {{ .Values.configMapName }} -n {{ .Release.Namespace }};
-          kubectl delete secret {{ .Values.identityVolumeSecretName }} -n {{ .Release.Namespace }};
-          kubectl delete secret {{ .Values.webVolumeSecretName }} -n {{ .Release.Namespace }};
+          kubectl delete configmap {{ template "bitwarden.proxy" . }} -n {{ .Release.Namespace }};
+          kubectl delete configmap {{ .Values.general.configMapName }} -n {{ .Release.Namespace }};
+          kubectl delete secret {{ template "bitwarden.identity" . }} -n {{ .Release.Namespace }};
+          kubectl delete secret {{ template "bitwarden.web" . }} -n {{ .Release.Namespace }};
           echo "Done"
         ']
         image: "bitnami/kubectl:1.19"

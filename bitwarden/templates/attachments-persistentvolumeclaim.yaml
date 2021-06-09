@@ -1,24 +1,24 @@
-{{- if or .Values.attachmentsInstall .Values.apiInstall }}
+{{- if or .Values.deployment.attachments.enabled .Values.deployment.api.enabled }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.attachmentsVolumeClaimName }}
-{{- if .Values.attachmentsVolumeAnnotations }}
+  name: {{ template "bitwarden.attachments" . }}
+{{- if .Values.volume.attachments.annotations }}
   annotations:
-{{ toYaml .Values.attachmentsVolumeAnnotations | indent 4 }}
+{{ toYaml .Values.volume.attachments.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.attachmentsVolumeLabels }}
-{{ toYaml .Values.attachmentsVolumeLabels | indent 4 }}
+{{- if .Values.volume.attachments.labels }}
+{{ toYaml .Values.volume.attachments.labels | indent 4 }}
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.attachmentsVolumeAccessModes | indent 4 }}
-  storageClassName: {{ .Values.attachmentsVolumeStorageClassName }}
+{{ toYaml .Values.volume.attachments.accessModes | indent 4 }}
+  storageClassName: {{ .Values.volume.attachments.storageClassName }}
   resources:
     requests:
-      storage: {{ .Values.attachmentsVolumeSize }}
+      storage: {{ .Values.volume.attachments.size }}
 {{- end }}

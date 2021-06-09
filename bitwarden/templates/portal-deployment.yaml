@@ -1,49 +1,49 @@
-{{- if .Values.portalInstall }}
+{{- if .Values.deployment.portal.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.portalDeploymentName }}
-{{- if .Values.portalDeploymentAnnotations }}
+  name: {{ template "bitwarden.portal" . }}
+{{- if .Values.deployment.portal.annotations }}
   annotations:
-{{ toYaml .Values.portalDeploymentAnnotations | indent 4 }}
+{{ toYaml .Values.deployment.portal.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: portal
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.portalDeploymentLabels }}
-{{ toYaml .Values.portalDeploymentLabels | indent 4 }}
+{{- if .Values.deployment.portal.labels }}
+{{ toYaml .Values.deployment.portal.labels | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.portalDeploymentReplicaCount }}
+  replicas: {{ .Values.deployment.portal.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: portal
   template:
     metadata:
-{{- if .Values.portalPodAnnotations }}
+{{- if .Values.deployment.portal.podAnnotations }}
       annotations:
-{{ toYaml .Values.portalPodAnnotations | indent 8 }}
+{{ toYaml .Values.deployment.portal.podAnnotations | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: portal
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.portalPodLabels }}
-{{ toYaml .Values.portalPodLabels | indent 8 }}
+{{- if .Values.deployment.portal.podLabels }}
+{{ toYaml .Values.deployment.portal.podLabels | indent 8 }}
 {{- end }}
     spec:
       containers:
-        - name: {{ .Values.portalContainerName }}
-          image: "{{ .Values.portalContainerImageRepository }}:{{ .Values.portalContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.portalContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.portal" . }}
+          image: "{{ .Values.deployment.portal.image.name }}:{{ .Values.deployment.portal.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.deployment.portal.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.portalServiceTargetPort }}
+              value: http://+:{{ .Values.service.portal.targetPort }}
           ports:
-            - containerPort: {{ .Values.portalServiceTargetPort }}
+            - containerPort: {{ .Values.service.portal.targetPort }}
           volumeMounts:
             - name: dataprotection
               mountPath: /etc/bitwarden/core/aspnet-dataprotection
@@ -52,8 +52,8 @@ spec:
       volumes:
         - name: dataprotection
           persistentVolumeClaim:
-            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+            claimName: {{ template "bitwarden.dataprotection" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ .Values.licensesVolumeClaimName }}
+            claimName: {{ template "bitwarden.licenses" . }}
 {{- end }}

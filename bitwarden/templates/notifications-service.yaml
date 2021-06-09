@@ -1,25 +1,25 @@
-{{- if .Values.notificationsInstall }}
+{{- if .Values.service.notifications.enabled }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.notificationsServiceName }}
-{{- if .Values.notificationsServiceAnnotations }}
+  name: {{ template "bitwarden.notifications" . }}
+{{- if .Values.service.notifications.annotations }}
   annotations:
-{{ toYaml .Values.notificationsServiceAnnotations | indent 4 }}
+{{ toYaml .Values.service.notifications.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.notificationsServiceLabels }}
-{{ toYaml .Values.notificationsServiceLabels | indent 4 }}
+{{- if .Values.service.notifications.labels }}
+{{ toYaml .Values.service.notifications.labels | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.notificationsServiceType }}
+  type: {{ .Values.service.notifications.type }}
   ports:
     - name: http-port
-      port: {{ .Values.notificationsServicePort }}
-      targetPort: {{ .Values.notificationsServiceTargetPort }}
+      port: {{ .Values.service.notifications.port }}
+      targetPort: {{ .Values.service.notifications.targetPort }}
   selector:
     app.kubernetes.io/component: notifications
 {{- end }}

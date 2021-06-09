@@ -1,49 +1,49 @@
-{{- if .Values.ssoInstall }}
+{{- if .Values.deployment.sso.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.ssoDeploymentName }}
-{{- if .Values.ssoDeploymentAnnotations }}
+  name: {{ template "bitwarden.sso" . }}
+{{- if .Values.deployment.sso.annotations }}
   annotations:
-{{ toYaml .Values.ssoDeploymentAnnotations | indent 4 }}
+{{ toYaml .Values.deployment.sso.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.ssoDeploymentLabels }}
-{{ toYaml .Values.ssoDeploymentLabels | indent 4 }}
+{{- if .Values.deployment.sso.labels }}
+{{ toYaml .Values.deployment.sso.labels | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.ssoDeploymentReplicaCount }}
+  replicas: {{ .Values.deployment.sso.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: sso
   template:
     metadata:
-{{- if .Values.ssoPodAnnotations }}
+{{- if .Values.deployment.sso.podAnnotations }}
       annotations:
-{{ toYaml .Values.ssoPodAnnotations | indent 8 }}
+{{ toYaml .Values.deployment.sso.podAnnotations | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.ssoPodLabels }}
-{{ toYaml .Values.ssoPodLabels | indent 8 }}
+{{- if .Values.deployment.sso.podLabels }}
+{{ toYaml .Values.deployment.sso.podLabels | indent 8 }}
 {{- end }}
     spec:
       containers:
-        - name: {{ .Values.ssoContainerName }}
-          image: "{{ .Values.ssoContainerImageRepository }}:{{ .Values.ssoContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.ssoContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.sso" . }}
+          image: "{{ .Values.deployment.sso.image.name }}:{{ .Values.deployment.sso.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.deployment.sso.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env: 
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.ssoServiceTargetPort }}
+              value: http://+:{{ .Values.service.sso.targetPort }}
           ports:
-            - containerPort: {{ .Values.ssoServiceTargetPort }}
+            - containerPort: {{ .Values.service.sso.targetPort }}
           volumeMounts:
             - name: identity
               mountPath: /etc/bitwarden/identity
@@ -54,11 +54,11 @@ spec:
       volumes:
         - name: identity
           secret:
-            secretName: {{ .Values.identityVolumeSecretName }}
+            secretName: {{ template "bitwarden.identity" . }}
         - name: dataprotection
           persistentVolumeClaim:
-            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+            claimName: {{ template "bitwarden.dataprotection" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ .Values.licensesVolumeClaimName }}
+            claimName: {{ template "bitwarden.licenses" . }}
 {{- end }}

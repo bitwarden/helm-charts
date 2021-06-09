@@ -1,47 +1,47 @@
-{{- if .Values.iconsInstall }}
+{{- if .Values.deployment.icons.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.iconsDeploymentName }}
-{{- if .Values.iconsDeploymentAnnotations }}
+  name: {{ template "bitwarden.icons" . }}
+{{- if .Values.deployment.icons.annotations }}
   annotations:
-{{ toYaml .Values.iconsDeploymentAnnotations | indent 4 }}
+{{ toYaml .Values.deployment.icons.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.iconsDeploymentLabels }}
-{{ toYaml .Values.iconsDeploymentLabels | indent 4 }}
+{{- if .Values.deployment.icons.labels }}
+{{ toYaml .Values.deployment.icons.labels | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.iconsDeploymentReplicaCount }}
+  replicas: {{ .Values.deployment.icons.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: icons
   template:
     metadata:
-{{- if .Values.iconsPodAnnotations }}
+{{- if .Values.deployment.icons.podAnnotations }}
       annotations:
-{{ toYaml .Values.iconsPodAnnotations | indent 8 }}
+{{ toYaml .Values.deployment.icons.podAnnotations | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.iconsPodLabels }}
-{{ toYaml .Values.iconsPodLabels | indent 8 }}
+{{- if .Values.deployment.icons.podLabels }}
+{{ toYaml .Values.deployment.icons.podLabels | indent 8 }}
 {{- end }}
     spec:
       containers:
-        - name: {{ .Values.iconsContainerName }}
-          image: "{{ .Values.iconsContainerImageRepository }}:{{ .Values.iconsContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.iconsContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.icons" . }}
+          image: "{{ .Values.deployment.icons.image.name }}:{{ .Values.deployment.icons.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.deployment.icons.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.iconsServiceTargetPort }}
+              value: http://+:{{ .Values.service.icons.targetPort }}
           ports:
-            - containerPort: {{ .Values.iconsServiceTargetPort }}
+            - containerPort: {{ .Values.service.icons.targetPort }}
 {{- end }}

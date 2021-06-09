@@ -1,49 +1,49 @@
-{{- if .Values.adminInstall }}
+{{- if .Values.deployment.admin.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.adminDeploymentName }}
-{{- if .Values.adminDeploymentAnnotations }}
+  name: {{ template "bitwarden.admin" . }}
+{{- if .Values.deployment.admin.annotations }}
   annotations:
-{{ toYaml .Values.adminDeploymentAnnotations | indent 4 }}
+{{ toYaml .Values.deployment.admin.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: admin
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.adminDeploymentLabels }}
-{{ toYaml .Values.adminDeploymentLabels | indent 4 }}
+{{- if .Values.deployment.admin.labels }}
+{{ toYaml .Values.deployment.admin.labels | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.adminDeploymentReplicaCount }}
+  replicas: {{ .Values.deployment.admin.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: admin
   template:
     metadata:
-{{- if .Values.adminPodAnnotations }}
+{{- if .Values.deployment.admin.podAnnotations }}
       annotations:
-{{ toYaml .Values.adminPodAnnotations | indent 8 }}
+{{ toYaml .Values.deployment.admin.podAnnotations | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: admin
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.adminPodLabels }}
-{{ toYaml .Values.adminPodLabels | indent 8 }}
+{{- if .Values.deployment.admin.podLabels }}
+{{ toYaml .Values.deployment.admin.podLabels | indent 8 }}
 {{- end }}
     spec:
       containers:
-        - name: {{ .Values.adminContainerName }}
-          image: "{{ .Values.adminContainerImageRepository }}:{{ .Values.adminContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.adminContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.admin" . }}
+          image: "{{ .Values.deployment.admin.image.name }}:{{ .Values.deployment.admin.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.deployment.admin.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.adminServiceTargetPort }}
+              value: http://+:{{ .Values.service.admin.targetPort }}
           ports:
-            - containerPort: {{ .Values.adminServiceTargetPort }}
+            - containerPort: {{ .Values.service.admin.targetPort }}
           volumeMounts:
             - name: dataprotection
               mountPath: /etc/bitwarden/core/aspnet-dataprotection
@@ -52,8 +52,8 @@ spec:
       volumes:
         - name: dataprotection
           persistentVolumeClaim:
-            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+            claimName: {{ template "bitwarden.dataprotection" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ .Values.licensesVolumeClaimName }}
+            claimName: {{ template "bitwarden.licenses" . }}
 {{- end }}

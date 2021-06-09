@@ -1,49 +1,49 @@
-{{- if .Values.apiInstall }}
+{{- if .Values.deployment.api.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.apiDeploymentName }}
-{{- if .Values.apiDeploymentAnnotations }}
+  name: {{ template "bitwarden.api" . }}
+{{- if .Values.deployment.api.annotations }}
   annotations:
-{{ toYaml .Values.apiDeploymentAnnotations | indent 4 }}
+{{ toYaml .Values.deployment.api.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: api
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.apiDeploymentLabels }}
-{{ toYaml .Values.apiDeploymentLabels | indent 4 }}
+{{- if .Values.deployment.api.labels }}
+{{ toYaml .Values.deployment.api.labels | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.apiDeploymentReplicaCount }}
+  replicas: {{ .Values.deployment.api.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: api
   template:
     metadata:
-{{- if .Values.apiPodAnnotations }}
+{{- if .Values.deployment.api.podAnnotations }}
       annotations:
-{{ toYaml .Values.apiPodAnnotations | indent 8 }}
+{{ toYaml .Values.deployment.api.podAnnotations | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: api
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.apiodLabels }}
-{{ toYaml .Values.apiPodLabels | indent 8 }}
+{{- if .Values.deployment.api.podLabels }}
+{{ toYaml .Values.deployment.api.podLabels | indent 8 }}
 {{- end }}
     spec:
       containers:
-        - name: {{ .Values.apiContainerName }}
-          image: "{{ .Values.apiContainerImageRepository }}:{{ .Values.apiContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.apiContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.api" . }}
+          image: "{{ .Values.deployment.api.image.name }}:{{ .Values.deployment.api.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.deployment.api.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.apiServiceTargetPort }}
+              value: http://+:{{ .Values.service.api.targetPort }}
           ports:
-            - containerPort: {{ .Values.apiServiceTargetPort }}
+            - containerPort: {{ .Values.service.api.targetPort }}
           volumeMounts:
             - name: attachments
               mountPath: /etc/bitwarden/core/attachments
@@ -54,11 +54,11 @@ spec:
       volumes:
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ .Values.attachmentsVolumeClaimName }}
+            claimName: {{ template "bitwarden.attachments" . }}
         - name: dataprotection
           persistentVolumeClaim:
-            claimName: {{ .Values.dataprotectionVolumeClaimName }}
+            claimName: {{ template "bitwarden.dataprotection" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ .Values.licensesVolumeClaimName }}
+            claimName: {{ template "bitwarden.licenses" . }}
 {{- end }}

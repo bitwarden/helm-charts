@@ -1,24 +1,24 @@
-{{- if eq .Values.databaseType "container" }}
+{{- if eq .Values.database.type "container" }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.mssqlBackupsVolumeClaimName }}
-{{- if .Values.mssqlBackupsVolumeAnnotations }}
+  name: {{ template "bitwarden.mssqlBackups" . }}
+{{- if .Values.volume.mssql.backups.annotations }}
   annotations:
-{{ toYaml .Values.mssqlBackupsVolumeAnnotations | indent 4 }}
+{{ toYaml .Values.volume.mssql.backups.annotations | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql-backups
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.mssqlBackupsVolumeLabels }}
-{{ toYaml .Values.mssqlBackupsVolumeLabels | indent 4 }}
+{{- if .Values.volume.mssql.backups.labels }}
+{{ toYaml .Values.volume.mssql.backups.labels | indent 4 }}
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.mssqlBackupsVolumeAccessModes | indent 4 }}
-  storageClassName: {{ .Values.mssqlBackupsVolumeStorageClassName }}
+{{ toYaml .Values.volume.mssql.backups.accessModes | indent 4 }}
+  storageClassName: {{ .Values.volume.mssql.backups.storageClassName }}
   resources:
     requests:
-      storage: {{ .Values.mssqlBackupsVolumeSize }}
+      storage: {{ .Values.volume.mssql.backups.size }}
 {{- end }}
