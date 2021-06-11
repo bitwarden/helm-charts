@@ -1,25 +1,25 @@
-{{- if .Values.service.events.enabled -}}
+{{- if .Values.component.events.service.enabled -}}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.events" . }}
-{{- with .Values.service.events.annotations }}
+{{- with .Values.component.events.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.events.labels }}
+{{- with .Values.component.events.service.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.events.type }}
+  type: {{ .Values.component.events.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.events.port }}
-      targetPort: {{ .Values.service.events.targetPort }}
+      port: {{ .Values.component.events.service.port }}
+      targetPort: {{ .Values.component.events.service.targetPort }}
   selector:
     app.kubernetes.io/component: events
 {{- end -}}

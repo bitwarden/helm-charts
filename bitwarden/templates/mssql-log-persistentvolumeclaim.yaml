@@ -1,26 +1,26 @@
-{{- if and (eq .Values.database.type "container") (not .Values.volume.mssql.log.existingClaim) -}}
+{{- if and (eq .Values.database.type "container") (not .Values.component.mssql.volume.log.existingClaim) -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "bitwarden.mssqlLog" . }}
-{{- with .Values.volume.mssql.log.annotations }}
+{{- with .Values.component.mssql.volume.log.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql-log
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.volume.mssql.log.labels }}
+{{- with .Values.component.mssql.volume.log.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:
-    - {{ .Values.volume.mssql.log.accessMode | quote }}
-{{- if .Values.volume.mssql.log.storageClass }}
-  storageClassName: {{ .Values.volume.mssql.log.storageClass | quote }}
+    - {{ .Values.component.mssql.volume.log.accessMode | quote }}
+{{- if .Values.component.mssql.volume.log.storageClass }}
+  storageClassName: {{ .Values.component.mssql.volume.log.storageClass | quote }}
 {{- end }}
   resources:
     requests:
-      storage: {{ .Values.volume.mssql.log.size }}
+      storage: {{ .Values.component.mssql.volume.log.size }}
 {{- end -}}

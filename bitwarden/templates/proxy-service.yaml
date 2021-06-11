@@ -1,25 +1,25 @@
-{{- if .Values.service.proxy.enabled -}}
+{{- if .Values.component.proxy.service.enabled -}}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.proxy" . }}
-{{- with .Values.service.proxy.annotations }}
+{{- with .Values.component.proxy.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: proxy
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.proxy.labels }}
+{{- with .Values.component.proxy.service.labels }}
 {{ toYaml . | nindent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.proxy.type }}
+  type: {{ .Values.component.proxy.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.proxy.port }}
-      targetPort: {{ .Values.service.proxy.targetPort }}
+      port: {{ .Values.component.proxy.service.port }}
+      targetPort: {{ .Values.component.proxy.service.targetPort }}
   selector:
     app.kubernetes.io/component: proxy
 {{- end -}}

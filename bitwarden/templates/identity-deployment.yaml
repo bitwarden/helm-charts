@@ -1,55 +1,55 @@
-{{- if .Values.deployment.identity.enabled -}}
+{{- if .Values.component.identity.deployment.enabled -}}
 ---
 apiVersion: apps/v1
-kind: {{ .Values.deployment.identity.kind }}
+kind: {{ .Values.component.identity.deployment.kind }}
 metadata:
   name: {{ template "bitwarden.identity" . }}
-{{- with .Values.deployment.identity.annotations }}
+{{- with .Values.component.identity.deployment.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.deployment.identity.labels }}
+{{- with .Values.component.identity.deployment.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{- if eq .Values.deployment.identity.kind "Deployment" }}
-  replicas: {{ .Values.deployment.identity.replicas }}
+{{- if eq .Values.component.identity.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.identity.deployment.replicas }}
 {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: identity
   template:
     metadata:
-{{- with .Values.deployment.identity.podAnnotations }}
+{{- with .Values.component.identity.deployment.podAnnotations }}
       annotations:
 {{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- with .Values.deployment.identity.podLabels }}
+{{- with .Values.component.identity.deployment.podLabels }}
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
-{{- with .Values.deployment.identity.initContainers }}
+{{- with .Values.component.identity.deployment.initContainers }}
       initContainers:
 {{- toYaml . | indent 8 }}
 {{- end }}
       containers:
         - name: {{ template "bitwarden.identity" . }}
-          image: "{{ .Values.deployment.identity.image.name }}:{{ .Values.deployment.identity.image.tag | default .Values.general.coreVersion }}"
-          imagePullPolicy: {{ .Values.deployment.identity.image.pullPolicy }}
+          image: "{{ .Values.component.identity.deployment.image.name }}:{{ .Values.component.identity.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.identity.deployment.image.pullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.service.identity.targetPort }}
+              value: http://+:{{ .Values.component.identity.service.targetPort }}
           ports:
-            - containerPort: {{ .Values.service.identity.targetPort }}
+            - containerPort: {{ .Values.component.identity.service.targetPort }}
           volumeMounts:
             - name: identity
               mountPath: /etc/bitwarden/identity
@@ -57,8 +57,8 @@ spec:
               mountPath: /etc/bitwarden/core/aspnet-dataprotection
             - name: licenses
               mountPath: /etc/bitwarden/core/licenses
-{{- if .Values.deployment.identity.additionalContainers }}
-{{- toYaml .Values.deployment.identity.additionalContainers | indent 8 }}
+{{- if .Values.component.identity.deployment.additionalContainers }}
+{{- toYaml .Values.component.identity.deployment.additionalContainers | indent 8 }}
 {{- end }}
       volumes:
         - name: identity
@@ -70,7 +70,7 @@ spec:
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.licenses" . }}
-{{- if .Values.deployment.identity.additionalVolumes }}
-{{- toYaml .Values.deployment.identity.additionalVolumes | indent 8 }}
+{{- if .Values.component.identity.deployment.additionalVolumes }}
+{{- toYaml .Values.component.identity.deployment.additionalVolumes | indent 8 }}
 {{- end }}
 {{- end -}}

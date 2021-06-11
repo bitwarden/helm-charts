@@ -53,24 +53,24 @@ spec:
         args: ['
           . /bitwarden/env/mssql.override.env;
           . /bitwarden/env/global.override.env;
-{{- if .Values.deployment.proxy.enabled }}
-          sed -i "s/8080 default_server/{{ .Values.service.proxy.targetPort }} default_server/g" /bitwarden/nginx/default.conf;
-          sed -i "s/admin:5000/{{ template "bitwarden.admin" . }}:{{ .Values.service.admin.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/api:5000/{{ template "bitwarden.api" . }}:{{ .Values.service.api.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/attachments:5000/{{ template "bitwarden.attachments" . }}:{{ .Values.service.attachments.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/events:5000/{{ template "bitwarden.events" . }}:{{ .Values.service.events.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/icons:5000/{{ template "bitwarden.icons" . }}:{{ .Values.service.icons.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/identity:5000/{{ template "bitwarden.identity" . }}:{{ .Values.service.identity.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/notifications:5000/{{ template "bitwarden.notifications" . }}:{{ .Values.service.notifications.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/portal:5000/{{ template "bitwarden.portal" . }}:{{ .Values.service.portal.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/sso:5000/{{ template "bitwarden.sso" . }}:{{ .Values.service.sso.port }}/g" /bitwarden/nginx/default.conf;
-          sed -i "s/web:5000/{{ template "bitwarden.web" . }}:{{ .Values.service.web.port }}/g" /bitwarden/nginx/default.conf;
+{{- if .Values.component.proxy.deployment.enabled }}
+          sed -i "s/8080 default_server/{{ .Values.component.proxy.service.targetPort }} default_server/g" /bitwarden/nginx/default.conf;
+          sed -i "s/admin:5000/{{ template "bitwarden.admin" . }}:{{ .Values.component.admin.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/api:5000/{{ template "bitwarden.api" . }}:{{ .Values.component.api.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/attachments:5000/{{ template "bitwarden.attachments" . }}:{{ .Values.component.attachments.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/events:5000/{{ template "bitwarden.events" . }}:{{ .Values.component.events.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/icons:5000/{{ template "bitwarden.icons" . }}:{{ .Values.component.icons.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/identity:5000/{{ template "bitwarden.identity" . }}:{{ .Values.component.identity.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/notifications:5000/{{ template "bitwarden.notifications" . }}:{{ .Values.component.notifications.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/portal:5000/{{ template "bitwarden.portal" . }}:{{ .Values.component.portal.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/sso:5000/{{ template "bitwarden.sso" . }}:{{ .Values.component.sso.service.port }}/g" /bitwarden/nginx/default.conf;
+          sed -i "s/web:5000/{{ template "bitwarden.web" . }}:{{ .Values.component.web.service.port }}/g" /bitwarden/nginx/default.conf;
           kubectl create configmap {{ template "bitwarden.proxy" . }} --from-file=/bitwarden/nginx/default.conf -n {{ .Release.Namespace }};
 {{- end }}
-{{- if or .Values.deployment.identity.enabled .Values.deployment.sso.enabled }}
+{{- if or .Values.component.identity.deployment.enabled .Values.component.sso.deployment.enabled }}
           kubectl create secret generic {{ template "bitwarden.identity" . }} --from-file=/bitwarden/identity/identity.pfx -n {{ .Release.Namespace }};
 {{- end }}
-{{- if .Values.deployment.web.enabled }}
+{{- if .Values.component.web.deployment.enabled }}
           kubectl create secret generic {{ template "bitwarden.web" . }} --from-file=/bitwarden/web/app-id.json -n {{ .Release.Namespace }};
 {{- end }}
           kubectl patch configmap {{ .Values.general.configMapName }} -n {{ .Release.Namespace }} --type="merge" -p "
@@ -95,7 +95,7 @@ spec:
           kubectl patch configmap {{ .Values.general.configMapName }} -n {{ .Release.Namespace }} --type="merge" -p "
             {
               \"data\": {
-                \"globalSettings__sqlServer__connectionString\":\"Data Source=tcp:{{ template "bitwarden.mssql" . }},{{ .Values.service.mssql.port }};Initial Catalog=vault;Persist Security Info=False;User ID=sa;Password=$SA_PASSWORD;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True\",
+                \"globalSettings__sqlServer__connectionString\":\"Data Source=tcp:{{ template "bitwarden.mssql" . }},{{ .Values.component.mssql.service.port }};Initial Catalog=vault;Persist Security Info=False;User ID=sa;Password=$SA_PASSWORD;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True\",
                 \"SA_PASSWORD\":\"$SA_PASSWORD\"
               }
             }

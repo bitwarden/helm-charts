@@ -37,10 +37,10 @@ spec:
               service:
                 name: {{ template "bitwarden.proxy" . }}
                 port:
-                  number: {{ .Values.service.proxy.port }}
+                  number: {{ .Values.component.proxy.service.port }}
 {{ else }}
               serviceName: {{ template "bitwarden.proxy" . }}
-              servicePort: {{ .Values.service.proxy.port }}
+              servicePort: {{ .Values.component.proxy.service.port }}
 {{- end }}
 {{- if .Values.ingress.cert.tls.enabled }}
   tls:

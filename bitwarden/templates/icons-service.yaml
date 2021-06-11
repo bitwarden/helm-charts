@@ -1,25 +1,25 @@
-{{- if .Values.service.icons.enabled -}}
+{{- if .Values.component.icons.service.enabled -}}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.icons" . }}
-{{- with .Values.service.icons.annotations }}
+{{- with .Values.component.icons.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.icons.labels }}
+{{- with .Values.component.icons.service.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.icons.type }}
+  type: {{ .Values.component.icons.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.icons.port }}
-      targetPort: {{ .Values.service.icons.targetPort }}
+      port: {{ .Values.component.icons.service.port }}
+      targetPort: {{ .Values.component.icons.service.targetPort }}
   selector:
     app.kubernetes.io/component: icons
 {{- end -}}

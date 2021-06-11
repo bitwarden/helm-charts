@@ -1,25 +1,25 @@
-{{- if .Values.service.identity.enabled -}}
+{{- if .Values.component.identity.service.enabled -}}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.identity" . }}
-{{- with .Values.service.identity.annotations }}
+{{- with .Values.component.identity.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.identity.labels }}
+{{- with .Values.component.identity.service.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.identity.type }}
+  type: {{ .Values.component.identity.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.identity.port }}
-      targetPort: {{ .Values.service.identity.targetPort }}
+      port: {{ .Values.component.identity.service.port }}
+      targetPort: {{ .Values.component.identity.service.targetPort }}
   selector:
     app.kubernetes.io/component: identity
 {{- end -}}

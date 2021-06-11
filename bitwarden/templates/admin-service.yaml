@@ -1,25 +1,25 @@
-{{- if .Values.service.admin.enabled -}}
+{{- if .Values.component.admin.service.enabled -}}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.admin" . }}
-{{- with .Values.service.admin.annotations }}
+{{- with .Values.component.admin.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: admin
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.admin.labels }}
+{{- with .Values.component.admin.service.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.admin.type }}
+  type: {{ .Values.component.admin.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.admin.port }}
-      targetPort: {{ .Values.service.admin.targetPort }}
+      port: {{ .Values.component.admin.service.port }}
+      targetPort: {{ .Values.component.admin.service.targetPort }}
   selector:
     app.kubernetes.io/component: admin
 {{- end -}}

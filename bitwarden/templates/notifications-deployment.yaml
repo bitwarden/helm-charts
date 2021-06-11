@@ -1,60 +1,60 @@
-{{- if .Values.deployment.notifications.enabled -}}
+{{- if .Values.component.notifications.deployment.enabled -}}
 ---
 apiVersion: apps/v1
-kind: {{ .Values.deployment.notifications.kind }}
+kind: {{ .Values.component.notifications.deployment.kind }}
 metadata:
   name: {{ template "bitwarden.notifications" . }}
-{{- with .Values.deployment.notifications.annotations }}
+{{- with .Values.component.notifications.deployment.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.deployment.notifications.labels }}
+{{- with .Values.component.notifications.deployment.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{- if eq .Values.deployment.notifications.kind "Deployment" }}
-  replicas: {{ .Values.deployment.notifications.replicas }}
+{{- if eq .Values.component.notifications.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.notifications.deployment.replicas }}
 {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: notifications
   template:
     metadata:
-{{- with .Values.deployment.notifications.podAnnotations }}
+{{- with .Values.component.notifications.deployment.podAnnotations }}
       annotations:
 {{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- with .Values.deployment.notifications.podLabels }}
+{{- with .Values.component.notifications.deployment.podLabels }}
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
-{{- with .Values.deployment.notifications.initContainers }}
+{{- with .Values.component.notifications.deployment.initContainers }}
       initContainers:
 {{- toYaml . | indent 8 }}
 {{- end }}
       containers:
         - name: {{ template "bitwarden.notifications" . }}
-          image: "{{ .Values.deployment.notifications.image.name }}:{{ .Values.deployment.notifications.image.tag | default .Values.general.coreVersion }}"
-          imagePullPolicy: {{ .Values.deployment.notifications.image.pullPolicy }}
+          image: "{{ .Values.component.notifications.deployment.image.name }}:{{ .Values.component.notifications.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.notifications.deployment.image.pullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.service.notifications.targetPort }}
+              value: http://+:{{ .Values.component.notifications.service.targetPort }}
           ports:
-            - containerPort: {{ .Values.service.notifications.targetPort }}
-{{- if .Values.deployment.notifications.additionalContainers }}
-{{- toYaml .Values.deployment.notifications.additionalContainers | indent 8 }}
+            - containerPort: {{ .Values.component.notifications.service.targetPort }}
+{{- if .Values.component.notifications.deployment.additionalContainers }}
+{{- toYaml .Values.component.notifications.deployment.additionalContainers | indent 8 }}
 {{- end }}
-{{- if .Values.deployment.notifications.additionalVolumes }}
+{{- if .Values.component.notifications.deployment.additionalVolumes }}
       volumes:
-{{- toYaml .Values.deployment.notifications.additionalVolumes | indent 8 }}
+{{- toYaml .Values.component.notifications.deployment.additionalVolumes | indent 8 }}
 {{- end }}
 {{- end -}}

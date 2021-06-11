@@ -4,22 +4,22 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.mssql" . }}
-{{- with .Values.service.mssql.annotations }}
+{{- with .Values.component.mssql.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.mssql.labels }}
+{{- with .Values.component.mssql.service.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.mssql.type }}
+  type: {{ .Values.component.mssql.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.mssql.port }}
-      targetPort: {{ .Values.service.mssql.targetPort }}
+      port: {{ .Values.component.mssql.service.port }}
+      targetPort: {{ .Values.component.mssql.service.targetPort }}
   selector:
     app.kubernetes.io/component: mssql
 {{- end -}}

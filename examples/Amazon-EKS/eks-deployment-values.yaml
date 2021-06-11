@@ -105,9 +105,9 @@ ingress:
 database:
   ## - The database type that will be used - Can either be "container" or "mssql"
   #  If database.type == "container" then see the following sections:
-  #     deployment.mssql
-  #     service.mssql
-  #     volume.mssql
+  #     component.mssql.deployment
+  #     component.mssql.service
+  #     component.mssql.volume
   type: mssql
   # If database.type == "mssql":
   # Hostname of the database
@@ -120,494 +120,563 @@ database:
   password: password
 
 #
-# Configure deployments
+# Configure components
 #
-deployment:
-  # The Admin deployment
+component:
+  # The Admin component
   admin:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/admin
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The API deployment
+    # The Admin deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/admin
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The API component
   api:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/api
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Attachments deployment
+    # The API deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/api
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Attachments component
   attachments:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/attachments
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Events deployment
+    # The Attachments deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/attachments
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+    volume:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      storageClass: "efs-sc"
+      # Storage size
+      size: 1Gi
+
+  # The Events component
   events:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/events
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Icons deployment
+    # The Events deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/events
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Icons component
   icons:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/icons
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Identity deployment
+    # The Icons deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/icons
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Identity component
   identity:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/identity
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The MSSQL deployment
+    # The Identity deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/identity
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The MSSQL component
   # If database.type == "mssql"
   mssql:
-    ## - Annotations to add to the MSSQL deployment
-    annotations: {}
-    ## - Labels to add to the MSSQL deployment
-    labels: {}
-    ## - Annotations to add to the MSSQL deployment pods
-    podAnnotations: {}
-    ## - Labels to add to the MSSQL deployment pods
-    podLabels: {}
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/mssql
-      tag: ""
-      pullPolicy: IfNotPresent
-    ## - The containers are limited to the resources below
-    resources:
-      limits:
-        memory: 2Gi
-  # The Notifications deployment
+    # The MSSQL deployment
+    deployment:
+      # Annotations to add to the MSSQL deployment
+      annotations: {}
+      # Labels to add to the MSSQL deployment
+      labels: {}
+      # Annotations to add to the MSSQL deployment pods
+      podAnnotations: {}
+      # Labels to add to the MSSQL deployment pods
+      podLabels: {}
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/mssql
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+      # The containers are limited to the resources below
+      resources:
+        limits:
+          memory: 2Gi
+    service:
+      # Annotations to add to the MSSQL service
+      annotations: {}
+      # Labels to add to the MSSQL service
+      labels: {}
+      # Type of the MSSQL service - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+      type: ClusterIP
+      # The port exposed by the MSSQL service
+      port: 1433
+      # Port to access on the pods targeted by the service
+      targetPort: 1433
+    volume:
+      backups:
+        # If specified, existing claim will be used instead of creating a new PVC.
+        # existingClaim: ""
+        # Additional volume annotations
+        annotations: {}
+        # Additional volume labels
+        labels: {}
+        # Access mode
+        accessMode: ReadWriteMany
+        # Storage class
+        # storageClass: ""
+        # Storage size
+        size: 10Gi
+      data:
+        # If specified, existing claim will be used instead of creating a new PVC.
+        # existingClaim: ""
+        # Additional volume annotations
+        annotations: {}
+        # Additional volume labels
+        labels: {}
+        # Access mode
+        accessMode: ReadWriteMany
+        # Storage class
+        # storageClass: ""
+        # Storage size
+        size: 10Gi
+      log:
+        # If specified, existing claim will be used instead of creating a new PVC.
+        # existingClaim: ""
+        # Additional volume annotations
+        annotations: {}
+        # Additional volume labels
+        labels: {}
+        # Access mode
+        accessMode: ReadWriteMany
+        # Storage class
+        # storageClass: ""
+        # Storage size
+        size: 10Gi
+
+  # The Notifications component
   notifications:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/notifications
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Portal deployment
+    # The Notifications deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/notifications
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Portal component
   portal:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/portal
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Proxy deployment
+    # The Portal deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/portal
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Proxy component
   proxy:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/k8s-proxy
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The SSO deployment
+    # The Proxy deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/k8s-proxy
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 8080
+      # Port to access on the pods targeted by the service
+      targetPort: 8080
+
+  # The SSO component
   sso:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/sso
-      tag: ""
-      pullPolicy: IfNotPresent
-  # The Web deployment
+    # The SSO deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/sso
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Web component
   web:
-    enabled: true
-    # Can be either Deployment or DaemonSet
-    kind: Deployment
-    # Number of pods of the deployment (only applies when kind == Deployment)
-    replicas: 3
-    # Additional deployment annotations
-    annotations: {}
-    # Additional deployment labels
-    labels: {}
-    # Additional pod annotations
-    podAnnotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional containers
-    additionalContainers: []
-    # Additional volumes available for use with initContainers and additionalContainers
-    additionalVolumes: []
-    # Additional initContainers
-    initContainers: []
-    # Image name, tag, and pull policy
-    image:
-      name: bitwarden/web
-      tag: ""
-      pullPolicy: IfNotPresent
+    # The Web deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 3
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwarden/web
+        # Tag of the image to use. (Defaults to general.webVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
 
 #
-# Configure services
-#
-service:
-  # The Admin service
-  admin:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The API service
-  api:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Attachments service
-  attachments:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Events service
-  events:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Icons service
-  icons:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Identity service
-  identity:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The MSSQL service
-  # If database.type == "mssql"
-  mssql:
-    ## - Annotations to add to the MSSQL service
-    annotations: {}
-    ## - Labels to add to the MSSQL service
-    labels: {}
-    ## - Type of the MSSQL service - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
-    type: ClusterIP
-    ## - The port exposed by the MSSQL service
-    port: 1433
-    # Port to access on the pods targeted by the service
-    targetPort: 1433
-  # The Notifications service
-  notifications:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Portal service
-  portal:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Proxy service
-  proxy:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 8080
-    # Port to access on the pods targeted by the service
-    targetPort: 8080
-  # The SSO service
-  sso:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-  # The Web service
-  web:
-    enabled: true
-    # Additional service annotations
-    annotations: {}
-    # Additional service labels
-    labels: {}
-    # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
-    type: ClusterIP
-    # Port exposed by this service
-    port: 5000
-    # Port to access on the pods targeted by the service
-    targetPort: 5000
-
-#
-# Configure volumes
+# Configure other volumes
 #
 volume:
-  attachments:
-    # If specified, existing claim will be used instead of creating a new PVC.
-    # existingClaim: ""
-    # Additional volume annotations
-    annotations: {}
-    # Additional volume labels
-    labels: {}
-    # Access mode
-    accessMode: ReadWriteMany
-    # Storage class
-    storageClass: "efs-sc"
-    # Storage size
-    size: 1Gi
   dataprotection:
     # If specified, existing claim will be used instead of creating a new PVC.
     # existingClaim: ""
@@ -634,44 +703,3 @@ volume:
     storageClass: "efs-sc"
     # Storage size
     size: 1Gi
-  # If database.type == "container":
-  mssql:
-    backups:
-      # If specified, existing claim will be used instead of creating a new PVC.
-      # existingClaim: ""
-      # Additional volume annotations
-      annotations: {}
-      # Additional volume labels
-      labels: {}
-      # Access mode
-      accessMode: ReadWriteMany
-      # Storage class
-      # storageClass: ""
-      # Storage size
-      size: 10Gi
-    data:
-      # If specified, existing claim will be used instead of creating a new PVC.
-      # existingClaim: ""
-      # Additional volume annotations
-      annotations: {}
-      # Additional volume labels
-      labels: {}
-      # Access mode
-      accessMode: ReadWriteMany
-      # Storage class
-      # storageClass: ""
-      # Storage size
-      size: 10Gi
-    log:
-      # If specified, existing claim will be used instead of creating a new PVC.
-      # existingClaim: ""
-      # Additional volume annotations
-      annotations: {}
-      # Additional volume labels
-      labels: {}
-      # Access mode
-      accessMode: ReadWriteMany
-      # Storage class
-      # storageClass: ""
-      # Storage size
-      size: 10Gi

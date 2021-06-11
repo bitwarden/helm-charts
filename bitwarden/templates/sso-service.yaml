@@ -1,25 +1,25 @@
-{{- if .Values.service.sso.enabled -}}
+{{- if .Values.component.sso.service.enabled -}}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.sso" . }}
-{{- with .Values.service.sso.annotations }}
+{{- with .Values.component.sso.service.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.service.sso.labels }}
+{{- with .Values.component.sso.service.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  type: {{ .Values.service.sso.type }}
+  type: {{ .Values.component.sso.service.type }}
   ports:
     - name: http-port
-      port: {{ .Values.service.sso.port }}
-      targetPort: {{ .Values.service.sso.targetPort }}
+      port: {{ .Values.component.sso.service.port }}
+      targetPort: {{ .Values.component.sso.service.targetPort }}
   selector:
     app.kubernetes.io/component: sso
 {{- end -}}
