@@ -145,7 +145,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/admin
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The API deployment
   api:
@@ -171,7 +172,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/api
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Attachments deployment
   attachments:
@@ -197,7 +199,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/attachments
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Events deployment
   events:
@@ -223,7 +226,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/events
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Icons deployment
   icons:
@@ -249,7 +253,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/icons
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Identity deployment
   identity:
@@ -275,7 +280,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/identity
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The MSSQL deployment
   # If database.type == "mssql"
@@ -291,7 +297,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/mssql
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
     ## - The containers are limited to the resources below
     resources:
@@ -321,7 +328,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/notifications
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Portal deployment
   portal:
@@ -347,7 +355,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/portal
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Proxy deployment
   proxy:
@@ -373,7 +382,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/k8s-proxy
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The SSO deployment
   sso:
@@ -399,7 +409,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/sso
-      tag: ""
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
   # The Web deployment
   web:
@@ -425,7 +436,8 @@ deployment:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/web
-      tag: ""
+      # Tag of the image to use. (Defaults to general.webVersion)
+      # tag: ""
       pullPolicy: IfNotPresent
 
 #
