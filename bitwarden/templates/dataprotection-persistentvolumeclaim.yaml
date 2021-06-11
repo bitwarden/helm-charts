@@ -17,7 +17,9 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.volume.dataprotection.accessMode | quote }}
-  storageClassName: {{ .Values.volume.dataprotection.storageClassName }}
+{{- if .Values.volume.dataprotection.storageClass }}
+  storageClassName: {{ .Values.volume.dataprotection.storageClass | quote }}
+{{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.dataprotection.size }}

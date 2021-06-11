@@ -17,7 +17,9 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.volume.attachments.accessMode | quote }}
-  storageClassName: {{ .Values.volume.attachments.storageClassName }}
+{{- if .Values.volume.attachments.storageClass }}
+  storageClassName: {{ .Values.volume.attachments.storageClass | quote }}
+{{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.attachments.size }}

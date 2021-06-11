@@ -17,7 +17,9 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.volume.mssql.data.accessMode | quote }}
-  storageClassName: {{ .Values.volume.mssql.data.storageClassName }}
+{{- if .Values.volume.mssql.data.storageClass }}
+  storageClassName: {{ .Values.volume.mssql.data.storageClass | quote }}
+{{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.mssql.data.size }}

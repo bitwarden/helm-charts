@@ -17,7 +17,9 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.volume.licenses.accessMode | quote }}
-  storageClassName: {{ .Values.volume.licenses.storageClassName }}
+{{- if .Values.volume.licenses.storageClass }}
+  storageClassName: {{ .Values.volume.licenses.storageClass | quote }}
+{{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.licenses.size }}

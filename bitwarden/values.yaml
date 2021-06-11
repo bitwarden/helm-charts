@@ -596,8 +596,8 @@ volume:
     labels: {}
     # Access mode
     accessMode: ReadWriteMany
-    # Storage class name
-    storageClassName: ""
+    # Storage class
+    # storageClass: ""
     # Storage size
     size: 1Gi
   dataprotection:
@@ -609,8 +609,8 @@ volume:
     labels: {}
     # Access mode
     accessMode: ReadWriteMany
-    # Storage class name
-    storageClassName: ""
+    # Storage class
+    # storageClass: ""
     # Storage size
     size: 1Gi
   licenses:
@@ -622,8 +622,8 @@ volume:
     labels: {}
     # Access mode
     accessMode: ReadWriteMany
-    # Storage class name
-    storageClassName: ""
+    # Storage class
+    # storageClass: ""
     # Storage size
     size: 1Gi
   # If database.type == "container":
@@ -637,8 +637,8 @@ volume:
       labels: {}
       # Access mode
       accessMode: ReadWriteMany
-      # Storage class name
-      storageClassName: ""
+      # Storage class
+      # storageClass: ""
       # Storage size
       size: 10Gi
     data:
@@ -650,8 +650,8 @@ volume:
       labels: {}
       # Access mode
       accessMode: ReadWriteMany
-      # Storage class name
-      storageClassName: ""
+      # Storage class
+      # storageClass: ""
       # Storage size
       size: 10Gi
     log:
@@ -663,7 +663,7 @@ volume:
       labels: {}
       # Access mode
       accessMode: ReadWriteMany
-      # Storage class name
-      storageClassName: ""
+      # Storage class
+      # storageClass: ""
       # Storage size
       size: 10Gi
