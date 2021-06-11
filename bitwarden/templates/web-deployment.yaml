@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.web.kind }}
 metadata:
   name: {{ template "bitwarden.web" . }}
-{{- if .Values.deployment.web.annotations }}
+{{- with .Values.deployment.web.annotations }}
   annotations:
-{{ toYaml .Values.deployment.web.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: web
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.web.labels }}
-{{ toYaml .Values.deployment.web.labels | indent 4 }}
+{{- with .Values.deployment.web.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.web.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: web
   template:
     metadata:
-{{- if .Values.deployment.web.podAnnotations }}
+{{- with .Values.deployment.web.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.web.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: web
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.web.podLabels }}
-{{ toYaml .Values.deployment.web.podLabels | indent 8 }}
+{{- with .Values.deployment.web.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.web.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.web" . }}
           image: "{{ .Values.deployment.web.image.name }}:{{ .Values.deployment.web.image.tag | default .Values.general.webVersion }}"
@@ -49,8 +53,14 @@ spec:
           volumeMounts:
             - name: web
               mountPath: /etc/bitwarden/web
+{{- if .Values.deployment.web.additionalContainers }}
+{{- toYaml .Values.deployment.web.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: web
           secret:
             secretName: {{ template "bitwarden.web" . }}
+{{- if .Values.deployment.web.additionalVolumes }}
+{{- toYaml .Values.deployment.web.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

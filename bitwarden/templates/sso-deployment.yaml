@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.sso.kind }}
 metadata:
   name: {{ template "bitwarden.sso" . }}
-{{- if .Values.deployment.sso.annotations }}
+{{- with .Values.deployment.sso.annotations }}
   annotations:
-{{ toYaml .Values.deployment.sso.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.sso.labels }}
-{{ toYaml .Values.deployment.sso.labels | indent 4 }}
+{{- with .Values.deployment.sso.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.sso.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: sso
   template:
     metadata:
-{{- if .Values.deployment.sso.podAnnotations }}
+{{- with .Values.deployment.sso.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.sso.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.sso.podLabels }}
-{{ toYaml .Values.deployment.sso.podLabels | indent 8 }}
+{{- with .Values.deployment.sso.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.sso.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.sso" . }}
           image: "{{ .Values.deployment.sso.image.name }}:{{ .Values.deployment.sso.image.tag | default .Values.general.coreVersion }}"
@@ -53,6 +57,9 @@ spec:
               mountPath: /etc/bitwarden/core/aspnet-dataprotection
             - name: licenses
               mountPath: /etc/bitwarden/core/licenses
+{{- if .Values.deployment.sso.additionalContainers }}
+{{- toYaml .Values.deployment.sso.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: identity
           secret:
@@ -63,4 +70,7 @@ spec:
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.licenses" . }}
+{{- if .Values.deployment.sso.additionalVolumes }}
+{{- toYaml .Values.deployment.sso.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

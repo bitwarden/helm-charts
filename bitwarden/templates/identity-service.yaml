@@ -4,15 +4,15 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.identity" . }}
-{{- if .Values.service.identity.annotations }}
+{{- with .Values.service.identity.annotations }}
   annotations:
-{{ toYaml .Values.service.identity.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.service.identity.labels }}
-{{ toYaml .Values.service.identity.labels | indent 4 }}
+{{- with .Values.service.identity.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   type: {{ .Values.service.identity.type }}

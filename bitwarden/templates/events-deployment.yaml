@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.events.kind }}
 metadata:
   name: {{ template "bitwarden.events" . }}
-{{- if .Values.deployment.events.annotations }}
+{{- with .Values.deployment.events.annotations }}
   annotations:
-{{ toYaml .Values.deployment.events.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.events.labels }}
-{{ toYaml .Values.deployment.events.labels | indent 4 }}
+{{- with .Values.deployment.events.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.events.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: events
   template:
     metadata:
-{{- if .Values.deployment.events.podAnnotations }}
+{{- with .Values.deployment.events.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.events.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.events.podLabels }}
-{{ toYaml .Values.deployment.events.podLabels | indent 8 }}
+{{- with .Values.deployment.events.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.events.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.events" . }}
           image: "{{ .Values.deployment.events.image.name }}:{{ .Values.deployment.events.image.tag | default .Values.general.coreVersion }}"
@@ -46,4 +50,11 @@ spec:
               value: http://+:{{ .Values.service.events.targetPort }}
           ports:
             - containerPort: {{ .Values.service.events.targetPort }}
+{{- if .Values.deployment.events.additionalContainers }}
+{{- toYaml .Values.deployment.events.additionalContainers | indent 8 }}
+{{- end }}
+{{- if .Values.deployment.events.additionalVolumes }}
+      volumes:
+{{- toYaml .Values.deployment.events.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

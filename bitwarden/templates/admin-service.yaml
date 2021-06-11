@@ -4,15 +4,15 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.admin" . }}
-{{- if .Values.service.admin.annotations }}
+{{- with .Values.service.admin.annotations }}
   annotations:
-{{ toYaml .Values.service.admin.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: admin
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.service.admin.labels }}
-{{ toYaml .Values.service.admin.labels | indent 4 }}
+{{- with .Values.service.admin.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   type: {{ .Values.service.admin.type }}

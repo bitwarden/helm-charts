@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.proxy.kind }}
 metadata:
   name: {{ template "bitwarden.proxy" . }}
-{{- if .Values.deployment.proxy.annotations }}
+{{- with .Values.deployment.proxy.annotations }}
   annotations:
-{{ toYaml .Values.deployment.proxy.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: proxy
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.proxy.labels }}
-{{ toYaml .Values.deployment.proxy.labels | indent 4 }}
+{{- with .Values.deployment.proxy.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.proxy.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: proxy
   template:
     metadata:
-{{- if .Values.deployment.proxy.podAnnotations }}
+{{- with .Values.deployment.proxy.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.proxy.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: proxy
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.proxy.podLabels }}
-{{ toYaml .Values.deployment.proxy.podLabels | indent 8 }}
+{{- with .Values.deployment.proxy.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.proxy.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.proxy" . }}
           image: "{{ .Values.deployment.proxy.image.name }}:{{ .Values.deployment.proxy.image.tag | default .Values.general.coreVersion }}"
@@ -46,8 +50,14 @@ spec:
           volumeMounts:
             - name: proxy
               mountPath: /etc/nginx/conf.d
+{{- if .Values.deployment.proxy.additionalContainers }}
+{{- toYaml .Values.deployment.proxy.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: proxy
           configMap:
             name: {{ template "bitwarden.proxy" . }}
+{{- if .Values.deployment.proxy.additionalVolumes }}
+{{- toYaml .Values.deployment.proxy.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

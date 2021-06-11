@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "bitwarden.mssql" . }}
-{{- if .Values.deployment.mssql.annotations }}
+{{- with .Values.deployment.mssql.annotations }}
   annotations:
-{{ toYaml .Values.deployment.mssql.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.mssql.labels }}
-{{ toYaml .Values.deployment.mssql.labels | indent 4 }}
+{{- with .Values.deployment.mssql.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   replicas: 1
@@ -21,17 +21,21 @@ spec:
       app.kubernetes.io/component: mssql
   template:
     metadata:
-{{- if .Values.deployment.mssql.podAnnotations }}
+{{- with .Values.deployment.mssql.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.mssql.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.mssql.podLabels }}
-{{ toYaml .Values.deployment.mssql.podLabels | indent 8 }}
+{{- with .Values.deployment.mssql.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.mssql.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
           image: "{{ .Values.deployment.mssql.image.name }}:{{ .Values.deployment.mssql.image.tag | default .Values.general.coreVersion }}"
@@ -50,6 +54,9 @@ spec:
               mountPath: /var/opt/mssql/log
             - name: mssql-backups
               mountPath: /etc/bitwarden/mssql/backups
+{{- if .Values.deployment.mssql.additionalContainers }}
+{{- toYaml .Values.deployment.mssql.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: mssql-data
           persistentVolumeClaim:
@@ -60,4 +67,7 @@ spec:
         - name: mssql-backups
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.mssqlBackups" . }}
+{{- if .Values.deployment.mssql.additionalVolumes }}
+{{- toYaml .Values.deployment.mssql.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

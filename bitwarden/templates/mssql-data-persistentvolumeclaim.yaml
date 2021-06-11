@@ -4,15 +4,15 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "bitwarden.mssqlData" . }}
-{{- if .Values.volume.mssql.data.annotations }}
+{{- with .Values.volume.mssql.data.annotations }}
   annotations:
-{{ toYaml .Values.volume.mssql.data.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql-data
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.volume.mssql.data.labels }}
-{{ toYaml .Values.volume.mssql.data.labels | indent 4 }}
+{{- with .Values.volume.mssql.data.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:

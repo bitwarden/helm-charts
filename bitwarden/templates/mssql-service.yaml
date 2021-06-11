@@ -4,15 +4,15 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.mssql" . }}
-{{- if .Values.service.mssql.annotations }}
+{{- with .Values.service.mssql.annotations }}
   annotations:
-{{ toYaml .Values.service.mssql.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.service.mssql.labels }}
-{{ toYaml .Values.service.mssql.labels | indent 4 }}
+{{- with .Values.service.mssql.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   type: {{ .Values.service.mssql.type }}

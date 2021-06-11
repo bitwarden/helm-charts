@@ -3,15 +3,15 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "bitwarden.dataprotection" . }}
-{{- if .Values.volume.dataprotection.annotations }}
+{{- with .Values.volume.dataprotection.annotations }}
   annotations:
-{{ toYaml .Values.volume.dataprotection.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: dataprotection
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.volume.dataprotection.labels }}
-{{ toYaml .Values.volume.dataprotection.labels | indent 4 }}
+{{- with .Values.volume.dataprotection.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:

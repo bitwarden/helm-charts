@@ -4,15 +4,15 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.proxy" . }}
-{{- if .Values.service.proxy.annotations }}
+{{- with .Values.service.proxy.annotations }}
   annotations:
-{{ toYaml .Values.service.proxy.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: proxy
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.service.proxy.labels }}
-{{ toYaml .Values.service.proxy.labels | nindent 4 }}
+{{- with .Values.service.proxy.labels }}
+{{ toYaml . | nindent 4 }}
 {{- end }}
 spec:
   type: {{ .Values.service.proxy.type }}

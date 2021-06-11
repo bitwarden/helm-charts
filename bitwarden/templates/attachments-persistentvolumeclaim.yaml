@@ -4,15 +4,15 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "bitwarden.attachments" . }}
-{{- if .Values.volume.attachments.annotations }}
+{{- with .Values.volume.attachments.annotations }}
   annotations:
-{{ toYaml .Values.volume.attachments.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.volume.attachments.labels }}
-{{ toYaml .Values.volume.attachments.labels | indent 4 }}
+{{- with .Values.volume.attachments.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:

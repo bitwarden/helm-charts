@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.attachments.kind }}
 metadata:
   name: {{ template "bitwarden.attachments" . }}
-{{- if .Values.deployment.attachments.annotations }}
+{{- with .Values.deployment.attachments.annotations }}
   annotations:
-{{ toYaml .Values.deployment.attachments.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.attachments.labels }}
-{{ toYaml .Values.deployment.attachments.labels | indent 4 }}
+{{- with .Values.deployment.attachments.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.attachments.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: attachments
   template:
     metadata:
-{{- if .Values.deployment.attachments.podAnnotations }}
+{{- with .Values.deployment.attachments.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.attachments.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.attachments.podLabels }}
-{{ toYaml .Values.deployment.attachments.podLabels | indent 8 }}
+{{- with .Values.deployment.attachments.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.attachments.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.attachments" . }}
           image: "{{ .Values.deployment.attachments.image.name }}:{{ .Values.deployment.attachments.image.tag | default .Values.general.coreVersion }}"
@@ -49,8 +53,14 @@ spec:
           volumeMounts:
             - name: attachments
               mountPath: /etc/bitwarden/core/attachments
+{{- if .Values.deployment.attachments.additionalContainers }}
+{{- toYaml .Values.deployment.attachments.additionalContainers | indent 8 }}
+{{- end }}
       volumes: 
         - name: attachments
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.attachments" . }}
+{{- if .Values.deployment.attachments.additionalVolumes }}
+{{- toYaml .Values.deployment.attachments.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

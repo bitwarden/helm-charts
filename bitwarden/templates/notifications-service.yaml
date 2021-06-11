@@ -4,15 +4,15 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.notifications" . }}
-{{- if .Values.service.notifications.annotations }}
+{{- with .Values.service.notifications.annotations }}
   annotations:
-{{ toYaml .Values.service.notifications.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.service.notifications.labels }}
-{{ toYaml .Values.service.notifications.labels | indent 4 }}
+{{- with .Values.service.notifications.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   type: {{ .Values.service.notifications.type }}

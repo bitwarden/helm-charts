@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.icons.kind }}
 metadata:
   name: {{ template "bitwarden.icons" . }}
-{{- if .Values.deployment.icons.annotations }}
+{{- with .Values.deployment.icons.annotations }}
   annotations:
-{{ toYaml .Values.deployment.icons.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.icons.labels }}
-{{ toYaml .Values.deployment.icons.labels | indent 4 }}
+{{- with .Values.deployment.icons.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.icons.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: icons
   template:
     metadata:
-{{- if .Values.deployment.icons.podAnnotations }}
+{{- with .Values.deployment.icons.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.icons.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.icons.podLabels }}
-{{ toYaml .Values.deployment.icons.podLabels | indent 8 }}
+{{- with .Values.deployment.icons.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.icons.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.icons" . }}
           image: "{{ .Values.deployment.icons.image.name }}:{{ .Values.deployment.icons.image.tag | default .Values.general.coreVersion }}"
@@ -46,4 +50,11 @@ spec:
               value: http://+:{{ .Values.service.icons.targetPort }}
           ports:
             - containerPort: {{ .Values.service.icons.targetPort }}
+{{- if .Values.deployment.icons.additionalContainers }}
+{{- toYaml .Values.deployment.icons.additionalContainers | indent 8 }}
+{{- end }}
+{{- if .Values.deployment.icons.additionalVolumes }}
+      volumes:
+{{- toYaml .Values.deployment.icons.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

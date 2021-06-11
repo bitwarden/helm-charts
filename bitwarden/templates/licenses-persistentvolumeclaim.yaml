@@ -3,15 +3,15 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "bitwarden.licenses" . }}
-{{- if .Values.volume.licenses.annotations }}
+{{- with .Values.volume.licenses.annotations }}
   annotations:
-{{ toYaml .Values.volume.licenses.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: licenses
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.volume.licenses.labels }}
-{{ toYaml .Values.volume.licenses.labels | indent 4 }}
+{{- with .Values.volume.licenses.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:

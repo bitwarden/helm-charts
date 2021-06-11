@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.portal.kind }}
 metadata:
   name: {{ template "bitwarden.portal" . }}
-{{- if .Values.deployment.portal.annotations }}
+{{- with .Values.deployment.portal.annotations }}
   annotations:
-{{ toYaml .Values.deployment.portal.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: portal
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.portal.labels }}
-{{ toYaml .Values.deployment.portal.labels | indent 4 }}
+{{- with .Values.deployment.portal.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.portal.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: portal
   template:
     metadata:
-{{- if .Values.deployment.portal.podAnnotations }}
+{{- with .Values.deployment.portal.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.portal.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: portal
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.portal.podLabels }}
-{{ toYaml .Values.deployment.portal.podLabels | indent 8 }}
+{{- with .Values.deployment.portal.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.portal.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.portal" . }}
           image: "{{ .Values.deployment.portal.image.name }}:{{ .Values.deployment.portal.image.tag | default .Values.general.coreVersion }}"
@@ -51,6 +55,9 @@ spec:
               mountPath: /etc/bitwarden/core/aspnet-dataprotection
             - name: licenses
               mountPath: /etc/bitwarden/core/licenses
+{{- if .Values.deployment.portal.additionalContainers }}
+{{- toYaml .Values.deployment.portal.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: dataprotection
           persistentVolumeClaim:
@@ -58,4 +65,7 @@ spec:
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.licenses" . }}
+{{- if .Values.deployment.portal.additionalVolumes }}
+{{- toYaml .Values.deployment.portal.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

@@ -10,15 +10,15 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ .Values.ingress.name }}
-{{- if .Values.ingress.annotations }}
+{{- with .Values.ingress.annotations }}
   annotations:
-{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: ingress
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.ingress.labels }}
-{{ toYaml .Values.ingress.labels | indent 4 }}
+{{- with .Values.ingress.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if .Values.ingress.className }}

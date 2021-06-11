@@ -4,15 +4,15 @@ apiVersion: apps/v1
 kind: {{ .Values.deployment.notifications.kind }}
 metadata:
   name: {{ template "bitwarden.notifications" . }}
-{{- if .Values.deployment.notifications.annotations }}
+{{- with .Values.deployment.notifications.annotations }}
   annotations:
-{{ toYaml .Values.deployment.notifications.annotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.deployment.notifications.labels }}
-{{ toYaml .Values.deployment.notifications.labels | indent 4 }}
+{{- with .Values.deployment.notifications.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
 {{- if eq .Values.deployment.notifications.kind "Deployment" }}
@@ -23,17 +23,21 @@ spec:
       app.kubernetes.io/component: notifications
   template:
     metadata:
-{{- if .Values.deployment.notifications.podAnnotations }}
+{{- with .Values.deployment.notifications.podAnnotations }}
       annotations:
-{{ toYaml .Values.deployment.notifications.podAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.deployment.notifications.podLabels }}
-{{ toYaml .Values.deployment.notifications.podLabels | indent 8 }}
+{{- with .Values.deployment.notifications.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.deployment.notifications.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
         - name: {{ template "bitwarden.notifications" . }}
           image: "{{ .Values.deployment.notifications.image.name }}:{{ .Values.deployment.notifications.image.tag | default .Values.general.coreVersion }}"
@@ -46,4 +50,11 @@ spec:
               value: http://+:{{ .Values.service.notifications.targetPort }}
           ports:
             - containerPort: {{ .Values.service.notifications.targetPort }}
+{{- if .Values.deployment.notifications.additionalContainers }}
+{{- toYaml .Values.deployment.notifications.additionalContainers | indent 8 }}
+{{- end }}
+{{- if .Values.deployment.notifications.additionalVolumes }}
+      volumes:
+{{- toYaml .Values.deployment.notifications.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}
