@@ -588,6 +588,8 @@ service:
 #
 volume:
   attachments:
+    # If specified, existing claim will be used instead of creating a new PVC.
+    # existingClaim: ""
     # Additional volume annotations
     annotations: {}
     # Additional volume labels
@@ -600,6 +602,8 @@ volume:
     # Storage size
     size: 1Gi
   dataprotection:
+    # If specified, existing claim will be used instead of creating a new PVC.
+    # existingClaim: ""
     # Additional volume annotations
     annotations: {}
     # Additional volume labels
@@ -612,6 +616,8 @@ volume:
     # Storage size
     size: 1Gi
   licenses:
+    # If specified, existing claim will be used instead of creating a new PVC.
+    # existingClaim: ""
     # Additional volume annotations
     annotations: {}
     # Additional volume labels
@@ -626,6 +632,8 @@ volume:
   # If database.type == "container":
   mssql:
     backups:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
       # Additional volume annotations
       annotations: {}
       # Additional volume labels
@@ -638,6 +646,8 @@ volume:
       # Storage size
       size: 10Gi
     data:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
       # Additional volume annotations
       annotations: {}
       # Additional volume labels
@@ -650,6 +660,8 @@ volume:
       # Storage size
       size: 10Gi
     log:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
       # Additional volume annotations
       annotations: {}
       # Additional volume labels

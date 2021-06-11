@@ -1,4 +1,4 @@
-{{- if eq .Values.database.type "container" }}
+{{- if and (eq .Values.database.type "container") (not .Values.volume.mssql.log.existingClaim) -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -21,4 +21,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.mssql.log.size }}
-{{- end }}
+{{- end -}}

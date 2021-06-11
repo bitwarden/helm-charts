@@ -1,4 +1,4 @@
-{{- if or .Values.deployment.attachments.enabled .Values.deployment.api.enabled }}
+{{- if and (or .Values.deployment.attachments.enabled .Values.deployment.api.enabled) (not .Values.volume.attachments.existingClaim) -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -21,4 +21,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.attachments.size }}
-{{- end }}
+{{- end -}}

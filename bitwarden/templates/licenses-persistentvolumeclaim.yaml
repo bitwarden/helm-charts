@@ -1,3 +1,4 @@
+{{- if not .Values.volume.licenses.existingClaim -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -20,3 +21,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.licenses.size }}
+{{- end -}}
