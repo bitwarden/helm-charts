@@ -14,19 +14,6 @@ general:
   labels: {}
     # label1: value1
     # label2: value2
-  # Certificate options
-  cert:
-    # CA Certificate information
-    ca:
-      enabled: false
-      annotations: {}
-      labels: {}
-      secretName: cacert
-      secretValue: ""
-    ssl:
-      enabled: false
-      certValue: ""
-      keyValue: ""
   # The name of the Config Map to store the Bitwarden configuration
   configMapName: config
   # Domain used for Bitwarden installation
@@ -83,13 +70,32 @@ ingress:
   # className: public
   ## - Path Type for Ingress resource - Can be Exact, Prefix, or ImplementationSpecific
   # pathType: ImplementationSpecific
-  ## Secret name to use for TLS on the Ingress resource
-  tls:
-    secret: tls
-    ## - Annotations to add to the TLS Secret
-    annotations: {}
-    ## - Labels to add to the TLS Secret
-    labels: {}
+  # Certificate options
+  cert:
+    # CA Certificate information
+    ca:
+      enabled: false
+      # Additional annotations to add to the CA certificate secret
+      annotations: {}
+      # Additional labels to add to the CA certificate secret
+      labels: {}
+      # CA certificate secret name
+      name: cacert
+      # CA certificate secret value (base64)
+      value: ""
+    # TLS Certificate information
+    tls:
+      enabled: false
+      # Additional annotations to add to the TLS certificate secret
+      annotations: {}
+      # Additional labels to add to the TLS certificate secret
+      labels: {}
+      # TLS certificate secret name
+      name: tls
+      # TLS certificate secret value (base64)
+      cert: ""
+      # TLS certificate secret key (base64)
+      key: ""
 
 #
 # Configure database

@@ -42,10 +42,10 @@ spec:
               serviceName: {{ template "bitwarden.proxy" . }}
               servicePort: {{ .Values.service.proxy.port }}
 {{- end }}
-{{- if .Values.ingress.tls.secret }}
+{{- if .Values.ingress.cert.tls.enabled }}
   tls:
     - hosts:
       - {{ .Values.general.domain }}
-      secretName: {{ .Values.ingress.tls.secret }}
+      secretName: {{ .Values.ingress.cert.tls.name }}
 {{- end }}
 {{- end -}}

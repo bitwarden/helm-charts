@@ -33,7 +33,7 @@ spec:
           "-corev", "{{ .Values.general.coreVersion }}",
           "-webv", "{{ .Values.general.webVersion }}"
         ]
-        image: "bitwarden/setup:dev"
+        image: "bitwarden/setup:{{ .Values.general.coreVersion }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
