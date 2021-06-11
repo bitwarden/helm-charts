@@ -10,7 +10,7 @@ Installs Bitwarden on a Kubernetes cluster.
 ## Get Repo Info
 
 ```console
-helm repo add bitwarden URL-HERE
+helm repo add bitwarden https://bwhelmtest.blob.core.windows.net/helm-charts/
 helm repo update
 ```
 
