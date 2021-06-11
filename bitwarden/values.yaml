@@ -594,9 +594,8 @@ volume:
     annotations: {}
     # Additional volume labels
     labels: {}
-    # Access modes
-    accessModes:
-      - ReadWriteMany
+    # Access mode
+    accessMode: ReadWriteMany
     # Storage class name
     storageClassName: ""
     # Storage size
@@ -608,9 +607,8 @@ volume:
     annotations: {}
     # Additional volume labels
     labels: {}
-    # Access modes
-    accessModes:
-      - ReadWriteMany
+    # Access mode
+    accessMode: ReadWriteMany
     # Storage class name
     storageClassName: ""
     # Storage size
@@ -622,9 +620,8 @@ volume:
     annotations: {}
     # Additional volume labels
     labels: {}
-    # Access modes
-    accessModes:
-      - ReadWriteMany
+    # Access mode
+    accessMode: ReadWriteMany
     # Storage class name
     storageClassName: ""
     # Storage size
@@ -638,9 +635,8 @@ volume:
       annotations: {}
       # Additional volume labels
       labels: {}
-      # Access modes
-      accessModes:
-        - ReadWriteMany
+      # Access mode
+      accessMode: ReadWriteMany
       # Storage class name
       storageClassName: ""
       # Storage size
@@ -652,9 +648,8 @@ volume:
       annotations: {}
       # Additional volume labels
       labels: {}
-      # Access modes
-      accessModes:
-        - ReadWriteMany
+      # Access mode
+      accessMode: ReadWriteMany
       # Storage class name
       storageClassName: ""
       # Storage size
@@ -666,9 +661,8 @@ volume:
       annotations: {}
       # Additional volume labels
       labels: {}
-      # Access modes
-      accessModes:
-        - ReadWriteMany
+      # Access mode
+      accessMode: ReadWriteMany
       # Storage class name
       storageClassName: ""
       # Storage size

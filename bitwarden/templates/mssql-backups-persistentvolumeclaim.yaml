@@ -16,7 +16,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.volume.mssql.backups.accessModes | indent 4 }}
+    - {{ .Values.volume.mssql.backups.accessMode | quote }}
   storageClassName: {{ .Values.volume.mssql.backups.storageClassName }}
   resources:
     requests:

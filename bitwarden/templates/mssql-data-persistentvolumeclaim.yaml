@@ -16,7 +16,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.volume.mssql.data.accessModes | indent 4 }}
+    - {{ .Values.volume.mssql.data.accessMode | quote }}
   storageClassName: {{ .Values.volume.mssql.data.storageClassName }}
   resources:
     requests:

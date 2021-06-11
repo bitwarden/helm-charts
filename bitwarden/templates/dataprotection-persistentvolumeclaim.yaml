@@ -16,7 +16,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.volume.dataprotection.accessModes | indent 4 }}
+    - {{ .Values.volume.dataprotection.accessMode | quote }}
   storageClassName: {{ .Values.volume.dataprotection.storageClassName }}
   resources:
     requests:

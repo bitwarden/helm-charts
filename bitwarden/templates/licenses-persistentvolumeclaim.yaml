@@ -16,7 +16,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.volume.licenses.accessModes | indent 4 }}
+    - {{ .Values.volume.licenses.accessMode | quote }}
   storageClassName: {{ .Values.volume.licenses.storageClassName }}
   resources:
     requests:

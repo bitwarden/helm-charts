@@ -16,7 +16,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.volume.attachments.accessModes | indent 4 }}
+    - {{ .Values.volume.attachments.accessMode | quote }}
   storageClassName: {{ .Values.volume.attachments.storageClassName }}
   resources:
     requests:
