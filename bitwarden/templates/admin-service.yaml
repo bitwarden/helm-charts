@@ -1,4 +1,4 @@
-{{- if .Values.service.admin.enabled }}
+{{- if .Values.service.admin.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.admin.targetPort }}
   selector:
     app.kubernetes.io/component: admin
-{{- end }}
+{{- end -}}

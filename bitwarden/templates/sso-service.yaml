@@ -1,4 +1,4 @@
-{{- if .Values.service.sso.enabled }}
+{{- if .Values.service.sso.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.sso.targetPort }}
   selector:
     app.kubernetes.io/component: sso
-{{- end }}
+{{- end -}}

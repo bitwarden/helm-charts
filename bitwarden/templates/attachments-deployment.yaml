@@ -1,4 +1,4 @@
-{{- if .Values.deployment.attachments.enabled }}
+{{- if .Values.deployment.attachments.enabled -}}
 ---
 apiVersion: apps/v1
 kind: {{ .Values.deployment.attachments.kind }}
@@ -63,4 +63,4 @@ spec:
 {{- if .Values.deployment.attachments.additionalVolumes }}
 {{- toYaml .Values.deployment.attachments.additionalVolumes | indent 8 }}
 {{- end }}
-{{- end }}
+{{- end -}}

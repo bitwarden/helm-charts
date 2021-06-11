@@ -1,4 +1,4 @@
-{{- if .Values.service.attachments.enabled }}
+{{- if .Values.service.attachments.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.attachments.targetPort }}
   selector:
     app.kubernetes.io/component: attachments
-{{- end }}
+{{- end -}}

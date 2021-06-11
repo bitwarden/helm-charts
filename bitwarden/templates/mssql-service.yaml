@@ -1,4 +1,4 @@
-{{- if eq .Values.database.type "container" }}
+{{- if eq .Values.database.type "container" -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.mssql.targetPort }}
   selector:
     app.kubernetes.io/component: mssql
-{{- end }}
+{{- end -}}

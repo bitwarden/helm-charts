@@ -1,4 +1,4 @@
-{{- if .Values.service.icons.enabled }}
+{{- if .Values.service.icons.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.icons.targetPort }}
   selector:
     app.kubernetes.io/component: icons
-{{- end }}
+{{- end -}}

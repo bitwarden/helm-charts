@@ -1,4 +1,4 @@
-{{- if .Values.service.web.enabled }}
+{{- if .Values.service.web.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.web.targetPort }}
   selector:
     app.kubernetes.io/component: web
-{{- end }}
+{{- end -}}

@@ -1,4 +1,4 @@
-{{- if .Values.deployment.web.enabled }}
+{{- if .Values.deployment.web.enabled -}}
 ---
 apiVersion: apps/v1
 kind: {{ .Values.deployment.web.kind }}
@@ -63,4 +63,4 @@ spec:
 {{- if .Values.deployment.web.additionalVolumes }}
 {{- toYaml .Values.deployment.web.additionalVolumes | indent 8 }}
 {{- end }}
-{{- end }}
+{{- end -}}

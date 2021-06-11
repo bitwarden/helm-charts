@@ -1,4 +1,4 @@
-{{- if .Values.deployment.portal.enabled }}
+{{- if .Values.deployment.portal.enabled -}}
 ---
 apiVersion: apps/v1
 kind: {{ .Values.deployment.portal.kind }}
@@ -68,4 +68,4 @@ spec:
 {{- if .Values.deployment.portal.additionalVolumes }}
 {{- toYaml .Values.deployment.portal.additionalVolumes | indent 8 }}
 {{- end }}
-{{- end }}
+{{- end -}}

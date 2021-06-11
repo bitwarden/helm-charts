@@ -1,4 +1,4 @@
-{{- if .Values.service.portal.enabled }}
+{{- if .Values.service.portal.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.portal.targetPort }}
   selector:
     app.kubernetes.io/component: portal
-{{- end }}
+{{- end -}}

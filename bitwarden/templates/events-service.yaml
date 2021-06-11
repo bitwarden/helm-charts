@@ -1,4 +1,4 @@
-{{- if .Values.service.events.enabled }}
+{{- if .Values.service.events.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -22,4 +22,4 @@ spec:
       targetPort: {{ .Values.service.events.targetPort }}
   selector:
     app.kubernetes.io/component: events
-{{- end }}
+{{- end -}}
