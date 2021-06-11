@@ -65,10 +65,9 @@ general:
   # Email addresses which may access the System Administrator Portal, each entry should be separated by a comma
   admins: ""
 
-##################################
-#  Ingress Configuration Options #
-##################################
-
+#
+#  Configure ingress
+#
 ingress:
   ## - If this is set to true, an Ingress resource will be created
   enabled: false
@@ -91,10 +90,6 @@ ingress:
     annotations: {}
     ## - Labels to add to the TLS Secret
     labels: {}
-
-#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*
-#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*
-#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*
 
 #
 # Configure database
