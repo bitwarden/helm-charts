@@ -374,7 +374,7 @@ deployment:
     initContainers: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/proxy
+      name: bitwarden/k8s-proxy
       tag: ""
       pullPolicy: IfNotPresent
   # The SSO deployment
