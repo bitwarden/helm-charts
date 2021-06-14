@@ -101,21 +101,102 @@ ingress:
 # Configure database
 #
 database:
-  ## - The database type that will be used - Can either be "container" or "mssql"
-  #  If database.type == "container" then see the following sections:
-  #     component.mssql.deployment
-  #     component.mssql.service
-  #     component.mssql.volume
-  type: container
-  # If database.type == "mssql":
-  # Hostname of the database
-  hostname: database-hostname.domain.com
-  # Port the database is listening for connections on
-  port: 1433
-  # Admin user of the database
-  user: admin
-  # Admin password of the database
-  password: password
+  # If enabled, will deploy a MSSQL component including:
+  # - Deployment
+  # - Service
+  # - Volumes
+  #
+  # If disabled, you will need to specify the following for the external database:
+  # - hostname
+  # - port
+  # - user
+  # - password
+  enabled: true
+
+  # Hostname of the external database
+  # hostname: database-hostname.domain.com
+  # Port the external database is listening for connections on
+  # port: 1433
+  # Admin user of the external database
+  # user: admin
+  # Admin password of the external database
+  # password: password
+
+  # The MSSQL deployment
+  deployment:
+    # Annotations to add to the MSSQL deployment
+    annotations: {}
+    # Labels to add to the MSSQL deployment
+    labels: {}
+    # Annotations to add to the MSSQL deployment pods
+    podAnnotations: {}
+    # Labels to add to the MSSQL deployment pods
+    podLabels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/mssql
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
+      pullPolicy: IfNotPresent
+    # The containers are limited to the resources below
+    resources:
+      limits:
+        memory: 2Gi
+
+  # The MSSQL service
+  service:
+    # Annotations to add to the MSSQL service
+    annotations: {}
+    # Labels to add to the MSSQL service
+    labels: {}
+    # Type of the MSSQL service - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+    type: ClusterIP
+    # The port exposed by the MSSQL service
+    port: 1433
+    # Port to access on the pods targeted by the service
+    targetPort: 1433
+
+  # The MSSQL volumes
+  volume:
+    backups:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      # storageClass: ""
+      # Storage size
+      size: 10Gi
+    data:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      # storageClass: ""
+      # Storage size
+      size: 10Gi
+    log:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      # storageClass: ""
+      # Storage size
+      size: 10Gi
 
 #
 # Configure components
@@ -385,81 +466,6 @@ component:
       port: 5000
       # Port to access on the pods targeted by the service
       targetPort: 5000
-
-  # The MSSQL component
-  # If database.type == "mssql"
-  mssql:
-    # The MSSQL deployment
-    deployment:
-      # Annotations to add to the MSSQL deployment
-      annotations: {}
-      # Labels to add to the MSSQL deployment
-      labels: {}
-      # Annotations to add to the MSSQL deployment pods
-      podAnnotations: {}
-      # Labels to add to the MSSQL deployment pods
-      podLabels: {}
-      # Image name, tag, and pull policy
-      image:
-        name: bitwarden/mssql
-        # Tag of the image to use. (Defaults to general.coreVersion)
-        # tag: ""
-        pullPolicy: IfNotPresent
-      # The containers are limited to the resources below
-      resources:
-        limits:
-          memory: 2Gi
-    service:
-      # Annotations to add to the MSSQL service
-      annotations: {}
-      # Labels to add to the MSSQL service
-      labels: {}
-      # Type of the MSSQL service - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
-      type: ClusterIP
-      # The port exposed by the MSSQL service
-      port: 1433
-      # Port to access on the pods targeted by the service
-      targetPort: 1433
-    volume:
-      backups:
-        # If specified, existing claim will be used instead of creating a new PVC.
-        # existingClaim: ""
-        # Additional volume annotations
-        annotations: {}
-        # Additional volume labels
-        labels: {}
-        # Access mode
-        accessMode: ReadWriteMany
-        # Storage class
-        # storageClass: ""
-        # Storage size
-        size: 10Gi
-      data:
-        # If specified, existing claim will be used instead of creating a new PVC.
-        # existingClaim: ""
-        # Additional volume annotations
-        annotations: {}
-        # Additional volume labels
-        labels: {}
-        # Access mode
-        accessMode: ReadWriteMany
-        # Storage class
-        # storageClass: ""
-        # Storage size
-        size: 10Gi
-      log:
-        # If specified, existing claim will be used instead of creating a new PVC.
-        # existingClaim: ""
-        # Additional volume annotations
-        annotations: {}
-        # Additional volume labels
-        labels: {}
-        # Access mode
-        accessMode: ReadWriteMany
-        # Storage class
-        # storageClass: ""
-        # Storage size
-        size: 10Gi
 
   # The Notifications component
   notifications:

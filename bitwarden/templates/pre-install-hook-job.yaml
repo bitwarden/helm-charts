@@ -83,7 +83,7 @@ spec:
               }
             }
           ";
-{{- if eq .Values.database.type "mssql" }}
+{{- if not .Values.database.enabled }}
           kubectl patch configmap {{ .Values.general.configMapName }} -n {{ .Release.Namespace }} --type="merge" -p "
             {
               \"data\": {
@@ -95,7 +95,7 @@ spec:
           kubectl patch configmap {{ .Values.general.configMapName }} -n {{ .Release.Namespace }} --type="merge" -p "
             {
               \"data\": {
-                \"globalSettings__sqlServer__connectionString\":\"Data Source=tcp:{{ template "bitwarden.mssql" . }},{{ .Values.component.mssql.service.port }};Initial Catalog=vault;Persist Security Info=False;User ID=sa;Password=$SA_PASSWORD;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True\",
+                \"globalSettings__sqlServer__connectionString\":\"Data Source=tcp:{{ template "bitwarden.mssql" . }},{{ .Values.database.service.port }};Initial Catalog=vault;Persist Security Info=False;User ID=sa;Password=$SA_PASSWORD;MultipleActiveResultSets=False;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True\",
                 \"SA_PASSWORD\":\"$SA_PASSWORD\"
               }
             }
