@@ -1,22 +1,26 @@
+{{- if not .Values.volume.dataprotection.existingClaim -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.dataprotectionVolumeClaimName }}
-{{- if .Values.dataprotectionVolumeAnnotations }}
+  name: {{ template "bitwarden.dataprotection" . }}
+{{- with .Values.volume.dataprotection.annotations }}
   annotations:
-{{ toYaml .Values.dataprotectionVolumeAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: dataprotection
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.dataprotectionVolumeLabels }}
-{{ toYaml .Values.dataprotectionVolumeLabels | indent 4 }}
+{{- with .Values.volume.dataprotection.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.dataprotectionVolumeAccessModes | indent 4 }}
-  storageClassName: {{ .Values.dataprotectionVolumeStorageClassName }}
+    - {{ .Values.volume.dataprotection.accessMode | quote }}
+{{- if .Values.volume.dataprotection.storageClass }}
+  storageClassName: {{ .Values.volume.dataprotection.storageClass | quote }}
+{{- end }}
   resources:
     requests:
-      storage: {{ .Values.dataprotectionVolumeSize }}
+      storage: {{ .Values.volume.dataprotection.size }}
+{{- end -}}

@@ -1,54 +1,66 @@
-{{- if .Values.attachmentsInstall }}
+{{- if .Values.component.attachments.deployment.enabled -}}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.component.attachments.deployment.kind }}
 metadata:
-  name: {{ .Values.attachmentsDeploymentName }}
-{{- if .Values.attachmentsDeploymentAnnotations }}
+  name: {{ template "bitwarden.attachments" . }}
+{{- with .Values.component.attachments.deployment.annotations }}
   annotations:
-{{ toYaml .Values.attachmentsDeploymentAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.attachmentsDeploymentLabels }}
-{{ toYaml .Values.attachmentsDeploymentLabels | indent 4 }}
+{{- with .Values.component.attachments.deployment.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.attachmentsDeploymentReplicaCount }}
+{{- if eq .Values.component.attachments.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.attachments.deployment.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: attachments
   template:
     metadata:
-{{- if .Values.attachmentsPodAnnotations }}
+{{- with .Values.component.attachments.deployment.podAnnotations }}
       annotations:
-{{ toYaml .Values.attachmentsPodAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.attachmentsPodLabels }}
-{{ toYaml .Values.attachmentsPodLabels | indent 8 }}
+{{- with .Values.component.attachments.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.component.attachments.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
-        - name: {{ .Values.attachmentsContainerName }}
-          image: "{{ .Values.attachmentsContainerImageRepository }}:{{ .Values.attachmentsContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.attachmentsContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.attachments" . }}
+          image: "{{ .Values.component.attachments.deployment.image.name }}:{{ .Values.component.attachments.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.attachments.deployment.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.attachmentsServiceTargetPort }}
+              value: http://+:{{ .Values.component.attachments.service.targetPort }}
           ports:
-            - containerPort: {{ .Values.attachmentsServiceTargetPort }}
+            - containerPort: {{ .Values.component.attachments.service.targetPort }}
           volumeMounts:
             - name: attachments
               mountPath: /etc/bitwarden/core/attachments
+{{- if .Values.component.attachments.deployment.additionalContainers }}
+{{- toYaml .Values.component.attachments.deployment.additionalContainers | indent 8 }}
+{{- end }}
       volumes: 
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ .Values.attachmentsVolumeClaimName }}
+            claimName: {{ template "bitwarden.attachments" . }}
+{{- if .Values.component.attachments.deployment.additionalVolumes }}
+{{- toYaml .Values.component.attachments.deployment.additionalVolumes | indent 8 }}
 {{- end }}
+{{- end -}}

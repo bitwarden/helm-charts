@@ -1,22 +1,26 @@
+{{- if not .Values.volume.licenses.existingClaim -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.licensesVolumeClaimName }}
-{{- if .Values.licensesVolumeAnnotations }}
+  name: {{ template "bitwarden.licenses" . }}
+{{- with .Values.volume.licenses.annotations }}
   annotations:
-{{ toYaml .Values.licensesVolumeAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: licenses
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.licensesVolumeLabels }}
-{{ toYaml .Values.licensesVolumeLabels | indent 4 }}
+{{- with .Values.volume.licenses.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.licensesVolumeAccessModes | indent 4 }}
-  storageClassName: {{ .Values.licensesVolumeStorageClassName }}
+    - {{ .Values.volume.licenses.accessMode | quote }}
+{{- if .Values.volume.licenses.storageClass }}
+  storageClassName: {{ .Values.volume.licenses.storageClass | quote }}
+{{- end }}
   resources:
     requests:
-      storage: {{ .Values.licensesVolumeSize }}
+      storage: {{ .Values.volume.licenses.size }}
+{{- end -}}

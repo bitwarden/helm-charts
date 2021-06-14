@@ -1,47 +1,60 @@
-{{- if .Values.iconsInstall }}
+{{- if .Values.component.icons.deployment.enabled -}}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.component.icons.deployment.kind }}
 metadata:
-  name: {{ .Values.iconsDeploymentName }}
-{{- if .Values.iconsDeploymentAnnotations }}
+  name: {{ template "bitwarden.icons" . }}
+{{- with .Values.component.icons.deployment.annotations }}
   annotations:
-{{ toYaml .Values.iconsDeploymentAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.iconsDeploymentLabels }}
-{{ toYaml .Values.iconsDeploymentLabels | indent 4 }}
+{{- with .Values.component.icons.deployment.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.iconsDeploymentReplicaCount }}
+{{- if eq .Values.component.icons.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.icons.deployment.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: icons
   template:
     metadata:
-{{- if .Values.iconsPodAnnotations }}
+{{- with .Values.component.icons.deployment.podAnnotations }}
       annotations:
-{{ toYaml .Values.iconsPodAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.iconsPodLabels }}
-{{ toYaml .Values.iconsPodLabels | indent 8 }}
+{{- with .Values.component.icons.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.component.icons.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
-        - name: {{ .Values.iconsContainerName }}
-          image: "{{ .Values.iconsContainerImageRepository }}:{{ .Values.iconsContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.iconsContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.icons" . }}
+          image: "{{ .Values.component.icons.deployment.image.name }}:{{ .Values.component.icons.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.icons.deployment.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           env:
             - name: ASPNETCORE_URLS
-              value: http://+:{{ .Values.iconsServiceTargetPort }}
+              value: http://+:{{ .Values.component.icons.service.targetPort }}
           ports:
-            - containerPort: {{ .Values.iconsServiceTargetPort }}
+            - containerPort: {{ .Values.component.icons.service.targetPort }}
+{{- if .Values.component.icons.deployment.additionalContainers }}
+{{- toYaml .Values.component.icons.deployment.additionalContainers | indent 8 }}
 {{- end }}
+{{- if .Values.component.icons.deployment.additionalVolumes }}
+      volumes:
+{{- toYaml .Values.component.icons.deployment.additionalVolumes | indent 8 }}
+{{- end }}
+{{- end -}}

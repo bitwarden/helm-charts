@@ -1,48 +1,52 @@
-{{- if eq .Values.databaseType "container" }}
+{{- if .Values.database.enabled -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.mssqlDeploymentName }}
-{{- if .Values.mssqlDeploymentAnnotations }}
+  name: {{ template "bitwarden.mssql" . }}
+{{- with .Values.database.deployment.annotations }}
   annotations:
-{{ toYaml .Values.mssqlDeploymentAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.mssqlDeploymentLabels }}
-{{ toYaml .Values.mssqlDeploymentLabels | indent 4 }}
+{{- with .Values.database.deployment.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.mssqlDeploymentReplicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: mssql
   template:
     metadata:
-{{- if .Values.mssqlPodAnnotations }}
+{{- with .Values.database.deployment.podAnnotations }}
       annotations:
-{{ toYaml .Values.mssqlPodAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.mssqlPodLabels }}
-{{ toYaml .Values.mssqlPodLabels | indent 8 }}
+{{- with .Values.database.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.database.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
-        - name: {{ .Values.mssqlContainerName }}
-          image: "{{ .Values.mssqlContainerImageRepository }}:{{ .Values.mssqlContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.mssqlContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.mssql" . }}
+          image: "{{ .Values.database.deployment.image.name }}:{{ .Values.database.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.database.deployment.image.pullPolicy }}
           resources:
-{{ toYaml .Values.mssqlContainerResourceLimits | indent 12 }}
+{{ toYaml .Values.database.deployment.resources | indent 12 }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           ports:
-            - containerPort: 1433
+            - containerPort: {{ .Values.database.service.targetPort }}
           volumeMounts:
             - name: mssql-data
               mountPath: /var/opt/mssql/data
@@ -50,14 +54,20 @@ spec:
               mountPath: /var/opt/mssql/log
             - name: mssql-backups
               mountPath: /etc/bitwarden/mssql/backups
+{{- if .Values.database.deployment.additionalContainers }}
+{{- toYaml .Values.database.deployment.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: mssql-data
           persistentVolumeClaim:
-            claimName: {{ .Values.mssqlDataVolumeClaimName }}
+            claimName: {{ template "bitwarden.mssqlData" . }}
         - name: mssql-log
           persistentVolumeClaim:
-            claimName: {{ .Values.mssqlLogVolumeClaimName }}
+            claimName: {{ template "bitwarden.mssqlLog" . }}
         - name: mssql-backups
           persistentVolumeClaim:
-            claimName: {{ .Values.mssqlBackupsVolumeClaimName }}
+            claimName: {{ template "bitwarden.mssqlBackups" . }}
+{{- if .Values.database.deployment.additionalVolumes }}
+{{- toYaml .Values.database.deployment.additionalVolumes | indent 8 }}
 {{- end }}
+{{- end -}}

@@ -1,51 +1,63 @@
-{{- if .Values.proxyInstall }}
+{{- if .Values.component.proxy.deployment.enabled -}}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ .Values.component.proxy.deployment.kind }}
 metadata:
-  name: {{ .Values.proxyDeploymentName }}
-{{- if .Values.proxyDeploymentAnnotations }}
+  name: {{ template "bitwarden.proxy" . }}
+{{- with .Values.component.proxy.deployment.annotations }}
   annotations:
-{{ toYaml .Values.proxyDeploymentAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: proxy
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.proxyDeploymentLabels }}
-{{ toYaml .Values.proxyDeploymentLabels | indent 4 }}
+{{- with .Values.component.proxy.deployment.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: {{ .Values.proxyDeploymentReplicaCount }}
+{{- if eq .Values.component.proxy.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.proxy.deployment.replicas }}
+{{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/component: proxy
   template:
     metadata:
-{{- if .Values.proxyPodAnnotations }}
+{{- with .Values.component.proxy.deployment.podAnnotations }}
       annotations:
-{{ toYaml .Values.proxyPodAnnotations | indent 8 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       labels:
         app.kubernetes.io/component: proxy
 {{ include "bitwarden.labels" . | indent 8 }}
-{{- if .Values.proxyPodLabels }}
-{{ toYaml .Values.proxyPodLabels | indent 8 }}
+{{- with .Values.component.proxy.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+{{- with .Values.component.proxy.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
       containers:
-        - name: {{ .Values.proxyContainerName }}
-          image: "{{ .Values.proxyContainerImageRepository }}:{{ .Values.proxyContainerImageTag | default .Values.coreVersion }}"
-          imagePullPolicy: {{ .Values.proxyContainerImagePullPolicy }}
+        - name: {{ template "bitwarden.proxy" . }}
+          image: "{{ .Values.component.proxy.deployment.image.name }}:{{ .Values.component.proxy.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.proxy.deployment.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.general.configMapName }}
           ports:
-            - containerPort: {{ .Values.proxyServiceTargetPort }}
+            - containerPort: {{ .Values.component.proxy.service.targetPort }}
           volumeMounts:
             - name: proxy
               mountPath: /etc/nginx/conf.d
+{{- if .Values.component.proxy.deployment.additionalContainers }}
+{{- toYaml .Values.component.proxy.deployment.additionalContainers | indent 8 }}
+{{- end }}
       volumes:
         - name: proxy
           configMap:
-            name: {{ .Values.proxyVolumeConfigMapName }}
+            name: {{ template "bitwarden.proxy" . }}
+{{- if .Values.component.proxy.deployment.additionalVolumes }}
+{{- toYaml .Values.component.proxy.deployment.additionalVolumes | indent 8 }}
 {{- end }}
+{{- end -}}

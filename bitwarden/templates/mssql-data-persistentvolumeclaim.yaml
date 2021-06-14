@@ -1,24 +1,26 @@
-{{- if eq .Values.databaseType "container" }}
+{{- if and .Values.database.enabled (not .Values.database.volume.data.existingClaim) -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.mssqlDataVolumeClaimName }}
-{{- if .Values.mssqlDataVolumeAnnotations }}
+  name: {{ template "bitwarden.mssqlData" . }}
+{{- with .Values.database.volume.data.annotations }}
   annotations:
-{{ toYaml .Values.mssqlDataVolumeAnnotations | indent 4 }}
+{{ toYaml . | indent 4 }}
 {{- end }}
   labels:
     app.kubernetes.io/component: mssql-data
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- if .Values.mssqlDataVolumeLabels }}
-{{ toYaml .Values.mssqlDataVolumeLabels | indent 4 }}
+{{- with .Values.database.volume.data.labels }}
+{{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   accessModes:
-{{ toYaml .Values.mssqlDataVolumeAccessModes | indent 4 }}
-  storageClassName: {{ .Values.mssqlDataVolumeStorageClassName }}
+    - {{ .Values.database.volume.data.accessMode | quote }}
+{{- if .Values.database.volume.data.storageClass }}
+  storageClassName: {{ .Values.database.volume.data.storageClass | quote }}
+{{- end }}
   resources:
     requests:
-      storage: {{ .Values.mssqlDataVolumeSize }}
-{{- end }}
+      storage: {{ .Values.database.volume.data.size }}
+{{- end -}}

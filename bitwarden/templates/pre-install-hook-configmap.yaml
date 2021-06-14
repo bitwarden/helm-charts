@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.configMapName }}
+  name: {{ .Values.general.configMapName }}
   labels:
     app.kubernetes.io/component: pre-install-hook
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -10,61 +10,61 @@ metadata:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-1"
 data:
-{{- if eq .Values.databaseType "container" }}
+{{- if .Values.database.enabled }}
   ACCEPT_EULA: "Y"
   MSSQL_PID: "Express"
 {{- end }}
   ASPNETCORE_ENVIRONMENT: "Production"
   globalSettings__selfHosted: "true"
-  globalSettings__baseServiceUri__vault: "https://{{ .Values.domain }}"
-  globalSettings__baseServiceUri__api: "https://{{ .Values.domain }}/api"
-  globalSettings__baseServiceUri__identity: "https://{{ .Values.domain }}/identity"
-  globalSettings__baseServiceUri__admin: "https://{{ .Values.domain }}/admin"
-  globalSettings__baseServiceUri__notifications: "https://{{ .Values.domain }}/notifications"
-  globalSettings__baseServiceUri__sso: "https://{{ .Values.domain }}/sso"
-  globalSettings__baseServiceUri__portal: "https://{{ .Values.domain }}/portal"
-  globalSettings__baseServiceUri__internalNotifications: "http://{{ .Values.notificationsServiceName }}:{{ .Values.notificationsServicePort }}"
-  globalSettings__baseServiceUri__internalAdmin: "http://{{ .Values.adminServiceName }}:{{ .Values.adminServicePort }}"
-  globalSettings__baseServiceUri__internalIdentity: "http://{{ .Values.identityServiceName }}:{{ .Values.identityServicePort }}"
-  globalSettings__baseServiceUri__internalApi: "http://{{ .Values.apiServiceName }}:{{ .Values.apiServicePort }}"
-  globalSettings__baseServiceUri__internalVault: "http://{{ .Values.webServiceName }}:{{ .Values.webServicePort }}"
-  globalSettings__baseServiceUri__internalsso: "http://{{ .Values.ssoServiceName }}:{{ .Values.ssoServicePort }}"
-  globalSettings__baseServiceUri__internalportal: "http://{{ .Values.portalServiceName }}:{{ .Values.portalServicePort }}"
+  globalSettings__baseServiceUri__vault: "https://{{ .Values.general.domain }}"
+  globalSettings__baseServiceUri__api: "https://{{ .Values.general.domain }}/api"
+  globalSettings__baseServiceUri__identity: "https://{{ .Values.general.domain }}/identity"
+  globalSettings__baseServiceUri__admin: "https://{{ .Values.general.domain }}/admin"
+  globalSettings__baseServiceUri__notifications: "https://{{ .Values.general.domain }}/notifications"
+  globalSettings__baseServiceUri__sso: "https://{{ .Values.general.domain }}/sso"
+  globalSettings__baseServiceUri__portal: "https://{{ .Values.general.domain }}/portal"
+  globalSettings__baseServiceUri__internalNotifications: "http://{{ template "bitwarden.notifications" . }}:{{ .Values.component.notifications.service.port }}"
+  globalSettings__baseServiceUri__internalAdmin: "http://{{ template "bitwarden.admin" . }}:{{ .Values.component.admin.service.port }}"
+  globalSettings__baseServiceUri__internalIdentity: "http://{{ template "bitwarden.identity" . }}:{{ .Values.component.identity.service.port }}"
+  globalSettings__baseServiceUri__internalApi: "http://{{ template "bitwarden.api" . }}:{{ .Values.component.api.service.port }}"
+  globalSettings__baseServiceUri__internalVault: "http://{{ template "bitwarden.web" . }}:{{ .Values.component.web.service.port }}"
+  globalSettings__baseServiceUri__internalsso: "http://{{ template "bitwarden.sso" . }}:{{ .Values.component.sso.service.port }}"
+  globalSettings__baseServiceUri__internalportal: "http://{{ template "bitwarden.portal" . }}:{{ .Values.component.portal.service.port }}"
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
   globalSettings__installation__identityUri: "https://identity.bitwarden.com"
   globalSettings__attachment__baseDirectory: "/etc/bitwarden/core/attachments"
-  globalSettings__attachment__baseUrl: "https://{{ .Values.domain }}/attachments"
+  globalSettings__attachment__baseUrl: "https://{{ .Values.general.domain }}/attachments"
   globalSettings__send__baseDirectory: "/etc/bitwarden/core/attachments/sendfiles"
-  globalSettings__send__baseUrl: "https://{{ .Values.domain }}/attachments/sendfiles"
+  globalSettings__send__baseUrl: "https://{{ .Values.general.domain }}/attachments/sendfiles"
   globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"
   globalSettings__logDirectory: "/dev/null"
   globalSettings__logRollBySizeLimit: ""
   globalSettings__syslog__destination: ""
   globalSettings__licenseDirectory: "/etc/bitwarden/core/licenses"
-  globalSettings__installation__id: {{ .Values.installationId | quote }}
-  globalSettings__installation__key: {{ .Values.installationKey | quote }}
-{{- if .Values.yubicoClientId }}
-  globalSettings__yubico__clientId: {{ .Values.yubicoClientId | quote }}
+  globalSettings__installation__id: {{ .Values.general.installationId | quote }}
+  globalSettings__installation__key: {{ .Values.general.installationKey | quote }}
+{{- if .Values.general.yubico.clientId }}
+  globalSettings__yubico__clientId: {{ .Values.general.yubico.clientId | quote }}
 {{- end }}
-{{- if .Values.yubicoKey }}
-  globalSettings__yubico__key: {{ .Values.yubicoKey | quote }}
+{{- if .Values.general.yubico.key }}
+  globalSettings__yubico__key: {{ .Values.general.yubico.key | quote }}
 {{- end }}
-{{- range $index, $url := .Values.yubicoValidationURLs }}
+{{- range $index, $url := .Values.general.yubico.validationURLs }}
   globalSettings__yubico__validationUrls__$index=$url
 {{- end }}
-  globalSettings__mail__replyToEmail: {{ .Values.replyToEmail | quote }}
-  globalSettings__mail__smtp__host: {{ .Values.smtpHost | quote }}
-  globalSettings__mail__smtp__port: {{ .Values.smtpPort | quote }}
-  globalSettings__mail__smtp__ssl: {{ .Values.smtpSsl | quote }}
-  globalSettings__mail__smtp__username: {{ .Values.smtpUsername | quote }}
-  globalSettings__mail__smtp__password: {{ .Values.smtpPassword | quote }}
-  globalSettings__disableUserRegistration: {{ .Values.disableUserRegistration | quote }}
-{{- if .Values.organizationInviteExpirationHours }}
-  globalSettings__organizationInviteExpirationHours: {{ .Values.organizationInviteExpirationHours | quote }}
+  globalSettings__mail__replyToEmail: {{ .Values.general.email.replyToEmail | quote }}
+  globalSettings__mail__smtp__host: {{ .Values.general.email.smtpHost | quote }}
+  globalSettings__mail__smtp__port: {{ .Values.general.email.smtpPort | quote }}
+  globalSettings__mail__smtp__ssl: {{ .Values.general.email.smtpSsl | quote }}
+  globalSettings__mail__smtp__username: {{ .Values.general.email.smtpUsername | quote }}
+  globalSettings__mail__smtp__password: {{ .Values.general.email.smtpPassword | quote }}
+  globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
+{{- if .Values.general.organizationInviteExpirationHours }}
+  globalSettings__organizationInviteExpirationHours: {{ .Values.general.organizationInviteExpirationHours | quote }}
 {{- end }}
-{{- if .Values.hibpApiKey }}
-  globalSettings__hibpApiKey: {{ .Values.hibpApiKey | quote }}
+{{- if .Values.general.hibp.apiKey }}
+  globalSettings__hibpApiKey: {{ .Values.general.hibp.apiKey | quote }}
 {{- end }}
-  adminSettings__admins: {{ .Values.admins | quote }}
+  adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"
