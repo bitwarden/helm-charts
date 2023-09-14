@@ -1,0 +1,16 @@
+apiVersion: v2
+appVersion: 1.47.1
+description: A Helm chart for deploying an ephemeral Bitwarden instance on Kubernetes
+home: https://bitwarden.com/
+icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/512x512.png
+keywords:
+- bitwarden
+- password
+- manager
+- vault
+kubeVersion: '>=1.20.0-0'
+name: ephemeral-environment
+sources:
+- https://github.com/bitwarden/server
+type: application
+version: 1.4.8

@@ -1,0 +1,25 @@
+{{- if .Values.component.attachments.service.enabled -}}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "bitwarden.attachments" . }}
+{{- with .Values.component.attachments.service.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.attachments.service.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.component.attachments.service.type }}
+  ports:
+    - name: http-port
+      port: {{ .Values.component.attachments.service.port }}
+      targetPort: {{ .Values.component.attachments.service.targetPort }}
+  selector:
+    app.kubernetes.io/component: attachments
+{{- end -}}

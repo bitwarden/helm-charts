@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.icons" . }}
+  labels:
+    app.kubernetes.io/component: icons
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.icons.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: icons
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: icons
+{{ include "bitwarden.labels" . | indent 8 }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+{{- with .Values.component.icons.labels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ template "bitwarden.icons" . }}
+          image: "{{ .Values.component.icons.image.name }}:{{ .Values.general.coreVersion }}"
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.general.configMapName }}
+            - configMapRef:
+                name: {{ template "bitwarden.featureflags" . }}
+            - secretRef:
+                name: {{ template "bitwarden.secretProviderClass" . }}-secrets
+            - secretRef:
+                name: "{{ .Release.Name }}-global-env-secrets"
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:5000
+          livenessProbe:
+            exec:
+              command:
+                - "curl"
+                - "-f"
+                - "-s"
+                - "http://localhost:5000/alive"
+            initialDelaySeconds: 10
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+      enableServiceLinks: false
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ template "bitwarden.secretProviderClass" . }}

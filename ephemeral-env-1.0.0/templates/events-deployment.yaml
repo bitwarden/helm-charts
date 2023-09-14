@@ -1,0 +1,72 @@
+{{- if .Values.component.events.deployment.enabled -}}
+---
+apiVersion: apps/v1
+kind: {{ .Values.component.events.deployment.kind }}
+metadata:
+  name: {{ template "bitwarden.events" . }}
+{{- with .Values.component.events.deployment.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: events
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.events.deployment.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+{{- if eq .Values.component.events.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.events.deployment.replicas }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: events
+  template:
+    metadata:
+{{- with .Values.component.events.deployment.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: events
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- with .Values.component.events.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+{{- with .Values.component.events.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
+      containers:
+        - name: {{ template "bitwarden.events" . }}
+          image: "{{ .Values.component.events.deployment.image.name }}:{{ .Values.component.events.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.events.deployment.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.general.configMapName }}
+            - secretRef:
+                name: {{ template "bitwarden.secretProviderClass" . }}-secrets
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.component.events.service.targetPort }}
+          ports:
+            - containerPort: {{ .Values.component.events.service.targetPort }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+{{- if .Values.component.events.deployment.additionalContainers }}
+{{- toYaml .Values.component.events.deployment.additionalContainers | indent 8 }}
+{{- end }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ template "bitwarden.secretProviderClass" . }}
+{{- if .Values.component.events.deployment.additionalVolumes }}
+{{- toYaml .Values.component.events.deployment.additionalVolumes | indent 8 }}
+{{- end }}
+{{- end -}}

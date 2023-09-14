@@ -1,0 +1,742 @@
+# Default values for bitwarden.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+fullnameOverride: "ee"
+#
+# General configuration options
+#
+general:
+  # Core server version to install
+  coreVersion: "1.45.4"
+  # Web version to install
+  webVersion: "2.25.1"
+  # Labels to apply to all resources
+  labels: {}
+    # label1: value1
+    # label2: value2
+  # The name of the Config Map to store the Bitwarden configuration
+  configMapName: config
+  # Domain used for Bitwarden installation
+  domain: "bitwarden.localhost"
+  yubico:
+    # Used for YubiCloud Validation Service or Self-hosted Yubico Validation Server
+    clientId: ""
+    # Used for YubiCloud Validation Service or Self-hosted Yubico Validation Server
+    key: ""
+    # Primary URL for self-hosted Yubico Validation Server.  Not needed if using YubiCloud Validation Service.
+    validationURLs: []
+  email:
+    # Email address used for invitations, typically no-reply@smtp-host
+    replyToEmail: "no-reply@bitwarden.localhost"
+    # Your SMTP server hostname (recommended) or IP address
+    smtpHost: "smtp.sendgrid.net"
+    # The SMTP port used by the SMTP server
+    smtpPort: "465"
+    # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
+    smtpSsl: "true"
+  # Specify the number of hours after which an Organization Invite will expire (120 by default)
+  organizationInviteExpirationHours: "120"
+  # Specify "true" to disable new users signing up for an account on this instance via the Registration page.
+  disableUserRegistration: "false"
+  hibp:
+    # Used for checking password leaks. Available here: https://haveibeenpwned.com/API/Key
+    apiKey: ""
+  # Email addresses which may access the System Administrator Portal, each entry should be separated by a comma
+  admins: ""
+
+#
+# Configure secrets
+#
+secrets:
+  # CSI Configuration
+  config:
+    keyvaultName: bw-qa
+    provider: azure
+    tenantId: "10c0387a-9792-4d9f-b1b1-ebc6785914ce"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: "be62ae46-8078-46c7-b920-e1a9cd0f5795"
+  # Key Vault Secret Names
+  names:
+    installationId: ee-installation-id
+    installationKey: ee-installation-key
+    smtpUsername: ee-smtp-username
+    smtpPassword: ee-smtp-password
+
+#
+#  Configure ingress
+#
+ingress:
+  ## - If this is set to true, an Ingress resource will be created
+  enabled: true
+  ## - Name of the Ingress resource
+  name: ingress
+  ## Ingress Route Prefix
+  routePrefix: /
+  ## - Annotations to add to the Ingress resource
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/auth-url: "https://oauth2-qa.eph.bitwarden.pw/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://oauth2-qa.eph.bitwarden.pw/oauth2/start?rd=/redirect/$http_host$escaped_request_uri"
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  ## - Labels to add to the Ingress resource
+  labels: {}
+  ## - Class name to use for Ingress resource
+  # className: public
+  ## - Path Type for Ingress resource - Can be Exact, Prefix, or ImplementationSpecific
+  pathType: Prefix
+  # Certificate options
+  cert:
+    # CA Certificate information
+    ca:
+      enabled: false
+      # Additional annotations to add to the CA certificate secret
+      annotations: {}
+      # Additional labels to add to the CA certificate secret
+      labels: {}
+      # CA certificate secret name
+      name: cacert
+      # CA certificate secret value (base64)
+      value: ""
+    # TLS Certificate information
+    tls:
+      enabled: true
+      # Additional annotations to add to the TLS certificate secret
+      annotations: {}
+      # Additional labels to add to the TLS certificate secret
+      labels: {}
+      # TLS certificate secret name
+      name: ee-ssl-cert
+      # TLS certificate secret value (base64)
+      cert: ""
+      # TLS certificate secret key (base64)
+      key: ""
+
+#
+# Configure database
+#
+database:
+  # If enabled, will deploy a MSSQL component including:
+  # - Deployment
+  # - Service
+  # - Volumes
+  #
+  # If disabled, you will need to specify the following for the external database:
+  # - hostname
+  # - port
+  # - user
+  # - password
+  enabled: true
+
+  # Hostname of the external database
+  # hostname: database-hostname.domain.com
+  # Port the external database is listening for connections on
+  # port: 1433
+  # Admin user of the external database
+  # user: admin
+  # Admin password of the external database
+  # password: password
+
+  # The MSSQL deployment
+  deployment:
+    # Annotations to add to the MSSQL deployment
+    annotations: {}
+    # Labels to add to the MSSQL deployment
+    labels: {}
+    # Annotations to add to the MSSQL deployment pods
+    podAnnotations: {}
+    # Labels to add to the MSSQL deployment pods
+    podLabels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwardenqa.azurecr.io/mssql
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      # tag: ""
+      pullPolicy: IfNotPresent
+    # The containers are limited to the resources below
+    resources:
+      limits:
+        memory: 2Gi
+
+  # The MSSQL service
+  service:
+    # Annotations to add to the MSSQL service
+    annotations: {}
+    # Labels to add to the MSSQL service
+    labels: {}
+    # Type of the MSSQL service - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+    type: ClusterIP
+    # The port exposed by the MSSQL service
+    port: 1433
+    # Port to access on the pods targeted by the service
+    targetPort: 1433
+
+  # The MSSQL volumes
+  volume:
+    backups:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      storageClass: azurefile
+      # Storage size
+      size: 10Gi
+    data:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      storageClass: azurefile
+      # Storage size
+      size: 10Gi
+    log:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      storageClass: azurefile
+      # Storage size
+      size: 10Gi
+
+#
+# Configure Webhook
+#
+webhook:
+  # The Webhook deployment
+  deployment:
+    enabled: true
+    # Can be either Deployment or DaemonSet
+    kind: Deployment
+    # Number of pods of the deployment (only applies when kind == Deployment)
+    replicas: 1
+    # Annotations to add to the Webhook deployment
+    annotations: {}
+    # Labels to add to the Webhook deployment
+    labels: {}
+    # Annotations to add to the Webhook deployment pods
+    podAnnotations: {}
+    # Labels to add to the Webhook deployment pods
+    podLabels: {}
+    # Additional containers
+    additionalContainers: []
+    # Additional volumes available for use with initContainers and additionalContainers
+    additionalVolumes: []
+    # Additional initContainers
+    initContainers: []
+    # Image name, tag, and pull policy
+    image:
+      name: bitwardenqa.azurecr.io/backup-webhook
+      # Tag of the image to use. (Defaults to general.coreVersion)
+      tag: "dev"
+      pullPolicy: Always
+    # Azure Storage Account Connection String
+    azureStorageConnectionString: ""
+    # Azure Storage Container
+    azureStorageContainer: backups
+    # Webhook API Key
+    webhookApiKey: This-really-should-be-changed  # Should this be a secret in a Key Vault and shared by all of the environments?
+    # Server Branch for SQL migration files
+    serverBranch: master
+    # Ingress Route Prefix for Webhook
+    routePrefix: webhook
+    # Server branch to use for SQL migrations
+    serverBranch: master
+  service:
+    enabled: true
+    # Annotations to add to the Webhook service
+    annotations: {}
+    # Labels to add to the Webhook service
+    labels: {}
+    # Type of the Webhook service - Can be ExternalName, ClusterIP, NodePort, and LoadBalancer
+    type: ClusterIP
+    # The port exposed by the Webhook service
+    port: 5000
+    # Port to access on the pods targeted by the service
+    targetPort: 5000
+
+#
+# Configure components
+#
+component:
+  # The Admin component
+  admin:
+    # The Admin ingress path
+    ingress:
+      enabled: true
+      # Admin ingress path prefix
+      routePrefix: admin
+    # The Admin deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/admin
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The API component
+  api:
+    # The API ingress path
+    ingress:
+      enabled: true
+      # API ingress path prefix
+      routePrefix: api
+    # The API deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/api
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Attachments component
+  attachments:
+    # The Attachments ingress path
+    ingress:
+      enabled: true
+      # Attachments ingress path prefix
+      routePrefix: attachments
+    # The Attachments deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/attachments
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+    volume:
+      # If specified, existing claim will be used instead of creating a new PVC.
+      # existingClaim: ""
+      # Additional volume annotations
+      annotations: {}
+      # Additional volume labels
+      labels: {}
+      # Access mode
+      accessMode: ReadWriteMany
+      # Storage class
+      storageClass: azurefile
+      # Storage size
+      size: 1Gi
+
+  # The Events component
+  events:
+    # The Events ingress path
+    ingress:
+      enabled: true
+      # Events ingress path prefix
+      routePrefix: events
+    # The Events deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/events
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Icons component
+  icons:
+    # The Icons ingress path
+    ingress:
+      enabled: true
+      # Icons ingress path prefix
+      routePrefix: icons
+    # The Icons deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/icons
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Identity component
+  identity:
+    # The Identity ingress path
+    ingress:
+      enabled: true
+      # Identity ingress path prefix
+      routePrefix: identity
+    # The Identity deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/identity
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Notifications component
+  notifications:
+    # The Notifications ingress path
+    ingress:
+      enabled: true
+      # Notifications ingress path prefix
+      routePrefix: notifications
+    # The Notifications deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/notifications
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The SSO component
+  sso:
+    # The SSO ingress path
+    ingress:
+      enabled: true
+      # SSO ingress path prefix
+      routePrefix: sso
+    # The SSO deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/sso
+        # Tag of the image to use. (Defaults to general.coreVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+  # The Web component
+  web:
+    # The Web ingress path
+    ingress:
+      enabled: true
+      # Web ingress path prefix
+      routePrefix: /
+    # The Web deployment
+    deployment:
+      enabled: true
+      # Can be either Deployment or DaemonSet
+      kind: Deployment
+      # Number of pods of the deployment (only applies when kind == Deployment)
+      replicas: 1
+      # Additional deployment annotations
+      annotations: {}
+      # Additional deployment labels
+      labels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional containers
+      additionalContainers: []
+      # Additional volumes available for use with initContainers and additionalContainers
+      additionalVolumes: []
+      # Additional initContainers
+      initContainers: []
+      # Image name, tag, and pull policy
+      image:
+        name: bitwardenqa.azurecr.io/web
+        # Tag of the image to use. (Defaults to general.webVersion)
+        # tag: ""
+        pullPolicy: IfNotPresent
+    service:
+      enabled: true
+      # Additional service annotations
+      annotations: {}
+      # Additional service labels
+      labels: {}
+      # Service type (Can be ExternalName, ClusterIP, NodePort, or LoadBalancer)
+      type: ClusterIP
+      # Port exposed by this service
+      port: 5000
+      # Port to access on the pods targeted by the service
+      targetPort: 5000
+
+#
+# Configure other volumes
+#
+volume:
+  dataprotection:
+    # If specified, existing claim will be used instead of creating a new PVC.
+    # existingClaim: ""
+    # Additional volume annotations
+    annotations: {}
+    # Additional volume labels
+    labels: {}
+    # Access mode
+    accessMode: ReadWriteMany
+    # Storage class
+    storageClass: azurefile
+    # Storage size
+    size: 1Gi
+  licenses:
+    # If specified, existing claim will be used instead of creating a new PVC.
+    # existingClaim: ""
+    # Additional volume annotations
+    annotations: {}
+    # Additional volume labels
+    labels: {}
+    # Access mode
+    accessMode: ReadWriteMany
+    # Storage class
+    storageClass: azurefile
+    # Storage size
+    size: 1Gi

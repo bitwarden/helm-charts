@@ -1,0 +1,17 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "bitwarden.attachments" . }}
+  labels:
+    app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-port
+      port: 5000
+      targetPort: 5000
+  selector:
+    app.kubernetes.io/component: attachments
+    app.kubernetes.io/instance: {{ .Release.Name }}
