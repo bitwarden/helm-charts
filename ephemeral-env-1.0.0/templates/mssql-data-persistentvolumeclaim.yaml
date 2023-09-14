@@ -1,0 +1,26 @@
+{{- if and .Values.database.enabled (not .Values.database.volume.data.existingClaim) -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "bitwarden.mssqlData" . }}
+{{- with .Values.database.volume.data.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: mssql-data
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.database.volume.data.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.database.volume.data.accessMode | quote }}
+{{- if .Values.database.volume.data.storageClass }}
+  storageClassName: {{ .Values.database.volume.data.storageClass | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.database.volume.data.size }}
+{{- end -}}

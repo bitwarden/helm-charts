@@ -1,0 +1,74 @@
+{{- if .Values.webhook.deployment.enabled -}}
+---
+apiVersion: apps/v1
+kind: {{ .Values.webhook.deployment.kind }}
+metadata:
+  name: {{ template "bitwarden.webhook" . }}
+{{- with .Values.webhook.deployment.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: webhook
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.webhook.deployment.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+{{- if eq .Values.webhook.deployment.kind "Deployment" }}
+  replicas: {{ .Values.webhook.deployment.replicas }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: webhook
+  template:
+    metadata:
+{{- with .Values.webhook.deployment.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: webhook
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- with .Values.webhook.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+{{- with .Values.webhook.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
+      containers:
+        - name: {{ template "bitwarden.webhook" . }}
+          image: "{{ .Values.webhook.deployment.image.name }}:{{ .Values.webhook.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.webhook.deployment.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.general.configMapName }}
+          env:
+            - name: SERVER
+              value: {{ template "bitwarden.mssql" . }}
+            - name: AZURE_STORAGE_CONTAINER
+              value: {{ .Values.webhook.deployment.azureStorageContainer }}
+            - name: BACKUP_AZURE_STORAGE_CONNECTION_STRING
+              value: {{ .Values.webhook.deployment.azureStorageConnectionString }}
+            - name: BACKUP_WEBHOOK_API_KEY
+              value: {{ .Values.webhook.deployment.webhookApiKey }}
+            - name: SERVER_BRANCH
+              value: {{ .Values.webhook.deployment.serverBranch }}
+          ports:
+            - containerPort: {{ .Values.webhook.service.targetPort }}
+          volumeMounts:
+            - name: mssql-backups
+              mountPath: /backups
+{{- if .Values.webhook.deployment.additionalContainers }}
+{{- toYaml .Values.webhook.deployment.additionalContainers | indent 8 }}
+{{- end }}
+      volumes:
+        - name: mssql-backups
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.mssqlBackups" . }}
+{{- if .Values.webhook.deployment.additionalVolumes }}
+{{- toYaml .Values.webhook.deployment.additionalVolumes | indent 8 }}
+{{- end }}
+{{- end -}}

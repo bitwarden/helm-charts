@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.web" . }}
+  labels:
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.web.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: web
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 8 }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+{{- with .Values.component.web.labels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+        - name: {{ template "bitwarden.web" . }}
+          image: "{{ .Values.component.web.image.name }}:{{ .Values.general.webVersion }}"
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.general.configMapName }}
+            - configMapRef:
+                name: {{ template "bitwarden.featureflags" . }}
+            - secretRef:
+                name: {{ template "bitwarden.secretProviderClass" . }}-secrets
+            - secretRef:
+                name: "{{ .Release.Name }}-global-env-secrets"
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:5000
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: web
+              mountPath: /etc/bitwarden/web
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+      enableServiceLinks: false
+      volumes:
+        - name: web
+          configMap:
+            name: {{ template "bitwarden.web" . }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ template "bitwarden.secretProviderClass" . }}

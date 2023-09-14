@@ -1,0 +1,20 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "bitwarden.events" . }}
+  labels:
+    app.kubernetes.io/component: events
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.events.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-port
+      port: 5000
+      targetPort: 5000
+  selector:
+    app.kubernetes.io/component: events
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,0 +1,87 @@
+{{- if .Values.component.api.deployment.enabled -}}
+---
+apiVersion: apps/v1
+kind: {{ .Values.component.api.deployment.kind }}
+metadata:
+  name: {{ template "bitwarden.api" . }}
+{{- with .Values.component.api.deployment.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: api
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.api.deployment.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+{{- if eq .Values.component.api.deployment.kind "Deployment" }}
+  replicas: {{ .Values.component.api.deployment.replicas }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+{{- with .Values.component.api.deployment.podAnnotations }}
+      annotations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+      labels:
+        app.kubernetes.io/component: api
+{{ include "bitwarden.labels" . | indent 8 }}
+{{- with .Values.component.api.deployment.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+{{- with .Values.component.api.deployment.initContainers }}
+      initContainers:
+{{- toYaml . | indent 8 }}
+{{- end }}
+      containers:
+        - name: {{ template "bitwarden.api" . }}
+          image: "{{ .Values.component.api.deployment.image.name }}:{{ .Values.component.api.deployment.image.tag | default .Values.general.coreVersion }}"
+          imagePullPolicy: {{ .Values.component.api.deployment.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.general.configMapName }}
+            - secretRef:
+                name: {{ template "bitwarden.secretProviderClass" . }}-secrets
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:{{ .Values.component.api.service.targetPort }}
+          ports:
+            - containerPort: {{ .Values.component.api.service.targetPort }}
+          volumeMounts:
+            - name: attachments
+              mountPath: /etc/bitwarden/core/attachments
+            - name: dataprotection
+              mountPath: /etc/bitwarden/core/aspnet-dataprotection
+            - name: licenses
+              mountPath: /etc/bitwarden/core/licenses
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+{{- if .Values.component.api.deployment.additionalContainers }}
+{{- toYaml .Values.component.api.deployment.additionalContainers | indent 8 }}
+{{- end }}
+      volumes:
+        - name: attachments
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.attachments" . }}
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.dataprotection" . }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.licenses" . }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ template "bitwarden.secretProviderClass" . }}
+{{- if .Values.component.api.deployment.additionalVolumes }}
+{{- toYaml .Values.component.api.deployment.additionalVolumes | indent 8 }}
+{{- end }}
+{{- end -}}
