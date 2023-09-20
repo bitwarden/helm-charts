@@ -1,0 +1,26 @@
+{{- if .Values.letsencrypt.enabled}}
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-{{ .Values.letsencrypt.server }}
+spec:
+  acme:
+{{- if eq .Values.letsencrypt.server "staging" }}
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+{{- end }} 
+{{- if eq .Values.letsencrypt.server "production" }}    
+    server: https://acme-v02.api.letsencrypt.org/directory
+{{- end }}     
+    email: {{ .Values.letsencrypt.email }}
+    privateKeySecretRef:
+      name: letsencrypt-{{ .Values.letsencrypt.server }}
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+
+{{- end }}            
+
+
+

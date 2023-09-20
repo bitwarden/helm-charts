@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config-map
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+data:
+  ACCEPT_EULA: "Y"
+  MSSQL_PID: "Express"
+  ASPNETCORE_ENVIRONMENT: "Production"
+  globalSettings__selfHosted: "true"  
+  globalSettings__baseServiceUri__vault: "https://{{ .Values.general.domain }}"
+  globalSettings__baseServiceUri__api: "https://{{ .Values.general.domain }}/api"
+  globalSettings__baseServiceUri__identity: "https://{{ .Values.general.domain }}/identity"
+  globalSettings__baseServiceUri__admin: "https://{{ .Values.general.domain }}/admin"
+  globalSettings__baseServiceUri__notifications: "https://{{ .Values.general.domain }}/notifications"
+  globalSettings__baseServiceUri__sso: "https://{{ .Values.general.domain }}/sso"
+  globalSettings__baseServiceUri__internalNotifications: "http://{{ template "bitwarden.notifications" . }}:5000"
+  globalSettings__baseServiceUri__internalAdmin: "http://{{ template "bitwarden.admin" . }}:5000"
+  globalSettings__baseServiceUri__internalIdentity: "http://{{ template "bitwarden.identity" . }}:5000"
+  globalSettings__baseServiceUri__internalApi: "http://{{ template "bitwarden.api" . }}:5000"
+  globalSettings__baseServiceUri__internalVault: "http://{{ template "bitwarden.web" . }}:5000"
+  globalSettings__baseServiceUri__internalsso: "http://{{ template "bitwarden.sso" . }}:5000"
+  globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
+  globalSettings__attachment__baseDirectory: "/etc/bitwarden/core/attachments"
+  globalSettings__attachment__baseUrl: "https://{{ .Values.general.domain }}/attachments"
+  globalSettings__send__baseDirectory: "/etc/bitwarden/core/attachments/sendfiles"
+  globalSettings__send__baseUrl: "https://{{ .Values.general.domain }}/attachments/sendfiles"
+
+{{- $currentGeneratedConfigMap := (lookup "v1" "ConfigMap" .Release.Namespace "{{ .Release.Name }}-config-map") }}
+{{- if $currentGeneratedConfigMap}}  
+  globalSettings__internalIdentityKey: {{ index $currentGeneratedConfigMap.data "globalSettings__internalIdentityKey"}}
+  globalSettings__oidcIdentityClientKey: {{ index $currentGeneratedConfigMap.data "globalSettings__oidcIdentityClientKey"}}
+  globalSettings__duo__aKey: {{ index $currentGeneratedConfigMap.data "globalSettings__oidcIdentityClientKey"}}
+{{- else}}
+  globalSettings__internalIdentityKey: {{ (randAlphaNum 64) | quote }}
+  globalSettings__oidcIdentityClientKey: {{ (randAlphaNum 64) | quote }}
+  globalSettings__duo__aKey: {{ (randAlphaNum 64) | quote }}
+{{- end }}
+  globalSettings__logDirectory: "/dev/null"
+  globalSettings__logRollBySizeLimit: ""
+  globalSettings__syslog__destination: ""
+  globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"
+  globalSettings__licenseDirectory: "/etc/bitwarden/core/licenses"
+  globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
+  globalSettings__hibpApiKey: {{ .Values.general.hibpApiKey | quote }}
+  adminSettings__admins: {{ .Values.general.admins | quote }}
+  LOCAL_UID: "1000"
+  LOCAL_GID: "1000"
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config-map-web
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+data:
+  app-id.json: |-
+    {
+      "trustedFacets": [
+        {
+          "version": {
+            "major": 1,
+            "minor": 0
+          },
+          "ids": [
+            "https://{{ .Values.general.domain }}",
+            "ios:bundle-id:com.8bit.bitwarden",
+            "android:apk-key-hash:dUGFzUzf3lmHSLBDBIv+WaFyZMI"
+          ]
+        }
+      ]
+    }
+
+

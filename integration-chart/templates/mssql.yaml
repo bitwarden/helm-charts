@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.mssql" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.mssql" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.mssql" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.mssql" . }}
+    spec:
+      containers:
+        - name: {{ template "bitwarden.mssql" . }}
+          image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"
+          resources:
+            requests:
+              memory: "2G"
+              cpu: "2000m"
+            limits:
+              memory: "2G"
+              cpu: "2000m"          
+          imagePullPolicy: Always
+          resources:
+{{ toYaml .Values.database.resources | indent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config-map
+            - secretRef:
+                {{- if eq .Values.secrets.secretSource "fromValues" }}
+                name: {{ .Release.Name }}-globalsettings-env-secrets
+                {{- end }}
+                {{- if eq .Values.secrets.secretSource "fromSecret" }}
+                name: "{{ .Values.secrets.fromSecret.secretName }}"
+                {{- end }}                
+          ports:
+            - name: mssql
+              containerPort: 1433
+          volumeMounts:
+            - name: mssql-data
+              mountPath: /var/opt/mssql/data
+            - name: mssql-log
+              mountPath: /var/opt/mssql/log
+            - name: mssql-backups
+              mountPath: /etc/bitwarden/mssql/backups
+          livenessProbe:
+            tcpSocket:
+              port: mssql
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: mssql
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 1
+          startupProbe:
+            exec:
+              command:
+                - '/bin/sh'
+                - '-c'
+                - '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SA_PASSWORD} -Q "SELECT 1" || exit 1'
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 3
+      enableServiceLinks: false
+      volumes:
+        - name: mssql-data
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.mssqlData" . }}
+        - name: mssql-log
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.mssqlLog" . }}
+        - name: mssql-backups
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.mssqlBackups" . }}
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "bitwarden.mssql" . }}
+  labels:
+    app.kubernetes.io/component: mssql
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-port
+      port: 1433
+      targetPort: 1433
+  selector:
+    app: {{ template "bitwarden.mssql" . }}

@@ -1,0 +1,145 @@
+
+fullnameOverride: ""
+
+general:
+  domain: "REPLACE"
+  ingress: "nginx"
+  coreVersion: "2023.9.0"
+  webVersion: "2023.9.0"
+  mail:
+    replyTo: "REPLACE"
+    smtpHost: "REPLACE"
+    smtpPort: "587"
+    smtpSSL: "false"
+  disableUserRegistration: "false"   
+  hibpApiKey: "false" 
+  admins: "false"
+  storageAccount: "Azure"
+  
+# Specify the name of the shared storage class
+sharedStorageClassName: "azure-disk"
+
+letsencrypt:
+  enabled: true
+  # Values staging or production
+  server: "staging"
+  email: "REPLACE"
+
+secrets:
+  secretSource: "fromSecret"
+  fromEnv: 
+    fileName: "envvars.env"
+  fromValues: 
+    globalSettings__installation__id: "REPLACE"
+    globalSettings__installation__key: "REPLACE"
+    globalSettings__mail__replyToEmail: "REPLACE"
+    globalSettings__mail__smtp__host: "stmp.host"
+    globalSettings__mail__smtp__port: "386"
+    globalSettings__mail__smtp__ssl: "true"
+    globalSettings__sqlServer__connectionString: "Data Source=tcp:bitwarden-mssql,1433;Initial Catalog=vault;Persist Security Info=False;User ID=sa;Password=REPLACE;Multiple Active Result Sets=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True"
+    globalSettings__yubico__clientId: "REPLACE"
+    globalSettings__yubico__key: "REPLACE"
+    # This is the password used to setup the database, this should match what is used in the connection string if using the default database
+    SA_PASSWORD: "REPLACE"
+  # Specify a secret name which contains the secret values set above. Example given in secret-example.md
+  fromSecret:
+    secretName: custom-secret
+
+component:
+  # The Admin component
+  admin:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/admin
+  api:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/api
+  attachments:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/attachments
+  events:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/events
+  icons:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/icons        
+  identity:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/identity  
+  notifications:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/notifications  
+  scim:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/scim       
+  sso:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/sso  
+  web:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/web  
+volume:
+  dataprotection:
+    size: "1Gi"
+
+#
+# Configure service account
+#
+serviceAccount: service-account
+
+#
+# Configure database
+#
+database:
+  # Labels to add to the MSSQL deployment
+  labels: {}
+  # Image name, tag, and pull policy
+  image:
+    name: mcr.microsoft.com/mssql/server
+    # Tag of the image to use. (Defaults to general.coreVersion)
+    tag: 2019-CU17-ubuntu-20.04
+  # The containers are limited to the resources below
+  resources:
+    limits:
+      memory: 1Gi    
+
+  # The MSSQL volumes
+  volume:
+    backups:
+      # Storage size
+      size: 1Gi
+    data:
+      # Storage size
+      size: 10Gi
+    log:
+      # Storage size
+      size: 10Gi      
