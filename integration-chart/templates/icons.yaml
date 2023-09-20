@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.icons" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.icons" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.icons" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.icons" . }}
+    spec:
+      containers:
+      - name: {{ template "bitwarden.icons" . }}
+        image: "{{ .Values.component.icons.image.name }}:{{ .Values.general.coreVersion }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              {{- if eq .Values.secrets.secretSource "fromValues" }}
+              name: {{ .Release.Name }}-globalsettings-env-secrets
+              {{- end }}
+              {{- if eq .Values.secrets.secretSource "fromSecret" }}
+              name: "{{ .Values.secrets.fromSecret.secretName }}"
+              {{- end }}                        
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 5000
+          initialDelaySeconds: 180    
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      volumes:
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.icons" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ template "bitwarden.icons" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000
+
