@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.identity" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.identity" . }}
+    app.kubernetes.io/component: identity
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.identity.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.identity" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.identity" . }}
+        app.kubernetes.io/component: identity
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+      containers:
+      - name: {{ template "bitwarden.identity" . }}
+        image: "{{ .Values.component.identity.image.name }}:{{ .Values.general.coreVersion }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map   
+          - secretRef:
+              {{- if eq .Values.secrets.secretSource "fromValues" }}
+              name: {{ .Release.Name }}-globalsettings-env-secrets
+              {{- end }}
+              {{- if eq .Values.secrets.secretSource "fromSecret" }}
+              name: "{{ .Values.secrets.fromSecret.secretName }}"
+              {{- end }} 
+          - secretRef:
+              name: {{ .Release.Name }}-identity-cert-password                                    
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 5000
+          initialDelaySeconds: 180    
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.identity.resources | indent 10 }}
+        volumeMounts:
+        - mountPath: /etc/bitwarden/identity
+          name: identity
+        - mountPath: /etc/bitwarden/core/aspnet-dataprotection
+          name: dataprotection          
+        - mountPath: /etc/bitwarden/core/licenses
+          name: licenses
+      volumes:
+        - name: identity
+          secret:
+            secretName: {{ .Release.Name }}-identity-cert      
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.dataprotection" . }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.licenses" . }}        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.identity" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: identity
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.identity.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.identity" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000
+

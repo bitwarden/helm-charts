@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.web" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.web" . }}
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.web.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.web" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.web" . }}
+        app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+      containers:
+      - name: {{ template "bitwarden.web" . }}
+        image: "{{ .Values.component.web.image.name }}:{{ .Values.general.webVersion }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map   
+          - secretRef:
+              {{- if eq .Values.secrets.secretSource "fromValues" }}
+              name: {{ .Release.Name }}-globalsettings-env-secrets
+              {{- end }}
+              {{- if eq .Values.secrets.secretSource "fromSecret" }}
+              name: "{{ .Values.secrets.fromSecret.secretName }}"
+              {{- end }}                        
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 180    
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.web.resources | indent 10 }}
+        volumeMounts:
+        - mountPath: /etc/bitwarden/web  
+          name: web              
+      volumes:
+        - name: web
+          configMap:
+            name: {{ .Release.Name }}-config-map-web          
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.web" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.web.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.web" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000
+

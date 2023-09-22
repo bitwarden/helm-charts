@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-cleanup"
+  labels:
+    app.kubernetes.io/component: post-delete-hook
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-cleanup"
+      labels:
+        app.kubernetes.io/component: post-delete-hook
+    spec:
+    {{- if .Values.serviceAccount }}
+      serviceAccountName: "{{ .Values.serviceAccount }}"
+    {{- end }}
+      containers:
+      - name: delete-resources
+        command: [
+          "/bin/sh", "-c"
+        ]
+        args: ['
+          kubectl delete configmap {{ .Release.Name }}-config-map -n {{ .Release.Namespace }};
+          kubectl delete configmap {{ .Release.Name }}-config-map-web -n {{ .Release.Namespace }};
+          {{- if or (eq .Values.secrets.secretSource "fromValues") (eq .Values.secrets.secretSource "fromEnv")}}
+          kubectl delete secret "{{ .Release.Name }}-globalsettings-env-secrets" -n {{ .Release.Namespace }};
+          {{- end }}              
+          kubectl delete secret {{ .Release.Name }}-identity-cert -n {{ .Release.Namespace }};
+          kubectl delete secret {{ .Release.Name }}-identity-cert-password  -n {{ .Release.Namespace }};
+          kubectl delete job {{ .Release.Name }}-setup;
+          echo "Done"
+        ']
+        image: "bitnami/kubectl:1.21"
+      restartPolicy: Never
