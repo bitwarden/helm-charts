@@ -17,8 +17,8 @@ general:
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists 
       clusterIssuer:
 
-  coreVersion: "2023.9.0"
-  webVersion: "2023.9.0"
+  coreVersion: "2023.8.3"
+  webVersion: "2023.8.4"
   mail:
     replyTo: "REPLACE"
     smtpHost: "REPLACE"
