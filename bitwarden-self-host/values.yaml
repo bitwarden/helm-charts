@@ -5,6 +5,7 @@ nameOverride: ""
 general:
   domain: "REPLACE"
   ingress: 
+    enabled: true
     type: "nginx"
      ## - Annotations to add to the Ingress resource
     annotations: {}
@@ -43,9 +44,12 @@ secrets:
     globalSettings__mail__smtp__port: "386"
     globalSettings__mail__smtp__ssl: "true"
     globalSettings__yubico__clientId: "REPLACE"
-    globalSettings__yubico__key: "REPLACE"
-    # This is the password used to setup the database, this should match what is used in the connection string if using the default database
+    globalSettings__yubico__key: "REPLACE"    
+    # This is the password used to setup the database, this should match what is used in the connection string if using the default database.
+    # Only used if deploying the database pod
     SA_PASSWORD: "REPLACE"
+    # This setting is calculated unless the database pod is set to disabled in the database section below
+    globalSettings__sqlServer__connectionString: "REPLACE"
   # Specify a secret name which contains the secret values set above. Example given in secret-example.md
   fromSecret:
     secretName: custom-secret
@@ -202,6 +206,8 @@ serviceAccount: service-account
 # Configure database
 #
 database:
+  # deploy the database pod?  if false, a connection string will need to be provided through one of the configuration providers defined above
+  enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
   # Image name, tag, and pull policy

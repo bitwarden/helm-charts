@@ -58,6 +58,7 @@ spec:
 #################
 # MSSQL Volumes #
 #################
+{{- if .Values.database.enabled }}
 
 ---
 apiVersion: v1
@@ -116,3 +117,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.database.volume.data.size }}
+{{- end }}

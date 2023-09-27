@@ -35,8 +35,10 @@ spec:
               {{- if eq .Values.secrets.secretSource "fromSecret" }}
               name: "{{ .Values.secrets.fromSecret.secretName }}"
               {{- end }}
+          {{- if .Values.database.enabled }}
           - secretRef:
-              name: {{ .Release.Name }}-sql-connection-string               
+              name: {{ .Release.Name }}-sql-connection-string  
+          {{- end }}             
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000

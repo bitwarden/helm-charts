@@ -29,8 +29,10 @@ spec:
           kubectl delete configmap {{ .Release.Name }}-config-map-web -n {{ .Release.Namespace }};
           {{- if or (eq .Values.secrets.secretSource "fromValues") (eq .Values.secrets.secretSource "fromEnv")}}
           kubectl delete secret "{{ .Release.Name }}-globalsettings-env-secrets" -n {{ .Release.Namespace }};
-          {{- end }}              
+          {{- end }}                        
+          {{- if .Values.database.enabled }}
           kubectl delete secret "{{ .Release.Name }}-sql-connection-string" -n {{ .Release.Namespace }};
+          {{- end }}      
           kubectl delete secret {{ .Release.Name }}-identity-cert -n {{ .Release.Namespace }};
           kubectl delete secret {{ .Release.Name }}-identity-cert-password  -n {{ .Release.Namespace }};
           kubectl delete job {{ .Release.Name }}-setup;
