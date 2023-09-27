@@ -1,0 +1,57 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-migrator"
+  labels:
+    app.kubernetes.io/component: post-install-db-migrator-job
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-migrator"
+      labels:
+        app.kubernetes.io/component: post-install-db-migrator-job
+    spec:
+      {{- if .Values.serviceAccount }}
+      serviceAccountName: "{{ .Values.serviceAccount }}"
+      {{- end }}
+      initContainers:
+      - name: wait-for-db
+        command:
+          - "/bin/bash"
+          - "-c"
+        args: ['          
+          while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.mssql" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}") != "true" ]]; do sleep 1; done
+
+          echo "SQL Ready!"
+
+          while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}") != "true" ]]; do sleep 1; done
+
+          echo "Admin Ready!"
+
+          while [ ! -f /db/vault.mdf ]; do sleep 1; done  
+          
+          echo "DB Ready!"        
+        ']
+        image: "bitnami/kubectl:1.19"
+        volumeMounts:
+          - name: mssql-data
+            mountPath: /db
+      containers:
+      - name: migrate-db
+        env:
+        - name: MSSQL_CONN_STRING
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-sql-connection-string            
+              key: globalSettings__sqlServer__connectionString
+        image: "bitwarden/mssqlmigratorutility:latest" #{{.Values.general.coreVersion}}"
+      restartPolicy: Never
+      volumes:
+        - name: mssql-data
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.mssqlData" . }}

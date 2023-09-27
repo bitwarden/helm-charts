@@ -6,7 +6,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     {{- if eq .Values.general.ingress.type "nginx" }}
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -25,6 +24,9 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
+  {{- if eq .Values.general.ingress.type "nginx" }}
+  ingressClassName: nginx  
+  {{- end }} 
   rules:
     - host: {{ .Values.general.domain }}
       http:

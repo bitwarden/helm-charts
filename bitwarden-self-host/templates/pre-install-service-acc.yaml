@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.serviceAccount }}   
   namespace: {{ .Release.Namespace }}   
   annotations:
-    "helm.sh/hook": pre-install
+    "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"  
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -13,12 +13,25 @@ metadata:
   name: role:service-acc
   namespace: {{ .Release.Namespace }}  
   annotations:
-    "helm.sh/hook": pre-install
+    "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"    
 rules:          # Authorization rules for this role
   - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
+    resources: ["secrets"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: role:service-acc-pods
+  namespace: {{ .Release.Namespace }}  
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"    
+rules:          # Authorization rules for this role
+  - apiGroups: ["*"]
+    resources: ["pods"]
+    verbs: ["get","list","watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -26,12 +39,29 @@ metadata:
   name: rolebinding:service-acc
   namespace: {{ .Release.Namespace }}  
   annotations:
-    "helm.sh/hook": pre-install
+    "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"    
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: role:service-acc
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount }}   
+    namespace: {{ .Release.Namespace }}   
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rolebinding:service-acc-pods
+  namespace: {{ .Release.Namespace }}  
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"    
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: role:service-acc-pods
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.serviceAccount }}   

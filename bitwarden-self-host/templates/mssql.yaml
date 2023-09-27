@@ -41,7 +41,9 @@ spec:
                 {{- end }}
                 {{- if eq .Values.secrets.secretSource "fromSecret" }}
                 name: "{{ .Values.secrets.fromSecret.secretName }}"
-                {{- end }}                
+                {{- end }}    
+            - secretRef:
+                name: {{ .Release.Name }}-sql-connection-string  
           ports:
             - name: mssql
               containerPort: 1433

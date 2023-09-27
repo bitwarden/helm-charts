@@ -36,7 +36,9 @@ spec:
               name: "{{ .Values.secrets.fromSecret.secretName }}"
               {{- end }} 
           - secretRef:
-              name: {{ .Release.Name }}-identity-cert-password                                        
+              name: {{ .Release.Name }}-identity-cert-password     
+          - secretRef:
+              name: {{ .Release.Name }}-sql-connection-string  
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000

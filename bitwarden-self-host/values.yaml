@@ -16,9 +16,8 @@ general:
       name: 
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists 
       clusterIssuer:
-
-  coreVersion: "2023.8.3"
-  webVersion: "2023.8.4"
+  coreVersion: "2023.9.0"
+  webVersion: "2023.9.1"
   mail:
     replyTo: "REPLACE"
     smtpHost: "REPLACE"
@@ -28,6 +27,9 @@ general:
   hibpApiKey: "false" 
   admins: "false"
   labels: {}
+
+# Specify the name of the shared storage class
+sharedStorageClassName: "shared-storage"
 
 secrets:
   secretSource: "fromSecret"
@@ -40,7 +42,6 @@ secrets:
     globalSettings__mail__smtp__host: "stmp.host"
     globalSettings__mail__smtp__port: "386"
     globalSettings__mail__smtp__ssl: "true"
-    globalSettings__sqlServer__connectionString: "Data Source=tcp:bitwarden-mssql,1433;Initial Catalog=vault;Persist Security Info=False;User ID=sa;Password=REPLACE;Multiple Active Result Sets=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True"
     globalSettings__yubico__clientId: "REPLACE"
     globalSettings__yubico__key: "REPLACE"
     # This is the password used to setup the database, this should match what is used in the connection string if using the default database
@@ -212,10 +213,10 @@ database:
   resources:
     requests:
       memory: "2G"
-      cpu: "2000m"
+      cpu: "100m"
     limits:
       memory: "2G"
-      cpu: "2500m"   
+      cpu: "500m"   
 
   # The MSSQL volumes
   volume:
