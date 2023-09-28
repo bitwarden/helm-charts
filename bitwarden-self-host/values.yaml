@@ -1,11 +1,14 @@
-
+# Optional
 fullnameOverride: ""
 nameOverride: ""
 
 general:
+  # Domain name for the service
   domain: "REPLACE"
   ingress: 
+    # Set to false if using a custom ingress
     enabled: true
+    # Current supported values for ingress type include: nginx
     type: "nginx"
      ## - Annotations to add to the Ingress resource
     annotations: {}
@@ -17,22 +20,23 @@ general:
       name: 
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists 
       clusterIssuer:
+  # Application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersion: "2023.9.0"
   webVersion: "2023.9.1"
-  mail:
-    replyTo: "REPLACE"
-    smtpHost: "REPLACE"
-    smtpPort: "587"
-    smtpSSL: "false"
   disableUserRegistration: "false"   
   hibpApiKey: "false" 
   admins: "false"
   labels: {}
 
 # Specify the name of the shared storage class
+# This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
 sharedStorageClassName: "shared-storage"
 
 secrets:
+  # There are three possible ways to provide basic configuration of secrets: fromSecret, fromEnv, and fromValues.  Specify one here
+  # fromSecret:  Use the secret-example.md instructions to create a custom secret to specify the required values and configure the same name below
+  # fromEnv: Use one of the two envvars example files as a basis for your configuration and match the filename below.  The is one version where you can bring your own MS SQL Server instead of using the Pod
+  # fromValues:  Values are directly supplied below.  
   secretSource: "fromSecret"
   fromEnv: 
     fileName: "envvars.env"
@@ -43,6 +47,8 @@ secrets:
     globalSettings__mail__smtp__host: "stmp.host"
     globalSettings__mail__smtp__port: "386"
     globalSettings__mail__smtp__ssl: "true"
+    globalSettings__mail__smtp__username: "REPLACE"
+    globalSettings__mail__smtp__password: "REPLACE"
     globalSettings__yubico__clientId: "REPLACE"
     globalSettings__yubico__key: "REPLACE"    
     # This is the password used to setup the database, this should match what is used in the connection string if using the default database.
@@ -206,7 +212,7 @@ serviceAccount: service-account
 # Configure database
 #
 database:
-  # deploy the database pod?  if false, a connection string will need to be provided through one of the configuration providers defined above
+  # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
