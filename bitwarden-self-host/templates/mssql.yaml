@@ -42,9 +42,9 @@ spec:
                 {{- end }}
                 {{- if eq .Values.secrets.secretSource "fromSecret" }}
                 name: "{{ .Values.secrets.fromSecret.secretName }}"
-                {{- end }}    
+                {{- end }}
             - secretRef:
-                name: {{ .Release.Name }}-sql-connection-string  
+                name: {{ .Release.Name }}-sql-connection-string
           ports:
             - name: mssql
               containerPort: 1433
@@ -98,7 +98,7 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
         {{- end }}
 ---
 

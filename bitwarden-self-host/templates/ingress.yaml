@@ -11,10 +11,10 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    {{- end }} 
+    {{- end }}
     {{- if .Values.general.ingress.tls.clusterIssuer }}
     cert-manager.io/cluster-issuer: {{ .Values.general.ingress.tls.clusterIssuer }}
-    {{- end }} 
+    {{- end }}
 {{- with .Values.general.ingress.annotations }}
 {{ toYaml . | indent 4 }}
 {{- end }}
@@ -26,8 +26,8 @@ metadata:
 {{- end }}
 spec:
   {{- if eq .Values.general.ingress.type "nginx" }}
-  ingressClassName: nginx  
-  {{- end }} 
+  ingressClassName: nginx
+  {{- end }}
   rules:
     - host: {{ .Values.general.domain }}
       http:
@@ -169,5 +169,5 @@ spec:
       - {{ .Values.general.domain }}
       {{- if .Values.general.ingress.tls.name }}
       secretName: {{ .Values.general.ingress.tls.name }}
-      {{- end }} 
+      {{- end }}
 {{- end }}

@@ -34,11 +34,11 @@ spec:
               {{- end }}
               {{- if eq .Values.secrets.secretSource "fromSecret" }}
               name: "{{ .Values.secrets.fromSecret.secretName }}"
-              {{- end }}     
+              {{- end }}
           {{- if .Values.database.enabled }}
           - secretRef:
-              name: {{ .Release.Name }}-sql-connection-string  
-          {{- end }}               
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
@@ -46,14 +46,14 @@ spec:
           httpGet:
             path: /alive
             port: 5000
-          initialDelaySeconds: 180    
+          initialDelaySeconds: 180
         ports:
         - containerPort: 5000
         resources:
 {{ toYaml .Values.component.api.resources | indent 10 }}
         volumeMounts:
-        - mountPath: /etc/bitwarden/core/attachments    
-          name: attachments              
+        - mountPath: /etc/bitwarden/core/attachments
+          name: attachments
         - mountPath: /etc/bitwarden/core/aspnet-dataprotection
           name: dataprotection
         - mountPath: /etc/bitwarden/core/licenses
@@ -69,10 +69,10 @@ spec:
             claimName: {{ template "bitwarden.dataprotection" . }}
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.attachments" . }}            
+            claimName: {{ template "bitwarden.attachments" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.licenses" . }}           
+            claimName: {{ template "bitwarden.licenses" . }}
         {{- if .Values.secrets.fromSecret.secretProviderClass}}
         - name: secrets-store-inline
           csi:

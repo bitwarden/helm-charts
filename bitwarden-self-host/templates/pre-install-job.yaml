@@ -1,7 +1,7 @@
 
 {{- $identityCertPasswordTxtValue := (randAlpha 32) }}
 {{- $currentIdentityCert := (lookup "v1" "Secret" "{.Release.Namespace}" "{{ .Release.Name }}-identity-cert") }}
-{{- $identityCertPasswordTxtValue := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password") }}  
+{{- $identityCertPasswordTxtValue := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password") }}
 
 {{- if $currentIdentityCert }}
 {{- $identityCertPasswordTxtValue := index $currentIdentityCert.data "globalSettings__identityServer__certificatePassword" | b64dec }}
@@ -27,7 +27,7 @@ spec:
     {{- if .Values.serviceAccount }}
       serviceAccountName: "{{ .Values.serviceAccount }}"
     {{- end }}
-  
+
 {{- if not $currentIdentityCert }}
       initContainers:
       - name: generate-identity-cert
@@ -47,16 +47,16 @@ spec:
 {{- end }}
       containers:
       - name: create-resources
-        command: 
+        command:
           - "/bin/sh"
           - "-c"
         args: ['
           ls -atlh /bitwarden;
 {{- if not $currentIdentityCert }}
           kubectl create secret generic {{ .Release.Name }}-identity-cert --from-file=/bitwarden/identity.pfx -n {{ .Release.Namespace }} ;
-          kubectl create secret generic {{ .Release.Name }}-identity-cert-password -n {{ .Release.Namespace }} 
-            --from-literal=globalSettings__identityServer__certificatePassword={{ $identityCertPasswordTxtValue | quote }}; 
-{{- end }}            
+          kubectl create secret generic {{ .Release.Name }}-identity-cert-password -n {{ .Release.Namespace }}
+            --from-literal=globalSettings__identityServer__certificatePassword={{ $identityCertPasswordTxtValue | quote }};
+{{- end }}
           echo "Done"
         ']
         image: "bitnami/kubectl:1.21"

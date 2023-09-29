@@ -25,7 +25,7 @@ spec:
           - "/bin/bash"
           - "-c"
         {{- if .Values.database.enabled }}
-        args: ['          
+        args: ['
           while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.mssql" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}") != "true" ]]; do sleep 1; done
 
           echo "SQL Ready!"
@@ -34,12 +34,12 @@ spec:
 
           echo "Admin Ready!"
 
-          while [ ! -f /db/vault.mdf ]; do sleep 1; done  
-          
-          echo "DB Ready!"        
-        ']    
-        {{- else }}    
-        args: ['   
+          while [ ! -f /db/vault.mdf ]; do sleep 1; done
+
+          echo "DB Ready!"
+        ']
+        {{- else }}
+        args: ['
           while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}") != "true" ]]; do sleep 1; done
 
           echo "Admin Ready!"
@@ -56,12 +56,12 @@ spec:
         env:
         - name: MSSQL_CONN_STRING
           valueFrom:
-            secretKeyRef:              
+            secretKeyRef:
               {{- if .Values.database.enabled }}
-              name: {{ .Release.Name }}-sql-connection-string            
+              name: {{ .Release.Name }}-sql-connection-string
               {{- else if or (eq .Values.secrets.secretSource "fromValues") (eq .Values.secrets.secretSource "fromEnv") }}
-              name: {{ .Release.Name }}-globalsettings-env-secrets  
-              {{- else }}              
+              name: {{ .Release.Name }}-globalsettings-env-secrets
+              {{- else }}
               name: "{{ .Values.secrets.fromSecret.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
@@ -85,5 +85,5 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
         {{- end }}

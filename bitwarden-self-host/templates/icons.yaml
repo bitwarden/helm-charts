@@ -34,11 +34,11 @@ spec:
               {{- end }}
               {{- if eq .Values.secrets.secretSource "fromSecret" }}
               name: "{{ .Values.secrets.fromSecret.secretName }}"
-              {{- end }}  
+              {{- end }}
           {{- if .Values.database.enabled }}
           - secretRef:
-              name: {{ .Release.Name }}-sql-connection-string  
-          {{- end }}                    
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
@@ -46,25 +46,25 @@ spec:
           httpGet:
             path: /alive
             port: 5000
-          initialDelaySeconds: 180    
+          initialDelaySeconds: 180
         ports:
         - containerPort: 5000
-        volumeMounts: 
+        volumeMounts:
         {{- if .Values.secrets.fromSecret.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
-        {{- end }}   
+        {{- end }}
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
-      volumes:      
+      volumes:
         {{- if .Values.secrets.fromSecret.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
         {{- end }}
 ---
 

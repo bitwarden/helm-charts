@@ -10,7 +10,7 @@ data:
   ACCEPT_EULA: "Y"
   MSSQL_PID: "Express"
   ASPNETCORE_ENVIRONMENT: "Production"
-  globalSettings__selfHosted: "true"  
+  globalSettings__selfHosted: "true"
   globalSettings__baseServiceUri__vault: "https://{{ .Values.general.domain }}"
   globalSettings__baseServiceUri__api: "https://{{ .Values.general.domain }}/api"
   globalSettings__baseServiceUri__identity: "https://{{ .Values.general.domain }}/identity"
@@ -30,7 +30,7 @@ data:
   globalSettings__send__baseUrl: "https://{{ .Values.general.domain }}/attachments/sendfiles"
 
 {{- $currentGeneratedConfigMap := (lookup "v1" "ConfigMap" .Release.Namespace "{{ .Release.Name }}-config-map") }}
-{{- if $currentGeneratedConfigMap}}  
+{{- if $currentGeneratedConfigMap}}
   globalSettings__internalIdentityKey: {{ index $currentGeneratedConfigMap.data "globalSettings__internalIdentityKey"}}
   globalSettings__oidcIdentityClientKey: {{ index $currentGeneratedConfigMap.data "globalSettings__oidcIdentityClientKey"}}
   globalSettings__duo__aKey: {{ index $currentGeneratedConfigMap.data "globalSettings__oidcIdentityClientKey"}}

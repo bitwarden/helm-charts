@@ -5,7 +5,7 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "REPLACE"
-  ingress: 
+  ingress:
     # Set to false if using a custom ingress
     enabled: true
     # Current supported values for ingress type include: nginx
@@ -17,14 +17,14 @@ general:
     # Certificate options
     tls:
       # TLS certificate secret name
-      name: 
-      # Cluster cert issuer (ex. Let's Encrypt) name if one exists 
+      name:
+      # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer:
   # Application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersion: "2023.9.0"
   webVersion: "2023.9.1"
-  disableUserRegistration: "false"   
-  hibpApiKey: "false" 
+  disableUserRegistration: "false"
+  hibpApiKey: "false"
   admins: "false"
   labels: {}
 
@@ -36,11 +36,11 @@ secrets:
   # There are three possible ways to provide basic configuration of secrets: fromSecret, fromEnv, and fromValues.  Specify one here
   # fromSecret:  Use the README file instructions to create a custom secret to specify the required values and configure the same name below
   # fromEnv: Use one of the two envvars example in the README file as a basis for your configuration and match the filename below.  The is one version where you can bring your own MS SQL Server instead of using the Pod
-  # fromValues:  Values are directly supplied below.  
+  # fromValues:  Values are directly supplied below.
   secretSource: "fromSecret"
-  fromEnv: 
+  fromEnv:
     fileName: "envvars.env"
-  fromValues: 
+  fromValues:
     globalSettings__installation__id: "REPLACE"
     globalSettings__installation__key: "REPLACE"
     globalSettings__mail__replyToEmail: "REPLACE"
@@ -50,7 +50,7 @@ secrets:
     globalSettings__mail__smtp__username: "REPLACE"
     globalSettings__mail__smtp__password: "REPLACE"
     globalSettings__yubico__clientId: "REPLACE"
-    globalSettings__yubico__key: "REPLACE"    
+    globalSettings__yubico__key: "REPLACE"
     # This is the password used to setup the database, this should match what is used in the connection string if using the default database.
     # Only used if deploying the database pod
     SA_PASSWORD: "REPLACE"
@@ -59,7 +59,7 @@ secrets:
   # Specify a secret name which contains the secret values set above. Example given in README.
   fromSecret:
     secretName: custom-secret
-    secretProviderClass: 
+    secretProviderClass:
 
 component:
   # The Admin component
@@ -120,20 +120,20 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/icons   
+      name: bitwarden/icons
     resources:
       requests:
         memory: "64Mi"
         cpu: "50m"
       limits:
         memory: "128Mi"
-        cpu: "100m"     
+        cpu: "100m"
   identity:
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/identity  
+      name: bitwarden/identity
     resources:
       requests:
         memory: "64Mi"
@@ -146,7 +146,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/notifications  
+      name: bitwarden/notifications
     resources:
       requests:
         memory: "64Mi"
@@ -159,7 +159,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/scim   
+      name: bitwarden/scim
     resources:
       requests:
         memory: "64Mi"
@@ -172,7 +172,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/sso  
+      name: bitwarden/sso
     resources:
       requests:
         memory: "64Mi"
@@ -185,7 +185,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/web  
+      name: bitwarden/web
     resources:
       requests:
         memory: "64Mi"
@@ -229,7 +229,7 @@ database:
       cpu: "100m"
     limits:
       memory: "2G"
-      cpu: "500m"   
+      cpu: "500m"
 
   # The MSSQL volumes
   volume:
@@ -241,4 +241,4 @@ database:
       size: 10Gi
     log:
       # Storage size
-      size: 10Gi      
+      size: 10Gi

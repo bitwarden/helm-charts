@@ -27,17 +27,17 @@ spec:
         image: "{{ .Values.component.scim.image.name }}:{{ .Values.general.coreVersion }}"
         envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-config-map   
+              name: {{ .Release.Name }}-config-map
           - secretRef:
               {{- if eq .Values.secrets.secretSource "fromValues" }}
               name: {{ .Release.Name }}-globalsettings-env-secrets
               {{- end }}
               {{- if eq .Values.secrets.secretSource "fromSecret" }}
               name: "{{ .Values.secrets.fromSecret.secretName }}"
-              {{- end }}      
+              {{- end }}
           {{- if .Values.database.enabled }}
           - secretRef:
-              name: {{ .Release.Name }}-sql-connection-string  
+              name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
         env:
           - name: ASPNETCORE_URLS
@@ -46,15 +46,15 @@ spec:
           httpGet:
             path: /alive
             port: 5000
-          initialDelaySeconds: 180    
+          initialDelaySeconds: 180
         ports:
         - containerPort: 5000
         resources:
         resources:
 {{ toYaml .Values.component.scim.resources | indent 10 }}
         volumeMounts:
-        - mountPath: /etc/bitwarden/core/attachments    
-          name: attachments              
+        - mountPath: /etc/bitwarden/core/attachments
+          name: attachments
         - mountPath: /etc/bitwarden/core/aspnet-dataprotection
           name: dataprotection
         - mountPath: /etc/bitwarden/core/licenses
@@ -70,17 +70,17 @@ spec:
             claimName: {{ template "bitwarden.dataprotection" . }}
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.attachments" . }}            
+            claimName: {{ template "bitwarden.attachments" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.licenses" . }}          
+            claimName: {{ template "bitwarden.licenses" . }}
         {{- if .Values.secrets.fromSecret.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
         {{- end }}
 ---
 

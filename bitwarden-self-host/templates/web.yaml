@@ -27,17 +27,17 @@ spec:
         image: "{{ .Values.component.web.image.name }}:{{ .Values.general.webVersion }}"
         envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-config-map   
+              name: {{ .Release.Name }}-config-map
           - secretRef:
               {{- if eq .Values.secrets.secretSource "fromValues" }}
               name: {{ .Release.Name }}-globalsettings-env-secrets
               {{- end }}
               {{- if eq .Values.secrets.secretSource "fromSecret" }}
               name: "{{ .Values.secrets.fromSecret.secretName }}"
-              {{- end }}       
+              {{- end }}
           {{- if .Values.database.enabled }}
           - secretRef:
-              name: {{ .Release.Name }}-sql-connection-string  
+              name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
         env:
           - name: ASPNETCORE_URLS
@@ -46,30 +46,30 @@ spec:
           httpGet:
             path: /
             port: 5000
-          initialDelaySeconds: 180    
+          initialDelaySeconds: 180
         ports:
         - containerPort: 5000
         resources:
 {{ toYaml .Values.component.web.resources | indent 10 }}
         volumeMounts:
-        - mountPath: /etc/bitwarden/web  
-          name: web   
+        - mountPath: /etc/bitwarden/web
+          name: web
         {{- if .Values.secrets.fromSecret.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
-        {{- end }}           
+        {{- end }}
       volumes:
         - name: web
           configMap:
-            name: {{ .Release.Name }}-config-map-web          
+            name: {{ .Release.Name }}-config-map-web
         {{- if .Values.secrets.fromSecret.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
         {{- end }}
 ---
 

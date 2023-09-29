@@ -30,11 +30,11 @@ helm repo update
 
 ### Update the config file
 Edit the `my-values.yaml` file and fill out the values.  Required values that must be set:
-- general.domain   
+- general.domain
 - general.ingress.enabled (set to disbled if you are creating your own ingress)
-- general.ingress.cert.tls.name    
+- general.ingress.cert.tls.name
 - sharedStorageClassName
-- secrets.secretSource 
+- secrets.secretSource
 - database.enabled (set to disbled if using an external SQL server)
 
 ### Create namespace
@@ -54,7 +54,7 @@ Set secrets based on one of the three options for secrets.secretSource (fromEnv,
 #### Secret Sources
 The following speaks to configuring these secrets for each of the different possible secret sources:
 - fromValues
-  - Update all values in the `secrets.fromValues` section of the `my-values.yaml` file    
+  - Update all values in the `secrets.fromValues` section of the `my-values.yaml` file
 - fromSecret:
   - Create a secret on your own.  This can either be via the kubectl command line or via a YAML deployment file.  Examples of kubectl creation are provided below.  One is for use with SQL deployed in a pod.  The other is for usage with an external SQL server.
     - With included SQL pod
@@ -70,7 +70,7 @@ The following speaks to configuring these secrets for each of the different poss
           --from-literal=globalSettings__mail__smtp__password="REPLACE" \
           --from-literal=globalSettings__yubico__clientId="REPLACE" \
           --from-literal=globalSettings__yubico__key="REPLACE" \
-          --from-literal=SA_PASSWORD="REPLACE" 
+          --from-literal=SA_PASSWORD="REPLACE"
       ```
     - With external SQL server
       ```shell
@@ -134,7 +134,7 @@ Replace any optional values in `my-values.yaml` to best fit your cluster.  This 
 
 
 
-> The current Bitwarden release is architected in a way which requires the sharing of persistent data between containers and therefore requires storage which supports the access mode ReadWriteMany. 
+> The current Bitwarden release is architected in a way which requires the sharing of persistent data between containers and therefore requires storage which supports the access mode ReadWriteMany.
 
 Edit values.yaml and update to suit your configuration.
 
@@ -218,7 +218,7 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 Finally, set the ingress TLS information in `my-values.yaml`:
 ```yaml
-  ingress: 
+  ingress:
     enabled: true
     type: "nginx"
      ## - Annotations to add to the Ingress resource
@@ -229,7 +229,7 @@ Finally, set the ingress TLS information in `my-values.yaml`:
     tls:
       # TLS certificate secret name
       name: tls-secret
-      # Cluster cert issuer (ex. Let's Encrypt) name if one exists 
+      # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer: letsencrypt-staging
 ```
 
@@ -242,7 +242,7 @@ apiVersion: storage.k8s.io/v1
 metadata:
   name: azure-disk
   namespace: bitwaren
-provisioner: file.csi.azure.com 
+provisioner: file.csi.azure.com
 allowVolumeExpansion: true
 mountOptions:
   - dir_mode=0777
@@ -269,7 +269,7 @@ See the configuration sections above for required values.  Secrets can be config
 #### Installing the Azure Key Vault CSI Driver
 The following will add the Azure Key Vault CSI driver to an existing cluster.  More information can be found in this article: [Use the Azure Key Vault Provider for Secrets Store CSI Driver in an Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-driver)
 
-```shell 
+```shell
 az aks enable-addons --addons azure-keyvault-secrets-provider --name REPLACE --resource-group REPLACE
 ```
 
@@ -392,7 +392,7 @@ Now, edit `my-values.yaml` to use this secret provider class we created.
 ### Helm
 
 ```
-helm install bitwarden ./bitwarden -n bitwarden 
+helm install bitwarden ./bitwarden -n bitwarden
 ```
 
 ### Pointing your DNS
