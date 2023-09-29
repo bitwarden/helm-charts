@@ -47,15 +47,15 @@ jobs:
         id: list-changed
         run: |
           echo ${GITHUB_REF#refs/heads/}
-          ct list-changed --chart-dirs ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
-          ct list-changed --chart-dirs ./bitwarden-self-host --target-branch main
-          changed=$(ct list-changed --chart-dirs ./bitwarden-self-host --target-branch main) #${GITHUB_REF#refs/heads/}
+          ct list-changed --debug --chart-dirs ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
+          ct list-changed --debug --chart-dirs ./bitwarden-self-host --target-branch master
+          changed=$(ct list-changed --chart-dirs ./bitwarden-self-host --target-branch master) #${GITHUB_REF#refs/heads/}
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch main
+        run: ct lint --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch master
        
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
