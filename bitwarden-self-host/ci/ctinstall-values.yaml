@@ -37,10 +37,10 @@ secrets:
     globalSettings__mail__smtp__host: "smtp.sendgrid.net"
     globalSettings__mail__smtp__port: "386"
     globalSettings__mail__smtp__ssl: "false"
-    globalSettings__mail__smtp__username: ""
-    globalSettings__mail__smtp__password: ""
-    globalSettings__yubico__clientId: ""
-    globalSettings__yubico__key: ""
+    globalSettings__mail__smtp__username:
+    globalSettings__mail__smtp__password:
+    globalSettings__yubico__clientId:
+    globalSettings__yubico__key:
     # This is the password used to setup the database, this should match what is used in the connection string if using the default database.
     # Only needed if deploying the database pod
     SA_PASSWORD: "6zdrv%d5woAgP&"
