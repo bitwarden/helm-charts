@@ -61,4 +61,4 @@ jobs:
 
       - name: Run chart-testing (install)
         run: |
-          ct install --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/ --helm-extra-args "-f .ct/ctinstall-values.yaml"
+          ct install --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/} --helm-extra-args "-f .ct/ctinstall-values.yaml"
