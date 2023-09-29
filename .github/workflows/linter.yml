@@ -53,5 +53,7 @@ jobs:
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --debug --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
+        run: |
+          cat /opt/hostedtoolcache/ct/v3.5.1/x86_64/etc/lintconf.yaml
+          ct lint --debug --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
        
