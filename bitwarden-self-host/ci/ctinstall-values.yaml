@@ -1,4 +1,3 @@
-
 fullnameOverride: ""
 nameOverride: ""
 
@@ -17,7 +16,6 @@ general:
       name:
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer:
-
   coreVersion: "2023.9.0"
   webVersion: "2023.9.1"
   disableUserRegistration: "false"
@@ -233,4 +231,3 @@ database:
     log:
       # Storage size
       size: 10Gi
-
