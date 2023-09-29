@@ -47,6 +47,8 @@ jobs:
         id: list-changed
         run: |
           echo ${GITHUB_REF#refs/heads/}
+          ct list-changed --chart-dirs ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
+          ct list-changed --chart-dirs ./bitwarden-self-host --target-branch main
           changed=$(ct list-changed --chart-dirs ./bitwarden-self-host --target-branch main) #${GITHUB_REF#refs/heads/}
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
@@ -59,6 +61,7 @@ jobs:
         uses: helm/kind-action@v1.2.0
         if: steps.list-changed.outputs.changed == 'true'
 
-      - name: Run chart-testing (install)
+      - name: Run chart-testing (install)        
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           ct install --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch main
