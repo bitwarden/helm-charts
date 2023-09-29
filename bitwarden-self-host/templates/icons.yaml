@@ -49,9 +49,23 @@ spec:
           initialDelaySeconds: 180    
         ports:
         - containerPort: 5000
+        volumeMounts: 
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}   
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
-      volumes:
+      volumes:      
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+        {{- end }}
 ---
 
 apiVersion: v1

@@ -51,8 +51,21 @@ spec:
         - containerPort: 5000
         resources:
 {{ toYaml .Values.component.events.resources | indent 10 }}
-        volumeMounts:           
+        volumeMounts: 
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}          
       volumes:
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+        {{- end }}
 ---
 
 apiVersion: v1

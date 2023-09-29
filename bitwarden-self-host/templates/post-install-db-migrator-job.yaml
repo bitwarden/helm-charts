@@ -60,16 +60,30 @@ spec:
               {{- if .Values.database.enabled }}
               name: {{ .Release.Name }}-sql-connection-string            
               {{- else if or (eq .Values.secrets.secretSource "fromValues") (eq .Values.secrets.secretSource "fromEnv") }}
-              name: {{ .Release.Name }}-sql-connection-string    
+              name: {{ .Release.Name }}-globalsettings-env-secrets  
               {{- else }}              
               name: "{{ .Values.secrets.fromSecret.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
         image: "bitwarden/mssqlmigratorutility:latest" #{{.Values.general.coreVersion}}"
+        volumeMounts:
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
       restartPolicy: Never
       volumes:
         {{- if .Values.database.enabled }}
         - name: mssql-data
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.mssqlData" . }}
+        {{- end }}
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
         {{- end }}

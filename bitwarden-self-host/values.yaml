@@ -59,6 +59,7 @@ secrets:
   # Specify a secret name which contains the secret values set above. Example given in secret-example.md
   fromSecret:
     secretName: custom-secret
+    secretProviderClass: 
 
 component:
   # The Admin component

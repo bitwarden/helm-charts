@@ -53,11 +53,24 @@ spec:
 {{ toYaml .Values.component.attachments.resources | indent 10 }}
         volumeMounts:
         - mountPath: /etc/bitwarden/core/attachments    
-          name: attachments               
+          name: attachments 
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}              
       volumes:
         - name: attachments
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.attachments" . }}
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+        {{- end }}
 ---
 
 apiVersion: v1

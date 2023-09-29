@@ -264,7 +264,130 @@ sharedStorageClassName: "azure-disk"
 ```
 
 ### Configure remaining values
-See the configuration sections above for required values.
+See the configuration sections above for required values.  Secrets can be configured using any of the standard methods already provided.  However, you can also use Azure Key Vault as a source for your secret, though this is completely optional.
+
+#### Installing the Azure Key Vault CSI Driver
+The following will add the Azure Key Vault CSI driver to an existing cluster.  More information can be found in this article: [Use the Azure Key Vault Provider for Secrets Store CSI Driver in an Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-driver)
+
+```shell 
+az aks enable-addons --addons azure-keyvault-secrets-provider --name REPLACE --resource-group REPLACE
+```
+
+You will also want to configure identity access for your cluster to the Key Vault.  This article provides a couple of different options: [Provide an identity to access the Azure Key Vault Provider for Secrets Store CSI Driver in Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-identity-access)
+
+Once the cluster identity has been granted access to the Key Vault, you will need to create a SecretProviderClass.  An example is provided below.
+
+```shell
+cat <<EOF | kubectl apply -n bitwarden -f -
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: bitwarden-azure-keyvault-csi
+  labels:
+    app.kubernetes.io/component: secrets
+  annotations:
+spec:
+  provider: azure
+  parameters:
+    useVMManagedIdentity: "true" # Set to false for workload identity
+    userAssignedIdentityID: "<REPLACE>" # Set the clientID of the user-assigned managed identity to use
+    # clientID: "<REPLACE>" # Setting this to use workload identity
+    keyvaultName: "<REPLACE>"
+    cloudName: "AzurePublicCloud"
+    objects: |
+      array:
+        - |
+          objectName: installationid
+          objectAlias: installationid
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: installationkey
+          objectAlias: installationkey
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: smtpreplytoemail
+          objectAlias: smtpreplytoemail
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: smtphost
+          objectAlias: smtphost
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: smtpport
+          objectAlias: smtpport
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: smtpssl
+          objectAlias: smtpssl
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: smtpusername
+          objectAlias: smtpusername
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: smtppassword
+          objectAlias: smtppassword
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: yubicoclientid
+          objectAlias: yubicoclientid
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: yubicokey
+          objectAlias: yubicokey
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: sapassowrd #-OR- dbconnectionstring if external SQL
+          objectAlias: sapassowrd #-OR- dbconnectionstring if external SQL
+          objectType: secret
+          objectVersion: ""
+    tenantId: "<REPLACE>"
+  secretObjects:
+  - secretName: "bitwarden-secret"
+    type: Opaque
+    data:
+    - objectName: installationid
+      key: globalSettings__installation__id
+    - objectName: installationkey
+      key: globalSettings__installation__key
+   - objectName: smtpreplytoemail
+      key: globalSettings__mail__replyToEmail
+    - objectName: smtphost
+      key: globalSettings__mail__smtp__host
+   - objectName: smtpreplytoemail
+      key: globalSettings__mail__smtp__port
+    - objectName: smtphost
+      key: globalSettings__mail__smtp__ssl
+    - objectName: smtpusername
+      key: globalSettings__mail__smtp__username
+    - objectName: smtppassword
+      key: globalSettings__mail__smtp__password
+    - objectName: yubicoclientid
+      key: globalSettings__yubico__clientId
+    - objectName: yubicokey
+      key: globalSettings__yubico__key
+    - objectName: sapassowrd #-OR- dbconnectionstring if external SQL
+      key: SA_PASSWORD #-OR- globalSettings__sqlServer__connectionString if external SQL
+EOF
+```
+Note the spots in the definition that say `"<REPLACE>"`.  These will need to be updated for your environment.  Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server.  Those spots that will need to change have been marked with a comment.  Finally, you can name the secrets in Azure Key Vault based on your own naming convention.  If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
+
+Now, edit `my-values.yaml` to use this secret provider class we created.
+```yaml
+  fromSecret:
+    secretName: bitwarden-secret # spec.secretObjects.secretName in example
+    secretProviderClass: bitwarden-azure-keyvault-csi #metadata.name in example
+```
 
 ### Helm
 

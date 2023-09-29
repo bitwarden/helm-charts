@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     {{- end }} 
     {{- if .Values.general.ingress.tls.clusterIssuer }}
-    cert-manager.io/cluster-issuer: .Values.general.ingress.tls.clusterIssuer
+    cert-manager.io/cluster-issuer: {{ .Values.general.ingress.tls.clusterIssuer }}
     {{- end }} 
 {{- with .Values.general.ingress.annotations }}
 {{ toYaml . | indent 4 }}

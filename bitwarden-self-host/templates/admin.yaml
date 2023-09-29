@@ -55,14 +55,27 @@ spec:
         - mountPath: /etc/bitwarden/core/aspnet-dataprotection
           name: dataprotection        
         - mountPath: /etc/bitwarden/core/licenses
-          name: licenses
+          name: licenses   
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
       volumes:     
         - name: dataprotection
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.dataprotection" . }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.licenses" . }}           
+            claimName: {{ template "bitwarden.licenses" . }}     
+        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}      
+        {{- end }}
 ---
 
 apiVersion: v1
