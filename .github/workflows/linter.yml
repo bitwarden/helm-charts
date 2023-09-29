@@ -47,8 +47,8 @@ jobs:
         id: list-changed
         run: |
           echo ${GITHUB_REF#refs/heads/}
-          ct list-changed --debug --chart-dirs ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
-          ct list-changed --debug --chart-dirs ./bitwarden-self-host --target-branch master
+          ct list-changed --chart-dirs ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
+          ct list-changed --chart-dirs ./bitwarden-self-host --target-branch master
           changed=$(ct list-changed --chart-dirs ./bitwarden-self-host --target-branch master) #${GITHUB_REF#refs/heads/}
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
