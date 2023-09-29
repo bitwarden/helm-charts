@@ -62,4 +62,4 @@ jobs:
       - name: Run chart-testing (install)        
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          ct install --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch main
+          ct install --debug --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch main
