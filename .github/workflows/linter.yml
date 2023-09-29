@@ -46,11 +46,12 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --chart-dirs ./bitwarden-self-host)
+          echo ${GITHUB_REF#refs/heads/}
+          changed=$(ct list-changed --chart-dirs ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/})
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host
+        run: ct lint --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch ${GITHUB_REF#refs/heads/}
        
