@@ -22,3 +22,11 @@ version: 2023.10.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "2023.9.0"
+
+
+maintainers:
+  - name: Joseph Flinn
+  - name: Vince Grassia
+  - name: Keith Hubner
+  - name: Aaron Marshall
+  - name: Jordan Cooks
