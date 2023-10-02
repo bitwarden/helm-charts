@@ -42,4 +42,7 @@ jobs:
       - name: helm push
         run: |
           echo ${{steps.helm_package.outputs.path}}
+          echo ${{ github.repository_owner }}
+
+      
         
