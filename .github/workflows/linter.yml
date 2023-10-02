@@ -63,7 +63,8 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: |
           mkdir $GITHUB_WORKSPACE/shared
-          
+
+          cat <<EOF | kubectl apply -n bitwarden -f -
           apiVersion: storage.k8s.io/v1
           kind: StorageClass 
           metadata:   
