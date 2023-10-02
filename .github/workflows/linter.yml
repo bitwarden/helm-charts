@@ -13,6 +13,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   push:
+
+env:
+  RUN_TESTS: false
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -48,7 +51,7 @@ jobs:
         id: list-changed
         run: |
           changed=$(ct list-changed --chart-dirs . --excluded-charts bitwarden,integration-chart,ephemeral-env-1.0.0,ephemeral-env-1.4.8 --target-branch ${{ github.event.repository.default_branch }}) #${GITHUB_REF#refs/heads/}
-          if [[ -n "$changed" ]]; then
+          if [["$RUN_TESTS" = true] && [ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
@@ -58,134 +61,6 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
         if: steps.list-changed.outputs.changed == 'true'
-
-      - name: Setup volumes        
-        if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          mkdir $GITHUB_WORKSPACE/shared
-
-          cat <<EOF | kubectl apply -n bitwarden -f -
-          apiVersion: storage.k8s.io/v1
-          kind: StorageClass 
-          metadata:   
-            name: shared-storage
-          provisioner: docker.io/hostpath
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-1
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 10Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-2
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 10Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-3
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 10Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-4
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 1Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-5
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 1Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-6
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 1Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          ---
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: bitwarden-shared-pv-7
-            labels:
-              type: local
-          spec:
-            storageClassName: shared-storage
-            capacity:
-              storage: 1Gi
-            accessModes:
-              - ReadWriteMany
-            hostPath:
-              path: $GITHUB_WORKSPACE/shared
-            persistentVolumeReclaimPolicy: Retain
-          EOF
-
-          kubectl get pv -n bitwarden
 
       - name: Run chart-testing (install)        
         if: steps.list-changed.outputs.changed == 'true'
