@@ -36,4 +36,5 @@ jobs:
           message=$(helm package ./bitwarden-self-host)
           echo $message
           path="${message/Successfully packaged chart and saved it to: /}"
+          echo $path
         
