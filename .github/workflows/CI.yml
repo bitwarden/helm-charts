@@ -36,5 +36,9 @@ jobs:
           message=$(helm package ./bitwarden-self-host)
           echo $message
           path="${message/Successfully packaged chart and saved it to: /}"
-          echo $path
+          echo "path=$path" >> GITHUB_OUTPUT
+
+      - name: helm push
+        run: |
+          echo ${{steps.helm_package.outputs.path}}
         
