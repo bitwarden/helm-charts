@@ -36,10 +36,8 @@ jobs:
         run: |
           rm -f bitwarden-*.tgz
           helm package ./bitwarden-self-host
-          message=$(ls bitwarden-*.tgz)
-          echo $message
-          path="${message/Successfully packaged chart and saved it to: /}"
-          echo "path=$message" >> "$GITHUB_OUTPUT"
+          path=$(ls bitwarden-*.tgz)
+          echo "path=$path" >> "$GITHUB_OUTPUT"
 
       - name: helm push
         run: |
