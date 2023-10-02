@@ -62,7 +62,8 @@ jobs:
       - name: Setup volumes        
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          mkdir ${{GITHUB_WORKSPACE}}/shared
+          mkdir $GITHUB_WORKSPACE/shared
+          
           apiVersion: storage.k8s.io/v1
           kind: StorageClass 
           metadata:   
@@ -82,7 +83,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           
           ---
@@ -99,7 +100,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           ---
           apiVersion: v1
@@ -115,7 +116,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           ---
           apiVersion: v1
@@ -131,7 +132,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           ---
           apiVersion: v1
@@ -147,7 +148,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           ---
           apiVersion: v1
@@ -163,7 +164,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           ---
           apiVersion: v1
@@ -179,7 +180,7 @@ jobs:
             accessModes:
               - ReadWriteMany
             hostPath:
-              path: ${{GITHUB_WORKSPACE}}/shared
+              path: $GITHUB_WORKSPACE/shared
             persistentVolumeReclaimPolicy: Retain
           EOF
 
