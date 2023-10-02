@@ -62,7 +62,7 @@ jobs:
       - name: Setup volumes        
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          mkdir /data
+          mkdir /shared
           cat <<EOF | 
           apiVersion: storage.k8s.io/v1
           kind: StorageClass 
