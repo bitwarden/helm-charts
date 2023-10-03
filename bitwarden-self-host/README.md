@@ -164,9 +164,15 @@ general:
   ingress: "nginx"
 ```
 
-### Lets Encrypt
+### Let's Encrypt
 
-> It is recommended to use the staging configuration until your DNS records have been pointed correctly.
+If you have not done so, first install cert-manager on the cluster.
+
+```shell
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+```
+
+> It is recommended to use the staging configuration of Let's Encrypt until your DNS records have been pointed correctly.
 
 Use one of the following certificate issuers depending on if you are in a production or a pre-production environment:
 
@@ -208,12 +214,6 @@ spec:
           ingress:
             class: nginx
 EOF
-```
-
-You must also deploy the Let's Encrypt certificate manager:
-
-```shell
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
 ```
 
 Finally, set the ingress TLS information in `my-values.yaml`:
