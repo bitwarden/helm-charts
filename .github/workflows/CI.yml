@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: bwhelmtest.azurecr.io
-  REGISTRY_USER: bwhelmtest
+  ACR_REGISTRY: bwhelmtest
+  ACR_REGISTRY_USER: bwhelmtest
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -54,17 +54,9 @@ jobs:
             echo "available=false"
           fi
           
-      - name: Log into registry ${{ env.REGISTRY }}
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ secrets.ACR_PASSWORD }}
-          
-
       - name: helm push
         run: |
           echo ${{steps.helm_package.outputs.path}}
-
+          helm registry login ${{ env.ACR_REGISTRY }}.azurecr.io -u ${{ env.ACR_REGISTRY_USER }} -p ${{ secrets.ACR_PASSWORD }}
       
         
