@@ -43,20 +43,11 @@ jobs:
           path=$(ls bitwarden-*.tgz)
           echo "path=$path" >> "$GITHUB_OUTPUT"
           
-      - name: Check for Secret availability
-        id: secret-check
-        # perform secret check & put boolean result as an output
-        shell: bash
-        run: |
-          if [ "${{ secrets.ACR_PASSWORD }}" != '' ]; then
-            echo "available=true" 
-          else
-            echo "available=false"
-          fi
-          
       - name: helm push
         run: |
           echo ${{steps.helm_package.outputs.path}}
-          helm registry login ${{ env.ACR_REGISTRY }}.azurecr.io -u ${{ env.ACR_REGISTRY_USER }} -p ${{ secrets.ACR_PASSWORD }}
+          registry="${{ env.ACR_REGISTRY }}.azurecr.io"
+          helm registry login $registry -u ${{ env.ACR_REGISTRY_USER }} -p ${{ secrets.ACR_PASSWORD }}
+          helm push ${{steps.helm_package.outputs.path}} oci://$registry/helm
       
         
