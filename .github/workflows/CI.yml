@@ -11,6 +11,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  REGISTRY: bwhelmtest.azurecr.io
+  REGISTRY_USER: bwhelmtest
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -21,10 +25,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
       - name: Helm tool installer
-        uses: Azure/setup-helm@v3
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
 
       # Runs a single command using the runners shell
       - name: helm lint
@@ -38,11 +42,28 @@ jobs:
           helm package ./bitwarden-self-host
           path=$(ls bitwarden-*.tgz)
           echo "path=$path" >> "$GITHUB_OUTPUT"
+          
+      - name: Check for Secret availability
+        id: secret-check
+        # perform secret check & put boolean result as an output
+        shell: bash
+        run: |
+          if [ "${{ secrets.ACR_PASSWORD }}" != '' ]; then
+            echo "available=true" 
+          else
+            echo "available=false"
+          fi
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ secrets.ACR_PASSWORD }}
+          
 
       - name: helm push
         run: |
           echo ${{steps.helm_package.outputs.path}}
-          echo ${{ github.repository_owner }}
 
       
         
