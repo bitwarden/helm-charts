@@ -47,7 +47,7 @@ jobs:
         run: |
           echo ${{steps.helm_package.outputs.path}}
           registry="${{ env.ACR_REGISTRY }}.azurecr.io"
-          helm registry login $registry -u ${{ env.ACR_REGISTRY_USER }} -p ${{ secrets.ACR_PASSWORD }}
+          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login $registry -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
           helm push ${{steps.helm_package.outputs.path}} oci://$registry/helm
       
         
