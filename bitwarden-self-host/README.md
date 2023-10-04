@@ -360,13 +360,13 @@ spec:
       key: globalSettings__installation__id
     - objectName: installationkey
       key: globalSettings__installation__key
-   - objectName: smtpreplytoemail
+    - objectName: smtpreplytoemail
       key: globalSettings__mail__replyToEmail
     - objectName: smtphost
       key: globalSettings__mail__smtp__host
-   - objectName: smtpreplytoemail
+    - objectName: smtpport
       key: globalSettings__mail__smtp__port
-    - objectName: smtphost
+    - objectName: smtpssl
       key: globalSettings__mail__smtp__ssl
     - objectName: smtpusername
       key: globalSettings__mail__smtp__username
@@ -381,6 +381,25 @@ spec:
 EOF
 ```
 Note the spots in the definition that say `"<REPLACE>"`.  These will need to be updated for your environment.  Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server.  Those spots that will need to change have been marked with a comment.  Finally, you can name the secrets in Azure Key Vault based on your own naming convention.  If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
+
+The following commands would create these secrts in a Key Vault:
+
+```shell
+kvname="kv-aks-bw-helm-cus-01"
+az keyvault secret set --name installationid --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name installationkey --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name smtpreplytoemail --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name smtphost --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name smtpport --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name smtpssl --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name smtpusername --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name smtppassword --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name yubicoclientid --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name yubicokey --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name sapassword --vault-name $kvname --value '"<REPLACEME>"'
+# - OR -
+# az keyvault secret set --name dbconnectionstring --vault-name $kvname --value '"<REPLACEME>"'
+```
 
 Now, edit `my-values.yaml` to use this secret provider class we created.
 ```yaml

@@ -39,59 +39,6 @@ spec:
                 name: {{ template "bitwarden.web" . }}
                 port:
                   number: 5000
-          - path: /(app-id.json)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ template "bitwarden.web" . }}
-                port:
-                  number: 5000
-
-
-          - path: /(duo-connector.html)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ template "bitwarden.web" . }}
-                port:
-                  number: 5000
-
-
-          - path: /(u2f-connector.html)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ template "bitwarden.web" . }}
-                port:
-                  number: 5000
-
-
-          - path: /(webauthn-connector.html)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ template "bitwarden.web" . }}
-                port:
-                  number: 5000
-
-
-          - path: /(webauthn-fallback-connector.html)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ template "bitwarden.web" . }}
-                port:
-                  number: 5000
-
-
-          - path: /(sso-connector.html)
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ template "bitwarden.web" . }}
-                port:
-                  number: 5000
-
 
           - path: /attachments[/|$](.*)
             pathType: Prefix
