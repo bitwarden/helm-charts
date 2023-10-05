@@ -78,7 +78,6 @@ jobs:
         run: |
           rm -f bitwarden-*.tgz
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
-          helm push ${{steps.helm_package.outputs.path}} oci://$registry/helm
           helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --untar false
           path=$(ls bitwarden-*.tgz)
           echo $path
