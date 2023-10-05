@@ -96,13 +96,13 @@ jobs:
       - name: Login to Azure
         uses: Azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2 # v1.4.7
         with:
-          creds: ${{ inputs.azure-creds }}
+          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
           
       - name: Retrieve secrets
         id: get-secrets
         uses: bitwarden/gh-actions/get-keyvault-secrets@d48767f3d58bbe88678e0fb0c8d7044c55d7dda0
         with:
-          keyvault: "${{ inputs.azure-keyvault-name }}"
+          keyvault: "bitwarden-ci"
           secrets: "docker-password,
             docker-username"
 
