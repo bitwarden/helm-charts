@@ -79,7 +79,7 @@ jobs:
         run: |
           rm -f bitwarden-*.tgz
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
-          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --untar false
+          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden
           path=$(ls bitwarden-*.tgz)
           echo $path
           echo "path=$path" >> "$GITHUB_OUTPUT"
