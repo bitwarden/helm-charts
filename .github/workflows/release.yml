@@ -3,6 +3,7 @@ name: Release
 run-name: Release ${{ inputs.release_type }}
 
 on:
+  push: 
   workflow_dispatch:
     inputs:
       release_type:
