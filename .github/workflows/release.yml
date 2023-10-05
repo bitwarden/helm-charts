@@ -83,7 +83,7 @@ jobs:
           path=$(ls bitwarden-*.tgz)
           echo $path
           echo "path=$path" >> "$GITHUB_OUTPUT"
-          helm registry logout
+          helm registry logout ${{ env._AZ_REGISTRY }}
 
           
       #- name: Setup DCT
