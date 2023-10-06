@@ -74,7 +74,7 @@ jobs:
       - name: Helm tool installer
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
         
-      - name: Pull latest chart   
+      - name: Pull chart   
         id: pull_chart
         run: |
           rm -f bitwarden-*.tgz
@@ -82,6 +82,7 @@ jobs:
 
           arr=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
           version="${arr[1]}"
+          echo "Pulling version: $version"
           
           helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version
           path=$(ls bitwarden-*.tgz)
