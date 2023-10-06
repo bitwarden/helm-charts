@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  push:
+   branches: [ "master" ]
+    
+  workflow_dispatch:
+
+env:
+  ACR_REGISTRY: bwhelmtest
+  ACR_REGISTRY_USER: bwhelmtest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: Beta
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Helm tool installer
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
+
+      - name: helm lint
+        run: helm lint ./bitwarden-self-host
+
+      # Runs a set of commands using the runners shell
+      - name: helm package 
+        id: helm_package
+        run: |
+          rm -f bitwarden-*.tgz
+          helm package ./bitwarden-self-host
+          path=$(ls bitwarden-*.tgz)
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          
+      - name: helm push
+        run: |
+          echo ${{steps.helm_package.outputs.path}}
+          registry="${{ env.ACR_REGISTRY }}.azurecr.io"
+          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login $registry -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
+          helm push ${{steps.helm_package.outputs.path}} oci://$registry/helm
+      
+        
