@@ -1,7 +1,7 @@
 apiVersion: v2
 name: bitwarden
 description: A Helm chart for Kubernetes
-
+icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
