@@ -9,9 +9,13 @@ general:
     # Set to false if using a custom ingress
     enabled: true
     # Current supported values for ingress type include: nginx
-    type: "nginx"
+    className: "nginx"
      ## - Annotations to add to the Ingress resource
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -20,6 +24,35 @@ general:
       name:
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer:
+    paths:
+      web:
+        path: /(.*)
+        pathType: Prefix
+      attachments:
+        path: /attachments[/|$](.*)
+        pathType: Prefix
+      api:
+        path: /api[/|$](.*)
+        pathType: Prefix
+      icons:
+        path: /icons[/|$](.*)
+        pathType: Prefix
+      notifications:
+        path: /notifications[/|$](.*)
+        pathType: Prefix
+      events:
+        path: /events[/|$](.*)
+        pathType: Prefix
+      sso:
+        path: /sso[/|$](.*)
+        pathType: Prefix
+      identity:
+        path: /identity[/|$](.*)
+        pathType: Prefix
+      admin:
+        path: /(admin[/|$].*)
+        pathType: Prefix
+
   # Application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersion: "2023.9.0"
   webVersion: "2023.9.1"
