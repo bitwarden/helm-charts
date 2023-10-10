@@ -48,8 +48,8 @@ jobs:
           BRANCH_NAME=$(basename ${{ github.ref }})
           echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-  release-docker:
-    name: Push helm chart to Docker Hub
+  release-ghcr:
+    name: Push helm chart to GHCR
     runs-on: ubuntu-22.04
     needs: setup
     environment: Beta
@@ -63,7 +63,6 @@ jobs:
           RELEASE_OPTION: ${{ github.event.inputs.release_type }}
         run: |
           whoami
-          docker --version
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
           echo "Github Release Option: $RELEASE_OPTION"
@@ -96,6 +95,7 @@ jobs:
         run: |          
           echo ${{ steps.pull_chart.outputs.path }}
           echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io -u bitwarden --password-stdin
+          helm push ${{ steps.pull_chart.outputs.path }} oci://ghcr.io/bitwarden
 
 #  release:
 #    name: Create GitHub Release
