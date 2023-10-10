@@ -91,44 +91,11 @@ jobs:
           helm registry logout ${{ env._AZ_REGISTRY }}
 
           
-      #- name: Setup DCT
-      #  id: setup-dct
-      #  uses: bitwarden/gh-actions/setup-docker-trust@082f5e05ed97c3601c6f3179250b1a761c4d647f
-      #  with:
-      #    azure-creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
-      #    azure-keyvault-name: "bitwarden-ci"
-    
-      - name: Login to Azure
-        uses: Azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2 # v1.4.7
-        with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
-          
-      - name: Retrieve secrets
-        id: get-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@d48767f3d58bbe88678e0fb0c8d7044c55d7dda0
-        with:
-          keyvault: "bitwarden-ci"
-          secrets: "docker-password,
-            docker-username"
-
-          
-      - name: Push version 
+      - name: Push version to GHCR
         if: ${{ github.event.inputs.release_type != 'Dry Run' }}
-        env:
-          #DOCKER_CONTENT_TRUST: 1
-          #DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE: ${{ steps.setup-dct.outputs.dct-delegate-repo-passphrase }}
-          DOCKER_USERNAME: ${{ steps.get-secrets.outputs.docker-username }}
-          DOCKER_PASSWORD: ${{ steps.get-secrets.outputs.docker-password }}
         run: |          
           echo ${{ steps.pull_chart.outputs.path }}
-          ls
-          echo #DOCKER_PASSWORD | helm registry login registry-1.docker.io -u $DOCKER_USERNAME --password-stdin
-
-      - name: Log out of Docker and disable Docker Notary
-        run: |
-          helm registry logout
-          # docker logout
-          # echo "DOCKER_CONTENT_TRUST=0" >> $GITHUB_ENV
+          echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io -u bitwarden --password-stdin
 
 #  release:
 #    name: Create GitHub Release
