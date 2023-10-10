@@ -99,6 +99,112 @@ Set `secrets.secretName` to the name of the secret created above.
 
 Replace any optional values in `my-values.yaml` to best fit your cluster.  This includes changing of resource limits and requests.
 
+#### Raw Manifests Files
+
+This chart allows you to include other Kubernetes manifest files either pre- or post-install.  To do this, update the `rawManifests` section of the chart
+
+```yaml
+rawManifests:
+  preInstall: []
+  postInstall: []
+```
+
+The example below shows how you can use the raw manifests to install Traefik's IngressRoute instead of using the Kubernetes Ingress controller.  Note that you will want to disable the ingress controller under `general.ingress.enabled` to use this.
+
+```yaml
+rawManifests:
+  preInstall: []
+  postInstall:
+  - apiVersion: traefik.containo.us/v1alpha1
+    kind: Middleware
+    metadata:
+      name: "bitwarden-middleware-stripprefix"
+    spec:
+      stripPrefix:
+        prefixes:
+          - /api
+          - /icons
+          - /notifications
+          - /events
+          - /sso
+          - /identity
+          ##### NOTE:  Admin will not function correctly with path strip middleware
+  - apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: "bitwarden-ingress"
+    spec:
+      entryPoints:
+        - websecure
+      routes:
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/`)
+          services:
+            - kind: Service
+              name: bitwarden-web
+              passHostHeader: true
+              port: 5000
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/api`)
+          services:
+            - kind: Service
+              name: bitwarden-api
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/icons`)
+          services:
+            - kind: Service
+              name: bitwarden-icons
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/notifications`)
+          services:
+            - kind: Service
+              name: bitwarden-notifications
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/events`)
+          services:
+            - kind: Service
+              name: bitwarden-events
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/sso`)
+          services:
+            - kind: Service
+              name: bitwarden-sso
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/identity`)
+          services:
+            - kind: Service
+              name: bitwarden-identity
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        ##### NOTE:  Admin will not function correctly with path strip middleware
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/admin`)
+          services:
+            - kind: Service
+              name: bitwarden-admin
+              port: 5000
+      tls:
+        certResolver: letsencrypt
+```
+
+Note that the certResolver is deployed with the Traefik ingress configuration.
+
 ### Run Helm Install
 
 1. Run `helm install bitwarden bitwarden/bitwarden -n bitwarden -f my-values.yaml`.
@@ -353,9 +459,9 @@ __*NOTE:  These values will be stored in your shell history.  There are many oth
 Now, edit `my-values.yaml` to use this secret provider class we created.
 
 ```yaml
-  fromSecret:
-    secretName: bitwarden-secret # spec.secretObjects.secretName in example
-    secretProviderClass: bitwarden-azure-keyvault-csi #metadata.name in example
+secrets:
+  secretName: bitwarden-secret # spec.secretObjects.secretName in example
+  secretProviderClass: bitwarden-azure-keyvault-csi #metadata.name in example
 ```
 
 ### Helm
