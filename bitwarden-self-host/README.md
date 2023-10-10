@@ -15,21 +15,23 @@ The purpose of this chart is to enable the deployment of [Bitwarden](https://bit
 ---
 
 ## Steps
+
 ### Request Installation secrets
+
 - Request an installation ID and key from https://bitwarden.com/host/
 
-## Get Repo Info
+### Create config file
 
-```console
-helm repo add bitwarden https://bwhelmtest.blob.core.windows.net/helm-charts/
-helm repo update
+Run the following command to create a custom values file used for deployment:
+
+```shell
+helm show values bitwarden/bitwarden > my-values.yaml
 ```
 
-### Create config file
-1. Run `helm show values bitwarden/bitwarden > my-values.yaml`.
-
 ### Update the config file
+
 Edit the `my-values.yaml` file and fill out the values.  Required values that must be set:
+
 - general.domain
 - general.ingress.enabled (set to disbled if you are creating your own ingress)
 - general.ingress.cert.tls.name
@@ -47,6 +49,7 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
     - Run `kubectl create namespace bitwarden`.
 
 ### Secrets
+
 Create a secret to set the following values.
 
 - globalSettings__installation__id
