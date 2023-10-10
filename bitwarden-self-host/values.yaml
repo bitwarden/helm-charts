@@ -50,7 +50,7 @@ general:
         path: /identity[/|$](.*)
         pathType: Prefix
       admin:
-        path: /(admin[/|$].*)
+        path: /(admin[/|$]?.*)
         pathType: Prefix
 
   # Application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
