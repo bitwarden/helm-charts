@@ -29,12 +29,7 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
-              {{- if eq .Values.secrets.secretSource "fromValues" }}
-              name: {{ .Release.Name }}-globalsettings-env-secrets
-              {{- end }}
-              {{- if eq .Values.secrets.secretSource "fromSecret" }}
-              name: "{{ .Values.secrets.fromSecret.secretName }}"
-              {{- end }}
+              name: "{{ .Values.secrets.secretName }}"
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
@@ -60,7 +55,7 @@ spec:
           name: dataprotection
         - mountPath: /etc/bitwarden/core/licenses
           name: licenses
-        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
@@ -75,13 +70,13 @@ spec:
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.licenses" . }}
-        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
 ---
 

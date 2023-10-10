@@ -59,6 +59,15 @@ general:
   disableUserRegistration: "false"
   hibpApiKey: "false"
   admins: "false"
+  email:
+    # Email address used for invitations, typically no-reply@smtp-host
+    replyToEmail: "no-reply@bitwarden.localhost"
+    # Your SMTP server hostname (recommended) or IP address
+    smtpHost: "smtp.gmail.com"
+    # The SMTP port used by the SMTP server
+    smtpPort: "587"
+    # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
+    smtpSsl: "false"
   labels: {}
 
 # Specify the name of the shared storage class
@@ -66,33 +75,8 @@ general:
 sharedStorageClassName: "shared-storage"
 
 secrets:
-  # There are three possible ways to provide basic configuration of secrets: fromSecret, fromEnv, and fromValues.  Specify one here
-  # fromSecret:  Use the README file instructions to create a custom secret to specify the required values and configure the same name below
-  # fromEnv: Use one of the two envvars example in the README file as a basis for your configuration and match the filename below.  The is one version where you can bring your own MS SQL Server instead of using the Pod
-  # fromValues:  Values are directly supplied below.
-  secretSource: "fromSecret"
-  fromEnv:
-    fileName: "envvars.env"
-  fromValues:
-    globalSettings__installation__id: "REPLACE"
-    globalSettings__installation__key: "REPLACE"
-    globalSettings__mail__replyToEmail: "REPLACE"
-    globalSettings__mail__smtp__host: "stmp.host"
-    globalSettings__mail__smtp__port: "386"
-    globalSettings__mail__smtp__ssl: "true"
-    globalSettings__mail__smtp__username: "REPLACE"
-    globalSettings__mail__smtp__password: "REPLACE"
-    globalSettings__yubico__clientId: "REPLACE"
-    globalSettings__yubico__key: "REPLACE"
-    # This is the password used to setup the database, this should match what is used in the connection string if using the default database.
-    # Only used if deploying the database pod
-    SA_PASSWORD: "REPLACE"
-    # This setting is calculated unless the database pod is set to disabled in the database section below
-    globalSettings__sqlServer__connectionString: "REPLACE"
-  # Specify a secret name which contains the secret values set above. Example given in README.
-  fromSecret:
-    secretName: custom-secret
-    secretProviderClass:
+  secretName: custom-secret
+  secretProviderClass:
 
 component:
   # The Admin component
@@ -275,3 +259,7 @@ database:
     log:
       # Storage size
       size: 10Gi
+
+rawManifests:
+  preInstall: []
+  postInstall: []

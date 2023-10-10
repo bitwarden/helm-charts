@@ -28,6 +28,10 @@ data:
   globalSettings__attachment__baseUrl: "https://{{ .Values.general.domain }}/attachments"
   globalSettings__send__baseDirectory: "/etc/bitwarden/core/attachments/sendfiles"
   globalSettings__send__baseUrl: "https://{{ .Values.general.domain }}/attachments/sendfiles"
+  globalSettings__mail__replyToEmail: "{{ .Values.general.email.replyToEmail }}"
+  globalSettings__mail__smtp__host: "{{ .Values.general.email.smtpHost }}"
+  globalSettings__mail__smtp__port: "{{ .Values.general.email.smtpPort }}"
+  globalSettings__mail__smtp__ssl: "{{ .Values.general.email.smtpSsl }}"
 
 {{- $currentGeneratedConfigMap := (lookup "v1" "ConfigMap" .Release.Namespace "{{ .Release.Name }}-config-map") }}
 {{- if $currentGeneratedConfigMap}}

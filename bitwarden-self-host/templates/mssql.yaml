@@ -37,12 +37,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config-map
             - secretRef:
-                {{- if eq .Values.secrets.secretSource "fromValues" }}
-                name: {{ .Release.Name }}-globalsettings-env-secrets
-                {{- end }}
-                {{- if eq .Values.secrets.secretSource "fromSecret" }}
-                name: "{{ .Values.secrets.fromSecret.secretName }}"
-                {{- end }}
+                name: "{{ .Values.secrets.secretName }}"
             - secretRef:
                 name: {{ .Release.Name }}-sql-connection-string
           ports:
@@ -55,7 +50,7 @@ spec:
               mountPath: /var/opt/mssql/log
             - name: mssql-backups
               mountPath: /etc/bitwarden/mssql/backups
-            {{- if .Values.secrets.fromSecret.secretProviderClass}}
+            {{- if .Values.secrets.secretProviderClass}}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -92,13 +87,13 @@ spec:
         - name: mssql-backups
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.mssqlBackups" . }}
-        {{- if .Values.secrets.fromSecret.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.secrets.fromSecret.secretProviderClass }}
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
 ---
 

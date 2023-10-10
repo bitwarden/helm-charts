@@ -49,6 +49,22 @@ helm.sh/chart: {{ template "bitwarden.chart" . }}
 {{- end -}}
 {{- end -}}
 
+{{/*
+Generate basic labels
+*/}}
+{{- define "bitwarden.rawPostInstallAnnotations" -}}
+"helm.sh/hook": post-install,post-upgrade
+"helm.sh/hook-weight": "9"
+{{- end -}}
+
+{{/*
+Generate basic labels
+*/}}
+{{- define "bitwarden.rawPreInstallAnnotations" -}}
+"helm.sh/hook": pre-install,pre-upgrade
+"helm.sh/hook-weight": "0"
+{{- end -}}
+
 
 {{/*
 Name of Web components
