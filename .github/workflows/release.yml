@@ -95,7 +95,7 @@ jobs:
         run: |          
           echo ${{ steps.pull_chart.outputs.path }}
           echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io -u bitwarden --password-stdin
-          helm push ${{ steps.pull_chart.outputs.path }} oci://ghcr.io/bitwarden
+          helm push ${{ steps.pull_chart.outputs.path }} oci://ghcr.io/bitwarden/charts
 
 #  release:
 #    name: Create GitHub Release
