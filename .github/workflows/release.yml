@@ -18,14 +18,13 @@ on:
 env:
   _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
-  CHARTS_DIR: charts
+  CHARTS_DIR: .cr-release-packages
 
 jobs:
   setup:
     name: Setup
     runs-on: ubuntu-22.04
-    outputs:
-      release_version: ${{ steps.version.outputs.version }}
+    outputs:      
       branch-name: ${{ steps.branch.outputs.branch-name }}
     steps:
       - name: Branch check
@@ -49,8 +48,8 @@ jobs:
           BRANCH_NAME=$(basename ${{ github.ref }})
           echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-  release-ghcr:
-    name: Push helm chart to GHCR
+  release-github:
+    name: Push helm chart to GitHub Release
     runs-on: ubuntu-22.04
     needs: setup
     environment: Beta
@@ -78,7 +77,6 @@ jobs:
         id: pull_chart
         run: |
           mkdir -p ${{ env.CHARTS_DIR }}
-          rm -f bitwarden-*.tgz
           
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
