@@ -101,6 +101,7 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_PAGES_BRANCH: "gh-pages"
+          CR_SKIP_EXISTING: true
           
       #- name: Push version to GHCR
       #  if: ${{ github.event.inputs.release_type != 'Dry Run' }}
