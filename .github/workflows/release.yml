@@ -98,8 +98,8 @@ jobs:
         with:
           # skip the packaging option (do your custom packaging before running this action
           skip_packaging: true
-          mark_as_latest: true
-          packages_with_index: false
+         # mark_as_latest: true
+         # packages_with_index: false
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           
