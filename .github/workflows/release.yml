@@ -18,6 +18,7 @@ on:
 env:
   _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
+  CHARTS_DIR: charts
 
 jobs:
   setup:
@@ -76,26 +77,37 @@ jobs:
       - name: Pull chart   
         id: pull_chart
         run: |
+          mkdir -p ${{ env.CHARTS_DIR }}
           rm -f bitwarden-*.tgz
+          
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
           arr=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
           version="${arr[1]}"
           echo "Pulling version: $version"
           
-          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version
+          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}
           path=$(ls bitwarden-*.tgz)
           echo $path
           echo "path=$path" >> "$GITHUB_OUTPUT"
           helm registry logout ${{ env._AZ_REGISTRY }}
-
+      
+      - name: Helm Chart Releaser
+        uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968
+        with:
+          # skip the packaging option (do your custom packaging before running this action
+          skip_packaging: true
+          mark_as_latest: true
+          packages_with_index: false
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           
-      - name: Push version to GHCR
-        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
-        run: |          
-          echo ${{ steps.pull_chart.outputs.path }}
-          echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io -u bitwarden --password-stdin
-          helm push ${{ steps.pull_chart.outputs.path }} oci://ghcr.io/bitwarden/charts
+      #- name: Push version to GHCR
+      #  if: ${{ github.event.inputs.release_type != 'Dry Run' }}
+      #  run: |          
+      #    echo ${{ steps.pull_chart.outputs.path }}
+      #    echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io -u bitwarden --password-stdin
+          # helm push ${{ steps.pull_chart.outputs.path }} oci://ghcr.io/bitwarden/charts
 
 #  release:
 #    name: Create GitHub Release
