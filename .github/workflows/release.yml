@@ -18,13 +18,13 @@ on:
 env:
   _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
+  CHARTS_DIR: .cr-release-packages
 
 jobs:
   setup:
     name: Setup
     runs-on: ubuntu-22.04
-    outputs:
-      release_version: ${{ steps.version.outputs.version }}
+    outputs:      
       branch-name: ${{ steps.branch.outputs.branch-name }}
     steps:
       - name: Branch check
@@ -36,7 +36,7 @@ jobs:
             echo "==================================="
             #exit 1
           fi
-
+        
       - name: Checkout repo
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
@@ -48,8 +48,8 @@ jobs:
           BRANCH_NAME=$(basename ${{ github.ref }})
           echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-  release-ghcr:
-    name: Push helm chart to GHCR
+  release-github:
+    name: Push helm chart to GitHub Release
     runs-on: ubuntu-22.04
     needs: setup
     environment: Beta
@@ -69,79 +69,39 @@ jobs:
           
       - name: Checkout repo
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
-
+          
+      - name: Fetch history
+        run: git fetch --prune --unshallow
+        
       - name: Helm tool installer
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
         
       - name: Pull chart   
         id: pull_chart
         run: |
-          rm -f bitwarden-*.tgz
+          mkdir -p ${{ env.CHARTS_DIR }}
+          
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
           arr=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
           version="${arr[1]}"
           echo "Pulling version: $version"
           
-          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version
-          path=$(ls bitwarden-*.tgz)
-          echo $path
-          echo "path=$path" >> "$GITHUB_OUTPUT"
+          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
           helm registry logout ${{ env._AZ_REGISTRY }}
 
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      
+      - name: Helm Chart Releaser
+        uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968
+        with:
+          skip_packaging: true
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_PAGES_BRANCH: "gh-pages"
+          CR_SKIP_EXISTING: true
+          CR_MAKE_RELEASE_LATEST: true
           
-      - name: Push version to GHCR
-        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
-        run: |          
-          echo ${{ steps.pull_chart.outputs.path }}
-          echo ${{secrets.GITHUB_TOKEN}} | helm registry login ghcr.io -u bitwarden --password-stdin
-          helm push ${{ steps.pull_chart.outputs.path }} oci://ghcr.io/bitwarden/charts
-
-#  release:
-#    name: Create GitHub Release
-#    runs-on: ubuntu-22.04
-#    needs:
-#      - setup
-#      - deploy
-#    steps:
-#      - name: Download latest Release Docker Stubs
-#        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
-#        uses: bitwarden/gh-actions/download-artifacts@fdcf1fcec3b04762ce48216cbf3af32498bed74c
-#        with:
-#          workflow: build.yml
-#          workflow_conclusion: success
-#          branch: ${{ needs.setup.outputs.branch-name }}
-#          artifacts: "docker-stub-US.zip,
-#            docker-stub-US-sha256.txt,
-#            docker-stub-EU.zip,
-#            docker-stub-EU-sha256.txt,
-#            swagger.json"
-
- #     - name: Dry Run - Download latest Release Docker Stubs
- #       if: ${{ github.event.inputs.release_type == 'Dry Run' }}
- #       uses: bitwarden/gh-actions/download-artifacts@fdcf1fcec3b04762ce48216cbf3af32498bed74c
- #       with:
- #         workflow: build.yml
- #         workflow_conclusion: success
- #         branch: master
- #         artifacts: "docker-stub-US.zip,
- #           docker-stub-US-sha256.txt,
- #           docker-stub-EU.zip,
- #           docker-stub-EU-sha256.txt,
- #           swagger.json"
-
- #     - name: Create release
- #       if: ${{ github.event.inputs.release_type != 'Dry Run' }}
- #       uses: ncipollo/release-action@6c75be85e571768fa31b40abf38de58ba0397db5 # v1.13.0
- #       with:
- #         artifacts: "docker-stub-US.zip,
- #           docker-stub-US-sha256.txt,
- #           docker-stub-EU.zip,
- #           docker-stub-EU-sha256.txt,
- #           swagger.json"
- #         commit: ${{ github.sha }}
- #         tag: "v${{ needs.setup.outputs.release_version }}"
- #         name: "Version ${{ needs.setup.outputs.release_version }}"
- #         body: "<insert release notes here>"
- #         token: ${{ secrets.GITHUB_TOKEN }}
- #         draft: true
