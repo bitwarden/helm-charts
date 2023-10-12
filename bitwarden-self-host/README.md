@@ -14,7 +14,14 @@ The purpose of this chart is to enable the deployment of [Bitwarden](https://bit
 
 ---
 
-## Steps
+## Add the repo to Helm
+
+```shell
+helm repo add bitwarden https://bitwarden.github.io/helm-charts/
+helm repo update
+```
+
+## Installation Steps
 
 ### Request Installation secrets
 
