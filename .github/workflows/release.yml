@@ -19,7 +19,6 @@ env:
   ACR_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
   CHARTS_DIR: .cr-release-packages
-  RELEASE_NOTES_DIR: release-notes  
   GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
 
 jobs:
