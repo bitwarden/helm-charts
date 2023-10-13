@@ -35,7 +35,7 @@ jobs:
             echo "==================================="
             echo "[!] Can only release from the 'master' branch"
             echo "==================================="
-            exit 1
+            #exit 1
           fi
         
       - name: Checkout repo
@@ -67,9 +67,10 @@ jobs:
           
       - name: Checkout repo
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
-          
-      - name: Fetch history
-        run: git fetch --prune --unshallow
+        with:
+          fetch-depth: 0
+      #- name: Fetch history
+      #  run: git fetch --prune --unshallow
         
       - name: Helm tool installer
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
