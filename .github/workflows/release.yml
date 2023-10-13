@@ -84,8 +84,8 @@ jobs:
           version="${arr[1]}"
           echo "Pulling version: $version"
           
-          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
-          helm registry logout ${{ env._AZ_REGISTRY }}
+          helm pull oci://${{ env.ACR_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
+          helm registry logout ${{ env.ACR_REGISTRY }}
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Configure Git
