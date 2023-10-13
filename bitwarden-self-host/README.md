@@ -1,7 +1,6 @@
 
 # Bitwarden Helm Chart
 
-
 The purpose of this chart is to enable the deployment of [Bitwarden](https://bitwarden.com/) to different Kubernetes environments. This chart is built for usage across multiple Kubernetes hosting scenarios.
 
 ## Requirements
@@ -25,7 +24,7 @@ helm repo update
 
 ### Request Installation secrets
 
-- Request an installation ID and key from https://bitwarden.com/host/
+- Request an installation ID and key from: [https://bitwarden.com/host/](https://bitwarden.com/host/)
 
 ### Create config file
 
@@ -41,6 +40,9 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
 
 - general.domain
 - general.ingress.enabled (set to disbled if you are creating your own ingress)
+- general.ingress.className (nginx example provided)
+- general.ingress.annotations (nginx example provided)
+- general.ingress.paths (nginx example provided)
 - general.ingress.cert.tls.name
 - general.email.replyToEmail
 - general.email.smtpHost
@@ -49,6 +51,8 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
 - sharedStorageClassName
 - secrets.secretSource
 - database.enabled (set to disbled if using an external SQL server)
+
+Note that default values for Nginx have been setup for the ingress in the values.yaml file.  However, you will need to uncomment the ingress annotations and edit them as necessary for your environment.  Some other ingress controller examples are provided later in this document.
 
 ### Create namespace
 
@@ -130,6 +134,7 @@ rawManifests:
       stripPrefix:
         prefixes:
           - /api
+          - /attachements
           - /icons
           - /notifications
           - /events
@@ -153,6 +158,14 @@ rawManifests:
               port: 5000
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/api`)
+          services:
+            - kind: Service
+              name: bitwarden-api
+              port: 5000
+          middlewares:
+            - name: "bitwarden-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/attachments`)
           services:
             - kind: Service
               name: bitwarden-api
@@ -227,7 +240,7 @@ Minimal required to get a running installation:
 
 ## Example Deployment on AKS
 
-Below is an example of deploying this chart on AKS using the Nginx ingress controller and cert-manager to provision the certificate from LetsEncrypt.
+Below is an example of deploying this chart on AKS using various ingress controllers and cert-manager to provision the certificate from LetsEncrypt.
 
 ### Create namespace in AKS
 
@@ -235,19 +248,83 @@ Below is an example of deploying this chart on AKS using the Nginx ingress contr
 kubectl create ns bitwarden
 ```
 
-### Deploy the nginx ingress controller
+### Deploy the ingress controller
 
-```shell
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.7.0/deploy/static/provider/aws/deploy.yaml
-```
+#### Nginx
+
+This is the simplest ingress to setup and has been provided as the default.  You will need the ingress controller install if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
 
 Then update the my-values.yaml file:
 
 ```yaml
 general:
+  domain: replaceme.com
   enabled: true
   ingress: "nginx"
 ```
+
+Uncomment the annotations section and tweak as necessary for your environment.  These annotations can be used as-is.
+
+#### Azure Application Gateway
+
+Azure customers might want to use an Azure Application Gateway as the ingress controller for their AKS cluster.  You will want to [enable the Application Gateway ingress controller for your cluster](https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing) before making these configuration changes.
+
+Update the my-values.yaml file.  Tweak the annotations as necessary for your environment.
+
+```yaml
+general:
+  domain: "replaceme.com"
+  ingress:
+    enabled: true
+    className: "azure-application-gateway" # This value might be different depending on how you created your ingress controller.  Use "kubectl get ingressclasses -A" to find the name if unsure
+     ## - Annotations to add to the Ingress resource
+    annotations:
+      appgw.ingress.kubernetes.io/ssl-redirect: "true"
+      appgw.ingress.kubernetes.io/use-private-ip: "false" # This might be true depending on your setup
+      appgw.ingress.kubernetes.io/rewrite-rule-set: "bitwarden-ingress" # Make note of whatever you set this value to.  It will be used later.
+      appgw.ingress.kubernetes.io/connection-draining: "true" # Update as necessary
+      appgw.ingress.kubernetes.io/connection-draining-timeout: "30" # Update as necessary
+    ## - Labels to add to the Ingress resource
+    labels: {}
+    # Certificate options
+    tls:
+      # TLS certificate secret name
+      name: tls-secret
+      # Cluster cert issuer (ex. Let's Encrypt) name if one exists
+      clusterIssuer: letsencrypt-staging
+    paths:
+      web:
+        path: /*
+        pathType: Prefix
+      attachments:
+        path: /attachments/*
+        pathType: Prefix
+      api:
+        path: /api/*
+        pathType: Prefix
+      icons:
+        path: /icons/*
+        pathType: Prefix
+      notifications:
+        path: /notifications/*
+        pathType: Prefix
+      events:
+        path: /events/*
+        pathType: Prefix
+      sso:
+        path: /sso/*
+        pathType: Prefix
+      identity:
+        path: /identity/*
+        pathType: Prefix
+      admin:
+        path: /admin*
+        pathType: Prefix
+```
+
+__*NOTE: Make sure to update the paths to what you see here.*__
+
+Further settings will need to be set after the deployment on the Application Gateway itself.
 
 ### Let's Encrypt
 
@@ -278,7 +355,7 @@ spec:
     solvers:
       - http01:
           ingress:
-            class: nginx
+            class: nginx #use "azure/application-gateway" for Application Gateway ingress
 EOF
 ```
 
@@ -299,7 +376,7 @@ spec:
     solvers:
       - http01:
           ingress:
-            class: nginx
+            class: nginx #use "azure/application-gateway" for Application Gateway ingress
 EOF
 ```
 
@@ -307,12 +384,9 @@ Finally, set the ingress TLS information in `my-values.yaml`:
 
 ```yaml
   ingress:
-    enabled: true
-    type: "nginx"
-     ## - Annotations to add to the Ingress resource
-    annotations: {}
-    ## - Labels to add to the Ingress resource
-    labels: {}
+
+    ...
+
     # Certificate options
     tls:
       # TLS certificate secret name
@@ -477,7 +551,41 @@ secrets:
 helm install bitwarden ./bitwarden -n bitwarden
 ```
 
+### Azure Application Gateway Rewrite Set
+
+Application Gateway ingress deployments have one more required step for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
+
+We will need to create a rewrite set on the Application Gateway.  There are various ways of doing this, but we will discuss using the Azure Portal.
+
+  1. Navigate to the Application Gateway in the Azure Portal
+  2. Once in the Application Gateway, find the "Rewrites" blade   in the left-hand navigation menu.
+  3. Click the "+ Rewrite set" button at the top of the main page   section to add a new rewrite set
+  4. On the "Update rewrite set" page in the "Name and Association" tab:
+     - Set the Name field to the same value specified in the `appgw.ingress.kubernetes.io/rewrite-rule-set` ingress annotation
+     - Select all routing rules that start with something similar to "pr-bitwarden-bitwarden-ingress-rule-*"
+  5. Click Next
+  6. On the "Rewrite rule configuration" tab, click the "Add rewrite rule" button
+  7. Enter a name for the rule.  This can be anything that helps you with organization.  Something simlar to "bitwarden-rewrite" will work.
+  8. The rule sequence value does not matter for this purpose.
+  9. Add a condition and set the following values:
+     - Type of variable to check: Server variable
+     - Server variable: uri_path
+     - Case-sensitive: No
+     - Operator: equal (=)
+     - Pattern to match: `^(\/(?!admin)[^\/]*)\/(.*)`
+     - Click OK
+  10. Add an action and set the following values:
+     - Rewrite type: URL
+     - Action type: Set
+     - Components: URL path
+     - URL path value: `/{var_uri_path_2}`
+     - Re-evalueate path map: Unchecked
+     - Click OK
+  11. Click "Create" at the bottom of the screen
+
 ### Pointing your DNS
+
+#### Nginx Deployments
 
 You can find the public IP to point your DNS record at by running:
 
@@ -485,3 +593,7 @@ You can find the public IP to point your DNS record at by running:
 kubectl get ingress -n bitwarden
 
 ```
+
+#### Application Gateway Deployments
+
+The public IP will be found on the Overview tab of the Application Gateway service in the Azure Portal.
