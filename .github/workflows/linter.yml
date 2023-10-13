@@ -39,7 +39,7 @@ jobs:
         id: list-changed
         run: |
           changed=$(ct list-changed --chart-dirs . --excluded-charts bitwarden,integration-chart,ephemeral-env-1.0.0,ephemeral-env-1.4.8 --target-branch ${{ github.event.repository.default_branch }}) #${GITHUB_REF#refs/heads/}
-          if [[${{ env.RUN_TESTS }}] && [ -n "$changed" ]]; then
+          if ["${{ env.RUN_TESTS }}" = "true"] && [ -n "$changed" ]; then
             echo "::set-output name=changed::true"
           fi
 
