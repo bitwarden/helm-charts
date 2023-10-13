@@ -99,7 +99,7 @@ jobs:
         run: |
           version=${{ steps.pull_chart.outputs.version }}
           path="${{ env.RELEASE_NOTES_DIR}}/$version.md"
-          if [[ -n "$path" ]]; then
+          if [[ ! -f "$path" ]]; then
             echo "==================================="
             echo "[!] A release notes file needs to be created at $path"
             echo "==================================="
