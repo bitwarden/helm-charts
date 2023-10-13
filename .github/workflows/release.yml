@@ -19,7 +19,8 @@ env:
   _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
   CHARTS_DIR: .cr-release-packages
-  RELEASE_NOTES_DIR: release-notes
+  RELEASE_NOTES_DIR: release-notes  
+  GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
 
 jobs:
   setup:
@@ -113,7 +114,6 @@ jobs:
         with:
           skip_packaging: true
         env:
-          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_PAGES_BRANCH: "gh-pages"
           CR_SKIP_EXISTING: true
