@@ -25,6 +25,4 @@ appVersion: "2023.9.0"
 
 
 maintainers:
-  - name: joseph-flinn
-  - name: vgrassia
-  - name: cscharf
+  - name: dept-devops
