@@ -16,9 +16,10 @@ on:
           - Dry Run
 
 env:
-  _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
+  ACR_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
   CHARTS_DIR: .cr-release-packages
+  GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
 
 jobs:
   setup:
@@ -66,9 +67,8 @@ jobs:
           
       - name: Checkout repo
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
-          
-      - name: Fetch history
-        run: git fetch --prune --unshallow
+        with:
+          fetch-depth: 0
         
       - name: Helm tool installer
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
@@ -78,21 +78,23 @@ jobs:
         run: |
           mkdir -p ${{ env.CHARTS_DIR }}
           
-          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
+          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env.ACR_REGISTRY }} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
           arr=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
           version="${arr[1]}"
           echo "Pulling version: $version"
           
-          helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
-          helm registry logout ${{ env._AZ_REGISTRY }}
+          helm pull oci://${{ env.ACR_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
+          helm registry logout ${{ env.ACR_REGISTRY }}
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      
-      - name: Helm Chart Releaser
+     
+      - name: Helm Chart Releaser      
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968
         with:
           skip_packaging: true
@@ -101,4 +103,3 @@ jobs:
           CR_PAGES_BRANCH: "gh-pages"
           CR_SKIP_EXISTING: true
           CR_MAKE_RELEASE_LATEST: true
-          
