@@ -16,7 +16,7 @@ on:
           - Dry Run
 
 env:
-  _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
+  ACR_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
   CHARTS_DIR: .cr-release-packages
   RELEASE_NOTES_DIR: release-notes  
