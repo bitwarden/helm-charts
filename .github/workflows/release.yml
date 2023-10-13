@@ -113,6 +113,7 @@ jobs:
         with:
           skip_packaging: true
         env:
+          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_PAGES_BRANCH: "gh-pages"
           CR_SKIP_EXISTING: true
