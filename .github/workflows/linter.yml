@@ -18,10 +18,7 @@ jobs:
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
           fetch-depth: 0
-     
-      #- name: Fetch history
-      #  run: git fetch --prune --unshallow
-        
+             
       - name: Helm tool installer
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
         with:
@@ -42,7 +39,7 @@ jobs:
         id: list-changed
         run: |
           changed=$(ct list-changed --chart-dirs . --excluded-charts bitwarden,integration-chart,ephemeral-env-1.0.0,ephemeral-env-1.4.8 --target-branch ${{ github.event.repository.default_branch }}) #${GITHUB_REF#refs/heads/}
-          if [["$RUN_TESTS" = true] && [ -n "$changed" ]]; then
+          if [["${{ env.RUN_TESTS }}" = true] && [ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
 
