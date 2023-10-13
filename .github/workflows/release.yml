@@ -80,7 +80,7 @@ jobs:
         run: |
           mkdir -p ${{ env.CHARTS_DIR }}
           
-          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env._AZ_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
+          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env.ACR_REGISTRY}} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
           arr=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
           version="${arr[1]}"
