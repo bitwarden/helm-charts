@@ -35,7 +35,7 @@ jobs:
             echo "==================================="
             echo "[!] Can only release from the 'master' branch"
             echo "==================================="
-            #exit 1
+            exit 1
           fi
         
       - name: Checkout repo
