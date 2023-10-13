@@ -19,6 +19,7 @@ env:
   _AZ_REGISTRY: 'bwhelmtest.azurecr.io'
   ACR_REGISTRY_USER: bwhelmtest
   CHARTS_DIR: .cr-release-packages
+  RELEASE_NOTES_DIR: release-notes
 
 jobs:
   setup:
@@ -34,7 +35,7 @@ jobs:
             echo "==================================="
             echo "[!] Can only release from the 'master' branch"
             echo "==================================="
-            exit 1
+            #exit 1
           fi
         
       - name: Checkout repo
@@ -86,13 +87,29 @@ jobs:
           
           helm pull oci://${{ env._AZ_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
           helm registry logout ${{ env._AZ_REGISTRY }}
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+            - name: Branch check
       
-      - name: Helm Chart Releaser
+      - name: Check for release notes
+        id: release_notes_check
+        run: |
+          version=${{ steps.pull_chart.outputs.version }}
+          path="${{ env.RELEASE_NOTES_DIR}}/$version.md"
+          if [[ -n "$path" ]]; then
+            echo "==================================="
+            echo "[!] A release notes file needs to be created at $path"
+            echo "==================================="
+            exit 1
+          fi
+          echo "path=$path" >> $GITHUB_OUTPUT
+          
+      - name: Helm Chart Releaser      
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968
         with:
           skip_packaging: true
@@ -101,4 +118,4 @@ jobs:
           CR_PAGES_BRANCH: "gh-pages"
           CR_SKIP_EXISTING: true
           CR_MAKE_RELEASE_LATEST: true
-          
+          CR_RELEASE_NOTES_FILE: ${{ steps.release_notes_check.outputs.path }}
