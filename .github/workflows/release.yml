@@ -106,7 +106,7 @@ jobs:
             echo "==================================="
             exit 1
           fi
-          echo "path=$path" >> $GITHUB_OUTPUT
+          cp $path bitwarden-self-host/CHANGELOG.MD
           
       - name: Helm Chart Releaser      
         if: ${{ github.event.inputs.release_type != 'Dry Run' }}
@@ -118,4 +118,4 @@ jobs:
           CR_PAGES_BRANCH: "gh-pages"
           CR_SKIP_EXISTING: true
           CR_MAKE_RELEASE_LATEST: true
-          CR_RELEASE_NOTES_FILE: ${{ steps.release_notes_check.outputs.path }}
+          CR_RELEASE_NOTES_FILE: "CHANGELOG.MD"
