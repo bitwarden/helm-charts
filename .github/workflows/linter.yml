@@ -9,6 +9,7 @@ on:
 
 env:
   RUN_TESTS: false
+
 jobs:
   lint:
     name: Lint Helm chart
