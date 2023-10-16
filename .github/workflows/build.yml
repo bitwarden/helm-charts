@@ -1,0 +1,45 @@
+---
+name: Build
+
+on:
+  push:
+    branches:
+      - "master"
+  workflow_dispatch:
+
+env:
+  ACR_REGISTRY: bwhelmtest
+  ACR_REGISTRY_USER: bwhelmtest
+
+jobs:
+  build:
+    name: Build Helm chart
+    runs-on: ubuntu-22.04
+    environment: Beta
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+
+      - name: Lint Helm chart
+        run: helm lint ./bitwarden-self-host
+
+      # Runs a set of commands using the runners shell
+      - name: Package Helm chart
+        id: helm_package
+        run: |
+          rm -f bitwarden-*.tgz
+          helm package ./bitwarden-self-host
+          PKG_PATH=$(ls bitwarden-*.tgz)
+          echo "path=$PKG_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Push Helm chart
+        env:
+          PKG_PATH: ${{ steps.helm_package.outputs.path }}
+        run: |
+          echo $PKG_PATH
+          REGISTRY="${{ env.ACR_REGISTRY }}.azurecr.io"
+          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login $REGISTRY -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
+          helm push $PKG_PATH oci://$REGISTRY/helm

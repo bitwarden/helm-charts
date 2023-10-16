@@ -1,0 +1,103 @@
+---
+name: Release
+run-name: Release ${{ inputs.release_type }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Release Options"
+        required: true
+        default: "Initial Release"
+        type: choice
+        options:
+          - Initial Release
+          - Redeploy
+          - Dry Run
+
+env:
+  ACR_REGISTRY: 'bwhelmtest.azurecr.io'
+  ACR_REGISTRY_USER: bwhelmtest
+  CHARTS_DIR: .cr-release-packages
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-22.04
+    outputs:
+      branch-name: ${{ steps.branch.outputs.branch-name }}
+    steps:
+      - name: Branch check
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/master" ]]; then
+            echo "==================================="
+            echo "[!] Can only release from the 'master' branch"
+            echo "==================================="
+            exit 1
+          fi
+
+      - name: Checkout repo
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Get branch name
+        id: branch
+        run: |
+          BRANCH_NAME=$(basename ${{ github.ref }})
+          echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+  release-github:
+    name: Push Helm chart to GitHub Release
+    runs-on: ubuntu-22.04
+    needs: setup
+    environment: Beta
+    env:
+      _BRANCH_NAME: ${{ needs.setup.outputs.branch-name }}
+    steps:
+      - name: Print environment
+        env:
+          RELEASE_OPTION: ${{ github.event.inputs.release_type }}
+        run: |
+          whoami
+          echo "GitHub ref: $GITHUB_REF"
+          echo "GitHub event: $GITHUB_EVENT"
+          echo "Github Release Option: $RELEASE_OPTION"
+
+      - name: Checkout repo
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+
+      - name: Pull Helm chart
+        id: pull_chart
+        run: |
+          mkdir -p ${{ env.CHARTS_DIR }}
+
+          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env.ACR_REGISTRY }} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
+
+          ARR=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
+          VERSION="${ARR[1]}"
+          echo "Pulling version: $VERSION"
+
+          helm pull oci://${{ env.ACR_REGISTRY }}/helm/bitwarden --version $VERSION --destination ${{ env.CHARTS_DIR }}
+          helm registry logout ${{ env.ACR_REGISTRY }}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Release Helm chart
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
+        uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
+        with:
+          skip_packaging: true
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_PAGES_BRANCH: "gh-pages"
+          CR_SKIP_EXISTING: true
+          CR_MAKE_RELEASE_LATEST: true
