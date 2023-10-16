@@ -34,6 +34,7 @@ jobs:
           helm package ./bitwarden-self-host
           PKG_PATH=$(ls bitwarden-*.tgz)
           echo "path=$PKG_PATH" >> "$GITHUB_OUTPUT"
+
       - name: Push Helm chart
         env:
           PKG_PATH: ${{ steps.helm_package.outputs.path }}
