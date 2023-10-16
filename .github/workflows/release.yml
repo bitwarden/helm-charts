@@ -86,7 +86,8 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      - name: Release Helm chart    
+
+      - name: Release Helm chart
         if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
         with:
