@@ -46,6 +46,7 @@ jobs:
 
       - name: Run chart-testing (lint)
         run: ct lint --chart-dirs ./bitwarden-self-host --charts ./bitwarden-self-host --target-branch ${{ github.event.repository.default_branch }}
+
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@dda0770415bac9fc20092cacbc54aa298604d140 # v1.8.0
