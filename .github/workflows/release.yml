@@ -25,7 +25,7 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-22.04
-    outputs:      
+    outputs:
       branch-name: ${{ steps.branch.outputs.branch-name }}
     steps:
       - name: Branch check
@@ -37,7 +37,6 @@ jobs:
             echo "==================================="
             exit 1
           fi
-        
       - name: Checkout repo
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
@@ -48,13 +47,12 @@ jobs:
           echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
   release-github:
-    name: Push helm chart to GitHub Release
+    name: Push Helm chart to GitHub Release
     runs-on: ubuntu-22.04
     needs: setup
     environment: Beta
     env:
       _BRANCH_NAME: ${{ needs.setup.outputs.branch-name }}
-
     steps:
       - name: Print environment
         env:
@@ -64,38 +62,34 @@ jobs:
           echo "GitHub ref: $GITHUB_REF"
           echo "GitHub event: $GITHUB_EVENT"
           echo "Github Release Option: $RELEASE_OPTION"
-          
       - name: Checkout repo
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
           fetch-depth: 0
-        
-      - name: Helm tool installer
-        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 #v3
-        
-      - name: Pull chart   
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+      - name: Pull Helm chart
         id: pull_chart
         run: |
           mkdir -p ${{ env.CHARTS_DIR }}
-          
+
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env.ACR_REGISTRY }} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
-          arr=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
-          version="${arr[1]}"
-          echo "Pulling version: $version"
-          
-          helm pull oci://${{ env.ACR_REGISTRY }}/helm/bitwarden --version $version --destination ${{ env.CHARTS_DIR }}        
+          ARR=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
+          VERSION="${ARR[1]}"
+          echo "Pulling version: $VERSION"
+
+          helm pull oci://${{ env.ACR_REGISTRY }}/helm/bitwarden --version $VERSION --destination ${{ env.CHARTS_DIR }}
           helm registry logout ${{ env.ACR_REGISTRY }}
-          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-     
-      - name: Helm Chart Releaser      
+      - name: Release Helm chart    
         if: ${{ github.event.inputs.release_type != 'Dry Run' }}
-        uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968
+        uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
         with:
           skip_packaging: true
         env:

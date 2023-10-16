@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -53,8 +54,8 @@ data:
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"
----
 
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -80,5 +81,3 @@ data:
         }
       ]
     }
-
-

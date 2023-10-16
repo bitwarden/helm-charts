@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,8 +48,8 @@ spec:
         resources:
 {{ toYaml .Values.component.attachments.resources | indent 10 }}
         volumeMounts:
-        - mountPath: /etc/bitwarden/core/attachments
-          name: attachments
+        - name: attachments
+          mountPath: /etc/bitwarden/core/attachments
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -66,8 +67,8 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
----
 
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -85,4 +86,3 @@ spec:
   ports:
   - port: 5000
     targetPort: 5000
-

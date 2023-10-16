@@ -11,7 +11,7 @@ on:
 jobs:
   bump_props_version:
     name: "Create version_bump_${{ github.event.inputs.version_number }} branch"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Branch
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0

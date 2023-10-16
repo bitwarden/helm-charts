@@ -95,8 +95,8 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
----
 
+---
 kind: Service
 apiVersion: v1
 metadata:

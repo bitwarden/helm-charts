@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,10 +48,10 @@ spec:
         resources:
 {{ toYaml .Values.component.admin.resources | indent 10 }}
         volumeMounts:
-        - mountPath: /etc/bitwarden/core/aspnet-dataprotection
-          name: dataprotection
-        - mountPath: /etc/bitwarden/core/licenses
-          name: licenses
+        - name: dataprotection
+          mountPath: /etc/bitwarden/core/aspnet-dataprotection
+        - name: licenses
+          mountPath: /etc/bitwarden/core/licenses
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -71,8 +72,8 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
----
 
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -90,4 +91,3 @@ spec:
   ports:
   - port: 5000
     targetPort: 5000
-
