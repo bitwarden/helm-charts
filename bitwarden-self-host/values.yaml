@@ -54,8 +54,8 @@ general:
         pathType: Prefix
 
   # Application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
-  coreVersion: "2023.9.0"
-  webVersion: "2023.9.1"
+  coreVersion: "2023.9.1"
+  webVersion: "2023.9.2"
   disableUserRegistration: "false"
   hibpApiKey: "false"
   admins: "false"
