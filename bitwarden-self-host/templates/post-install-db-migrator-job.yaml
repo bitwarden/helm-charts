@@ -8,7 +8,7 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
 spec:
   template:
     metadata:
@@ -63,7 +63,7 @@ spec:
               name: "{{ .Values.secrets.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "bitwarden/mssqlmigratorutility:{{.Values.general.coreVersion}}"
+        image: "bitwarden/mssqlmigratorutility:{{ template "bitwarden.coreVersion" }}"
         volumeMounts:
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
