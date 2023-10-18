@@ -1,3 +1,24 @@
+{{- define "bitwarden.coreVersionDefault" -}}
+{{- "2023.9.1" -}}
+{{- end -}}
+{{- define "bitwarden.webVersionDefault" -}}
+{{- "2023.9.2" -}}
+{{- end -}}
+
+{{/*
+Get the coreVersion for image tags
+*/}}
+{{- define "bitwarden.coreVersion" -}}
+{{- default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride  -}}
+{{- end -}}
+
+{{/*
+Get the webVersion for image tags
+*/}}
+{{- define "bitwarden.webVersion" -}}
+{{- default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride  -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}

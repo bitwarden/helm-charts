@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: {{ template "bitwarden.web" . }}
-        image: "{{ .Values.component.web.image.name }}:{{ .Values.general.webVersion }}"
+        image: "{{ .Values.component.web.image.name }}:{{ template "bitwarden.webVersion" }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

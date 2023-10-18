@@ -49,7 +49,6 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
 - general.emal.smtpPort
 - general.email.smtpSsl
 - sharedStorageClassName
-- secrets.secretSource
 - database.enabled (set to disbled if using an external SQL server)
 
 Note that default values for Nginx have been setup for the ingress in the values.yaml file.  However, you will need to uncomment the ingress annotations and edit them as necessary for your environment.  Some other ingress controller examples are provided later in this document.
@@ -397,14 +396,14 @@ Finally, set the ingress TLS information in `my-values.yaml`:
 
 ### Create a storage class
 
-We will use the Azure Disk storage class for persistent storage:
+We will use the Azure File storage class for persistent storage:
 
 ```shell
 cat <<EOF | kubectl apply -n bitwarden -f -
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: azure-disk
+  name: azure-file
   namespace: bitwaren
 provisioner: file.csi.azure.com
 allowVolumeExpansion: true
@@ -424,7 +423,7 @@ EOF
 Set the `sharedStorageClassName` value in `my-values.yaml` to match the name provided.
 
 ```yaml
-sharedStorageClassName: "azure-disk"
+sharedStorageClassName: "azure-file"
 ```
 
 ### Configure remaining values
