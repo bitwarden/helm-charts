@@ -51,7 +51,7 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
 - sharedStorageClassName
 - database.enabled (set to disbled if using an external SQL server)
 
-Note that default values for Nginx have been setup for the ingress in the values.yaml file.  However, you will need to uncomment the ingress annotations and edit them as necessary for your environment.  Some other ingress controller examples are provided later in this document.
+Note that default values for Nginx have been setup for the ingress in the values.yaml file.  __*However, you will need to uncomment the ingress annotations and edit them as necessary for your environment.*__  Some other ingress controller examples are provided later in this document.
 
 ### Create namespace
 
@@ -251,18 +251,28 @@ kubectl create ns bitwarden
 
 #### Nginx
 
-This is the simplest ingress to setup and has been provided as the default.  You will need the ingress controller install if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
+This is the simplest ingress to setup and has been provided as the default.  You will need the ingress controller installed if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
 
 Then update the my-values.yaml file:
 
 ```yaml
 general:
-  domain: replaceme.com
-  enabled: true
-  ingress: "nginx"
+  # Domain name for the service
+  domain: "REPLACE"
+  ingress:
+    # Set to false if using a custom ingress
+    enabled: true
+    # Current supported values for ingress type include: nginx
+    className: "nginx"
+     ## - Annotations to add to the Ingress resource
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
 ```
 
-Uncomment the annotations section and tweak as necessary for your environment.  These annotations can be used as-is.
+__*Make certain to uncomment the annotations section and tweak as necessary for your environment.*__  These annotations can be used as-is.
 
 #### Azure Application Gateway
 
