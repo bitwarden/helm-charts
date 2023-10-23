@@ -30,15 +30,15 @@ jobs:
       - name: Branch check
         if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/master" ]]; then
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
             echo "==================================="
-            echo "[!] Can only release from the 'master' branch"
+            echo "[!] Can only release from the 'main' branch"
             echo "==================================="
             exit 1
           fi
 
       - name: Checkout repo
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Get branch name
         id: branch
@@ -64,7 +64,7 @@ jobs:
           echo "Github Release Option: $RELEASE_OPTION"
 
       - name: Checkout repo
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
 
@@ -78,7 +78,7 @@ jobs:
 
           echo "${{ secrets.ACR_PASSWORD }}" | helm registry login ${{ env.ACR_REGISTRY }} -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
 
-          ARR=($(cat ./bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
+          ARR=($(cat charts/bitwarden-self-host/Chart.yaml | grep "version:" | tr -d '"'))
           VERSION="${ARR[1]}"
           echo "Pulling version: $VERSION"
 

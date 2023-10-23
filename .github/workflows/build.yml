@@ -4,7 +4,7 @@ name: Build
 on:
   push:
     branches:
-      - "master"
+      - "main"
   workflow_dispatch:
 
 env:
@@ -18,20 +18,20 @@ jobs:
     environment: Beta
     steps:
       - name: Checkout repo
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
 
       - name: Lint Helm chart
-        run: helm lint ./bitwarden-self-host
+        run: helm lint charts/bitwarden-self-host
 
       # Runs a set of commands using the runners shell
       - name: Package Helm chart
         id: helm_package
         run: |
           rm -f bitwarden-*.tgz
-          helm package ./bitwarden-self-host
+          helm package charts/bitwarden-self-host
           PKG_PATH=$(ls bitwarden-*.tgz)
           echo "path=$PKG_PATH" >> "$GITHUB_OUTPUT"
 
