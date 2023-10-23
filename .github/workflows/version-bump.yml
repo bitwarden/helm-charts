@@ -43,7 +43,7 @@ jobs:
         uses: bitwarden/gh-actions/version-bump@c970b0fb89bd966749280e832928db62040812bf
         with:
           version: ${{ github.event.inputs.version_number }}
-          file_path: "./bitwarden-self-host/Chart.yaml"
+          file_path: "charts/bitwarden-self-host/Chart.yaml"
 
       - name: Setup git
         run: |
