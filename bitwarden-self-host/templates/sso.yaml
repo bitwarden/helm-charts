@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.sso.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.sso.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.sso.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.sso" . }}
         image: "{{ .Values.component.sso.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -61,6 +65,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.sso.securityContext | indent 10 }}
       volumes:
         - name: identity
           secret:

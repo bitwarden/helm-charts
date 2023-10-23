@@ -23,6 +23,10 @@ spec:
         app: {{ template "bitwarden.admin" . }}
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.admin.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.admin.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.admin.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.admin" . }}
         image: "{{ .Values.component.admin.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -57,6 +61,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.admin.securityContext | indent 10 }}
       volumes:
         - name: dataprotection
           persistentVolumeClaim:

@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: web
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.web.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.web.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.web.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.web" . }}
         image: "{{ .Values.component.web.image.name }}:{{ template "bitwarden.webVersion" }}"
@@ -55,6 +59,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.web.securityContext | indent 10 }}
       volumes:
         - name: web
           configMap:

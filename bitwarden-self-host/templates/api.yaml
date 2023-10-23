@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: api
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.api.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.api.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.api.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.api" . }}
         image: "{{ .Values.component.api.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -59,6 +63,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.api.securityContext | indent 10 }}
       volumes:
         - name: dataprotection
           persistentVolumeClaim:

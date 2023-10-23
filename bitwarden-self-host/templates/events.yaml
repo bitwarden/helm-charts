@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.events.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.events.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.events.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.events" . }}
         image: "{{ .Values.component.events.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -53,6 +57,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.events.securityContext | indent 10 }}
       volumes:
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline

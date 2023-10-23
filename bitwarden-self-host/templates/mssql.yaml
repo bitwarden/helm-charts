@@ -27,6 +27,10 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- if .Values.database.podServiceAccount }}
+      serviceAccount: "{{ .Values.database.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.database.podServiceAccount }}"
+    {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
           image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"
@@ -76,6 +80,8 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 3
+          securityContext:
+{{ toYaml .Values.database.securityContext | indent 12 }}
       enableServiceLinks: false
       volumes:
         - name: mssql-data
