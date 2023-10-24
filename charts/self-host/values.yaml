@@ -1,0 +1,298 @@
+# Optional
+fullnameOverride: ""
+nameOverride: ""
+
+general:
+  # Domain name for the service
+  domain: "REPLACE"
+  ingress:
+    # Set to false if using a custom ingress
+    enabled: true
+    # Current supported values for ingress type include: nginx
+    className: "nginx"
+     ## - Annotations to add to the Ingress resource
+    annotations:
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      # nginx.ingress.kubernetes.io/use-regex: "true"
+      # nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      # nginx.ingress.kubernetes.io/rewrite-target: /$1
+    ## - Labels to add to the Ingress resource
+    labels: {}
+    # Certificate options
+    tls:
+      # TLS certificate secret name
+      name:
+      # Cluster cert issuer (ex. Let's Encrypt) name if one exists
+      clusterIssuer:
+    paths:
+      web:
+        path: /(.*)
+        pathType: Prefix
+      attachments:
+        path: /attachments[/|$](.*)
+        pathType: Prefix
+      api:
+        path: /api[/|$](.*)
+        pathType: Prefix
+      icons:
+        path: /icons[/|$](.*)
+        pathType: Prefix
+      notifications:
+        path: /notifications[/|$](.*)
+        pathType: Prefix
+      events:
+        path: /events[/|$](.*)
+        pathType: Prefix
+      sso:
+        path: /sso[/|$](.*)
+        pathType: Prefix
+      identity:
+        path: /identity[/|$](.*)
+        pathType: Prefix
+      admin:
+        path: /(admin[/|$]?.*)
+        pathType: Prefix
+
+  # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
+  coreVersionOverride: ""
+  webVersionOverride: ""
+  disableUserRegistration: "false"
+  hibpApiKey: "false"
+  admins: "false"
+  email:
+    # Email address used for invitations, typically no-reply@smtp-host
+    replyToEmail: "no-reply@bitwarden.localhost"
+    # Your SMTP server hostname (recommended) or IP address
+    smtpHost: "smtp.gmail.com"
+    # The SMTP port used by the SMTP server
+    smtpPort: "587"
+    # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
+    smtpSsl: "false"
+  labels: {}
+
+# Specify the name of the shared storage class
+# This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
+sharedStorageClassName: "shared-storage"
+
+secrets:
+  secretName: custom-secret
+  secretProviderClass:
+
+component:
+  # The Admin component
+  admin:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/admin
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  api:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/api
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  attachments:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/attachments
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  events:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/events
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  icons:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/icons
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  identity:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/identity
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  notifications:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/notifications
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  scim:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/scim
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  sso:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/sso
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+  web:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/web
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+volume:
+  dataprotection:
+    size: "1Gi"
+    labels: {}
+  attachments:
+    size: 1Gi
+    labels: {}
+  licenses:
+    size: 1Gi
+    labels: {}
+
+#
+# Configure service account for pre- and post-install hooks
+#
+serviceAccount: service-account
+
+#
+# Configure database
+#
+database:
+  # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
+  enabled: true
+  # Labels to add to the MSSQL deployment
+  labels: {}
+  # Image name, tag, and pull policy
+  image:
+    name: mcr.microsoft.com/mssql/server
+    # Tag of the image to use. (Defaults to general.coreVersion)
+    tag: 2019-CU17-ubuntu-20.04
+  # The containers are limited to the resources below
+  resources:
+    requests:
+      memory: "2G"
+      cpu: "100m"
+    limits:
+      memory: "2G"
+      cpu: "500m"
+
+  # The MSSQL volumes
+  volume:
+    backups:
+      # Storage size
+      size: 1Gi
+    data:
+      # Storage size
+      size: 10Gi
+    log:
+      # Storage size
+      size: 10Gi
+  securityContext:
+  # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+  podServiceAccount:
+
+rawManifests:
+  preInstall: []
+  postInstall: []

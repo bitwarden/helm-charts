@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.admin" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: admin
+    app: {{ template "bitwarden.admin" . }}
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.admin.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.admin" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: admin
+        app: {{ template "bitwarden.admin" . }}
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+    {{- if .Values.component.admin.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.admin.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.admin.podServiceAccount }}"
+    {{- end }}
+      containers:
+      - name: {{ template "bitwarden.admin" . }}
+        image: "{{ .Values.component.admin.image.name }}:{{ template "bitwarden.coreVersion" }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              name: "{{ .Values.secrets.secretName }}"
+          {{- if .Values.database.enabled }}
+          - secretRef:
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 5000
+          initialDelaySeconds: 180
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.admin.resources | indent 10 }}
+        volumeMounts:
+        - name: dataprotection
+          mountPath: /etc/bitwarden/core/aspnet-dataprotection
+        - name: licenses
+          mountPath: /etc/bitwarden/core/licenses
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
+        securityContext:
+{{ toYaml .Values.component.admin.securityContext | indent 10 }}
+      volumes:
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.dataprotection" . }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.licenses" . }}
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.admin" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: admin
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.admin.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.admin" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000

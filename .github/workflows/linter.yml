@@ -39,13 +39,17 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          CHANGED=$(ct list-changed --chart-dirs charts --target-branch ${{ github.event.repository.default_branch }}) #${GITHUB_REF#refs/heads/}
+          CHANGED=$(ct list-changed --chart-dirs charts --target-branch ${{ github.event.repository.default_branch }})
           if [ "${{ env.RUN_TESTS }}" = "true" ] && [ -n "$changed" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs charts/bitwarden-self-host --charts charts/bitwarden-self-host --target-branch ${{ github.event.repository.default_branch }}
+        run: |
+          ct lint \
+            --chart-dirs charts/self-host \
+            --charts charts/self-host \
+            --target-branch ${{ github.event.repository.default_branch }}
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
@@ -53,4 +57,4 @@ jobs:
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --debug --chart-dirs charts/bitwarden-self-host --charts charts/bitwarden-self-host --target-branch main
+        run: ct install --debug --chart-dirs charts/self-host --charts charts/self-host --target-branch main
