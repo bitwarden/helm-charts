@@ -611,7 +611,7 @@ The public IP will be found on the Overview tab of the Application Gateway servi
 
 This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform.  We will provide some basic pointers.
 
-### Create project in Bitwarden
+### Create project in OpenShift
 
 Run the following shell commands to create a project in OpenShift.
 
@@ -831,13 +831,13 @@ Note that in this example we are setting `destinationCACertificate` to an empty 
 
 ### Setup storage class
 
-A shared storage class will be required.  As stated earlier in the document, a ReadWriteMany-capable Storage Class will need to be setup.  There are several options for this in OpenShift.  One viable option is to use the [NFS Subdir External Provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/charts/nfs-subdir-external-provisioner/README.md).
+A shared storage class will be required.  As stated earlier in the document, a ReadWriteMany-capable Storage Class will need to be set up.  There are several options for this in OpenShift.  One viable option is to use the [NFS Subdir External Provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/charts/nfs-subdir-external-provisioner/README.md).
 
 ### Setting secrets
 
 Using a secrets provider [HashiCorp Vault](https://developer.hashicorp.com/vault/docs/platform/k8s/csi/installation#installation-on-openshift) is valid, but we will focus on using the `oc` command to deploy our secrets. The process is similar to using `kubectl` detailed earlier.
 
-```shel
+```shell
 oc create secret generic custom-secret -n bitwarden \
     --from-literal=globalSettings__installation__id="REPLACE" \
     --from-literal=globalSettings__installation__key="REPLACE" \
