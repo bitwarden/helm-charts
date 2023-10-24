@@ -1,5 +1,5 @@
 apiVersion: v2
-name: bitwarden
+name: self-host
 description: A Helm chart for deploying a Bitwarden instance on Kubernetes
 icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
 # A chart can be either an 'application' or a 'library' chart.

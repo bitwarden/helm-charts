@@ -23,7 +23,7 @@ jobs:
 
       - name: Retrieve secrets
         id: retrieve-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@c970b0fb89bd966749280e832928db62040812bf
+        uses: bitwarden/gh-actions/get-keyvault-secrets@master
         with:
           keyvault: "bitwarden-ci"
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
@@ -40,10 +40,10 @@ jobs:
         run: git switch -c version_bump_${{ github.event.inputs.version_number }}
 
       - name: Bump Version - Props
-        uses: bitwarden/gh-actions/version-bump@c970b0fb89bd966749280e832928db62040812bf
+        uses: bitwarden/gh-actions/version-bump@master
         with:
           version: ${{ github.event.inputs.version_number }}
-          file_path: "charts/bitwarden-self-host/Chart.yaml"
+          file_path: "charts/self-host/Chart.yaml"
 
       - name: Setup git
         run: |
@@ -73,7 +73,7 @@ jobs:
         env:
           PR_BRANCH: "version_bump_${{ github.event.inputs.version_number }}"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          BASE_BRANCH: master
+          BASE_BRANCH: main
           TITLE: "Bump version to ${{ github.event.inputs.version_number }}"
         run: |
           gh pr create --title "$TITLE" \

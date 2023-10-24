@@ -7,39 +7,32 @@ on:
       - "main"
   workflow_dispatch:
 
-env:
-  ACR_REGISTRY: bwhelmtest
-  ACR_REGISTRY_USER: bwhelmtest
-
 jobs:
   build:
     name: Build Helm chart
     runs-on: ubuntu-22.04
-    environment: Beta
     steps:
       - name: Checkout repo
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Lint Helm chart
-        run: helm lint charts/bitwarden-self-host
+        run: helm lint charts/self-host
 
-      # Runs a set of commands using the runners shell
       - name: Package Helm chart
         id: helm_package
         run: |
-          rm -f bitwarden-*.tgz
-          helm package charts/bitwarden-self-host
-          PKG_PATH=$(ls bitwarden-*.tgz)
-          echo "path=$PKG_PATH" >> "$GITHUB_OUTPUT"
+          helm package charts/self-host
+          PKG_NAME=$(ls *.tgz)
+          echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Push Helm chart
-        env:
-          PKG_PATH: ${{ steps.helm_package.outputs.path }}
-        run: |
-          echo $PKG_PATH
-          REGISTRY="${{ env.ACR_REGISTRY }}.azurecr.io"
-          echo "${{ secrets.ACR_PASSWORD }}" | helm registry login $REGISTRY -u ${{ env.ACR_REGISTRY_USER }} --password-stdin
-          helm push $PKG_PATH oci://$REGISTRY/helm
+      - name: Upload Helm chart artifact
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        with:
+          name: self-host
+          path: ${{ steps.helm_package.outputs.name }}
+          if-no-files-found: error
