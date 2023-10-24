@@ -1,0 +1,94 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.attachments" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.attachments" . }}
+    app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.attachments.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.attachments" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.attachments" . }}
+        app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+    {{- if .Values.component.attachments.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.attachments.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.attachments.podServiceAccount }}"
+    {{- end }}
+      containers:
+      - name: {{ template "bitwarden.attachments" . }}
+        image: "{{ .Values.component.attachments.image.name }}:{{ template "bitwarden.coreVersion" }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              name: "{{ .Values.secrets.secretName }}"
+          {{- if .Values.database.enabled }}
+          - secretRef:
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 5000
+          initialDelaySeconds: 180
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.attachments.resources | indent 10 }}
+        volumeMounts:
+        - name: attachments
+          mountPath: /etc/bitwarden/core/attachments
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
+        securityContext:
+{{ toYaml .Values.component.attachments.securityContext | indent 10 }}
+      volumes:
+        - name: attachments
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.attachments" . }}
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.attachments" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.attachments.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.attachments" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000
