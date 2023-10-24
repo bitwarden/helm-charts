@@ -606,3 +606,302 @@ kubectl get ingress -n bitwarden
 #### Application Gateway Deployments
 
 The public IP will be found on the Overview tab of the Application Gateway service in the Azure Portal.
+
+## Example Deployment on OpenShift
+
+This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform.  We will provide some basic pointers.
+
+### Create project in OpenShift
+
+Run the following shell commands to create a project in OpenShift.
+
+```shell
+oc new-project bitwarden
+oc project bitwarden
+```
+
+### Setup ingress
+
+We will use OpenShift Routes for our ingress in this example.  Alternatively, ingress operators could be used.
+
+#### Disable default ingress
+
+In your `my-values.yaml`, disable the default ingress.
+
+```yaml
+general:
+  domain: "replaceme.com"
+  ingress:
+    enabled: false
+```
+
+You can ignore the rest of the ingress section.
+
+#### Add raw manifests for routes
+
+Update the `rawManifests` section in `my-values.yaml` to include OpenShift Route manifests.
+
+```yaml
+rawManifests:
+  preInstall: []
+  postInstall:
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-web
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/"
+      to:
+        kind: Service
+        name: bitwarden-web
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-api
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/api"
+      to:
+        kind: Service
+        name: bitwarden-api
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-attachments
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/attachments"
+      to:
+        kind: Service
+        name: bitwarden-attachments
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-icons
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/icons"
+      to:
+        kind: Service
+        name: bitwarden-icons
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-notifications
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/notifications"
+      to:
+        kind: Service
+        name: bitwarden-notifications
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-events
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/events"
+      to:
+        kind: Service
+        name: bitwarden-events
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-sso
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/sso"
+      to:
+        kind: Service
+        name: bitwarden-sso
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-identity
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/identity"
+      to:
+        kind: Service
+        name: bitwarden-identity
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: bitwarden-admin
+      namespace: bitwarden
+      annotations:
+        # Rewrite will not work with admin
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/admin"
+      to:
+        kind: Service
+        name: bitwarden-admin
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+```
+
+Note that in this example we are setting `destinationCACertificate` to an empty string.  This will use the default certificate setup in OpenShift.  Alternatively, specify a certificate name here, or you can use Let's Encrypt by following this guide: [Secure Red Had OpenShift routs with Let's Encrypt](https://developer.ibm.com/tutorials/secure-red-hat-openshift-routes-with-lets-encrypt/).  If you do so, you will need to add `kubernetes.io/tls-acme: "true"` to the annotations for each route.
+
+### Setup storage class
+
+A shared storage class will be required.  As stated earlier in the document, a ReadWriteMany-capable Storage Class will need to be set up.  There are several options for this in OpenShift.  One viable option is to use the [NFS Subdir External Provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/charts/nfs-subdir-external-provisioner/README.md).
+
+### Setting secrets
+
+Using a secrets provider [HashiCorp Vault](https://developer.hashicorp.com/vault/docs/platform/k8s/csi/installation#installation-on-openshift) is valid, but we will focus on using the `oc` command to deploy our secrets. The process is similar to using `kubectl` detailed earlier.
+
+```shell
+oc create secret generic custom-secret -n bitwarden \
+    --from-literal=globalSettings__installation__id="REPLACE" \
+    --from-literal=globalSettings__installation__key="REPLACE" \
+    --from-literal=globalSettings__mail__smtp__username="REPLACE" \
+    --from-literal=globalSettings__mail__smtp__password="REPLACE" \
+    --from-literal=globalSettings__yubico__clientId="REPLACE" \
+    --from-literal=globalSettings__yubico__key="REPLACE" \
+    --from-literal=SA_PASSWORD="REPLACE" # If using SQL pod
+    # --from-literal="REPLACE" # If using your own SQL server
+```
+
+### Create a service account
+
+Bitwarden currently requires the use of a service account in OpenShift due to each container's need to run elevated commands on start-up.  These commands are blocked by OpenShift's restricted SCCs.  We need to create a service account and assign it to the `anyuid` SCC.
+
+```shell
+oc create sa bitwarden-sa
+oc adm policy add-scc-to-user anyuid -z bitwarden-sa
+```
+
+Next, update `my-values.yaml` to use this service account.  Note that this is a different service account from the one in the `serviceAccount` section of the values YAML file.  Instead, set the following keys to the name of the service account created:
+
+- component.admin.podServiceAccount
+- component.api.podServiceAccount
+- component.attachments.podServiceAccount
+- component.events.podServiceAccount
+- component.icons.podServiceAccount
+- component.identity.podServiceAccount
+- component.notifications.podServiceAccount
+- component.scim.podServiceAccount
+- component.sso.podServiceAccount
+- component.web.podServiceAccount
+- database.podServiceAccount
+
+#### Example
+
+```yaml
+component:
+  # The Admin component
+  admin:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/admin
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    podServiceAccount: bitwarden-sa
+```
+
+__*NOTE: You can create your own SSC to fine-tune the security of these pods. [Managing SSCs in OpenShift](https://cloud.redhat.com/blog/managing-sccs-in-openshift) describes the out-of-the-box SSCs and how to create your own if desired.*__
+
+### Update other settings
+
+Update the other settings in `my-values.yaml` based on your environment.  Follow the instructions earlier in this document for required settings to update.
+
+### Deploy via Helm
+
+```shell
+helm install bitwarden ./bitwarden -n bitwarden
+```

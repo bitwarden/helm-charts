@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.icons.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.icons.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.icons.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.icons" . }}
         image: "{{ .Values.component.icons.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -53,6 +57,8 @@ spec:
         {{- end }}
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
+        securityContext:
+{{ toYaml .Values.component.icons.securityContext | indent 10 }}
       volumes:
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline

@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.notifications.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.notifications.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.notifications.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.notifications" . }}
         image: "{{ .Values.component.notifications.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -53,6 +57,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.notifications.securityContext | indent 10 }}
       volumes:
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline

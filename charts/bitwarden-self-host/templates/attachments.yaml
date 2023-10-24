@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+    {{- if .Values.component.attachments.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.attachments.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.attachments.podServiceAccount }}"
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.attachments" . }}
         image: "{{ .Values.component.attachments.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -55,6 +59,8 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        securityContext:
+{{ toYaml .Values.component.attachments.securityContext | indent 10 }}
       volumes:
         - name: attachments
           persistentVolumeClaim:

@@ -93,6 +93,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   api:
     # Additional deployment labels
     labels: {}
@@ -106,6 +109,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   attachments:
     # Additional deployment labels
     labels: {}
@@ -119,6 +125,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   events:
     # Additional deployment labels
     labels: {}
@@ -132,6 +141,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   icons:
     # Additional deployment labels
     labels: {}
@@ -145,6 +157,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   identity:
     # Additional deployment labels
     labels: {}
@@ -158,6 +173,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   notifications:
     # Additional deployment labels
     labels: {}
@@ -171,6 +189,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   scim:
     # Additional deployment labels
     labels: {}
@@ -184,6 +205,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   sso:
     # Additional deployment labels
     labels: {}
@@ -197,6 +221,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
   web:
     # Additional deployment labels
     labels: {}
@@ -210,6 +237,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
 volume:
   dataprotection:
     size: "1Gi"
@@ -222,7 +252,7 @@ volume:
     labels: {}
 
 #
-# Configure service account
+# Configure service account for pre- and post-install hooks
 #
 serviceAccount: service-account
 
@@ -259,6 +289,9 @@ database:
     log:
       # Storage size
       size: 10Gi
+  securityContext:
+  # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+  podServiceAccount:
 
 rawManifests:
   preInstall: []
