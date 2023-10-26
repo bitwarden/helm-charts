@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - "main"
+    branches-ignore:
+      - "gh-pages"
+    paths-ignore:
+      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
