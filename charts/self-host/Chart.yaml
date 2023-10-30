@@ -1,11 +1,10 @@
 apiVersion: v2
-name: self-host
-version: "0.1.1-Beta"
-
-appVersion: "2023.9.1"
+appVersion: 2023.9.1
 description: A Helm chart for deploying a Bitwarden instance on Kubernetes
 home: https://github.com/bitwarden/helm-charts/tree/main/charts/self-host
 icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
 maintainers:
-  - name: dept-devops
+- name: dept-devops
+name: self-host
 type: application
+version: 0.1.2-Beta
