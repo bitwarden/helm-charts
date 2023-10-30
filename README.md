@@ -7,16 +7,18 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 
 Once Helm has been set up correctly, add the repo as follows:
 
-  helm repo add bitwarden https://charts.bitwarden.com/helm-charts
+  helm repo add bitwarden https://charts.bitwarden.com/
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
 the latest versions of the packages.  You can then run `helm search repo
-bitwarden` to see the charts.
+bitwarden --devel` to see the charts.
 
-To install the self-host chart:
+We recommend creating a namespace for the self-host deployment.
 
-    helm install my-self-host bitwarden/self-host
+To install/upgrade the self-host chart:
+
+    helm upgrade my-self-host bitwarden/self-host --install --namespace bitwarden --values my-values.yaml --devel
 
 To uninstall the chart:
 
-    helm delete my-self-host
+    helm uninstall my-self-host --namespace bitwarden
