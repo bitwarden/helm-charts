@@ -1,0 +1,106 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.sso" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.sso" . }}
+    app.kubernetes.io/component: sso
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.sso.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.sso" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.sso" . }}
+        app.kubernetes.io/component: sso
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+    {{- if .Values.component.sso.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.sso.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.sso.podServiceAccount }}"
+    {{- end }}
+      containers:
+      - name: {{ template "bitwarden.sso" . }}
+        image: "{{ .Values.component.sso.image.name }}:{{ template "bitwarden.coreVersion" }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              name: "{{ .Values.secrets.secretName }}"
+          - secretRef:
+              name: {{ .Release.Name }}-identity-cert-password
+          {{- if .Values.database.enabled }}
+          - secretRef:
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 5000
+          initialDelaySeconds: 180
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.sso.resources | indent 10 }}
+        volumeMounts:
+        - name: identity
+          mountPath: /etc/bitwarden/identity
+        - name: dataprotection
+          mountPath: /etc/bitwarden/core/aspnet-dataprotection
+        - name: licenses
+          mountPath: /etc/bitwarden/core/licenses
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
+        securityContext:
+{{ toYaml .Values.component.sso.securityContext | indent 10 }}
+      volumes:
+        - name: identity
+          secret:
+            secretName: {{ .Release.Name }}-identity-cert
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.dataprotection" . }}
+        - name: licenses
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.licenses" . }}
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.sso" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: sso
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.sso.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.sso" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000

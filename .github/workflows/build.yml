@@ -1,0 +1,78 @@
+---
+name: Build
+
+on:
+  push:
+    branches-ignore:
+      - "gh-pages"
+    paths-ignore:
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Helm charts
+    runs-on: ubuntu-22.04
+    environment: Production
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - chart_name: self-host
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        with:
+          version: 'v3.13.1'
+
+      - name: Login to Azure - CI Subscription
+        uses: Azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2 # v1.4.7
+        with:
+          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+
+      - name: Set up GPG key and passphrase
+        run: |
+          az keyvault secret download \
+            --vault-name bitwarden-ci \
+            --name helm-signing-gpg-private-key \
+            --file private
+
+          az keyvault secret download \
+          --vault-name bitwarden-ci \
+          --name helm-signing-gpg-private-key-passphrase \
+          --file .passphrase
+
+          az keyvault secret download \
+          --vault-name bitwarden-ci \
+          --name helm-signing-gpg-public-key \
+          --file public
+
+          gpg --dearmor private
+          gpg --dearmor public
+
+      - name: Package Helm chart
+        id: helm_package
+        run: |
+          helm package \
+            --sign \
+            --key "DevOps Team" \
+            --keyring private.gpg \
+            --passphrase-file .passphrase \
+            charts/${{ matrix.chart_name }}
+          PKG_NAME=$(ls *.tgz)
+          echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Verify Helm chart
+        run: helm verify ${{ steps.helm_package.outputs.name }} --keyring public.gpg
+
+      - name: Upload Helm chart artifact
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        with:
+          name: ${{ matrix.chart_name }}
+          path: |
+            ${{ steps.helm_package.outputs.name }}
+            ${{ steps.helm_package.outputs.name }}.prov
+          if-no-files-found: error
