@@ -70,21 +70,3 @@ jobs:
         uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
         with:
           skip_packaging: true
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push charts to GitHub Container Registry
-        if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
-        run: |
-          shopt -s nullglob
-          for pkg in .cr-release-packages/*; do
-            if [ -z "${pkg:-}" ]; then
-              break
-            fi
-            helm push "${pkg}" "oci://ghcr.io/${GITHUB_REPOSITORY_OWNER}/charts"
-          done
