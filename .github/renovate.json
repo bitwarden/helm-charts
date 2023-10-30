@@ -1,6 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:base",
+    ":prConcurrentLimit10",
+    ":rebaseStalePrs",
+    "schedule:weekends"
+  ],
+  "enabledManagers": [
+    "github-actions",
+    "helm-requirements",
+    "helm-values",
+    "helmv3"
+  ],
+  "packageRules": [
+    {
+      "groupName": "gh minor",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"]
+    }
   ]
 }

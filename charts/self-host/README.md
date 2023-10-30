@@ -16,7 +16,7 @@ The purpose of this chart is to enable the deployment of [Bitwarden](https://bit
 ## Add the repo to Helm
 
 ```shell
-helm repo add bitwarden https://bitwarden.github.io/helm-charts/
+helm repo add bitwarden https://charts.bitwarden.com/
 helm repo update
 ```
 
@@ -31,7 +31,7 @@ helm repo update
 Run the following command to create a custom values file used for deployment:
 
 ```shell
-helm show values bitwarden/bitwarden > my-values.yaml
+helm show values bitwarden/self-host --devel > my-values.yaml
 ```
 
 ### Update the config file
@@ -224,12 +224,13 @@ rawManifests:
 
 Note that the certResolver is deployed with the Traefik ingress configuration.
 
-### Run Helm Install
+### Install Helm Chart
 
-1. Run `helm install bitwarden bitwarden/bitwarden -n bitwarden -f my-values.yaml`.
-    - This installs a release named `bitwarden`, in the namespace `bitwarden`, using values from `my-values.yaml`.
+1. Run `helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml`.
+    - This installs/upgrades a release named `bitwarden`, in the namespace `bitwarden`, using values from `my-values.yaml`.
     - This may take over a minute to fully come up (some of the services might register as failed in the meantime)
     - You can see help information for the `helm install` command by running `helm install --help`.
+    - You can see help information for the `helm upgrade` command by running `helm upgrade --help`.
 
 > The current Bitwarden release is architected in a way which requires the sharing of persistent data between containers and therefore requires storage which supports the access mode ReadWriteMany.
 
@@ -557,7 +558,7 @@ secrets:
 ### Helm
 
 ```shell
-helm install bitwarden ./bitwarden -n bitwarden
+helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
 ```
 
 ### Azure Application Gateway Rewrite Set
@@ -903,5 +904,5 @@ Update the other settings in `my-values.yaml` based on your environment.  Follow
 ### Deploy via Helm
 
 ```shell
-helm install bitwarden ./bitwarden -n bitwarden
+helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
 ```
