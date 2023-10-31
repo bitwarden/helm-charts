@@ -54,7 +54,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 The name of the service account to use
 */}}
 {{- define "bitwarden.serviceAccountName" -}}
-{{- default (include "bitwarden.fullname" .) .Values.serviceAccount -}}
+{{- default (include "bitwarden.fullname" .) .Values.serviceAccount.name -}}
 {{- end -}}
 
 {{/*
