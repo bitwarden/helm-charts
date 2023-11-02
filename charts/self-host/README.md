@@ -390,6 +390,8 @@ spec:
 EOF
 ```
 
+Alternatively, you can create the cluster issuer via the `rawManifets.preInstall` section of `my-values.yaml`.
+
 Finally, set the ingress TLS information in `my-values.yaml`:
 
 ```yaml
@@ -430,6 +432,8 @@ parameters:
   skuName: Standard_LRS
 EOF
 ```
+
+Alternatively, you can create the storage class via the `rawManifets.preInstall` section of `my-values.yaml`.
 
 Set the `sharedStorageClassName` value in `my-values.yaml` to match the name provided.
 
@@ -527,6 +531,8 @@ spec:
       key: SA_PASSWORD #-OR- globalSettings__sqlServer__connectionString if external SQL
 EOF
 ```
+
+Alternatively, you can create the secrets provider via the `rawManifets.preInstall` section of `my-values.yaml`.
 
 Note the spots in the definition that say `"<REPLACE>"`.  These will need to be updated for your environment.  Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server.  Those spots that will need to change have been marked with a comment.  Finally, you can name the secrets in Azure Key Vault based on your own naming convention.  If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
 
@@ -902,6 +908,310 @@ __*NOTE: You can create your own SSC to fine-tune the security of these pods. [M
 Update the other settings in `my-values.yaml` based on your environment.  Follow the instructions earlier in this document for required settings to update.
 
 ### Deploy via Helm
+
+```shell
+helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+```
+
+## Example Deployment on AWS EKS
+
+This section will walk through an example of hosting Bitwarden on AWS EKS. This is just one possible way to deploy the chart as there are many ways of handling persistent storage, secrets, and ingress.
+
+### Create the namespace
+
+Follow the instructions above for creating the namespace.
+
+### Setup Nginx ingress
+
+The ALB ingress is not currently recommended since it does not support path rewrites with path-based routing.  This example uses Nginx, but Traefik could also be used here.
+
+#### Install the Nginx Ingress Controller
+
+The ingress controller will set up an AWS Network Load Balancer.  Below, we define certain annotations that you should consider setting on the ingress controller service.  The specific settings will be dependent on your environment. In this example, we are setting the SSL certificate on the load balancer instead of using Let's Encrypt.  These annotations specify the certificate provided by AWS Certificate Manager using the certificate's ARN in the `aws-load-balancer-ssl-cert` annotation.
+
+- service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "ssl"
+- service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+- service.beta.kubernetes.io/aws-load-balancer-type: "external"
+- service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+- service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+- service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:REPLACEME:REPLACEME:certificate/REPLACEME" # ARN for the certificate
+- service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+
+You will also want to set the `spec.externalTrafficPolicy` property to "Local" on the service.  The following script will install the controller with these settings:
+
+```shell
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace kube-system \
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol'="ssl" \
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-cross-zone-load-balancing-enabled'="true" \
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-type'="external" \
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-nlb-target-type'="instance" \
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-scheme'="internet-facing" \
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert'="arn:aws:acm:REPLACEME:REPLACEME:certificate/REPLACEME" \ #Replace with the ARN for your certificate
+  --set-string controller.service.annotations.'service\.beta\.kubernetes\.io/aws-load-balancer-ssl-ports'="443" \
+  --set controller.service.externalTrafficPolicy=Local
+```
+
+#### Update the ingress section in my-values.yaml
+
+The following settings will create an Nginx ingress.  These settings are specific to the Nginx ingress controller annotations we detailed earlier.
+
+```yaml
+general:
+  domain: "REPLACEME.com"
+  ingress:
+    enabled: true
+    className: "nginx"
+     ## - Annotations to add to the Ingress resource
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    ## - Labels to add to the Ingress resource
+    labels: {}
+    # Certificate options
+    tls:
+      # TLS certificate secret name
+      name: # Handled via the NLB defined in the ingress controller
+      # Cluster cert issuer (ex. Let's Encrypt) name if one exists
+      clusterIssuer:
+    paths:
+      web:
+        path: /(.*)
+        pathType: Prefix
+      attachments:
+        path: /attachments[/|$](.*)
+        pathType: Prefix
+      api:
+        path: /api[/|$](.*)
+        pathType: Prefix
+      icons:
+        path: /icons[/|$](.*)
+        pathType: Prefix
+      notifications:
+        path: /notifications[/|$](.*)
+        pathType: Prefix
+      events:
+        path: /events[/|$](.*)
+        pathType: Prefix
+      sso:
+        path: /sso[/|$](.*)
+        pathType: Prefix
+      identity:
+        path: /identity[/|$](.*)
+        pathType: Prefix
+      admin:
+        path: /(admin[/|$]?.*)
+        pathType: Prefix
+```
+
+### Setup EFS storage class
+
+To use EFS persistent storage, you will need to set up the Amazon EFS CSI driver.  To do so, please follow the [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) documentation.  After the driver has been set up, you will need to create a storage class.  The exact settings on the storage class will be different for every cluster, but an example is provided below.
+
+```shell
+file_system_id="REPLACE ME"
+
+cat << EOF | kubectl apply -n bitwarden -f -
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: shared-storage
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: $file_system_id
+  directoryPerms: "777" # Change for your use case
+  uid: "2000" # Change for your use case
+  gid: "2000" # Change for your use case
+  basePath: "/dyn1"
+  subPathPattern: "\${.PVC.name}"
+  ensureUniqueDirectory: "false"
+  reuseAccessPoint: "false"
+mountOptions:
+  - iam
+  - tls
+EOF
+```
+
+Alternatively, you can create the storage provider via the `rawManifets.preInstall` section of `my-values.yaml`.
+
+Review the [CSI Driver for Amazon EFS GitHub](https://github.com/kubernetes-sigs/aws-efs-csi-driver) page for further information on these settings.  After the storage class has been created, set the storage class name in `my-values.yaml`:
+
+```yaml
+sharedStorageClassName: shared-storage
+```
+
+### Setting secrets using AWS Secrets Manager
+
+We have detailed several secret provider options.  For this example, we will use AWS Secrets Manager.
+
+First, create a secret in AWS Secrets Manager.  You will want to create a secret with keys similar to those below.  If you use different key names, make sure to update those in the secret provider class we create later.
+
+- installationid
+- installationkey
+- smtpusername
+- smtppassword
+- yubicoclientid
+- yubicokey
+- sapassowrd __*OR*__ dbconnectionstring if using external SQL
+
+Follow [Use AWS Secrets Manager secrets in Amazon Elastic Kubernetes Services](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_csi_driver.html) to set up the driver and permissions.  When creating the IAM permissions policy, one similar to the one below will suffice. Replace the "Resource" value with the ARN of your secret in Resource manager.
+
+```json
+{
+   "Version": "2012-10-17",
+   "Statement": {
+     "Effect": "Allow",
+     "Action": [
+       "secretsmanager:DescribeSecret",
+       "secretsmanager:GetSecretValue"
+     ],
+     "Resource": "arn:aws:secretsmanager:REPLACEME:REPLACEME:secret:REPLACEME"
+   }
+}
+```
+
+Create a service account, and give it access to your secret using the policy you created:
+
+```shell
+CLUSTER_NAME=replace_me
+ACCOUNT_ID=111111111111 # replace with your AWS account ID
+ROLE_NAME=replaceme # name of the role that will be created in IAM
+POLICY_NAME=replaceme # the name of the policy you created earlier
+eksctl create iamserviceaccount \
+  --cluster=$CLUSTER_NAME \
+  --namespace=bitwarden \
+  --name=bitwarden-sa \
+  --role-name $ROLE_NAME \
+  --attach-policy-arn=arn:aws:iam::$ACCOUNT_ID:policy/$POLICY_NAME \
+  --approve
+```
+
+Next, create the secret provider class.  The example below demonstrates how to do so.  Make sure to update the `region` and `objectName` before deploying.  If you used different keys when creating the secret in Secrets Manager, you will want to update the paths for the secrets as well.
+
+```shell
+cat <<EOF | kubectl apply -n bitwarden -f -
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: bitwarden-secrets-manager-csi
+  labels:
+    app.kubernetes.io/component: secrets
+  annotations:
+spec:
+  provider: aws
+  parameters:
+    region: REPLACEME
+    objects: |
+      - objectName: "REPLACEME"
+        objectType: "secretsmanager"
+        objectVersionLabel: "AWSCURRENT"
+        jmesPath:
+          - path: installationid
+            objectAlias: installationid
+          - path: installationkey
+            objectAlias: installationkey
+          - path: smtpusername
+            objectAlias: smtpusername
+          - path: smtppassword
+            objectAlias: smtppassword
+          - path: yubicoclientid
+            objectAlias: yubicoclientid
+          - path: yubicokey
+            objectAlias: yubicokey
+          - path: sapassword #-OR- dbconnectionstring if external SQL
+            objectAlias: sapassword #-OR- dbconnectionstring if external SQL
+  secretObjects:
+  - secretName: "bitwarden-secret"
+    type: Opaque
+    data:
+    - objectName: installationid
+      key: globalSettings__installation__id
+    - objectName: installationkey
+      key: globalSettings__installation__key
+    - objectName: smtpusername
+      key: globalSettings__mail__smtp__username
+    - objectName: smtppassword
+      key: globalSettings__mail__smtp__password
+    - objectName: yubicoclientid
+      key: globalSettings__yubico__clientId
+    - objectName: yubicokey
+      key: globalSettings__yubico__key
+    - objectName: sapassword #-OR- dbconnectionstring if external SQL
+      key: SA_PASSWORD #-OR- globalSettings__sqlServer__connectionString if external SQL
+EOF
+```
+
+Alternatively, you can create the secrets provider via the `rawManifets.preInstall` section of `my-values.yaml`.
+
+We now need to tell all of our pods to use the service account we created so that they can access the secrets.  Update the `serviceAccount` section in `my-values.yaml`, and set the name of the service account created via `eksctl`.  Note that we set `deployRolesOnly` to `true` since we created the service account outside of our chart.  The roles referenced grant the service account the ability to create secrets and get pod information inside the `bitwarden` namespace.  We used `eksctl` to create the account instead of the Helm chart since we needed to grant IAM permissions for Secrets Manager access to the service account prior to deployment.  The settings below tell the chart to create and assign the roles to that service account we already created.
+
+```yaml
+#
+# Configure service account for pre-install and post-install hooks
+#
+serviceAccount:
+  name: bitwarden-sa
+  # Certain instances will prequire the creation of a pre-deployed service account.  For instance, AWS IAM enabled service accounts need to be created outside
+  # of the chart to allow for setting of permissions on other AWS services like Secrets Manager
+  deployRolesOnly: true
+```
+
+As the commented code above states, this only assigns the service account for the pre-install and post-install hooks.  Our running pods will also need access to secrets.  Update `my-values.yaml` to use this same service account.  Set the following keys to the name of the service account created:
+
+- component.admin.podServiceAccount
+- component.api.podServiceAccount
+- component.attachments.podServiceAccount
+- component.events.podServiceAccount
+- component.icons.podServiceAccount
+- component.identity.podServiceAccount
+- component.notifications.podServiceAccount
+- component.scim.podServiceAccount
+- component.sso.podServiceAccount
+- component.web.podServiceAccount
+- database.podServiceAccount
+
+See the example below:
+
+```yaml
+component:
+  # The Admin component
+  admin:
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/admin
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    securityContext:
+    podServiceAccount: bitwarden-sa
+```
+
+Note that you could use a separate service account created via `eksctl` for the running pods.  However, it will need the same IAM access policy assigned to it to access our secret in Secrets Manager.  We have kept it simple and set the pods' and hooks' service accounts to the same account.
+
+Finally, set the secrets section in `my-values.yaml` with the information from our secret provider class we created.
+
+```yaml
+secrets:
+  secretName: bitwarden-secret
+  secretProviderClass: bitwarden-secrets-manager-csi
+```
+
+### Update other AWS settings
+
+Update the other settings in `my-values.yaml` based on your environment.  Follow the instructions earlier in this document for required settings to update.
+
+### Deploy to AWS via Helm
 
 ```shell
 helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml

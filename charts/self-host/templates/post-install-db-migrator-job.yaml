@@ -16,8 +16,8 @@ spec:
       labels:
         app.kubernetes.io/component: post-install-db-migrator-job
     spec:
-      {{- if .Values.serviceAccount }}
-      serviceAccountName: "{{ .Values.serviceAccount }}"
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: "{{ .Values.serviceAccount.name }}"
       {{- end }}
       initContainers:
       - name: wait-for-db

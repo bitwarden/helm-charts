@@ -254,7 +254,11 @@ volume:
 #
 # Configure service account for pre- and post-install hooks
 #
-serviceAccount: service-account
+serviceAccount:
+  name: service-account
+  # Certain instances will prequire the creation of a pre-deployed service account.  For instance, AWS IAM enabled service accounts need to be created outside
+  # of the chart to allow for setting of permissions on other AWS services like Secrets Manager
+  deployRolesOnly: false
 
 #
 # Configure database
