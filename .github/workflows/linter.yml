@@ -4,12 +4,12 @@ name: Lint
 on:
   pull_request:
     paths:
-      - 'charts/*'
+      - 'charts/**'
   push:
     branches:
       - main
     paths:
-      - 'charts/*'
+      - 'charts/**'
   workflow_dispatch:
 
 jobs:
