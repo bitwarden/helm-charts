@@ -927,7 +927,7 @@ The ALB ingress is not currently recommended since it does not support path rewr
 
 #### Install the Nginx Ingress Controller
 
-The ingress controller will setup an AWS Network Load Balancer.  Below, we define certain annotations that you should consider setting on the ingress controller service.  The specific settings will be dependent on your environment. In this example, we are setting the SSL certificate on the loadbalancer instead of using Let's Encrypt.  These annotations specify the certificate provided by AWS Certificate Manager using the certificate's ARN in the `aws-load-balancer-ssl-cert` annotation.
+The ingress controller will set up an AWS Network Load Balancer.  Below, we define certain annotations that you should consider setting on the ingress controller service.  The specific settings will be dependent on your environment. In this example, we are setting the SSL certificate on the load balancer instead of using Let's Encrypt.  These annotations specify the certificate provided by AWS Certificate Manager using the certificate's ARN in the `aws-load-balancer-ssl-cert` annotation.
 
 - service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "ssl"
 - service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
@@ -954,7 +954,7 @@ helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.service.externalTrafficPolicy=Local
 ```
 
-#### Update the ingrees section in my-values.yaml
+#### Update the ingress section in my-values.yaml
 
 The following settings will create an Nginx ingress.  These settings are specific to the Nginx ingress controller annotations we detailed earlier.
 
@@ -1010,7 +1010,7 @@ general:
 
 ### Setup EFS storage class
 
-To use EFS persistent storage, you will need to setup the Amazon EFS CSI driver.  To do so, please follow the [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html).  After the driver has been setup, you will need to create a storage class.  The exact settings on the storage class will be different for every cluster, but an example is provided below.
+To use EFS persistent storage, you will need to set up the Amazon EFS CSI driver.  To do so, please follow the [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) documentation.  After the driver has been set up, you will need to create a storage class.  The exact settings on the storage class will be different for every cluster, but an example is provided below.
 
 ```shell
 file_system_id="REPLACE ME"
@@ -1039,7 +1039,7 @@ EOF
 
 Alternatively, you can create the storage provider via the `rawManifets.preInstall` section of `my-values.yaml`.
 
-Review the [CSI Driver for Amazon EFS GitHub page](https://github.com/kubernetes-sigs/aws-efs-csi-driver) for further information on thses settings.  After the storage class has been created, set the storage class name in `my-values.yaml`:
+Review the [CSI Driver for Amazon EFS GitHub](https://github.com/kubernetes-sigs/aws-efs-csi-driver) page for further information on these settings.  After the storage class has been created, set the storage class name in `my-values.yaml`:
 
 ```yaml
 sharedStorageClassName: shared-storage
@@ -1054,14 +1054,12 @@ First, create a secret in AWS Secrets Manager.  You will want to create a secret
 - installationid
 - installationkey
 - smtpusername
-- smtpusername
 - smtppassword
-- yubicoclientid
 - yubicoclientid
 - yubicokey
 - sapassowrd __*OR*__ dbconnectionstring if using external SQL
 
-Follow [Use AWS Secrets Manager secrets in Amazon Elastic Kubernetes Services](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_csi_driver.html) to setup the driver and permissions.  When creating the IAM permissions policy, one similar to the one below will suffice. Replace the "Resource" value with the ARN of your secret in Resource manager.
+Follow [Use AWS Secrets Manager secrets in Amazon Elastic Kubernetes Services](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_csi_driver.html) to set up the driver and permissions.  When creating the IAM permissions policy, one similar to the one below will suffice. Replace the "Resource" value with the ARN of your secret in Resource manager.
 
 ```json
 {
@@ -1093,7 +1091,7 @@ eksctl create iamserviceaccount \
   --approve
 ```
 
-Next, create the secret provider class.  The example below demonstrates how to do so.  Make sure to update the region and objectName before deploying.  If you used different keys when creating the secret in Secrets Manager, you will want to update the paths for the secrets as well.
+Next, create the secret provider class.  The example below demonstrates how to do so.  Make sure to update the `region` and `objectName` before deploying.  If you used different keys when creating the secret in Secrets Manager, you will want to update the paths for the secrets as well.
 
 ```shell
 cat <<EOF | kubectl apply -n bitwarden -f -
@@ -1150,11 +1148,11 @@ EOF
 
 Alternatively, you can create the secrets provider via the `rawManifets.preInstall` section of `my-values.yaml`.
 
-We now need to tell all of our pods to use the service account we created so that they can access the secrets.  Update the serviceAccount section in `my-values.yaml`, and set the name of the service account created via `eksctl`.  Note that we set `deployRolesOnly` to `true` since we created the service account outside of our chart.  The roles in referenced grant the service account the ability to create secrets and get pod information inside the `bitwarden` namespace.  We used `eksctl` to create the account instead of the Helm chart since we needed to grant IAM permissions for Secrets Manager access to the service account prior to deployment.  The settings below tell the chart to create and assign the roles to that service account we already created.
+We now need to tell all of our pods to use the service account we created so that they can access the secrets.  Update the `serviceAccount` section in `my-values.yaml`, and set the name of the service account created via `eksctl`.  Note that we set `deployRolesOnly` to `true` since we created the service account outside of our chart.  The roles referenced grant the service account the ability to create secrets and get pod information inside the `bitwarden` namespace.  We used `eksctl` to create the account instead of the Helm chart since we needed to grant IAM permissions for Secrets Manager access to the service account prior to deployment.  The settings below tell the chart to create and assign the roles to that service account we already created.
 
 ```yaml
 #
-# Configure service account for pre- and post-install hooks
+# Configure service account for pre-install and post-install hooks
 #
 serviceAccount:
   name: bitwarden-sa
@@ -1163,7 +1161,7 @@ serviceAccount:
   deployRolesOnly: true
 ```
 
-As the commented code above states, this only assigns the service account for the pre- and post-install hooks.  Our running pods will also need access to secrets.  Update `my-values.yaml` to use this same service account.  Set the following keys to the name of the service account created:
+As the commented code above states, this only assigns the service account for the pre-install and post-install hooks.  Our running pods will also need access to secrets.  Update `my-values.yaml` to use this same service account.  Set the following keys to the name of the service account created:
 
 - component.admin.podServiceAccount
 - component.api.podServiceAccount
