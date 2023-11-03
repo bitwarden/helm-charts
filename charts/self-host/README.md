@@ -128,7 +128,7 @@ rawManifests:
   - apiVersion: traefik.containo.us/v1alpha1
     kind: Middleware
     metadata:
-      name: "bitwarden-middleware-stripprefix"
+      name: "bitwarden-self-host-middleware-stripprefix"
     spec:
       stripPrefix:
         prefixes:
@@ -143,7 +143,7 @@ rawManifests:
   - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
-      name: "bitwarden-ingress"
+      name: "bitwarden-self-host-ingress"
     spec:
       entryPoints:
         - websecure
@@ -152,71 +152,71 @@ rawManifests:
           match: Host(`REPLACEME.COM`) && PathPrefix(`/`)
           services:
             - kind: Service
-              name: bitwarden-web
+              name: bitwarden-self-host-web
               passHostHeader: true
               port: 5000
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/api`)
           services:
             - kind: Service
-              name: bitwarden-api
+              name: bitwarden-self-host-api
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/attachments`)
           services:
             - kind: Service
-              name: bitwarden-api
+              name: bitwarden-self-host-api
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/icons`)
           services:
             - kind: Service
-              name: bitwarden-icons
+              name: bitwarden-self-host-icons
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/notifications`)
           services:
             - kind: Service
-              name: bitwarden-notifications
+              name: bitwarden-self-host-notifications
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/events`)
           services:
             - kind: Service
-              name: bitwarden-events
+              name: bitwarden-self-host-events
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/sso`)
           services:
             - kind: Service
-              name: bitwarden-sso
+              name: bitwarden-self-host-sso
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/identity`)
           services:
             - kind: Service
-              name: bitwarden-identity
+              name: bitwarden-self-host-identity
               port: 5000
           middlewares:
-            - name: "bitwarden-middleware-stripprefix"
+            - name: "bitwarden-self-host-middleware-stripprefix"
         ##### NOTE:  Admin will not function correctly with path strip middleware
         - kind: Rule
           match: Host(`REPLACEME.COM`) && PathPrefix(`/admin`)
           services:
             - kind: Service
-              name: bitwarden-admin
+              name: bitwarden-self-host-admin
               port: 5000
       tls:
         certResolver: letsencrypt
@@ -655,7 +655,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-web
+      name: bitwarden-self-host-web
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -664,7 +664,7 @@ rawManifests:
       path: "/"
       to:
         kind: Service
-        name: bitwarden-web
+        name: bitwarden-self-host-web
         weight: 100
       port:
         targetPort: 5000
@@ -675,7 +675,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-api
+      name: bitwarden-self-host-api
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -684,7 +684,7 @@ rawManifests:
       path: "/api"
       to:
         kind: Service
-        name: bitwarden-api
+        name: bitwarden-self-host-api
         weight: 100
       port:
         targetPort: 5000
@@ -695,7 +695,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-attachments
+      name: bitwarden-self-host-attachments
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -704,7 +704,7 @@ rawManifests:
       path: "/attachments"
       to:
         kind: Service
-        name: bitwarden-attachments
+        name: bitwarden-self-host-attachments
         weight: 100
       port:
         targetPort: 5000
@@ -715,7 +715,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-icons
+      name: bitwarden-self-host-icons
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -724,7 +724,7 @@ rawManifests:
       path: "/icons"
       to:
         kind: Service
-        name: bitwarden-icons
+        name: bitwarden-self-host-icons
         weight: 100
       port:
         targetPort: 5000
@@ -735,7 +735,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-notifications
+      name: bitwarden-self-host-notifications
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -744,7 +744,7 @@ rawManifests:
       path: "/notifications"
       to:
         kind: Service
-        name: bitwarden-notifications
+        name: bitwarden-self-host-notifications
         weight: 100
       port:
         targetPort: 5000
@@ -755,7 +755,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-events
+      name: bitwarden-self-host-events
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -764,7 +764,7 @@ rawManifests:
       path: "/events"
       to:
         kind: Service
-        name: bitwarden-events
+        name: bitwarden-self-host-events
         weight: 100
       port:
         targetPort: 5000
@@ -775,7 +775,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-sso
+      name: bitwarden-self-host-sso
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -784,7 +784,7 @@ rawManifests:
       path: "/sso"
       to:
         kind: Service
-        name: bitwarden-sso
+        name: bitwarden-self-host-sso
         weight: 100
       port:
         targetPort: 5000
@@ -795,7 +795,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-identity
+      name: bitwarden-self-host-identity
       namespace: bitwarden
       annotations:
         haproxy.router.openshift.io/rewrite-target: /
@@ -804,7 +804,7 @@ rawManifests:
       path: "/identity"
       to:
         kind: Service
-        name: bitwarden-identity
+        name: bitwarden-self-host-identity
         weight: 100
       port:
         targetPort: 5000
@@ -815,7 +815,7 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: bitwarden-admin
+      name: bitwarden-self-host-admin
       namespace: bitwarden
       annotations:
         # Rewrite will not work with admin
@@ -824,7 +824,7 @@ rawManifests:
       path: "/admin"
       to:
         kind: Service
-        name: bitwarden-admin
+        name: bitwarden-self-host-admin
         weight: 100
       port:
         targetPort: 5000

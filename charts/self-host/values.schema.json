@@ -1,0 +1,2405 @@
+{
+    "type": "object",
+    "required": [],
+    "properties": {
+        "fullnameOverride": {
+            "type": "string"
+        },
+        "nameOverride": {
+            "type": "string"
+        },
+        "general": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "ingress": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "className": {
+                            "type": "string"
+                        },
+                        "annotations": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "properties": {}
+                        },
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "tls": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "clusterIssuer": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "paths": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "web": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "attachments": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "api": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "icons": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "notifications": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "events": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "sso": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "identity": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "admin": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "coreVersionOverride": {
+                    "type": "string"
+                },
+                "webVersionOverride": {
+                    "type": "string"
+                },
+                "disableUserRegistration": {
+                    "type": "string"
+                },
+                "hibpApiKey": {
+                    "type": "string"
+                },
+                "admins": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "replyToEmail": {
+                            "type": "string"
+                        },
+                        "smtpHost": {
+                            "type": "string"
+                        },
+                        "smtpPort": {
+                            "type": "string"
+                        },
+                        "smtpSsl": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "labels": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                }
+            }
+        },
+        "sharedStorageClassName": {
+            "type": "string"
+        },
+        "secrets": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "secretName": {
+                    "type": "string"
+                },
+                "secretProviderClass": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "component": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "admin": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "api": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "attachments": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "events": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "icons": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "identity": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "notifications": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "scim": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "sso": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "required": [],
+                            "properties": {}
+                        }
+                    }
+                },
+                "web": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": [],
+                            "additionalProperties": false,
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "capabilities": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "add": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "procMount": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsGroup": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "runAsNonRoot": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "runAsUser": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "seLinuxOptions": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "level": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "role": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "user": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "volume": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "dataprotection": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "size": {
+                            "type": "string"
+                        },
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        }
+                    }
+                },
+                "attachments": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "size": {
+                            "type": "string"
+                        },
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        }
+                    }
+                },
+                "licenses": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "size": {
+                            "type": "string"
+                        },
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        }
+                    }
+                }
+            }
+        },
+        "serviceAccount": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "deployRolesOnly": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "database": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "labels": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
+                },
+                "image": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "tag": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "requests": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "memory": {
+                                    "type": "string"
+                                },
+                                "cpu": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "limits": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "memory": {
+                                    "type": "string"
+                                },
+                                "cpu": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "volume": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "backups": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "size": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "data": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "size": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "log": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "size": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "securityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": [],
+                    "additionalProperties": false,
+                    "properties": {
+                        "allowPrivilegeEscalation": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "capabilities": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "properties": {
+                                "add": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "drop": {
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "privileged": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "procMount": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "readOnlyRootFilesystem": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "runAsGroup": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "runAsNonRoot": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "runAsUser": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        },
+                        "seLinuxOptions": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "properties": {
+                                "level": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "role": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "user": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "seccompProfile": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "properties": {
+                                "localhostProfile": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "podServiceAccount": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "rawManifests": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "preInstall": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "postInstall": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            }
+        }
+    }
+}
