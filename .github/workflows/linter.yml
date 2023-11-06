@@ -50,13 +50,133 @@ jobs:
           CT_CHECK_VERSION_INCREMENT: false
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
-      - name: Setup NFS for testing
-        run: |     
-          mkdir nfs
-          chmod 777 nfs
-          docker run                                            \
-            -v nfs:/srv/nfs  \
-            -e NFS_EXPORT_0="/srv/nfs *(rw,sync,no_subtree_check)" \
-            --cap-add SYS_ADMIN                                 \
-            -p 2049:2049                                        \
-            erichough/nfs-server
+      - name: Create kind cluster
+        #if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@v1.8.0
+
+      - name: Setup cluster
+        #if: steps.list-changed.outputs.changed == 'true'
+        run: | 
+          mkdir ${GITHUB_WORKSPACE}/storage
+          kubectl create ns bitwarden
+          echo << EOF | kubectl apply -n bitwarden -f -
+            apiVersion: storage.k8s.io/v1
+            kind: StorageClass 
+            metadata:   
+              name: shared-storage
+            provisioner: docker.io/hostpath
+
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-1
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 10Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+            
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-2
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 10Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-3
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 10Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-4
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 1Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-5
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 1Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-6
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 1Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+            ---
+            apiVersion: v1
+            kind: PersistentVolume
+            metadata:
+              name: shared-pv-7
+              labels:
+                type: local
+            spec:
+              storageClassName: shared-storage
+              capacity:
+                storage: 1Gi
+              accessModes:
+                - ReadWriteMany
+              hostPath:
+                path: ${GITHUB_WORKSPACE}/storage/
+              persistentVolumeReclaimPolicy: Retain
+          EOF
