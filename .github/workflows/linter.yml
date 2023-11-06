@@ -56,9 +56,9 @@ jobs:
 
       - name: Setup cluster
         #if: steps.list-changed.outputs.changed == 'true'
-        run: | 
-          mkdir ${GITHUB_WORKSPACE}/storage
+        run: |
           kubectl create ns bitwarden
+
           installation_id=uuidgen
           installation_key=$(openssl rand -base64 12)
           sa_password=$(openssl rand -base64 12)
@@ -70,4 +70,9 @@ jobs:
             --from-literal=globalSettings__yubico__clientId="REPLACE" \
             --from-literal=globalSettings__yubico__key="REPLACE" \
             --from-literal=SA_PASSWORD=$sa_password
+
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+      - name: Run chart-testing (install)
+        # if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }}
