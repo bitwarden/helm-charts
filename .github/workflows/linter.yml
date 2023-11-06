@@ -51,9 +51,11 @@ jobs:
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
       - name: Setup NFS for testing
-        run: |
-          sudo mkdir -p ${GITHUB_WORKSPACE}/nfs
-          sudo chmod 777 ${GITHUB_WORKSPACE}/nfs
-          echo "${GITHUB_WORKSPACE}/nfs 127.0.0.1(rw,sync,no_subtree_check)" >> /etc/exports
-          sudo exportfs -ar
-          sudo exportfs -v
+        run: |          
+          echo "/srv/nfs 127.0.0.1(rw,sync,no_subtree_check)" >> exports.txt
+          docker run                                            \
+            -v /host/path/to/shared/files:/some/container/path  \
+            -v /host/path/to/exports.txt:/etc/exports:ro        \
+            --cap-add SYS_ADMIN                                 \
+            -p 2049:2049                                        \
+            erichough/nfs-server
