@@ -54,10 +54,9 @@ jobs:
         run: |     
           mkdir nfs
           chmod 777 nfs
-          echo "/srv/nfs 127.0.0.1(rw,sync,no_subtree_check)" >> exports.txt
           docker run                                            \
             -v nfs:/srv/nfs  \
-            -v exports.txt:/etc/exports:ro        \
+            -e NFS_EXPORT_0="/srv/nfs *(rw,sync,no_subtree_check)"
             --cap-add SYS_ADMIN                                 \
             -p 2049:2049                                        \
             erichough/nfs-server
