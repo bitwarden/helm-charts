@@ -57,11 +57,11 @@ general:
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
   webVersionOverride: ""
-  # Disable users' ability to register themselves
+  # Disable account registration on web vault
   disableUserRegistration: "false"
   # Have I Been Pwned API Key
   hibpApiKey: "false"
-  # Set to email addresses for Admin users
+  # Comma-separated list of email addresses for Admin users
   admins: "false"
   email:
     # Email address used for invitations, typically no-reply@smtp-host
@@ -79,10 +79,10 @@ general:
 # This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
 sharedStorageClassName: "shared-storage"
 
-# Secrets are required.  Review the chart Readme on GitHub for details on creating these secrets
+# Secrets are required.  Review the chart README on GitHub for details on creating these secrets
 secrets:
   secretName: custom-secret
-  # Secrets can either be created via kubectl create secrets or a secret provider class.  If using the latter, specify the name here
+  # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass:
 
 # Settings for individual service containers
@@ -327,8 +327,8 @@ database:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
 
-# You can specify raw Kubernetes manifests that will get applied before or after the base Helm install.
-# Please see the chart Readme in GitHub for more information and examples.
+# You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
+# Please see the chart README in GitHub for more information and examples.
 rawManifests:
   preInstall: []
   postInstall: []
