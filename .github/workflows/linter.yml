@@ -59,115 +59,14 @@ jobs:
         run: | 
           mkdir ${GITHUB_WORKSPACE}/storage
           kubectl create ns bitwarden
-          ####STORAGE CLASS
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: storage.k8s.io/v1
-            kind: StorageClass 
-            metadata:   
-              name: shared-storage
-            provisioner: docker.io/hostpath
-          EOF
-          ####PVs
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: v1
-            kind: PersistentVolume
-            metadata:
-              name: shared-pv-1
-              labels:
-                type: local
-            spec:
-              storageClassName: shared-storage
-              capacity:
-                storage: 10Gi
-              accessModes:
-                - ReadWriteMany
-              hostPath:
-                path: ${GITHUB_WORKSPACE}/storage/
-              persistentVolumeReclaimPolicy: Retain
-          EOF
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: v1
-            kind: PersistentVolume
-            metadata:
-              name: shared-pv-2
-              labels:
-                type: local
-            spec:
-              storageClassName: shared-storage
-              capacity:
-                storage: 10Gi
-              accessModes:
-                - ReadWriteMany
-              hostPath:
-                path: ${GITHUB_WORKSPACE}/storage/
-              persistentVolumeReclaimPolicy: Retain
-          EOF
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: v1
-            kind: PersistentVolume
-            metadata:
-              name: shared-pv-3
-              labels:
-                type: local
-            spec:
-              storageClassName: shared-storage
-              capacity:
-                storage: 1Gi
-              accessModes:
-                - ReadWriteMany
-              hostPath:
-                path: ${GITHUB_WORKSPACE}/storage/
-              persistentVolumeReclaimPolicy: Retain
-          EOF
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: v1
-            kind: PersistentVolume
-            metadata:
-              name: shared-pv-4
-              labels:
-                type: local
-            spec:
-              storageClassName: shared-storage
-              capacity:
-                storage: 1Gi
-              accessModes:
-                - ReadWriteMany
-              hostPath:
-                path: ${GITHUB_WORKSPACE}/storage/
-              persistentVolumeReclaimPolicy: Retain
-          EOF
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: v1
-            kind: PersistentVolume
-            metadata:
-              name: shared-pv-5
-              labels:
-                type: local
-            spec:
-              storageClassName: shared-storage
-              capacity:
-                storage: 1Gi
-              accessModes:
-                - ReadWriteMany
-              hostPath:
-                path: ${GITHUB_WORKSPACE}/storage/
-              persistentVolumeReclaimPolicy: Retain
-          EOF
-          cat << EOF | kubectl apply -n bitwarden -f -
-            apiVersion: v1
-            kind: PersistentVolume
-            metadata:
-              name: shared-pv-6
-              labels:
-                type: local
-            spec:
-              storageClassName: shared-storage
-              capacity:
-                storage: 1Gi
-              accessModes:
-                - ReadWriteMany
-              hostPath:
-                path: ${GITHUB_WORKSPACE}/storage/
-              persistentVolumeReclaimPolicy: Retain
-          EOF
-          kubectl get pv -A
+          installation_id=uuidgen
+          installation_key=openssl rand -base64 12
+          sa_password=openssl rand -base64 12
+          kubectl create secret generic custom-secret -n bitwarden\
+            --from-literal=globalSettings__installation__id=$installation_id \
+            --from-literal=globalSettings__installation__key=$installation_key \
+            --from-literal=globalSettings__mail__smtp__username="REPLACE" \
+            --from-literal=globalSettings__mail__smtp__password="REPLACE" \
+            --from-literal=globalSettings__yubico__clientId="REPLACE" \
+            --from-literal=globalSettings__yubico__key="REPLACE" \
+            --from-literal=SA_PASSWORD=$sa_password
