@@ -60,8 +60,8 @@ jobs:
           mkdir ${GITHUB_WORKSPACE}/storage
           kubectl create ns bitwarden
           installation_id=uuidgen
-          installation_key=openssl rand -base64 12
-          sa_password=openssl rand -base64 12
+          installation_key=$(openssl rand -base64 12)
+          sa_password=$(openssl rand -base64 12)
           kubectl create secret generic custom-secret -n bitwarden\
             --from-literal=globalSettings__installation__id=$installation_id \
             --from-literal=globalSettings__installation__key=$installation_key \
