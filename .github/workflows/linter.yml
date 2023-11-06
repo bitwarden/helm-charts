@@ -71,7 +71,7 @@ jobs:
             --from-literal=globalSettings__yubico__key="REPLACE" \
             --from-literal=SA_PASSWORD=$sa_password
 
-          kubectl apply -n bitwarden -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
       - name: Run chart-testing (install)
         # if: steps.list-changed.outputs.changed == 'true'
