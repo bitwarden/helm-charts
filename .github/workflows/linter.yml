@@ -49,3 +49,11 @@ jobs:
         env:
           CT_CHECK_VERSION_INCREMENT: false
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Setup NFS for testing
+        run: |
+          sudo mkdir -p ${GITHUB_WORKSPACE}/nfs
+          sudo chmod 777 ${GITHUB_WORKSPACE}/nfs
+          echo "${GITHUB_WORKSPACE}/nfs 127.0.0.1(rw,sync,no_subtree_check)" >> /etc/exports
+          sudo exportfs -ar
+          sudo exportfs -v
