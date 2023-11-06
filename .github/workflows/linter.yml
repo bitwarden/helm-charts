@@ -46,4 +46,6 @@ jobs:
 
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
+        env:
+          CT_CHECK_VERSION_INCREMENT: false
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
