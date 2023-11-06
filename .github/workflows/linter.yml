@@ -59,7 +59,7 @@ jobs:
         run: | 
           mkdir ${GITHUB_WORKSPACE}/storage
           kubectl create ns bitwarden
-          echo << EOF | kubectl apply -n bitwarden -f -
+          cat << EOF | kubectl apply -n bitwarden -f -
             apiVersion: storage.k8s.io/v1
             kind: StorageClass 
             metadata:   
