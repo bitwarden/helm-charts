@@ -7,7 +7,7 @@ general:
   domain: "bitwarden.localhost"
   ingress:
     # Set to false if using a custom ingress
-    enabled: true
+    enabled: false
     # Current supported values for ingress type include: nginx
     className: "nginx"
      ## - Annotations to add to the Ingress resource.  Sample Nginx annotations are provided as comments.
