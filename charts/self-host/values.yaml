@@ -1,4 +1,4 @@
-# Optional
+# Optional - Override the chart name if desired
 fullnameOverride: ""
 nameOverride: ""
 
@@ -10,7 +10,7 @@ general:
     enabled: true
     # Current supported values for ingress type include: nginx
     className: "nginx"
-     ## - Annotations to add to the Ingress resource
+     ## - Annotations to add to the Ingress resource.  Sample Nginx annotations are provided as comments.
     annotations:
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/use-regex: "true"
@@ -24,6 +24,7 @@ general:
       name:
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer:
+    # Ingress path configuration - The samples provided are for Nginx. Examples with other Ingress providers are in the chart Readme on GitHub
     paths:
       web:
         path: /(.*)
@@ -56,8 +57,11 @@ general:
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
   webVersionOverride: ""
+  # Disable account registration on web vault
   disableUserRegistration: "false"
+  # Have I Been Pwned API Key
   hibpApiKey: "false"
+  # Comma-separated list of email addresses for Admin users
   admins: "false"
   email:
     # Email address used for invitations, typically no-reply@smtp-host
@@ -68,16 +72,20 @@ general:
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
     smtpSsl: "false"
+  # Custom labels to add throughout the installation
   labels: {}
 
 # Specify the name of the shared storage class
 # This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
 sharedStorageClassName: "shared-storage"
 
+# Secrets are required.  Review the chart README on GitHub for details on creating these secrets
 secrets:
   secretName: custom-secret
+  # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass:
 
+# Settings for individual service containers
 component:
   # The Admin component
   admin:
@@ -86,6 +94,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/admin
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -93,6 +102,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -102,6 +112,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/api
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -109,6 +120,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -118,6 +130,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/attachments
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -125,6 +138,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -134,6 +148,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/events
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -141,6 +156,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -150,6 +166,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/icons
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -157,6 +174,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -166,6 +184,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/identity
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -173,6 +192,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -182,6 +202,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/notifications
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -189,6 +210,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -198,6 +220,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/scim
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -205,6 +228,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -214,6 +238,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/sso
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -221,6 +246,7 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
@@ -230,6 +256,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/web
+    # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
@@ -237,9 +264,11 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+# Data volume sizes for shared PVCs
 volume:
   dataprotection:
     size: "1Gi"
@@ -273,7 +302,7 @@ database:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
     tag: 2019-CU17-ubuntu-20.04
-  # The containers are limited to the resources below
+  # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
       memory: "2G"
@@ -282,7 +311,7 @@ database:
       memory: "2G"
       cpu: "500m"
 
-  # The MSSQL volumes
+  # The MSSQL volumes for the PVCs
   volume:
     backups:
       # Storage size
@@ -293,10 +322,13 @@ database:
     log:
       # Storage size
       size: 10Gi
+  # This will set the Kubernetes container security context
   securityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
 
+# You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
+# Please see the chart README in GitHub for more information and examples.
 rawManifests:
   preInstall: []
   postInstall: []
