@@ -59,8 +59,6 @@ jobs:
       - name: Setup cluster
         #if: steps.list-changed.outputs.changed == 'true'
         run: |
-          dotnet tool install -g dotnet-guid
-
           kubectl create ns bitwarden
 
           installation_id=$(uuidgen)
@@ -77,6 +75,7 @@ jobs:
             --from-literal=SA_PASSWORD=$sa_password
 
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+          kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 
       - name: Run chart-testing (install)
         # if: steps.list-changed.outputs.changed == 'true'
