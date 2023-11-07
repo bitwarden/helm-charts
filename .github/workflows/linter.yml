@@ -67,14 +67,35 @@ jobs:
           installation_key=$(openssl rand -base64 12)
           sa_password=$(openssl rand -base64 12)
 
+          #TLS setup
+          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt
+          openssl genrsa -out bitwarden.localhost.key 2048
+          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr
+
+          cat > bitwarden.localhost.ext << EOF
+          authorityKeyIdentifier=keyid,issuer
+          basicConstraints=CA:FALSE
+          subjectAltName = @alt_names
+          [alt_names]
+          DNS.1 = bitwarden.localhost
+          EOF
+
+          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext
+
+          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem
+          openssl x509 -in rootCA.crt -out rootCA.pem
+
+          #Ingress
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
           kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
           sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
 
+          #Namespace
           kubectl create ns bitwarden
 
           kubectl config set-context --current --namespace=bitwarden
 
+          #Secrets
           kubectl create secret generic custom-secret \
             --from-literal=globalSettings__installation__id=$installation_id \
             --from-literal=globalSettings__installation__key=$installation_key \
@@ -84,6 +105,9 @@ jobs:
             --from-literal=globalSettings__yubico__key="REPLACE" \
             --from-literal=SA_PASSWORD=$sa_password
 
+          kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.crt
+
+
       - name: Run chart-testing (install)
         # if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
@@ -91,6 +115,7 @@ jobs:
       - name: Test install
         #if: steps.list-changed.outputs.changed == 'true'
         run: |
+          #For review purposes
           echo "*****DEPLOYMENTS*****"
           kubectl get deployments
           echo "*****PODS*****"
@@ -103,7 +128,7 @@ jobs:
           kubectl describe ingress
 
           echo "*****HOME*****"
-          home=$(curl -Lks https://bitwarden.localhost -w httpcode=%{http_code})
+          home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
           echo $home | lynx -stdin -dump -width=100
           httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${home}" | grep -Po 'Bitwarden Web Vault')
@@ -119,7 +144,7 @@ jobs:
           echo "Home OK."
 
           echo "*****API/CONFIG*****"
-          config=$(curl -Lks https://bitwarden.localhost/api/config -w httpcode=%{http_code})
+          config=$(curl -Ls https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
           echo $config | lynx -stdin -dump -width=100
           httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
@@ -135,8 +160,7 @@ jobs:
           echo "API/Config OK."
 
           echo "*****ADMIN*****"
-          curl -Lks https://bitwarden.localhost/admin | lynx -stdin -dump -width=100
-          admin=$(curl -Lks https://bitwarden.localhost/admin -w httpcode=%{http_code})
+          admin=$(curl -Ls https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
           echo $admin | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')

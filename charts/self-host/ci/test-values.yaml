@@ -21,7 +21,7 @@ general:
     # Certificate options
     tls:
       # TLS certificate secret name
-      name:
+      name: tls-secret
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer:
     # Ingress path configuration - The samples provided are for Nginx. Examples with other Ingress providers are in the chart Readme on GitHub
