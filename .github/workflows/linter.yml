@@ -53,6 +53,8 @@ jobs:
       - name: Create kind cluster
         #if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.8.0
+        with:
+          config: .github/workflows/config/cluster.yaml
 
       - name: Setup cluster
         #if: steps.list-changed.outputs.changed == 'true'
@@ -78,4 +80,4 @@ jobs:
 
       - name: Run chart-testing (install)
         # if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --debug --namespace bitwarden
+        run: ct install --target-branch ${{ github.event.repository.default_branch }} --namespace bitwarden
