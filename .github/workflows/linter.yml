@@ -107,12 +107,14 @@ jobs:
           echo $home | lynx -stdin -dump -width=100
           httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${home}" | grep -Po 'Bitwarden')
-          if [ ${httpCode} -ne 200]; then
-            raise error "Home page failed to load.  HTTP code was $httpCode"
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
           fi
 
-          if [ ${bodyCheck} -ne 200]; then
-            raise error "Home page failed to load.  Please check body output above."
+          if [[ ${bodyCheck} -ne "Bitwarden" ]]; then
+            echo "::error::ERROR: Home page failed to load.  Please check body output above."
+            exit 1
           fi
 
           echo "Home OK."
