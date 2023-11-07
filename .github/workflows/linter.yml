@@ -101,8 +101,22 @@ jobs:
           kubectl get jobs
           echo "*****INGRESS*****"
           kubectl describe ingress
+
           echo "*****HOME*****"
-          curl -Lks https://bitwarden.localhost | lynx -stdin -dump -width=100
+          home=$(curl -Lks https://bitwarden.localhost -w httpcode=%{http_code})
+          echo $home | lynx -stdin -dump -width=100
+          httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${home}" | grep -Po 'Bitwarden')
+          if [ ${httpCode} -ne 200]; then
+            raise error "Home page failed to load.  HTTP code was $httpCode"
+          fi
+
+          if [ ${bodyCheck} -ne 200]; then
+            raise error "Home page failed to load.  Please check body output above."
+          fi
+
+          echo "Home OK."
+
           echo "*****API/CONFIG*****"
           curl -Lks https://bitwarden.localhost/api/config | lynx -stdin -dump -width=100
           echo "*****ADMIN*****"
