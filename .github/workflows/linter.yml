@@ -68,10 +68,14 @@ jobs:
           sa_password=$(openssl rand -base64 12)
 
           #TLS setup
-          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt
-          openssl genrsa -out bitwarden.localhost.key 2048
-          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr
+          echo "Creating root CA cert"
+          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt --passout pass:$sa_password
+          echo "Generating TLS key"
+          openssl genrsa -out bitwarden.localhost.key 2048 --passout pass:$sa_password
+          echo "Generating TLS cert"
+          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$sa_password
 
+          echo "Signing TLS cert"
           cat > bitwarden.localhost.ext << EOF
           authorityKeyIdentifier=keyid,issuer
           basicConstraints=CA:FALSE
@@ -82,8 +86,9 @@ jobs:
 
           openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext
 
-          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem
-          openssl x509 -in rootCA.crt -out rootCA.pem
+          echo "Exporting TLS certs to PEM"
+          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$sa_password
+          openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$sa_password
 
           #Ingress
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
