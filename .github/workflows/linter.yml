@@ -111,8 +111,9 @@ jobs:
             echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
             exit 1
           fi
-
           if [[ "$bodyCheck" != "Bitwarden" ]]; then
+            echo "${home}"
+            echo "Body check: $bodyCheck"
             echo "::error::ERROR: Home page failed to load.  Please check body output above."
             exit 1
           fi
