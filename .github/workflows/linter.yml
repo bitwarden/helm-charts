@@ -112,7 +112,7 @@ jobs:
             exit 1
           fi
 
-          if [[ ${bodyCheck} -ne "Bitwarden" ]]; then
+          if [[ "$bodyCheck" != "Bitwarden" ]]; then
             echo "::error::ERROR: Home page failed to load.  Please check body output above."
             exit 1
           fi
