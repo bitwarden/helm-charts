@@ -119,7 +119,7 @@ jobs:
           echo "Home OK."
 
           echo "*****API/CONFIG*****"
-          config=(curl -Lks https://bitwarden.localhost/api/config -w httpcode=%{http_code})
+          config=$(curl -Lks https://bitwarden.localhost/api/config -w httpcode=%{http_code})
           echo $config | lynx -stdin -dump -width=100
           httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
@@ -135,7 +135,7 @@ jobs:
           echo "API/Config OK."
 
           echo "*****ADMIN*****"
-          admin=(curl -Lks https://bitwarden.localhost/admin)
+          admin=$(curl -Lks https://bitwarden.localhost/admin)
           echo $admin | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
