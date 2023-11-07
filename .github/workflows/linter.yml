@@ -69,7 +69,7 @@ jobs:
 
           #TLS setup
           echo "Creating root CA cert"
-          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt --passout pass:$sa_password
+          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt -subj "/CN=Bitwarden Ingress" --passout pass:$sa_password
           echo "Generating TLS key"
           openssl genrsa -out bitwarden.localhost.key 2048 --passout pass:$sa_password
           echo "Generating TLS cert"
