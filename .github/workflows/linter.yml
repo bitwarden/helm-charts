@@ -59,13 +59,20 @@ jobs:
       - name: Setup cluster
         #if: steps.list-changed.outputs.changed == 'true'
         run: |
-          kubectl create ns bitwarden
-
           installation_id=$(uuidgen)
           echo $installation_id
           installation_key=$(openssl rand -base64 12)
           sa_password=$(openssl rand -base64 12)
-          kubectl create secret generic custom-secret -n bitwarden\
+
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+          kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+          sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
+
+          kubectl create ns bitwarden
+
+          kubectl config set-context --current --namespace=bitwarden
+
+          kubectl create secret generic custom-secret \
             --from-literal=globalSettings__installation__id=$installation_id \
             --from-literal=globalSettings__installation__key=$installation_key \
             --from-literal=globalSettings__mail__smtp__username="REPLACE" \
@@ -74,9 +81,16 @@ jobs:
             --from-literal=globalSettings__yubico__key="REPLACE" \
             --from-literal=SA_PASSWORD=$sa_password
 
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-          kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
-
       - name: Run chart-testing (install)
         # if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --namespace bitwarden
+
+      - name: Test install
+        #if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          kubectl get deployments
+          kubectl get svc
+          kubectl describe ingress
+          curl https://bitwarden.localhost
+          curl https://bitwarden.localhost/api/config
+          curl https://bitwarden.localhost/admin
