@@ -135,17 +135,17 @@ jobs:
           echo "API/Config OK."
 
           echo "*****ADMIN*****"
-          curl -Lks https://bitwarden.localhost/admin -w httpcode=%{http_code}
+          curl -Lks https://bitwarden.localhost/admin | lynx -stdin -dump -width=100
           admin=$(curl -Lks https://bitwarden.localhost/admin -w httpcode=%{http_code})
           echo $admin | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
-          bodyCheck=$(echo "${admin}" | grep -Po 'We'll email you a secure login link')
+          bodyCheck=$(echo "${admin}" | grep -Po "We'll email you a secure login link")
           if [[ ${httpCode} -ne 200 ]]; then
             echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
             exit 1
           fi
-          if [[ "$bodyCheck" != 'We'll email you a secure login link' ]]; then
+          if [[ "$bodyCheck" != "We'll email you a secure login link" ]]; then
             echo "::error::ERROR: Admin page failed to load.  Please check body output above."
             exit 1
           fi
