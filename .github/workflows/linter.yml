@@ -27,6 +27,9 @@ jobs:
         with:
           version: 'v3.13.1'
 
+      - name: Setup lynx
+        run: sudo apt install lynx
+
       - name: Set up Python
         uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
         with:
@@ -88,11 +91,19 @@ jobs:
       - name: Test install
         #if: steps.list-changed.outputs.changed == 'true'
         run: |
+          echo "*****DEPLOYMENTS*****"
           kubectl get deployments
+          echo "*****PODS*****"
           kubectl get pods
+          echo "*****SERVICES*****"
           kubectl get svc
+          echo "*****JOBS*****"
           kubectl get jobs
+          echo "*****INGRESS*****"
           kubectl describe ingress
-          curl -k https://bitwarden.localhost
-          curl -k https://bitwarden.localhost/api/config
-          curl -k https://bitwarden.localhost/admin
+          echo "*****HOME*****"
+          curl -Lks https://bitwarden.localhost | lynx -stdin -dump -width=100
+          echo "*****API/CONFIG*****"
+          curl -Lks https://bitwarden.localhost/api/config | lynx -stdin -dump -width=100
+          echo "*****ADMIN*****"
+          curl -Lks https://bitwarden.localhost/admin | lynx -stdin -dump -width=100
