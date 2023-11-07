@@ -119,6 +119,34 @@ jobs:
           echo "Home OK."
 
           echo "*****API/CONFIG*****"
-          curl -Lks https://bitwarden.localhost/api/config | lynx -stdin -dump -width=100
+          config=(curl -Lks https://bitwarden.localhost/api/config -w httpcode=%{http_code})
+          echo $config | lynx -stdin -dump -width=100
+          httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != '"vault":"https://bitwarden.localhost"' ]]; then
+            echo "::error::ERROR: API/Config page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "API/Config OK."
+
           echo "*****ADMIN*****"
-          curl -Lks https://bitwarden.localhost/admin | lynx -stdin -dump -width=100
+          admin=(curl -Lks https://bitwarden.localhost/admin)
+          echo $admin | lynx -stdin -dump -width=100
+
+          httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${admin}" | grep -Po 'We'll email you a secure login link')
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != 'We'll email you a secure login link' ]]; then
+            echo "::error::ERROR: Admin page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "Admin OK."
