@@ -135,7 +135,8 @@ jobs:
           echo "API/Config OK."
 
           echo "*****ADMIN*****"
-          admin=$(curl -Lks https://bitwarden.localhost/admin)
+          curl -Lks https://bitwarden.localhost/admin -w httpcode=%{http_code}
+          admin=$(curl -Lks https://bitwarden.localhost/admin -w httpcode=%{http_code})
           echo $admin | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
