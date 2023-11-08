@@ -92,13 +92,15 @@ jobs:
 
       - name: Create Update Versions Branch
         run: |
-          git switch -c update-versions
-          git push -u origin update-versions
+          PR_BRANCH=update-versions-$GITHUB_SHA
+          echo "PR_BRANCH=$PR_BRANCH" >> $GITHUB_ENV
+          git switch -c $PR_BRANCH
+          git push -u origin $PR_BRANCH
 
       - name: Checkout Update Versions Branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          ref: update-versions
+          ref: ${{ env.PR_BRANCH }}
 
       - name: Update Core Version
         env:
@@ -125,11 +127,10 @@ jobs:
           git commit -m "Updated core and web versions" -a
 
       - name: Push changes
-        run: git push -u origin update-versions
+        run: git push -u origin $PR_BRANCH
 
       - name: Create Update Versions PR
         env:
-          PR_BRANCH: "update-versions"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ github.ref_name }}
           TITLE: "Update core and web versions"
@@ -147,4 +148,5 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version updates to core and web versions in charts/self-host/templates/helpers.tpl."
+              Automated version updates to core and web versions in charts/self-host/templates/helpers.tpl.
+              Automated version update to appVersion in charts/self-host/Chart.yaml"
