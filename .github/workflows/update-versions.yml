@@ -4,20 +4,23 @@ name: Update Versions
 on:
   workflow_dispatch:
 
+env:
+  _BRANCH: main
+
 jobs:
   setup:
     name: Setup
-    if: github.ref_name == 'main'
     runs-on: ubuntu-22.04
     outputs:
       core_version: ${{ steps.get-core.outputs.version }}
       core_version_update: ${{ steps.core-update.outputs.update }}
       web_version: ${{ steps.get-web.outputs.version }}
       web_version_update: ${{ steps.web-update.outputs.update }}
-
     steps:
       - name: Checkout Branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ env._BRANCH }}
 
       - name: Get Latest Core Version
         id: get-core
@@ -84,6 +87,8 @@ jobs:
     steps:
       - name: Checkout Branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ env._BRANCH }}
 
       - name: Create Update Versions Branch
         run: |
