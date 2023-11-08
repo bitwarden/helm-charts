@@ -75,7 +75,7 @@ jobs:
         working-directory: charts/self-host/templates
 
   update-versions:
-    name: "Create update_versions branch"
+    name: "Update Versions"
     if: |
       needs.setup.outputs.core_version_update == 1 ||
       needs.setup.outputs.web_version_update == 1
