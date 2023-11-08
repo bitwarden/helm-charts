@@ -107,6 +107,12 @@ jobs:
         run: sed -i '/define "bitwarden.webVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
         working-directory: charts/self-host/templates
 
+      - name: Update Chart appVersion
+        env:
+          VERSION: ${{ needs.setup.outputs.core_version }}
+        run: "sed -i -e 's/appVersion:.*/appVersion: '$VERSION'/' Chart.yaml"
+        working-directory: charts/self-host
+
       - name: Commit updated files
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
