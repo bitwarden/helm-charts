@@ -84,7 +84,7 @@ jobs:
           DNS.1 = bitwarden.localhost
           EOF
 
-          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext
+          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext  --passin pass:$sa_password
 
           echo "Exporting TLS certs to PEM"
           openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$sa_password
