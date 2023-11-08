@@ -73,7 +73,7 @@ jobs:
           echo "Generating TLS key"
           openssl genrsa -out bitwarden.localhost.key 2048
           echo "Generating TLS cert"
-          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$sa_password
+          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$sa_password -subj "/CN=bitwarden.localhost"
 
           echo "Signing TLS cert"
           cat > bitwarden.localhost.ext << EOF
