@@ -54,13 +54,13 @@ jobs:
         run: ct lint --target-branch ${{ github.event.repository.default_branch }}
 
       - name: Create kind cluster
-        #if: steps.list-changed.outputs.changed == 'true'
-        uses: helm/kind-action@v1.8.0
+        if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@dda0770415bac9fc20092cacbc54aa298604d140 # v1.8.0
         with:
           config: .github/workflows/config/cluster.yaml
 
       - name: Setup cluster
-        #if: steps.list-changed.outputs.changed == 'true'
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           installation_id=$(uuidgen)
           echo $installation_id
@@ -115,11 +115,11 @@ jobs:
 
 
       - name: Run chart-testing (install)
-        # if: steps.list-changed.outputs.changed == 'true'
+        if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
 
       - name: Test install
-        #if: steps.list-changed.outputs.changed == 'true'
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           #For review purposes
           echo "*****DEPLOYMENTS*****"
@@ -181,3 +181,10 @@ jobs:
           fi
 
           echo "Admin OK."
+
+      - name: Clean-up
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          helm uninstall self-host
+          kubectl delete ns bitwarden
+          kind delete cluster
