@@ -185,6 +185,6 @@ jobs:
       - name: Clean-up
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          helm uninstall self-host
+          helm ls --all --short | xargs -L1 helm delete --purge
           kubectl delete ns bitwarden
           kind delete cluster
