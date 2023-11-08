@@ -98,13 +98,13 @@ jobs:
       - name: Update Core Version
         env:
           VERSION: ${{ needs.setup.outputs.core_version }}
-        run: sed '/define "bitwarden.coreVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
+        run: sed -i '/define "bitwarden.coreVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
         working-directory: charts/self-host/templates
 
       - name: Update Web Version
         env:
           VERSION: ${{ needs.setup.outputs.web_version }}
-        run: sed '/define "bitwarden.webVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
+        run: sed -i '/define "bitwarden.webVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
         working-directory: charts/self-host/templates
 
       - name: Commit updated files
