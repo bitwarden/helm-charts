@@ -66,14 +66,15 @@ jobs:
           echo $installation_id
           installation_key=$(openssl rand -base64 12)
           sa_password=$(openssl rand -base64 12)
+          cert_pass=$(openssl rand -base64 12)
 
           #TLS setup
           echo "Creating root CA cert"
-          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt -subj "/CN=Bitwarden Ingress" --passout pass:$sa_password
+          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt -subj "/CN=Bitwarden Ingress" --passout pass:$cert_pass
           echo "Generating TLS key"
           openssl genrsa -out bitwarden.localhost.key 2048
           echo "Generating TLS cert"
-          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$sa_password -subj "/CN=bitwarden.localhost"
+          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$cert_pass -subj "/CN=bitwarden.localhost"
 
           echo "Signing TLS cert"
           cat > bitwarden.localhost.ext << EOF
@@ -84,11 +85,11 @@ jobs:
           DNS.1 = bitwarden.localhost
           EOF
 
-          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext  --passin pass:$sa_password
+          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext  --passin pass:$cert_pass
 
           echo "Exporting TLS certs to PEM"
-          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$sa_password
-          openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$sa_password
+          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$cert_pass
+          openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$cert_pass
 
           #Ingress
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
@@ -110,7 +111,7 @@ jobs:
             --from-literal=globalSettings__yubico__key="REPLACE" \
             --from-literal=SA_PASSWORD=$sa_password
 
-          kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.crt
+          kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
 
 
       - name: Run chart-testing (install)
