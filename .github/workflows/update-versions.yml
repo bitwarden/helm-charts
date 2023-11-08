@@ -92,7 +92,7 @@ jobs:
 
       - name: Create Update Versions Branch
         run: |
-          PR_BRANCH=update-versions-$GITHUB_SHA
+          PR_BRANCH=update-versions-$GITHUB_RUN_ID
           echo "PR_BRANCH=$PR_BRANCH" >> $GITHUB_ENV
           git switch -c $PR_BRANCH
           git push -u origin $PR_BRANCH
