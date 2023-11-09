@@ -4,20 +4,23 @@ name: Update Versions
 on:
   workflow_dispatch:
 
+env:
+  _BRANCH: main
+
 jobs:
   setup:
     name: Setup
-    if: github.ref_name == 'main'
     runs-on: ubuntu-22.04
     outputs:
       core_version: ${{ steps.get-core.outputs.version }}
       core_version_update: ${{ steps.core-update.outputs.update }}
       web_version: ${{ steps.get-web.outputs.version }}
       web_version_update: ${{ steps.web-update.outputs.update }}
-
     steps:
       - name: Checkout Branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ env._BRANCH }}
 
       - name: Get Latest Core Version
         id: get-core
@@ -72,7 +75,7 @@ jobs:
         working-directory: charts/self-host/templates
 
   update-versions:
-    name: "Create update_versions branch"
+    name: "Update Versions"
     if: |
       needs.setup.outputs.core_version_update == 1 ||
       needs.setup.outputs.web_version_update == 1
@@ -84,16 +87,20 @@ jobs:
     steps:
       - name: Checkout Branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: ${{ env._BRANCH }}
 
       - name: Create Update Versions Branch
         run: |
-          git switch -c update-versions
-          git push -u origin update-versions
+          PR_BRANCH=update-versions-$GITHUB_RUN_ID
+          echo "PR_BRANCH=$PR_BRANCH" >> $GITHUB_ENV
+          git switch -c $PR_BRANCH
+          git push -u origin $PR_BRANCH
 
       - name: Checkout Update Versions Branch
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          ref: update-versions
+          ref: ${{ env.PR_BRANCH }}
 
       - name: Update Core Version
         env:
@@ -107,6 +114,12 @@ jobs:
         run: sed -i '/define "bitwarden.webVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
         working-directory: charts/self-host/templates
 
+      - name: Update Chart appVersion
+        env:
+          VERSION: ${{ needs.setup.outputs.core_version }}
+        run: "sed -i -e 's/appVersion:.*/appVersion: '$VERSION'/' Chart.yaml"
+        working-directory: charts/self-host
+
       - name: Commit updated files
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -114,11 +127,10 @@ jobs:
           git commit -m "Updated core and web versions" -a
 
       - name: Push changes
-        run: git push -u origin update-versions
+        run: git push -u origin $PR_BRANCH
 
       - name: Create Update Versions PR
         env:
-          PR_BRANCH: "update-versions"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ github.ref_name }}
           TITLE: "Update core and web versions"
@@ -136,4 +148,5 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version updates to core and web versions in charts/self-host/templates/helpers.tpl."
+              Automated version updates to core and web versions in charts/self-host/templates/helpers.tpl.
+              Automated version update to appVersion in charts/self-host/Chart.yaml"
