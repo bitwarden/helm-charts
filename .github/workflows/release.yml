@@ -36,7 +36,7 @@ jobs:
 
       - name: Retrieve secrets
         id: retrieve-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@master
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
           keyvault: "bitwarden-ci"
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
@@ -60,7 +60,7 @@ jobs:
           version: v3.13.1
 
       - name: Download Helm chart artifact
-        uses: bitwarden/gh-actions/download-artifacts@master
+        uses: bitwarden/gh-actions/download-artifacts@main
         with:
           branch: main
           path: .cr-release-packages

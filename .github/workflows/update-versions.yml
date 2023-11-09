@@ -21,7 +21,7 @@ jobs:
 
       - name: Get Latest Core Version
         id: get-core
-        uses: bitwarden/gh-actions/get-release-version@master
+        uses: bitwarden/gh-actions/get-release-version@main
         with:
           repository: bitwarden/server
           trim: true
@@ -46,7 +46,7 @@ jobs:
 
       - name: Get Latest Web Version
         id: get-web
-        uses: bitwarden/gh-actions/get-release-version@master
+        uses: bitwarden/gh-actions/get-release-version@main
         with:
           repository: bitwarden/clients
           monorepo: true
