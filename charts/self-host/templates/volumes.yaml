@@ -6,7 +6,7 @@ metadata:
   name: {{ template "bitwarden.dataprotection" . }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.general.volumeAccessMode }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
@@ -26,7 +26,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.general.volumeAccessMode }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
@@ -46,7 +46,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.general.volumeAccessMode }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
@@ -71,7 +71,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.general.volumeAccessMode }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
@@ -91,7 +91,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.general.volumeAccessMode }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
@@ -111,7 +111,7 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.general.volumeAccessMode }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
