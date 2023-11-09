@@ -27,7 +27,7 @@ jobs:
         with:
           version: 'v3.13.1'
 
-      - name: Setup lynx
+      - name: Set up lynx
         run: sudo apt install lynx
 
       - name: Set up Python
@@ -59,7 +59,7 @@ jobs:
         with:
           config: .github/workflows/config/cluster.yaml
 
-      - name: Setup cluster
+      - name: Set up cluster
         if: steps.list-changed.outputs.changed == 'true'
         run: |
           installation_id=$(uuidgen)
@@ -112,7 +112,6 @@ jobs:
             --from-literal=SA_PASSWORD=$sa_password
 
           kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
-
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
