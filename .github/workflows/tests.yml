@@ -1,0 +1,183 @@
+---
+name: Tests
+
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Helm charts
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        with:
+          version: 'v3.13.1'
+
+      - name: Set up lynx
+        run: sudo apt install lynx
+
+      - name: Set up Python
+        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        with:
+          python-version: '3.12'
+          check-latest: true
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@b43128a8b25298e1e7b043b78ea6613844e079b1 # v2.6.0
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          CHANGED=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$CHANGED" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create kind cluster
+        if: steps.list-changed.outputs.changed == 'true'
+        uses: helm/kind-action@dda0770415bac9fc20092cacbc54aa298604d140 # v1.8.0
+        with:
+          config: .github/workflows/config/cluster.yaml
+
+      - name: Set up cluster
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          installation_id=$(uuidgen)
+          echo $installation_id
+          installation_key=$(openssl rand -base64 12)
+          sa_password=$(openssl rand -base64 12)
+          cert_pass=$(openssl rand -base64 12)
+
+          #TLS setup
+          echo "Creating root CA cert"
+          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt -subj "/CN=Bitwarden Ingress" --passout pass:$cert_pass
+          echo "Generating TLS key"
+          openssl genrsa -out bitwarden.localhost.key 2048
+          echo "Generating TLS cert"
+          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$cert_pass -subj "/CN=bitwarden.localhost"
+
+          echo "Signing TLS cert"
+          cat > bitwarden.localhost.ext << EOF
+          authorityKeyIdentifier=keyid,issuer
+          basicConstraints=CA:FALSE
+          subjectAltName = @alt_names
+          [alt_names]
+          DNS.1 = bitwarden.localhost
+          EOF
+
+          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext  --passin pass:$cert_pass
+
+          echo "Exporting TLS certs to PEM"
+          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$cert_pass
+          openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$cert_pass
+
+          #Ingress
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+          kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+          sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
+
+          #Namespace
+          kubectl create ns bitwarden
+
+          kubectl config set-context --current --namespace=bitwarden
+
+          #Secrets
+          kubectl create secret generic custom-secret \
+            --from-literal=globalSettings__installation__id=$installation_id \
+            --from-literal=globalSettings__installation__key=$installation_key \
+            --from-literal=globalSettings__mail__smtp__username="REPLACE" \
+            --from-literal=globalSettings__mail__smtp__password="REPLACE" \
+            --from-literal=globalSettings__yubico__clientId="REPLACE" \
+            --from-literal=globalSettings__yubico__key="REPLACE" \
+            --from-literal=SA_PASSWORD=$sa_password
+
+          kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
+
+      - name: Run chart-testing (install)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
+
+      - name: Test install
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          #For review purposes
+          echo "*****DEPLOYMENTS*****"
+          kubectl get deployments
+          echo "*****PODS*****"
+          kubectl get pods
+          echo "*****SERVICES*****"
+          kubectl get svc
+          echo "*****JOBS*****"
+          kubectl get jobs
+          echo "*****INGRESS*****"
+          kubectl describe ingress
+
+          echo "*****HOME*****"
+          home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
+          echo $home | lynx -stdin -dump -width=100
+          httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${home}" | grep -Po 'Bitwarden Web Vault')
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != "Bitwarden Web Vault" ]]; then
+            echo "::error::ERROR: Home page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "Home OK."
+
+          echo "*****API/CONFIG*****"
+          config=$(curl -Ls https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
+          echo $config | lynx -stdin -dump -width=100
+          httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != '"vault":"https://bitwarden.localhost"' ]]; then
+            echo "::error::ERROR: API/Config page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "API/Config OK."
+
+          echo "*****ADMIN*****"
+          admin=$(curl -Ls https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
+          echo $admin | lynx -stdin -dump -width=100
+
+          httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${admin}" | grep -Po "We'll email you a secure login link")
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != "We'll email you a secure login link" ]]; then
+            echo "::error::ERROR: Admin page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "Admin OK."
+
+      - name: Clean-up
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          helm ls --all --short | xargs -L1 helm delete
+          kubectl delete ns bitwarden
+          kind delete cluster
