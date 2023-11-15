@@ -286,6 +286,10 @@
                                 }
                             }
                         },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -471,6 +475,10 @@
                                     }
                                 }
                             }
+                        },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
                         },
                         "securityContext": {
                             "type": [
@@ -658,6 +666,10 @@
                                 }
                             }
                         },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -843,6 +855,10 @@
                                     }
                                 }
                             }
+                        },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
                         },
                         "securityContext": {
                             "type": [
@@ -1030,6 +1046,10 @@
                                 }
                             }
                         },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -1215,6 +1235,10 @@
                                     }
                                 }
                             }
+                        },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
                         },
                         "securityContext": {
                             "type": [
@@ -1402,6 +1426,10 @@
                                 }
                             }
                         },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -1588,6 +1616,10 @@
                                 }
                             }
                         },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -1773,6 +1805,10 @@
                                     }
                                 }
                             }
+                        },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
                         },
                         "securityContext": {
                             "type": [
@@ -1961,6 +1997,10 @@
                                     }
                                 }
                             }
+                        },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
                         },
                         "securityContext": {
                             "type": [
@@ -2248,6 +2288,10 @@
                             }
                         }
                     }
+                },
+                "deploymentStrategy": {
+                    "type": "string",
+                    "enum": ["RollingUpdate", "Recreate"]
                 },
                 "securityContext": {
                     "type": [
