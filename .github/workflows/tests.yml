@@ -14,7 +14,7 @@ on:
 
 jobs:
   lint:
-    name: Lint Helm charts
+    name: Test Helm charts
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repo
