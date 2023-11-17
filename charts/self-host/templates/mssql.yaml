@@ -14,8 +14,8 @@ metadata:
 {{- end }}
 spec:
   replicas: 1
-  strategy:
-    type: "{{ .Values.database.deploymentStrategy }}"
+  updateStrategy:
+    type: "{{ .Values.database.updateStrategy }}"
   selector:
     matchLabels:
       app: {{ template "bitwarden.mssql" . }}

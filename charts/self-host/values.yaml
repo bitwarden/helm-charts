@@ -346,8 +346,9 @@ database:
     log:
       # Storage size
       size: 10Gi
-  # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
-  deploymentStrategy: RollingUpdate
+  # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
+  # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.
+  updateStrategy: OnDelete
   # This will set the Kubernetes container security context
   securityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments

@@ -2289,9 +2289,9 @@
                         }
                     }
                 },
-                "deploymentStrategy": {
+                "updateStrategy": {
                     "type": "string",
-                    "enum": ["RollingUpdate", "Recreate"]
+                    "enum": ["RollingUpdate", "OnDelete"]
                 },
                 "securityContext": {
                     "type": [
