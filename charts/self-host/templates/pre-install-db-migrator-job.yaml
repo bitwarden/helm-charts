@@ -12,7 +12,7 @@ metadata:
     "helm.sh/hook": pre-install,pre-upgrade
     {{- end }}
     "helm.sh/hook-weight": "4"
-    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
 spec:
   template:
     metadata:
