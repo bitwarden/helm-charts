@@ -1,7 +1,7 @@
 {{- if .Values.database.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ template "bitwarden.mssql" . }}
   namespace: {{ .Release.Namespace }}
