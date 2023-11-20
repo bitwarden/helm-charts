@@ -17,6 +17,11 @@
       "groupName": "gh minor",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "matchDatasources": ["github-tags"],
+      "matchPackageNames": ["helm/chart-releaser-action"],
+      "allowedVersions": "<=1.5.0"
     }
   ]
 }
