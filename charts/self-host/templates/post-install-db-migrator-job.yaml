@@ -8,7 +8,7 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
 spec:
   template:
     metadata:
@@ -69,6 +69,9 @@ spec:
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
+        {{- end }}
+        {{- if or (not .Values.database.enabled) (and .Values.database.enabled .Release.IsUpgrade) }}
+        arg: [ "-f", "DbScripts_transition", "-r"]
         {{- end }}
       restartPolicy: Never
       volumes:
