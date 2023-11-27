@@ -2187,6 +2187,23 @@
                             "properties": {}
                         }
                     }
+                },
+                "logs": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "size": {
+                            "type": "string"
+                        },
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        }
+                    }
                 }
             }
         },

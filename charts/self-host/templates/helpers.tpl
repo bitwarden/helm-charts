@@ -182,6 +182,13 @@ Name of Licenses volume
 {{ template "bitwarden.fullname" . }}-licenses
 {{- end -}}
 
+{{/*
+Name of Logs volume
+*/}}
+{{- define "bitwarden.applogs" -}}
+{{ template "bitwarden.fullname" . }}-applogs
+{{- end -}}
+
 
 {{/*
 Name of MSSQL Backups volume
