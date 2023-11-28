@@ -303,6 +303,11 @@ volume:
   licenses:
     size: 1Gi
     labels: {}
+  logs:
+    # Logs are disabled by default
+    enabled: false
+    size: 1Gi
+    labels: {}
 
 #
 # Configure service account for pre- and post-install hooks

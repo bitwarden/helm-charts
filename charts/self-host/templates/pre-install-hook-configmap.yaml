@@ -44,7 +44,9 @@ data:
   globalSettings__oidcIdentityClientKey: {{ (randAlphaNum 64) | quote }}
   globalSettings__duo__aKey: {{ (randAlphaNum 64) | quote }}
 {{- end }}
+{{- if not (and .Values.volume.logs .Values.volume.logs.enabled) }}
   globalSettings__logDirectory: "/dev/null"
+{{- end }}
   globalSettings__logRollBySizeLimit: ""
   globalSettings__syslog__destination: ""
   globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"

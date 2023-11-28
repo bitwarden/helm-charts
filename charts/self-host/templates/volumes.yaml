@@ -52,6 +52,28 @@ spec:
     requests:
       storage: {{ .Values.volume.attachments.size }}
 
+{{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.applogs" . }}
+  labels:
+    app.kubernetes.io/component: logs
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.volume.logs.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.logs.size }}
+{{- end }}
+
 #################
 # MSSQL Volumes #
 #################

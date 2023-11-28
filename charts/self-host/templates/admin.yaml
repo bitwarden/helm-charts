@@ -29,6 +29,20 @@ spec:
       serviceAccount: "{{ .Values.component.admin.podServiceAccount }}"
       serviceAccountName: "{{ .Values.component.admin.podServiceAccount }}"
     {{- end }}
+    {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+      initContainers:
+      - name: create-mount-subdir
+        command:
+          - "/bin/bash"
+          - "-c"
+        args: ['
+          mkdir -p /logs/admin
+        ']
+        image: "bitnami/kubectl:1.19"
+        volumeMounts:
+          - name: applogs
+            mountPath: /logs
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.admin" . }}
         image: "{{ .Values.component.admin.image.name }}:{{ template "bitwarden.coreVersion" }}"
@@ -58,6 +72,11 @@ spec:
           mountPath: /etc/bitwarden/core/aspnet-dataprotection
         - name: licenses
           mountPath: /etc/bitwarden/core/licenses
+        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        - name: applogs
+          mountPath: /etc/bitwarden/logs
+          subPath: admin
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -72,6 +91,11 @@ spec:
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.licenses" . }}
+        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        - name: applogs
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.applogs" . }}
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           csi:
