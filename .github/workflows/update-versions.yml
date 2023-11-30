@@ -78,7 +78,7 @@ jobs:
         id: verify-versions
         env:
           COREVERSION: 2023.10.2 #${{ steps.get-core.outputs.version }}
-          WEBVERSION: 2023.10.2 #${{ steps.get-web.outputs.version }}
+          WEBVERSION: ${{ steps.get-web.outputs.version }}
         run: |
           echo "Checking..."
           
