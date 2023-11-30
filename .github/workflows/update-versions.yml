@@ -87,7 +87,7 @@ jobs:
           test_image() {
               image=$1
               version=$2
-              tag=$(curl  "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version | cat)
+              tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version | cat)
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
