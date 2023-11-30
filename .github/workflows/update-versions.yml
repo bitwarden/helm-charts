@@ -80,8 +80,10 @@ jobs:
           COREVERSION: ${{ steps.get-core.outputs.version }}
           WEBVERSION: ${{ steps.get-web.outputs.version }}
         run: |
+          echo "Checking..."
+          
           coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
-
+          
           test_image() {
               image=$1
               version=$2
@@ -96,6 +98,8 @@ jobs:
               fi
           }
 
+          echo "Core Images..."
+          
           for key in "${!coreimages[@]}"
           do
               image=${coreimages[$key]}
@@ -103,6 +107,8 @@ jobs:
               test_image $image $COREVERSION
           done
 
+          echo "Web Image..."
+          
           test_image "web" $WEBVERSION
 
   update-versions:
