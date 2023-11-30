@@ -75,7 +75,7 @@ jobs:
         working-directory: charts/self-host/templates
 
       - name: Verify if image versions are on Docker Hub
-        id: web-update
+        id: verify-versions
         env:
           COREVERSION: ${{ steps.get-core.outputs.version }}
           WEBVERSION: ${{ steps.get-web.outputs.version }}
