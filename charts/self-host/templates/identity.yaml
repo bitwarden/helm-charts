@@ -45,7 +45,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.identity" . }}
-        image: "{{ .Values.component.identity.image.name }}:{{ template "bitwarden.coreVersion" }}"
+        image: "{{ .Values.component.identity.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride}}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

@@ -121,11 +121,11 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
         memory: "128Mi"
         cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -201,11 +201,11 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
         memory: "128Mi"
         cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
