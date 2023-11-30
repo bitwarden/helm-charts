@@ -85,9 +85,10 @@ jobs:
           coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
           
           test_image() {
+              echo "test_image"
               image=$1
               version=$2
-
+              echo "$image - $version"
               tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version)
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
@@ -105,6 +106,7 @@ jobs:
               echo "here"
               image=${coreimages[$key]}
               echo "there"
+              echo $image
               test_image $image $COREVERSION
               echo "everywhere"
           done
