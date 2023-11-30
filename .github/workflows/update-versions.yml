@@ -90,9 +90,11 @@ jobs:
               version=$2
               echo "$image - $version"
               tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version)
+              echo "tag: $tag"
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
+                  sleep 1
                   exit 127
               else
                   echo "$image - $tag - FOUND"
