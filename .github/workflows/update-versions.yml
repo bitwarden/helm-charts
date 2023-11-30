@@ -98,7 +98,7 @@ jobs:
               fi
           }
 
-          echo "Core Images..."
+          echo "Core Images ($COREVERSION)..."
           
           for key in "${!coreimages[@]}"
           do
@@ -107,7 +107,7 @@ jobs:
               test_image $image $COREVERSION
           done
 
-          echo "Web Image..."
+          echo "Web Image ($WEBVERSION)..."
           
           test_image "web" $WEBVERSION
 
