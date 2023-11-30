@@ -102,9 +102,11 @@ jobs:
           
           for key in "${!coreimages[@]}"
           do
+              echo "here"
               image=${coreimages[$key]}
-
+              echo "there"
               test_image $image $COREVERSION
+              echo "everywhere"
           done
 
           echo "Web Image ($WEBVERSION)..."
