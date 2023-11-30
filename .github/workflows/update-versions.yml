@@ -90,7 +90,7 @@ jobs:
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
-                  exit 1
+                  exit 127
               else
                   echo "$image - $tag - FOUND"
               fi
