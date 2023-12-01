@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "bitwarden-restore"
+  labels:
+    app.kubernetes.io/component: bitwarden-restore
+    app: bitwarden-restore
+spec:
+  ttlSecondsAfterFinished: 10
+  backoffLimit: 1
+  template:
+    metadata:
+      name: "bitwarden-restore"
+      labels:
+        app.kubernetes.io/component: bitwarden-restore
+        app: bitwarden-restore
+    spec:
+      containers:
+      - name: restore-db
+        env:
+        - name: MSSQL_CONN_STRING
+          valueFrom:
+            secretKeyRef:
+              name: bitwarden-sql-connection-string
+              key: globalSettings__sqlServer__connectionString
+        image: "mcr.microsoft.com/mssql-tools"
+        volumeMounts:
+          - name: mssql-backups
+            mountPath: /backups
+        command:
+          - "/bin/bash"
+          - "-c"
+        args: [
+            "
+            svr=\"$(echo \"${MSSQL_CONN_STRING}\" | grep -Po \"Data Source=tcp:\\K[^,]*(?=.*)\")\";
+            pass=\"$(echo \"${MSSQL_CONN_STRING}\" | grep -Po \".*Password=\\K[^;]*(?=.*)\")\";
+            echo \"$pass\" | /opt/mssql-tools/bin/sqlcmd -S $svr -U SA -q \"ALTER DATABASE [vault] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; RESTORE DATABASE [vault] FROM DISK = '/var/opt/mssql/backups/vault.bak' WITH REPLACE; ALTER DATABASE [vault] SET MULTI_USER;\"
+            "
+        ]
+      restartPolicy: Never
+      volumes:
+        - name: mssql-backups
+          persistentVolumeClaim:
+            claimName: bitwarden-self-host-mssqlbackups
