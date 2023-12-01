@@ -75,18 +75,19 @@ jobs:
         working-directory: charts/self-host/templates
 
       - name: Verify if image versions are on Docker Hub
-        id: web-update
+        id: verify-versions
         env:
           COREVERSION: ${{ steps.get-core.outputs.version }}
           WEBVERSION: ${{ steps.get-web.outputs.version }}
         run: |
+          echo "Checking..."
+          
           coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
-
+          
           test_image() {
               image=$1
               version=$2
-
-              tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version)
+              tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version | cat)
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
@@ -96,13 +97,16 @@ jobs:
               fi
           }
 
+          echo "Core Images ($COREVERSION)..."
+          
           for key in "${!coreimages[@]}"
           do
               image=${coreimages[$key]}
-
               test_image $image $COREVERSION
           done
 
+          echo "Web Image ($WEBVERSION)..."
+          
           test_image "web" $WEBVERSION
 
   update-versions:
