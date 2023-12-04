@@ -1224,3 +1224,11 @@ Update the other settings in `my-values.yaml` based on your environment.  Follow
 ```shell
 helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
 ```
+
+## Database Pod Backup and Restore Examples
+
+We have provided two example jobs for backing up and restoring the database in the Bitwarden database pod.  If you are using your own SQL Server instance that is not deployed as part of this Helm chart, please follow your corporate backup and restore policies.
+
+The example jobs for the database pod can be found in the `examples` folder in the root level of the repository.  You will find `database-backup` and `database-restore` folders for the jobs in question.  Note that the backup could be scheduled outside of the cluster to run at a regular interval, or it could be modified to create a CronJob object within Kubernetes for scheduling purposes.
+
+The backup job will create timestamped versions of the previous backups.  The current backup is simply called `vault.bak`.  These files are placed in the MS SQL backups persistent volume.  The restore job will look for `vault.bak` in the same persistent volume.
