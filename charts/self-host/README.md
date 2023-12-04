@@ -561,43 +561,51 @@ secrets:
   secretProviderClass: bitwarden-azure-keyvault-csi #metadata.name in example
 ```
 
+### Create Empty Azure Application Gateway Rewrite Set
+
+Application Gateway ingress deployments have a few more required steps for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
+
+We will need to create a rewrite set on the Application Gateway.  There are various ways of doing this, but we will discuss using the Azure Portal.  For now we are creating an empty set for the Helm deployment to work.  We will add the rewrite rule after deploying Helm.
+
+  1. Navigate to the Application Gateway in the Azure Portal
+  2. Once in the Application Gateway, find the "Rewrites" blade in the left-hand navigation menu.
+  3. Click the "+ Rewrite set" button at the top of the main page section to add a new rewrite set
+  4. On the "Update rewrite set" page in the "Name and Association" tab set the `Name` field to the same value specified in the `appgw.ingress.kubernetes.io/rewrite-rule-set` ingress annotation
+  5. Click Next
+  6. Click Create
+
 ### Helm
 
 ```shell
 helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
 ```
 
-### Azure Application Gateway Rewrite Set
+### Update Azure Application Gateway Rewrite Set
 
 Application Gateway ingress deployments have one more required step for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
 
-We will need to create a rewrite set on the Application Gateway.  There are various ways of doing this, but we will discuss using the Azure Portal.
+We will need to finish the rewrite set on the Application Gateway we created earlier.
 
-  1. Navigate to the Application Gateway in the Azure Portal
-  2. Once in the Application Gateway, find the "Rewrites" blade   in the left-hand navigation menu.
-  3. Click the "+ Rewrite set" button at the top of the main page   section to add a new rewrite set
-  4. On the "Update rewrite set" page in the "Name and Association" tab:
-     - Set the Name field to the same value specified in the `appgw.ingress.kubernetes.io/rewrite-rule-set` ingress annotation
-     - Select all routing rules that start with something similar to "pr-bitwarden-bitwarden-ingress-rule-*"
-  5. Click Next
-  6. On the "Rewrite rule configuration" tab, click the "Add rewrite rule" button
-  7. Enter a name for the rule.  This can be anything that helps you with organization.  Something simlar to "bitwarden-rewrite" will work.
-  8. The rule sequence value does not matter for this purpose.
-  9. Add a condition and set the following values:
+  1. Reopen the rewrite set you created earlier.
+  2. On the "Update rewrite set" page in the "Name and Association" tab, select all routing paths that begin with pr-bitwarden-self-host-ingress... , deselect any that do not begin with that prefix, and then select Next.
+  3. On the "Rewrite rule configuration" tab, click the "Add rewrite rule" button.
+  4. Enter a name for the rule.  This can be anything that helps you with organization.  Something similar to "bitwarden-rewrite" will work.
+  5. The rule sequence value does not matter for this purpose.
+  6. Add a condition and set the following values:
      - Type of variable to check: Server variable
      - Server variable: uri_path
      - Case-sensitive: No
      - Operator: equal (=)
      - Pattern to match: `^(\/(?!admin)[^\/]*)\/(.*)`
      - Click OK
-  10. Add an action and set the following values:
+  7. Add an action and set the following values:
      - Rewrite type: URL
      - Action type: Set
      - Components: URL path
      - URL path value: `/{var_uri_path_2}`
      - Re-evalueate path map: Unchecked
      - Click OK
-  11. Click "Create" at the bottom of the screen
+  8. Click "Update" at the bottom of the screen.
 
 ### Pointing your DNS
 
@@ -853,7 +861,7 @@ oc create secret generic custom-secret -n bitwarden \
     --from-literal=globalSettings__yubico__clientId="REPLACE" \
     --from-literal=globalSettings__yubico__key="REPLACE" \
     --from-literal=SA_PASSWORD="REPLACE" # If using SQL pod
-    # --from-literal="REPLACE" # If using your own SQL server
+    # --from-literal=globalSettings__sqlServer__connectionString="REPLACE" # If using your own SQL server
 ```
 
 ### Create a service account
