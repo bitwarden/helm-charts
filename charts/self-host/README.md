@@ -563,7 +563,7 @@ secrets:
 
 ### Create Empty Azure Application Gateway Rewrite Set
 
-Application Gateway ingress deployments have a few more required step for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
+Application Gateway ingress deployments have a few more required steps for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
 
 We will need to create a rewrite set on the Application Gateway.  There are various ways of doing this, but we will discuss using the Azure Portal.  For now we are creating an empty set for the Helm deployment to work.  We will add the rewrite rule after deploying Helm.
 
@@ -584,12 +584,12 @@ helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitward
 
 Application Gateway ingress deployments have one more required step for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
 
-We will need finish the rewrite set on the Application Gateway we created earlier.
+We will need to finish the rewrite set on the Application Gateway we created earlier.
 
   1. Reopen the rewrite set you created earlier.
-  2. On the "Update rewrite set" page in the "Name and Association" tab, select all routing paths that begin with pr-bitwarden-self-host-ingress... , de-select any that do not begin with that prefix, and select Next
-  3. On the "Rewrite rule configuration" tab, click the "Add rewrite rule" button
-  4. Enter a name for the rule.  This can be anything that helps you with organization.  Something simlar to "bitwarden-rewrite" will work.
+  2. On the "Update rewrite set" page in the "Name and Association" tab, select all routing paths that begin with pr-bitwarden-self-host-ingress... , deselect any that do not begin with that prefix, and then select Next.
+  3. On the "Rewrite rule configuration" tab, click the "Add rewrite rule" button.
+  4. Enter a name for the rule.  This can be anything that helps you with organization.  Something similar to "bitwarden-rewrite" will work.
   5. The rule sequence value does not matter for this purpose.
   6. Add a condition and set the following values:
      - Type of variable to check: Server variable
@@ -605,7 +605,7 @@ We will need finish the rewrite set on the Application Gateway we created earlie
      - URL path value: `/{var_uri_path_2}`
      - Re-evalueate path map: Unchecked
      - Click OK
-  8. Click "Update" at the bottom of the screen
+  8. Click "Update" at the bottom of the screen.
 
 ### Pointing your DNS
 
