@@ -20,6 +20,16 @@ spec:
       labels:
         app.kubernetes.io/component: pre-install-db-migrator-job
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ template "bitwarden.mssql" . }}
+            topologyKey: "kubernetes.io/hostname"
       {{- if .Values.serviceAccount.name }}
       serviceAccountName: "{{ .Values.serviceAccount.name }}"
       {{- end }}
