@@ -16,7 +16,7 @@ Get the coreVersion for image tags
 Get the webVersion for image tags
 */}}
 {{- define "bitwarden.webVersion" -}}
-{{- default ( include "bitwarden.webVersionDefault" nil ) .Values.webVersionOverride  -}}
+{{- default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride  -}}
 {{- end -}}
 
 {{/*
