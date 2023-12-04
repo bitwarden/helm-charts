@@ -35,7 +35,7 @@ spec:
               name: "{{ .Values.secrets.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "bitwarden/mssqlmigratorutility:{{ template "bitwarden.coreVersion" }}"
+        image: "bitwarden/mssqlmigratorutility:{{default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
