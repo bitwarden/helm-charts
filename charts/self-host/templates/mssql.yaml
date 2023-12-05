@@ -56,7 +56,7 @@ spec:
             - name: mssql-log
               mountPath: /var/opt/mssql/log
             - name: mssql-backups
-              mountPath: /etc/bitwarden/mssql/backups
+              mountPath: /var/opt/mssql/backups
             {{- if .Values.secrets.secretProviderClass}}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"

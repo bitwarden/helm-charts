@@ -1224,3 +1224,7 @@ Update the other settings in `my-values.yaml` based on your environment.  Follow
 ```shell
 helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
 ```
+
+## Database Pod Backup and Restore
+
+Please see the ["examples" README](../../examples/README.md) for information on how you might setup database backups for the provided SQL pod.
