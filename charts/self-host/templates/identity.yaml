@@ -12,7 +12,6 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{ include "bitwarden.podCoLocation.affinity" . | indent 2 }}
   replicas: 1
   strategy:
     type: "{{ .Values.component.identity.deploymentStrategy }}"
@@ -26,6 +25,7 @@ spec:
         app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.identity.podServiceAccount }}
       serviceAccount: "{{ .Values.component.identity.podServiceAccount }}"
       serviceAccountName: "{{ .Values.component.identity.podServiceAccount }}"

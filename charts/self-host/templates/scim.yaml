@@ -12,7 +12,6 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{ include "bitwarden.podCoLocation.affinity" . | indent 2 }}
   replicas: 1
   strategy:
     type: "{{ .Values.component.scim.deploymentStrategy }}"
@@ -26,6 +25,7 @@ spec:
         app.kubernetes.io/component: scim
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.scim.podServiceAccount }}
       serviceAccount: "{{ .Values.component.scim.podServiceAccount }}"
       serviceAccountName: "{{ .Values.component.scim.podServiceAccount }}"

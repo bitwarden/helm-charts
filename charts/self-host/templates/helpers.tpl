@@ -65,7 +65,7 @@ app.kubernetes.io/name: {{ template "bitwarden.name" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 helm.sh/chart: {{ template "bitwarden.chart" . }}
-{{- if eq (.Values.general.volumeAccessMode "ReadWriteOnce")  }}
+{{- if eq .Values.general.volumeAccessMode "ReadWriteOnce"  }}
 app.kubernetes.io/storage: "ReadWriteOnce"
 {{- end -}}
 {{- if .Values.general.labels }}
@@ -244,16 +244,16 @@ Name of SCIM components
 
 
 {{- define "bitwarden.podCoLocation.affinity" -}}
-{{- if eq (.Values.general.volumeAccessMode "ReadWriteOnce")  }}
+{{- if eq .Values.general.volumeAccessMode "ReadWriteOnce"  }}
 affinity:
-podAffinity:
+  podAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector:
-        matchExpressions:
-        - key: app.kubernetes.io/storage
-        operator: In
-        values:
-        - ReadWriteOnce
-    topologyKey: "kubernetes.io/hostname"
+      - labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/storage
+            operator: In
+            values:
+              - ReadWriteOnce
+        topologyKey: "kubernetes.io/hostname"
 {{- end -}}
 {{- end -}}

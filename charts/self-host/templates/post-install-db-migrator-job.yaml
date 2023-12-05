@@ -16,7 +16,7 @@ spec:
       labels:
         app.kubernetes.io/component: post-install-db-migrator-job
     spec:
-      {{- if and  (.Values.database.enabled) ( eq (.Values.general.volumeAccessMode "ReadWriteOnce")  }}
+      {{- if and  (.Values.database.enabled) ( eq .Values.general.volumeAccessMode "ReadWriteOnce")  }}
       affinity:
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
