@@ -71,7 +71,7 @@ spec:
           readOnly: true
         {{- end }}
         {{- if or (not .Values.database.enabled) (and .Values.database.enabled .Release.IsUpgrade) }}
-        arg: [ "-f", "DbScripts_transition", "-r"]
+        args: [ "-f", "DbScripts_transition", "-r"]
         {{- end }}
       restartPolicy: Never
       volumes:
