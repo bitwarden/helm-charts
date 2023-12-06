@@ -88,6 +88,17 @@ spec:
                 port:
                   number: 5000
 
+          {{- if .Values.component.scim.enabled }}
+          - path: {{ .Values.general.ingress.paths.scim.path }}
+            {{ if .Values.general.ingress.paths.scim.pathType }}
+            pathType: {{ .Values.general.ingress.paths.scim.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.scim" . }}
+                port:
+                  number: 5000
+          {{- end }}
 
           - path: {{ .Values.general.ingress.paths.sso.path }}
             {{ if .Values.general.ingress.paths.sso.pathType }}

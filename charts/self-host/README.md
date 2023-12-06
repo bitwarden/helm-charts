@@ -53,6 +53,10 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
 
 Note that default values for Nginx have been setup for the ingress in the values.yaml file.  __*However, you will need to uncomment the ingress annotations and edit them as necessary for your environment.*__  Some other ingress controller examples are provided later in this document.
 
+#### SCIM
+
+The SCIM pod is disabled by default.  To enable the SCIM pod, set `component.scim.enabled` in `my-values.yaml` to `true`.
+
 ### Create namespace
 
 1. Create a namespace to deploy Bitwarden to.  In this guide, we will be using `bitwarden` as the namespace.
@@ -137,6 +141,7 @@ rawManifests:
           - /icons
           - /notifications
           - /events
+          - /scim
           - /sso
           - /identity
           ##### NOTE:  Admin will not function correctly with path strip middleware
@@ -192,6 +197,14 @@ rawManifests:
           services:
             - kind: Service
               name: bitwarden-self-host-events
+              port: 5000
+          middlewares:
+            - name: "bitwarden-self-host-middleware-stripprefix"
+        - kind: Rule
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/scim`)
+          services:
+            - kind: Service
+              name: bitwarden-self-host-scim
               port: 5000
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
@@ -320,6 +333,9 @@ general:
         pathType: Prefix
       events:
         path: /events/*
+        pathType: Prefix
+      scim:
+        path: /scim/*
         pathType: Prefix
       sso:
         path: /sso/*
@@ -783,6 +799,26 @@ rawManifests:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
+      name: bitwarden-self-host-scim
+      namespace: bitwarden
+      annotations:
+        haproxy.router.openshift.io/rewrite-target: /
+    spec:
+      host: bitwarden.apps-crc.testing
+      path: "/scim"
+      to:
+        kind: Service
+        name: bitwarden-self-host-scim
+        weight: 100
+      port:
+        targetPort: 5000
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+        destinationCACertificate: ''
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
       name: bitwarden-self-host-sso
       namespace: bitwarden
       annotations:
@@ -1004,6 +1040,9 @@ general:
         pathType: Prefix
       events:
         path: /events[/|$](.*)
+        pathType: Prefix
+      scim:
+        path: /scim[/|$](.*)
         pathType: Prefix
       sso:
         path: /sso[/|$](.*)

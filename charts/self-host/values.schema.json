@@ -132,6 +132,18 @@
                                         }
                                     }
                                 },
+                                "scim": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "pathType": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
                                 "sso": {
                                     "type": "object",
                                     "required": [],
@@ -1572,6 +1584,9 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
