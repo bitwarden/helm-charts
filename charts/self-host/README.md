@@ -334,7 +334,7 @@ general:
       events:
         path: /events/*
         pathType: Prefix
-      scim:  # If SCIM is enabled
+      scim:
         path: /scim/*
         pathType: Prefix
       sso:
