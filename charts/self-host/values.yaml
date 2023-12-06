@@ -44,6 +44,9 @@ general:
       events:
         path: /events[/|$](.*)
         pathType: Prefix
+      scim:
+        path: /scim[/|$](.*)
+        pathType: Prefix
       sso:
         path: /sso[/|$](.*)
         pathType: Prefix
@@ -233,6 +236,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   scim:
+    # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
+    enabled: false
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
