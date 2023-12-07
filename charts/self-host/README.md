@@ -1057,7 +1057,7 @@ general:
         path: /(identity/.*)
         pathType: ImplementationSpecific
       admin:
-        path: /(admin/.*)
+        path: /(admin/?.*)
         pathType: ImplementationSpecific
 ```
 
