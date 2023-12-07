@@ -34,17 +34,6 @@ data:
   globalSettings__mail__smtp__host: "{{ .Values.general.email.smtpHost }}"
   globalSettings__mail__smtp__port: "{{ .Values.general.email.smtpPort }}"
   globalSettings__mail__smtp__ssl: "{{ .Values.general.email.smtpSsl }}"
-
-{{- $currentGeneratedConfigMap := (lookup "v1" "ConfigMap" .Release.Namespace "{{ .Release.Name }}-config-map") }}
-{{- if $currentGeneratedConfigMap}}
-  globalSettings__internalIdentityKey: {{ index $currentGeneratedConfigMap.data "globalSettings__internalIdentityKey"}}
-  globalSettings__oidcIdentityClientKey: {{ index $currentGeneratedConfigMap.data "globalSettings__oidcIdentityClientKey"}}
-  globalSettings__duo__aKey: {{ index $currentGeneratedConfigMap.data "globalSettings__oidcIdentityClientKey"}}
-{{- else}}
-  globalSettings__internalIdentityKey: {{ (randAlphaNum 64) | quote }}
-  globalSettings__oidcIdentityClientKey: {{ (randAlphaNum 64) | quote }}
-  globalSettings__duo__aKey: {{ (randAlphaNum 64) | quote }}
-{{- end }}
 {{- if not (and .Values.volume.logs .Values.volume.logs.enabled) }}
   globalSettings__logDirectory: "/dev/null"
 {{- end }}
@@ -53,7 +42,6 @@ data:
   globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"
   globalSettings__licenseDirectory: "/etc/bitwarden/core/licenses"
   globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
-  globalSettings__hibpApiKey: {{ .Values.general.hibpApiKey | quote }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"

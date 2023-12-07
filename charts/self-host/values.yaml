@@ -62,8 +62,6 @@ general:
   webVersionOverride: ""
   # Disable account registration on web vault
   disableUserRegistration: "false"
-  # Have I Been Pwned API Key
-  hibpApiKey: "false"
   # Comma-separated list of email addresses for Admin users
   admins: "false"
   email:
