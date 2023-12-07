@@ -224,3 +224,10 @@ Name of SCIM components
 {{- define "bitwarden.scim" -}}
 {{ template "bitwarden.fullname" . }}-scim
 {{- end -}}
+
+{{/*
+Name of the keys secret
+*/}}
+{{- define "bitwarden.keyssecret" -}}
+{{ template "bitwarden.fullname" . }}-secretkeys
+{{- end -}}

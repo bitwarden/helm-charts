@@ -193,9 +193,6 @@
                 "disableUserRegistration": {
                     "type": "string"
                 },
-                "hibpApiKey": {
-                    "type": "string"
-                },
                 "admins": {
                     "type": "string"
                 },

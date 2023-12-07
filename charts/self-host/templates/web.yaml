@@ -37,6 +37,8 @@ spec:
               name: {{ .Release.Name }}-config-map
           - secretRef:
               name: "{{ .Values.secrets.secretName }}"
+          - secretRef:
+              name: {{ template "bitwarden.keyssecret" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
