@@ -36,7 +36,7 @@ helm show values bitwarden/self-host --devel > my-values.yaml
 
 ### Update the config file
 
-Edit the `my-values.yaml` file and fill out the values.  Required values that must be set:
+Edit the `my-values.yaml` file and fill out the values. Required values that must be set:
 
 - general.domain
 - general.ingress.enabled (set to disbled if you are creating your own ingress)
@@ -51,15 +51,15 @@ Edit the `my-values.yaml` file and fill out the values.  Required values that mu
 - sharedStorageClassName
 - database.enabled (set to disbled if using an external SQL server)
 
-Note that default values for Nginx have been setup for the ingress in the values.yaml file.  __*However, you will need to uncomment the ingress annotations and edit them as necessary for your environment.*__  Some other ingress controller examples are provided later in this document.
+Note that default values for Nginx have been setup for the ingress in the values.yaml file. Some other ingress controller examples are provided later in this document.
 
 #### SCIM
 
-The SCIM pod is disabled by default.  To enable the SCIM pod, set `component.scim.enabled` in `my-values.yaml` to `true`.
+The SCIM pod is disabled by default. To enable the SCIM pod, set `component.scim.enabled` in `my-values.yaml` to `true`.
 
 ### Create namespace
 
-1. Create a namespace to deploy Bitwarden to.  In this guide, we will be using `bitwarden` as the namespace.
+1. Create a namespace to deploy Bitwarden to. In this guide, we will be using `bitwarden` as the namespace.
     - Run `kubectl create namespace bitwarden`.
 
 ### Secrets
@@ -75,9 +75,9 @@ Create a secret to set the following values.
 - SA_PASSWORD (if using the Bitwarden SQL pod)
 - globalSettings__sqlServer__connectionString (if using your own SQL server)
 
-Here we document the process of creating the secret using the command line.  However, you can also use a CSI secret provider class, which we document an example of under "Installing the Azure Key Vault CSI Driver" later in this README.
+Here we document the process of creating the secret using the command line. However, you can also use a CSI secret provider class, which we document an example of under "Installing the Azure Key Vault CSI Driver" later in this README.
 
-Examples of kubectl secret creation are provided below.  One is for use with SQL deployed in a pod.  The other is for usage with an external SQL server.
+Examples of kubectl secret creation are provided below. One is for use with SQL deployed in a pod. The other is for usage with an external SQL server.
 
 - With included SQL pod
 
@@ -105,17 +105,17 @@ Examples of kubectl secret creation are provided below.  One is for use with SQL
       --from-literal=globalSettings__yubico__key="REPLACE" \
   ```
 
-__*NOTE: These commands are recorded in your shell history.  To avoid this, consider setting up a CSI secret provider class.*__
+__*NOTE: These commands are recorded in your shell history. To avoid this, consider setting up a CSI secret provider class.*__
 
 Set `secrets.secretName` to the name of the secret created above.
 
 ### Optional Values
 
-Replace any optional values in `my-values.yaml` to best fit your cluster.  This includes changing of resource limits and requests.
+Replace any optional values in `my-values.yaml` to best fit your cluster. This includes changing of resource limits and requests.
 
 #### Raw Manifests Files
 
-This chart allows you to include other Kubernetes manifest files either pre- or post-install.  To do this, update the `rawManifests` section of the chart
+This chart allows you to include other Kubernetes manifest files either pre- or post-install. To do this, update the `rawManifests` section of the chart
 
 ```yaml
 rawManifests:
@@ -123,7 +123,7 @@ rawManifests:
   postInstall: []
 ```
 
-The example below shows how you can use the raw manifests to install Traefik's IngressRoute instead of using the Kubernetes Ingress controller.  Note that you will want to disable the ingress controller under `general.ingress.enabled` to use this.
+The example below shows how you can use the raw manifests to install Traefik's IngressRoute instead of using the Kubernetes Ingress controller. Note that you will want to disable the ingress controller under `general.ingress.enabled` to use this.
 
 ```yaml
 rawManifests:
@@ -142,8 +142,6 @@ rawManifests:
           - /notifications
           - /events
           - /scim
-          - /sso
-          - /identity
           ##### NOTE:  Admin will not function correctly with path strip middleware
   - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
@@ -161,7 +159,7 @@ rawManifests:
               passHostHeader: true
               port: 5000
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/api`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/api/`)
           services:
             - kind: Service
               name: bitwarden-self-host-api
@@ -169,7 +167,7 @@ rawManifests:
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/attachments`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/attachments/`)
           services:
             - kind: Service
               name: bitwarden-self-host-api
@@ -177,7 +175,7 @@ rawManifests:
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/icons`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/icons/`)
           services:
             - kind: Service
               name: bitwarden-self-host-icons
@@ -185,7 +183,7 @@ rawManifests:
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/notifications`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/notifications/`)
           services:
             - kind: Service
               name: bitwarden-self-host-notifications
@@ -193,7 +191,7 @@ rawManifests:
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/events`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/events/`)
           services:
             - kind: Service
               name: bitwarden-self-host-events
@@ -201,32 +199,30 @@ rawManifests:
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/scim`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/scim/`)
           services:
             - kind: Service
               name: bitwarden-self-host-scim
               port: 5000
           middlewares:
             - name: "bitwarden-self-host-middleware-stripprefix"
+        ##### NOTE:  SSO will not function correctly with path strip middleware
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/sso`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/sso/`)
           services:
             - kind: Service
               name: bitwarden-self-host-sso
               port: 5000
-          middlewares:
-            - name: "bitwarden-self-host-middleware-stripprefix"
+        ##### NOTE:  Identity will not function correctly with path strip middleware
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/identity`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/identity/`)
           services:
             - kind: Service
               name: bitwarden-self-host-identity
               port: 5000
-          middlewares:
-            - name: "bitwarden-self-host-middleware-stripprefix"
         ##### NOTE:  Admin will not function correctly with path strip middleware
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/admin`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/admin/`)
           services:
             - kind: Service
               name: bitwarden-self-host-admin
@@ -265,7 +261,7 @@ kubectl create ns bitwarden
 
 #### Nginx
 
-This is the simplest ingress to setup and has been provided as the default.  You will need the ingress controller installed if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
+This is the simplest ingress to setup and has been provided as the default. You will need the ingress controller installed if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
 
 Then update the my-values.yaml file:
 
@@ -282,29 +278,28 @@ general:
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
       nginx.ingress.kubernetes.io/rewrite-target: /$1
 ```
 
-__*Make certain to uncomment the annotations section and tweak as necessary for your environment.*__  These annotations can be used as-is.
+These annotations can be used as-is.
 
 #### Azure Application Gateway
 
-Azure customers might want to use an Azure Application Gateway as the ingress controller for their AKS cluster.  You will want to [enable the Application Gateway ingress controller for your cluster](https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing) before making these configuration changes.
+Azure customers might want to use an Azure Application Gateway as the ingress controller for their AKS cluster. You will want to [enable the Application Gateway ingress controller for your cluster](https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing) before making these configuration changes.
 
-Update the my-values.yaml file.  Tweak the annotations as necessary for your environment.
+Update the my-values.yaml file. Tweak the annotations as necessary for your environment.
 
 ```yaml
 general:
   domain: "replaceme.com"
   ingress:
     enabled: true
-    className: "azure-application-gateway" # This value might be different depending on how you created your ingress controller.  Use "kubectl get ingressclasses -A" to find the name if unsure
+    className: "azure-application-gateway" # This value might be different depending on how you created your ingress controller. Use "kubectl get ingressclasses -A" to find the name if unsure
      ## - Annotations to add to the Ingress resource
     annotations:
       appgw.ingress.kubernetes.io/ssl-redirect: "true"
       appgw.ingress.kubernetes.io/use-private-ip: "false" # This might be true depending on your setup
-      appgw.ingress.kubernetes.io/rewrite-rule-set: "bitwarden-ingress" # Make note of whatever you set this value to.  It will be used later.
+      appgw.ingress.kubernetes.io/rewrite-rule-set: "bitwarden-ingress" # Make note of whatever you set this value to. It will be used later.
       appgw.ingress.kubernetes.io/connection-draining: "true" # Update as necessary
       appgw.ingress.kubernetes.io/connection-draining-timeout: "30" # Update as necessary
     ## - Labels to add to the Ingress resource
@@ -459,19 +454,19 @@ sharedStorageClassName: "azure-file"
 
 ### Configure remaining values
 
-See the configuration sections above for required values.  Secrets can be configured using the standard CLI method already provided.  However, you can also use Azure Key Vault as the source for your secrets.  This is optional but recommended.
+See the configuration sections above for required values. Secrets can be configured using the standard CLI method already provided. However, you can also use Azure Key Vault as the source for your secrets. This is optional but recommended.
 
 #### Installing the Azure Key Vault CSI Driver
 
-The following will add the Azure Key Vault CSI driver to an existing cluster.  More information can be found in this article: [Use the Azure Key Vault Provider for Secrets Store CSI Driver in an Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-driver)
+The following will add the Azure Key Vault CSI driver to an existing cluster. More information can be found in this article: [Use the Azure Key Vault Provider for Secrets Store CSI Driver in an Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-driver)
 
 ```shell
 az aks enable-addons --addons azure-keyvault-secrets-provider --name REPLACE --resource-group REPLACE
 ```
 
-You will also want to configure identity access for your cluster to the Key Vault.  This article provides a couple of different options: [Provide an identity to access the Azure Key Vault Provider for Secrets Store CSI Driver in Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-identity-access)
+You will also want to configure identity access for your cluster to the Key Vault. This article provides a couple of different options: [Provide an identity to access the Azure Key Vault Provider for Secrets Store CSI Driver in Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-identity-access)
 
-Once the cluster identity has been granted access to the Key Vault, you will need to create a SecretProviderClass.  An example is provided below.
+Once the cluster identity has been granted access to the Key Vault, you will need to create a SecretProviderClass. An example is provided below.
 
 ```shell
 cat <<EOF | kubectl apply -n bitwarden -f -
@@ -550,7 +545,7 @@ EOF
 
 Alternatively, you can create the secrets provider via the `rawManifets.preInstall` section of `my-values.yaml`.
 
-Note the spots in the definition that say `"<REPLACE>"`.  These will need to be updated for your environment.  Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server.  Those spots that will need to change have been marked with a comment.  Finally, you can name the secrets in Azure Key Vault based on your own naming convention.  If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
+Note the spots in the definition that say `"<REPLACE>"`. These will need to be updated for your environment. Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server. Those spots that will need to change have been marked with a comment. Finally, you can name the secrets in Azure Key Vault based on your own naming convention. If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
 
 The following commands would create these secrts in a Key Vault:
 
@@ -567,7 +562,7 @@ az keyvault secret set --name sapassword --vault-name $kvname --value '"<REPLACE
 # az keyvault secret set --name dbconnectionstring --vault-name $kvname --value '"<REPLACEME>"'
 ```
 
-__*NOTE:  These values will be stored in your shell history.  There are many other ways to set Key Vault secrets that are outside of the scope of this document.  This provides you with one option.*__
+__*NOTE:  These values will be stored in your shell history. There are many other ways to set Key Vault secrets that are outside of the scope of this document. This provides you with one option.*__
 
 Now, edit `my-values.yaml` to use this secret provider class we created.
 
@@ -579,9 +574,9 @@ secrets:
 
 ### Create Empty Azure Application Gateway Rewrite Set
 
-Application Gateway ingress deployments have a few more required steps for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
+Application Gateway ingress deployments have a few more required steps for Bitwarden to function correctly. If you are using another ingress controller, you may skip to the next section.
 
-We will need to create a rewrite set on the Application Gateway.  There are various ways of doing this, but we will discuss using the Azure Portal.  For now we are creating an empty set for the Helm deployment to work.  We will add the rewrite rule after deploying Helm.
+We will need to create a rewrite set on the Application Gateway. There are various ways of doing this, but we will discuss using the Azure Portal. For now we are creating an empty set for the Helm deployment to work. We will add the rewrite rule after deploying Helm.
 
   1. Navigate to the Application Gateway in the Azure Portal
   2. Once in the Application Gateway, find the "Rewrites" blade in the left-hand navigation menu.
@@ -598,14 +593,14 @@ helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitward
 
 ### Update Azure Application Gateway Rewrite Set
 
-Application Gateway ingress deployments have one more required step for Bitwarden to function correctly.  If you are using another ingress controller, you may skip to the next section.
+Application Gateway ingress deployments have one more required step for Bitwarden to function correctly. If you are using another ingress controller, you may skip to the next section.
 
 We will need to finish the rewrite set on the Application Gateway we created earlier.
 
   1. Reopen the rewrite set you created earlier.
   2. On the "Update rewrite set" page in the "Name and Association" tab, select all routing paths that begin with pr-bitwarden-self-host-ingress... , deselect any that do not begin with that prefix, and then select Next.
   3. On the "Rewrite rule configuration" tab, click the "Add rewrite rule" button.
-  4. Enter a name for the rule.  This can be anything that helps you with organization.  Something similar to "bitwarden-rewrite" will work.
+  4. Enter a name for the rule. This can be anything that helps you with organization. Something similar to "bitwarden-rewrite" will work.
   5. The rule sequence value does not matter for this purpose.
   6. Add a condition and set the following values:
      - Type of variable to check: Server variable
@@ -640,7 +635,7 @@ The public IP will be found on the Overview tab of the Application Gateway servi
 
 ## Example Deployment on OpenShift
 
-This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform.  We will provide some basic pointers.
+This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform. We will provide some basic pointers.
 
 ### Create project in OpenShift
 
@@ -653,7 +648,7 @@ oc project bitwarden
 
 ### Setup ingress
 
-We will use OpenShift Routes for our ingress in this example.  Alternatively, ingress operators could be used.
+We will use OpenShift Routes for our ingress in this example. Alternatively, ingress operators could be used.
 
 #### Disable default ingress
 
@@ -705,7 +700,7 @@ rawManifests:
         haproxy.router.openshift.io/rewrite-target: /
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/api"
+      path: "/api/"
       to:
         kind: Service
         name: bitwarden-self-host-api
@@ -725,7 +720,7 @@ rawManifests:
         haproxy.router.openshift.io/rewrite-target: /
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/attachments"
+      path: "/attachments/"
       to:
         kind: Service
         name: bitwarden-self-host-attachments
@@ -745,7 +740,7 @@ rawManifests:
         haproxy.router.openshift.io/rewrite-target: /
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/icons"
+      path: "/icons/"
       to:
         kind: Service
         name: bitwarden-self-host-icons
@@ -765,7 +760,7 @@ rawManifests:
         haproxy.router.openshift.io/rewrite-target: /
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/notifications"
+      path: "/notifications/"
       to:
         kind: Service
         name: bitwarden-self-host-notifications
@@ -785,7 +780,7 @@ rawManifests:
         haproxy.router.openshift.io/rewrite-target: /
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/events"
+      path: "/events/"
       to:
         kind: Service
         name: bitwarden-self-host-events
@@ -805,7 +800,7 @@ rawManifests:
         haproxy.router.openshift.io/rewrite-target: /
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/scim"
+      path: "/scim/"
       to:
         kind: Service
         name: bitwarden-self-host-scim
@@ -822,10 +817,10 @@ rawManifests:
       name: bitwarden-self-host-sso
       namespace: bitwarden
       annotations:
-        haproxy.router.openshift.io/rewrite-target: /
+        # Rewrite will not work with sso
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/sso"
+      path: "/sso/"
       to:
         kind: Service
         name: bitwarden-self-host-sso
@@ -842,10 +837,10 @@ rawManifests:
       name: bitwarden-self-host-identity
       namespace: bitwarden
       annotations:
-        haproxy.router.openshift.io/rewrite-target: /
+        # Rewrite will not work with identity
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/identity"
+      path: "/identity/"
       to:
         kind: Service
         name: bitwarden-self-host-identity
@@ -865,7 +860,7 @@ rawManifests:
         # Rewrite will not work with admin
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/admin"
+      path: "/admin/"
       to:
         kind: Service
         name: bitwarden-self-host-admin
@@ -878,11 +873,11 @@ rawManifests:
         destinationCACertificate: ''
 ```
 
-Note that in this example we are setting `destinationCACertificate` to an empty string.  This will use the default certificate setup in OpenShift.  Alternatively, specify a certificate name here, or you can use Let's Encrypt by following this guide: [Secure Red Had OpenShift routs with Let's Encrypt](https://developer.ibm.com/tutorials/secure-red-hat-openshift-routes-with-lets-encrypt/).  If you do so, you will need to add `kubernetes.io/tls-acme: "true"` to the annotations for each route.
+Note that in this example we are setting `destinationCACertificate` to an empty string. This will use the default certificate setup in OpenShift. Alternatively, specify a certificate name here, or you can use Let's Encrypt by following this guide: [Secure Red Had OpenShift routs with Let's Encrypt](https://developer.ibm.com/tutorials/secure-red-hat-openshift-routes-with-lets-encrypt/). If you do so, you will need to add `kubernetes.io/tls-acme: "true"` to the annotations for each route.
 
 ### Setup storage class
 
-A shared storage class will be required.  As stated earlier in the document, a ReadWriteMany-capable Storage Class will need to be set up.  There are several options for this in OpenShift.  One viable option is to use the [NFS Subdir External Provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/charts/nfs-subdir-external-provisioner/README.md).
+A shared storage class will be required. As stated earlier in the document, a ReadWriteMany-capable Storage Class will need to be set up. There are several options for this in OpenShift. One viable option is to use the [NFS Subdir External Provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/charts/nfs-subdir-external-provisioner/README.md).
 
 ### Setting secrets
 
@@ -902,14 +897,14 @@ oc create secret generic custom-secret -n bitwarden \
 
 ### Create a service account
 
-Bitwarden currently requires the use of a service account in OpenShift due to each container's need to run elevated commands on start-up.  These commands are blocked by OpenShift's restricted SCCs.  We need to create a service account and assign it to the `anyuid` SCC.
+Bitwarden currently requires the use of a service account in OpenShift due to each container's need to run elevated commands on start-up. These commands are blocked by OpenShift's restricted SCCs. We need to create a service account and assign it to the `anyuid` SCC.
 
 ```shell
 oc create sa bitwarden-sa
 oc adm policy add-scc-to-user anyuid -z bitwarden-sa
 ```
 
-Next, update `my-values.yaml` to use this service account.  Note that this is a different service account from the one in the `serviceAccount` section of the values YAML file.  Instead, set the following keys to the name of the service account created:
+Next, update `my-values.yaml` to use this service account. Note that this is a different service account from the one in the `serviceAccount` section of the values YAML file. Instead, set the following keys to the name of the service account created:
 
 - component.admin.podServiceAccount
 - component.api.podServiceAccount
@@ -949,7 +944,7 @@ __*NOTE: You can create your own SSC to fine-tune the security of these pods. [M
 
 ### Update other settings
 
-Update the other settings in `my-values.yaml` based on your environment.  Follow the instructions earlier in this document for required settings to update.
+Update the other settings in `my-values.yaml` based on your environment. Follow the instructions earlier in this document for required settings to update.
 
 ### Deploy via Helm
 
@@ -967,11 +962,11 @@ Follow the instructions above for creating the namespace.
 
 ### Setup Nginx ingress
 
-The ALB ingress is not currently recommended since it does not support path rewrites with path-based routing.  This example uses Nginx, but Traefik could also be used here.
+The ALB ingress is not currently recommended since it does not support path rewrites with path-based routing. This example uses Nginx, but Traefik could also be used here.
 
 #### Install the Nginx Ingress Controller
 
-The ingress controller will set up an AWS Network Load Balancer.  Below, we define certain annotations that you should consider setting on the ingress controller service.  The specific settings will be dependent on your environment. In this example, we are setting the SSL certificate on the load balancer instead of using Let's Encrypt.  These annotations specify the certificate provided by AWS Certificate Manager using the certificate's ARN in the `aws-load-balancer-ssl-cert` annotation.
+The ingress controller will set up an AWS Network Load Balancer. Below, we define certain annotations that you should consider setting on the ingress controller service. The specific settings will be dependent on your environment. In this example, we are setting the SSL certificate on the load balancer instead of using Let's Encrypt. These annotations specify the certificate provided by AWS Certificate Manager using the certificate's ARN in the `aws-load-balancer-ssl-cert` annotation.
 
 - service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "ssl"
 - service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
@@ -981,7 +976,7 @@ The ingress controller will set up an AWS Network Load Balancer.  Below, we defi
 - service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:REPLACEME:REPLACEME:certificate/REPLACEME" # ARN for the certificate
 - service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
 
-You will also want to set the `spec.externalTrafficPolicy` property to "Local" on the service.  The following script will install the controller with these settings:
+You will also want to set the `spec.externalTrafficPolicy` property to "Local" on the service. The following script will install the controller with these settings:
 
 ```shell
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -1000,7 +995,7 @@ helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
 
 #### Update the ingress section in my-values.yaml
 
-The following settings will create an Nginx ingress.  These settings are specific to the Nginx ingress controller annotations we detailed earlier.
+The following settings will create an Nginx ingress. These settings are specific to the Nginx ingress controller annotations we detailed earlier.
 
 ```yaml
 general:
@@ -1012,7 +1007,6 @@ general:
     annotations:
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
       nginx.ingress.kubernetes.io/rewrite-target: /$1
     ## - Labels to add to the Ingress resource
     labels: {}
@@ -1025,39 +1019,39 @@ general:
     paths:
       web:
         path: /(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
       attachments:
-        path: /attachments[/|$](.*)
-        pathType: Prefix
+        path: /attachments/(.*)
+        pathType: ImplementationSpecific
       api:
-        path: /api[/|$](.*)
-        pathType: Prefix
+        path: /api/(.*)
+        pathType: ImplementationSpecific
       icons:
-        path: /icons[/|$](.*)
-        pathType: Prefix
+        path: /icons/(.*)
+        pathType: ImplementationSpecific
       notifications:
-        path: /notifications[/|$](.*)
-        pathType: Prefix
+        path: /notifications/(.*)
+        pathType: ImplementationSpecific
       events:
-        path: /events[/|$](.*)
-        pathType: Prefix
+        path: /events/(.*)
+        pathType: ImplementationSpecific
       scim:
-        path: /scim[/|$](.*)
-        pathType: Prefix
+        path: /scim/(.*)
+        pathType: ImplementationSpecific
       sso:
-        path: /sso[/|$](.*)
-        pathType: Prefix
+        path: /(sso/.*)
+        pathType: ImplementationSpecific
       identity:
-        path: /identity[/|$](.*)
-        pathType: Prefix
+        path: /(identity/.*)
+        pathType: ImplementationSpecific
       admin:
-        path: /(admin[/|$]?.*)
-        pathType: Prefix
+        path: /(admin/.*)
+        pathType: ImplementationSpecific
 ```
 
 ### Setup EFS storage class
 
-To use EFS persistent storage, you will need to set up the Amazon EFS CSI driver.  To do so, please follow the [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) documentation.  After the driver has been set up, you will need to create a storage class.  The exact settings on the storage class will be different for every cluster, but an example is provided below.
+To use EFS persistent storage, you will need to set up the Amazon EFS CSI driver. To do so, please follow the [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) documentation. After the driver has been set up, you will need to create a storage class. The exact settings on the storage class will be different for every cluster, but an example is provided below.
 
 ```shell
 file_system_id="REPLACE ME"
@@ -1086,7 +1080,7 @@ EOF
 
 Alternatively, you can create the storage provider via the `rawManifets.preInstall` section of `my-values.yaml`.
 
-Review the [CSI Driver for Amazon EFS GitHub](https://github.com/kubernetes-sigs/aws-efs-csi-driver) page for further information on these settings.  After the storage class has been created, set the storage class name in `my-values.yaml`:
+Review the [CSI Driver for Amazon EFS GitHub](https://github.com/kubernetes-sigs/aws-efs-csi-driver) page for further information on these settings. After the storage class has been created, set the storage class name in `my-values.yaml`:
 
 ```yaml
 sharedStorageClassName: shared-storage
@@ -1094,9 +1088,9 @@ sharedStorageClassName: shared-storage
 
 ### Setting secrets using AWS Secrets Manager
 
-We have detailed several secret provider options.  For this example, we will use AWS Secrets Manager.
+We have detailed several secret provider options. For this example, we will use AWS Secrets Manager.
 
-First, create a secret in AWS Secrets Manager.  You will want to create a secret with keys similar to those below.  If you use different key names, make sure to update those in the secret provider class we create later.
+First, create a secret in AWS Secrets Manager. You will want to create a secret with keys similar to those below. If you use different key names, make sure to update those in the secret provider class we create later.
 
 - installationid
 - installationkey
@@ -1106,7 +1100,7 @@ First, create a secret in AWS Secrets Manager.  You will want to create a secret
 - yubicokey
 - sapassowrd __*OR*__ dbconnectionstring if using external SQL
 
-Follow [Use AWS Secrets Manager secrets in Amazon Elastic Kubernetes Services](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_csi_driver.html) to set up the driver and permissions.  When creating the IAM permissions policy, one similar to the one below will suffice. Replace the "Resource" value with the ARN of your secret in Resource manager.
+Follow [Use AWS Secrets Manager secrets in Amazon Elastic Kubernetes Services](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_csi_driver.html) to set up the driver and permissions. When creating the IAM permissions policy, one similar to the one below will suffice. Replace the "Resource" value with the ARN of your secret in Resource manager.
 
 ```json
 {
@@ -1138,7 +1132,7 @@ eksctl create iamserviceaccount \
   --approve
 ```
 
-Next, create the secret provider class.  The example below demonstrates how to do so.  Make sure to update the `region` and `objectName` before deploying.  If you used different keys when creating the secret in Secrets Manager, you will want to update the paths for the secrets as well.
+Next, create the secret provider class. The example below demonstrates how to do so. Make sure to update the `region` and `objectName` before deploying. If you used different keys when creating the secret in Secrets Manager, you will want to update the paths for the secrets as well.
 
 ```shell
 cat <<EOF | kubectl apply -n bitwarden -f -
@@ -1195,7 +1189,7 @@ EOF
 
 Alternatively, you can create the secrets provider via the `rawManifets.preInstall` section of `my-values.yaml`.
 
-We now need to tell all of our pods to use the service account we created so that they can access the secrets.  Update the `serviceAccount` section in `my-values.yaml`, and set the name of the service account created via `eksctl`.  Note that we set `deployRolesOnly` to `true` since we created the service account outside of our chart.  The roles referenced grant the service account the ability to create secrets and get pod information inside the `bitwarden` namespace.  We used `eksctl` to create the account instead of the Helm chart since we needed to grant IAM permissions for Secrets Manager access to the service account prior to deployment.  The settings below tell the chart to create and assign the roles to that service account we already created.
+We now need to tell all of our pods to use the service account we created so that they can access the secrets. Update the `serviceAccount` section in `my-values.yaml`, and set the name of the service account created via `eksctl`. Note that we set `deployRolesOnly` to `true` since we created the service account outside of our chart. The roles referenced grant the service account the ability to create secrets and get pod information inside the `bitwarden` namespace. We used `eksctl` to create the account instead of the Helm chart since we needed to grant IAM permissions for Secrets Manager access to the service account prior to deployment. The settings below tell the chart to create and assign the roles to that service account we already created.
 
 ```yaml
 #
@@ -1203,12 +1197,12 @@ We now need to tell all of our pods to use the service account we created so tha
 #
 serviceAccount:
   name: bitwarden-sa
-  # Certain instances will prequire the creation of a pre-deployed service account.  For instance, AWS IAM enabled service accounts need to be created outside
+  # Certain instances will prequire the creation of a pre-deployed service account. For instance, AWS IAM enabled service accounts need to be created outside
   # of the chart to allow for setting of permissions on other AWS services like Secrets Manager
   deployRolesOnly: true
 ```
 
-As the commented code above states, this only assigns the service account for the pre-install and post-install hooks.  Our running pods will also need access to secrets.  Update `my-values.yaml` to use this same service account.  Set the following keys to the name of the service account created:
+As the commented code above states, this only assigns the service account for the pre-install and post-install hooks. Our running pods will also need access to secrets. Update `my-values.yaml` to use this same service account. Set the following keys to the name of the service account created:
 
 - component.admin.podServiceAccount
 - component.api.podServiceAccount
@@ -1244,7 +1238,7 @@ component:
     podServiceAccount: bitwarden-sa
 ```
 
-Note that you could use a separate service account created via `eksctl` for the running pods.  However, it will need the same IAM access policy assigned to it to access our secret in Secrets Manager.  We have kept it simple and set the pods' and hooks' service accounts to the same account.
+Note that you could use a separate service account created via `eksctl` for the running pods. However, it will need the same IAM access policy assigned to it to access our secret in Secrets Manager. We have kept it simple and set the pods' and hooks' service accounts to the same account.
 
 Finally, set the secrets section in `my-values.yaml` with the information from our secret provider class we created.
 
@@ -1256,7 +1250,7 @@ secrets:
 
 ### Update other AWS settings
 
-Update the other settings in `my-values.yaml` based on your environment.  Follow the instructions earlier in this document for required settings to update.
+Update the other settings in `my-values.yaml` based on your environment. Follow the instructions earlier in this document for required settings to update.
 
 ### Deploy to AWS via Helm
 

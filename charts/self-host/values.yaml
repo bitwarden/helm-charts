@@ -10,12 +10,11 @@ general:
     enabled: true
     # Current supported values for ingress type include: nginx
     className: "nginx"
-     ## - Annotations to add to the Ingress resource.  Sample Nginx annotations are provided as comments.
+     ## - Annotations to add to the Ingress resource.
     annotations:
-      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      # nginx.ingress.kubernetes.io/use-regex: "true"
-      # nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-      # nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -30,32 +29,29 @@ general:
         path: /(.*)
         pathType: ImplementationSpecific
       attachments:
-        path: /attachments[/|$](.*)
+        path: /attachments/(.*)
         pathType: ImplementationSpecific
       api:
-        path: /api[/|$](.*)
+        path: /api/(.*)
         pathType: ImplementationSpecific
       icons:
-        path: /icons[/|$](.*)
+        path: /icons/(.*)
         pathType: ImplementationSpecific
       notifications:
-        path: /notifications[/|$](.*)
+        path: /notifications/(.*)
         pathType: ImplementationSpecific
       events:
-        path: /events[/|$](.*)
-        pathType: ImplementationSpecific
-      scim:
-        path: /scim[/|$](.*)
+        path: /events/(.*)
         pathType: ImplementationSpecific
       sso:
-        path: /sso[/|$](.*)
+        path: /(sso/.*)
         pathType: ImplementationSpecific
       identity:
-        path: /identity[/|$](.*)
+        path: /(identity/.*)
         pathType: ImplementationSpecific
       admin:
-        path: /(admin[/|$])(.*)
-        pathType: ImplementationSpecific
+        path: /(admin/.*)
+        pathType: ImplementationSpecifi
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
