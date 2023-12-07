@@ -225,7 +225,7 @@ rawManifests:
               port: 5000
         ##### NOTE:  Admin will not function correctly with path strip middleware
         - kind: Rule
-          match: Host(`REPLACEME.COM`) && PathPrefix(`/admin/`)
+          match: Host(`REPLACEME.COM`) && PathPrefix(`/admin`)
           services:
             - kind: Service
               name: bitwarden-self-host-admin
