@@ -43,6 +43,9 @@ general:
       events:
         path: /events/(.*)
         pathType: ImplementationSpecific
+      scim:
+        path: /scim/(.*)
+        pathType: ImplementationSpecific
       sso:
         path: /(sso/.*)
         pathType: ImplementationSpecific
