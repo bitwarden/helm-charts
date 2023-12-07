@@ -871,7 +871,7 @@ rawManifests:
         # Rewrite will not work with admin
     spec:
       host: bitwarden.apps-crc.testing
-      path: "/admin/"
+      path: "/admin"
       to:
         kind: Service
         name: bitwarden-self-host-admin
