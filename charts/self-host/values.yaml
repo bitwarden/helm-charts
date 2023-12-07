@@ -54,7 +54,7 @@ general:
         pathType: ImplementationSpecific
       admin:
         path: /(admin/?.*)
-        pathType: ImplementationSpecifi
+        pathType: ImplementationSpecific
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
