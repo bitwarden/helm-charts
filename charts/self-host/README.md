@@ -72,6 +72,7 @@ Create a secret to set the following values.
 - globalSettings__mail__smtp__password
 - globalSettings__yubico__clientId
 - globalSettings__yubico__key
+- globalSettings__hibpApiKey
 - SA_PASSWORD (if using the Bitwarden SQL pod)
 - globalSettings__sqlServer__connectionString (if using your own SQL server)
 
@@ -89,6 +90,7 @@ Examples of kubectl secret creation are provided below. One is for use with SQL 
       --from-literal=globalSettings__mail__smtp__password="REPLACE" \
       --from-literal=globalSettings__yubico__clientId="REPLACE" \
       --from-literal=globalSettings__yubico__key="REPLACE" \
+      --from-literal=globalSettings__hibpApiKey="REPLACE" \
       --from-literal=SA_PASSWORD="REPLACE"
   ```
 
@@ -103,6 +105,7 @@ Examples of kubectl secret creation are provided below. One is for use with SQL 
       --from-literal=globalSettings__sqlServer__connectionString="Data Source=tcp:<SERVERNAME>,1433;Initial Catalog=vault;Persist Security Info=False;User ID=<USER>;Password=<PASSWORD>;Multiple Active Result Sets=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True" \
       --from-literal=globalSettings__yubico__clientId="REPLACE" \
       --from-literal=globalSettings__yubico__key="REPLACE" \
+      --from-literal=globalSettings__hibpApiKey="REPLACE" \
   ```
 
 __*NOTE: These commands are recorded in your shell history. To avoid this, consider setting up a CSI secret provider class.*__
@@ -518,6 +521,11 @@ spec:
           objectType: secret
           objectVersion: ""
         - |
+          objectName: hibpapikey
+          objectAlias: hibpapikey
+          objectType: secret
+          objectVersion: ""
+        - |
           objectName: sapassowrd #-OR- dbconnectionstring if external SQL
           objectAlias: sapassowrd #-OR- dbconnectionstring if external SQL
           objectType: secret
@@ -538,6 +546,8 @@ spec:
       key: globalSettings__yubico__clientId
     - objectName: yubicokey
       key: globalSettings__yubico__key
+    - objectName: hibpapikey
+      key: globalSettings__hibpApiKey
     - objectName: sapassowrd #-OR- dbconnectionstring if external SQL
       key: SA_PASSWORD #-OR- globalSettings__sqlServer__connectionString if external SQL
 EOF
@@ -557,6 +567,7 @@ az keyvault secret set --name smtpusername --vault-name $kvname --value <REPLACE
 az keyvault secret set --name smtppassword --vault-name $kvname --value <REPLACEME>
 az keyvault secret set --name yubicoclientid --vault-name $kvname --value <REPLACEME>
 az keyvault secret set --name yubicokey --vault-name $kvname --value <REPLACEME>
+az keyvault secret set --name hibpapikey --vault-name $kvname --value <REPLACEME>
 az keyvault secret set --name sapassword --vault-name $kvname --value '"<REPLACEME>"'
 # - OR -
 # az keyvault secret set --name dbconnectionstring --vault-name $kvname --value '"<REPLACEME>"'
@@ -891,6 +902,7 @@ oc create secret generic custom-secret -n bitwarden \
     --from-literal=globalSettings__mail__smtp__password="REPLACE" \
     --from-literal=globalSettings__yubico__clientId="REPLACE" \
     --from-literal=globalSettings__yubico__key="REPLACE" \
+    --from-literal=globalSettings__hibpApiKey="REPLACE" \
     --from-literal=SA_PASSWORD="REPLACE" # If using SQL pod
     # --from-literal=globalSettings__sqlServer__connectionString="REPLACE" # If using your own SQL server
 ```
@@ -1164,6 +1176,8 @@ spec:
             objectAlias: yubicoclientid
           - path: yubicokey
             objectAlias: yubicokey
+          - path: hibpapikey
+            objectAlias: hibpapikey
           - path: sapassword #-OR- dbconnectionstring if external SQL
             objectAlias: sapassword #-OR- dbconnectionstring if external SQL
   secretObjects:
@@ -1182,6 +1196,8 @@ spec:
       key: globalSettings__yubico__clientId
     - objectName: yubicokey
       key: globalSettings__yubico__key
+    - objectName: hibpapikey
+      key: globalSettings__hibpApiKey
     - objectName: sapassword #-OR- dbconnectionstring if external SQL
       key: SA_PASSWORD #-OR- globalSettings__sqlServer__connectionString if external SQL
 EOF
