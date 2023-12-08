@@ -145,7 +145,7 @@ rawManifests:
           - /notifications
           - /events
           - /scim
-          ##### NOTE:  Admin will not function correctly with path strip middleware
+          ##### NOTE:  Admin, Identity, and SSO will not function correctly with path strip middleware
   - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
