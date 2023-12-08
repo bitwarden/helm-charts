@@ -38,7 +38,7 @@ spec:
         args: ['
           mkdir -p /logs/admin
         ']
-        image: "bitnami/kubectl:1.19"
+        image: "bitnami/kubectl:1.21"
         volumeMounts:
           - name: applogs
             mountPath: /logs
