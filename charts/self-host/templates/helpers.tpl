@@ -1,22 +1,8 @@
 {{- define "bitwarden.coreVersionDefault" -}}
-{{- "2023.10.3" -}}
+{{- "2023.12.0" -}}
 {{- end -}}
 {{- define "bitwarden.webVersionDefault" -}}
-{{- "2023.10.2" -}}
-{{- end -}}
-
-{{/*
-Get the coreVersion for image tags
-*/}}
-{{- define "bitwarden.coreVersion" -}}
-{{- default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride  -}}
-{{- end -}}
-
-{{/*
-Get the webVersion for image tags
-*/}}
-{{- define "bitwarden.webVersion" -}}
-{{- default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride  -}}
+{{- "2023.12.0" -}}
 {{- end -}}
 
 {{/*
@@ -242,7 +228,6 @@ Name of SCIM components
 {{ template "bitwarden.fullname" . }}-scim
 {{- end -}}
 
-
 {{- define "bitwarden.podCoLocation.affinity" -}}
 {{- if eq .Values.general.volumeAccessMode "ReadWriteOnce"  }}
 affinity:
@@ -256,4 +241,12 @@ affinity:
               - ReadWriteOnce
         topologyKey: "kubernetes.io/hostname"
 {{- end -}}
+{{- end -}}
+
+
+{{/*
+Name of the keys secret
+*/}}
+{{- define "bitwarden.keyssecret" -}}
+{{ template "bitwarden.fullname" . }}-secretkeys
 {{- end -}}
