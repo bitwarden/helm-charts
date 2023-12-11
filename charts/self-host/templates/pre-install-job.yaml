@@ -1,5 +1,5 @@
 {{- $identityCertPasswordTxtValue := (randAlpha 32) }}
-{{- $currentIdentityCert := (lookup "v1" "Secret" "{.Release.Namespace}" "{{ .Release.Name }}-identity-cert") }}
+{{- $currentIdentityCert := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert") }}
 {{- $identityCertPasswordTxtValue := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password") }}
 
 {{- if $currentIdentityCert }}
