@@ -145,7 +145,7 @@ rawManifests:
           - /notifications
           - /events
           - /scim
-          ##### NOTE:  Admin will not function correctly with path strip middleware
+          ##### NOTE:  Admin, Identity, and SSO will not function correctly with path strip middleware
   - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
@@ -316,34 +316,34 @@ general:
     paths:
       web:
         path: /*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       attachments:
         path: /attachments/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       api:
         path: /api/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       icons:
         path: /icons/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       notifications:
         path: /notifications/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       events:
         path: /events/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       scim:
         path: /scim/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       sso:
         path: /sso/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       identity:
         path: /identity/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       admin:
         path: /admin*
-        pathType: Prefix
+        pathType: ImplementationSpecific
 ```
 
 __*NOTE: Make sure to update the paths to what you see here.*__
@@ -618,7 +618,7 @@ We will need to finish the rewrite set on the Application Gateway we created ear
      - Server variable: uri_path
      - Case-sensitive: No
      - Operator: equal (=)
-     - Pattern to match: `^(\/(?!admin)[^\/]*)\/(.*)`
+     - Pattern to match: `^(\/(?!admin)(?!identity)(?!sso)[^\/]*)\/(.*)`
      - Click OK
   7. Add an action and set the following values:
      - Rewrite type: URL

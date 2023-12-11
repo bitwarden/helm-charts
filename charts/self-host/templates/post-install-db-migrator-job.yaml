@@ -45,7 +45,7 @@ spec:
           echo "Admin Ready!"
         ']
         {{- end }}
-        image: "bitnami/kubectl:1.19"
+        image: "bitnami/kubectl:1.21"
         volumeMounts:
           {{- if .Values.database.enabled }}
           - name: mssql-data
