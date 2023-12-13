@@ -44,6 +44,11 @@ data:
   globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
   globalSettings__enableCloudCommunication: {{ .Values.general.enableCloudCommunication | quote }}
   globalSettings__baseServiceUri__cloudRegion: {{ .Values.general.cloudRegion }}
+{{- if eq .Values.general.cloudRegion "EU" }}
+  globalSettings__installation__identityUri: "https://identity.bitwarden.eu"
+  globalSettings__installation__apiUri: "https://api.bitwarden.eu"
+  globalSettings__pushRelayBaseUri: "https://push.bitwarden.eu"
+{{- end }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"
