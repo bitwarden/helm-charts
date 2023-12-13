@@ -25,7 +25,6 @@ data:
   globalSettings__baseServiceUri__internalVault: "http://{{ template "bitwarden.web" . }}:5000"
   globalSettings__baseServiceUri__internalSso: "http://{{ template "bitwarden.sso" . }}:5000"
   globalSettings__baseServiceUri__internalScim: "http://{{ template "bitwarden.scim" . }}:5000"
-  globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
   globalSettings__attachment__baseDirectory: "/etc/bitwarden/core/attachments"
   globalSettings__attachment__baseUrl: "https://{{ .Values.general.domain }}/attachments"
   globalSettings__send__baseDirectory: "/etc/bitwarden/core/attachments/sendfiles"
@@ -48,6 +47,8 @@ data:
   globalSettings__installation__identityUri: "https://identity.bitwarden.eu"
   globalSettings__installation__apiUri: "https://api.bitwarden.eu"
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.eu"
+{{- else }}
+  globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
 {{- end }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
