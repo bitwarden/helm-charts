@@ -222,6 +222,13 @@
                 "volumeAccessMode": {
                     "type": "string",
                     "enum": [ "ReadWriteMany", "ReadWriteOnce" ]
+                },
+                "enableCloudCommunication": {
+                    "type": "boolean"
+                },
+                "cloudRegion": {
+                    "type": "string",
+                    "enum": [ "US", "EU" ]
                 }
             }
         },

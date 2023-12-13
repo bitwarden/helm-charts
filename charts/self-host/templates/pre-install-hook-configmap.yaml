@@ -42,6 +42,8 @@ data:
   globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"
   globalSettings__licenseDirectory: "/etc/bitwarden/core/licenses"
   globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
+  globalSettings__enableCloudCommunication: {{ .Values.general.enableCloudCommunication | quote }}
+  globalSettings__baseServiceUri__cloudRegion: {{ .Values.general.cloudRegion }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"
