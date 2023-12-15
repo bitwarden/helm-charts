@@ -31,7 +31,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.web" . }}
-        image: "{{ .Values.component.web.image.name }}:{{ default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride }}"
+        image: "{{ default (include "bitwarden.defaultImageRegistry" nil ) .Values.general.imageRegistryOverride }}/{{ .Values.component.web.image.name }}:{{ default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

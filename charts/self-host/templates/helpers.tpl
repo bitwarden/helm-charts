@@ -5,6 +5,10 @@
 {{- "2023.12.0" -}}
 {{- end -}}
 
+{{- define "bitwarden.defaultImageRegistry" -}}
+{{- "registry.hub.docker.com" -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}

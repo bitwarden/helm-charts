@@ -39,7 +39,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "docker.io/nginx"
+        image: "{{ default (include "bitwarden.defaultImageRegistry" nil ) .Values.general.imageRegistryOverride }}/library/nginx"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -58,7 +58,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ default (include "bitwarden.defaultImageRegistry" nil ) .Values.general.imageRegistryOverride }}/bitnami/kubectl:1.21"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"

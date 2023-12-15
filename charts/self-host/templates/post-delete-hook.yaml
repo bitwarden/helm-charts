@@ -36,5 +36,5 @@ spec:
           kubectl delete job {{ .Release.Name }}-migrator;
           echo "Done"
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ default (include "bitwarden.defaultImageRegistry" nil ) .Values.general.imageRegistryOverride }}/bitnami/kubectl:1.21"
       restartPolicy: Never

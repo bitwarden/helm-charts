@@ -38,14 +38,14 @@ spec:
         args: ['
           mkdir -p /logs/identity
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ default (include "bitwarden.defaultImageRegistry" nil ) .Values.general.imageRegistryOverride }}/bitnami/kubectl:1.21"
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.identity" . }}
-        image: "{{ .Values.component.identity.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ default (include "bitwarden.defaultImageRegistry" nil ) .Values.general.imageRegistryOverride }}/{{ .Values.component.identity.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

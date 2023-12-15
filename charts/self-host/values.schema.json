@@ -229,6 +229,9 @@
                 "cloudRegion": {
                     "type": "string",
                     "enum": [ "US", "EU" ]
+                },
+                "imageRegistryOverride": {
+                    "type": "string"
                 }
             }
         },
@@ -2254,6 +2257,9 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "registry": {
+                            "type": "string"
+                        },
                         "name": {
                             "type": "string"
                         },
