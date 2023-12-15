@@ -38,7 +38,7 @@ spec:
         args: ['
           mkdir -p /logs/events
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ .Values.supportComponents.kubectl.image.name}}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs

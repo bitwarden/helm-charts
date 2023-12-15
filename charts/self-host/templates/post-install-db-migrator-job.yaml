@@ -45,7 +45,7 @@ spec:
           echo "Admin Ready!"
         ']
         {{- end }}
-        image: "bitnami/kubectl:1.21"
+        image: "{{ .Values.supportComponents.kubectl.image.name}}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           {{- if .Values.database.enabled }}
           - name: mssql-data
@@ -63,7 +63,7 @@ spec:
               name: "{{ .Values.secrets.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "bitwarden/mssqlmigratorutility:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ .Values.supportComponents.dbMigrator.image.name}}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
