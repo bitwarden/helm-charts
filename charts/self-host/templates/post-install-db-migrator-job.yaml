@@ -45,7 +45,7 @@ spec:
           echo "Admin Ready!"
         ']
         {{- end }}
-        image: "{{ .Values.supportComponents.kubectl.image.name}}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           {{- if .Values.database.enabled }}
           - name: mssql-data
