@@ -39,7 +39,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "{{ .Values.supportComponents.certGenerator.image.name}}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
