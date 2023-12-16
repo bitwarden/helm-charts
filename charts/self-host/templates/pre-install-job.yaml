@@ -58,7 +58,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name}}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
