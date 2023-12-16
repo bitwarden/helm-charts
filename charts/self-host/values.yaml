@@ -298,7 +298,7 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-# Containers used for jobs and init containers
+# Images used for jobs and init containers
 supportComponents:
   dbMigrator:
     image:
