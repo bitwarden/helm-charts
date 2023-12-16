@@ -39,7 +39,7 @@ spec:
         args: ['
           mkdir -p /logs/scim
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name}}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
