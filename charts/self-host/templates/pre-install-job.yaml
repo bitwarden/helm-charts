@@ -39,7 +39,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "docker.io/nginx"
+        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -58,7 +58,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"

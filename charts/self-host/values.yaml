@@ -298,6 +298,19 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+# Images used for jobs and init containers
+supportComponents:
+  dbMigrator:
+    image:
+      name: bitwarden/mssqlmigratorutility
+  certGenerator:
+    image:
+      name: docker.io/nginx
+      tag: 1.25.3
+  kubectl:
+    image:
+      name: bitnami/kubectl
+      tag: 1.21
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
