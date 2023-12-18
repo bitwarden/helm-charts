@@ -31,7 +31,7 @@ helm repo update
 Run the following command to create a custom values file used for deployment:
 
 ```shell
-helm show values bitwarden/self-host --devel > my-values.yaml
+helm show values bitwarden/self-host > my-values.yaml
 ```
 
 ### Update the config file
@@ -238,7 +238,7 @@ Note that the certResolver is deployed with the Traefik ingress configuration.
 
 ### Install Helm Chart
 
-1. Run `helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml`.
+1. Run `helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml`.
     - This installs/upgrades a release named `bitwarden`, in the namespace `bitwarden`, using values from `my-values.yaml`.
     - This may take over a minute to fully come up (some of the services might register as failed in the meantime)
     - You can see help information for the `helm install` command by running `helm install --help`.
@@ -599,7 +599,7 @@ We will need to create a rewrite set on the Application Gateway. There are vario
 ### Helm
 
 ```shell
-helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml
 ```
 
 ### Update Azure Application Gateway Rewrite Set
@@ -961,7 +961,7 @@ Update the other settings in `my-values.yaml` based on your environment. Follow 
 ### Deploy via Helm
 
 ```shell
-helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml
 ```
 
 ## Example Deployment on AWS EKS
@@ -1271,7 +1271,7 @@ Update the other settings in `my-values.yaml` based on your environment. Follow 
 ### Deploy to AWS via Helm
 
 ```shell
-helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml
 ```
 
 ## Database Pod Backup and Restore
