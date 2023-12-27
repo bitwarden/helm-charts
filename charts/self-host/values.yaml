@@ -314,17 +314,25 @@ supportComponents:
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
+    # Use an existing PVC with ReadWriteMany access mode.
+    existingClaim:
     size: "1Gi"
     labels: {}
   attachments:
+    # Use an existing PVC with ReadWriteMany access mode.
+    existingClaim:
     size: 1Gi
     labels: {}
   licenses:
+    # Use an existing PVC with ReadWriteMany access mode.
+    existingClaim:
     size: 1Gi
     labels: {}
   logs:
     # Logs are disabled by default
     enabled: false
+    # Use an existing PVC with ReadWriteMany access mode.
+    existingClaim:
     size: 1Gi
     labels: {}
 
@@ -361,6 +369,8 @@ database:
 
   # The MSSQL volumes for the PVCs
   volume:
+    # Use a dedicated StorageClass with ReadWriteOnce access mode for database volume. If not provided sharedStorageClassName will be used.
+    dbStorageClassName:
     backups:
       # Storage size
       size: 1Gi

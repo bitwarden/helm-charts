@@ -68,7 +68,7 @@ spec:
       volumes:
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.attachments" . }}
+            claimName: {{ template "bitwarden.attachmentsVolume" . }}
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           csi:

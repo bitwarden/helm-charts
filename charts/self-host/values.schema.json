@@ -2169,6 +2169,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "existingClaim": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2183,6 +2189,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "existingClaim": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2197,6 +2209,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "existingClaim": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2213,6 +2231,12 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean"
+                        },
+                        "existingClaim": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
                         },
                         "size": {
                             "type": "string"
@@ -2296,6 +2320,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "dbStorageClassName": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
                         "backups": {
                             "type": "object",
                             "required": [],

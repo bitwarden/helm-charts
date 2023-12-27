@@ -158,23 +158,60 @@ Name of MSSQL components
 Name of Dataprotection volume
 */}}
 {{- define "bitwarden.dataprotection" -}}
+{{- if and .Values.volume.dataprotection .Values.volume.dataprotection.existingClaim -}}
+{{ .Values.volume.dataprotection.existingClaim }}
+{{- else -}}
 {{ template "bitwarden.fullname" . }}-dataprotection
+{{- end -}}
+{{- end -}}
+
+{{/*
+Name of Attachments volume
+*/}}
+{{- define "bitwarden.attachmentsVolume" -}}
+{{- if and .Values.volume.attachments .Values.volume.attachments.existingClaim -}}
+{{ .Values.volume.attachments.existingClaim }}
+{{- else -}}
+{{ template "bitwarden.attachments" . }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Name of Licenses volume
 */}}
 {{- define "bitwarden.licenses" -}}
+{{- if and .Values.volume.licenses .Values.volume.licenses.existingClaim -}}
+{{ .Values.volume.licenses.existingClaim }}
+{{- else -}}
 {{ template "bitwarden.fullname" . }}-licenses
+{{- end -}}
 {{- end -}}
 
 {{/*
 Name of Logs volume
 */}}
 {{- define "bitwarden.applogs" -}}
+{{- if and .Values.volume.logs .Values.volume.logs.existingClaim -}}
+{{ .Values.volume.logs.existingClaim }}
+{{- else -}}
 {{ template "bitwarden.fullname" . }}-applogs
 {{- end -}}
+{{- end -}}
 
+{{/*
+Database PVCs StorageClass name
+*/}}
+{{- define "bitwarden.dbStorageClass" -}}
+{{- if .Values.database.volume.dbStorageClassName -}}
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.database.volume.dbStorageClassName }}
+{{- else -}}
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Name of MSSQL Backups volume

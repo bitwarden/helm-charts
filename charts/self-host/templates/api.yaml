@@ -94,7 +94,7 @@ spec:
             claimName: {{ template "bitwarden.dataprotection" . }}
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.attachments" . }}
+            claimName: {{ template "bitwarden.attachmentsVolume" . }}
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.licenses" . }}
