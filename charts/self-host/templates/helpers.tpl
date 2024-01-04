@@ -57,6 +57,35 @@ helm.sh/chart: {{ template "bitwarden.chart" . }}
 {{- end -}}
 
 {{/*
+Generate common pod labels
+*/}}
+{{- define "bitwarden.podLabels" -}}
+{{ include "bitwarden.labels" . }}
+{{- if .Values.general.podLabels }}
+{{ toYaml .Values.general.podLabels }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate basic annotations
+*/}}
+{{- define "bitwarden.annotations" -}}
+{{- if .Values.general.annotations }}
+{{ toYaml .Values.general.annotations }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate common pod annotations
+*/}}
+{{- define "bitwarden.podAnnotations" -}}
+{{ include "bitwarden.annotations" . }}
+{{- if .Values.general.podAnnotations }}
+{{ toYaml .Values.general.podAnnotations }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Generate basic labels
 */}}
 {{- define "bitwarden.rawPostInstallAnnotations" -}}
