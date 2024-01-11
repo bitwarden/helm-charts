@@ -22,7 +22,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.dataprotection.size }}
-{{- end -}}
+{{- end }}
 
 {{- if .Values.volume.licenses -}}
 {{- if not .Values.volume.licenses.existingClaim -}}
@@ -46,7 +46,7 @@ spec:
     requests:
       storage: {{ .Values.volume.licenses.size }}
 {{- end -}}
-{{- end -}}
+{{- end }}
 
 {{- if .Values.volume.attachments -}}
 {{- if not .Values.volume.attachments.existingClaim -}}
@@ -70,7 +70,7 @@ spec:
     requests:
       storage: {{ .Values.volume.attachments.size }}
 {{- end -}}
-{{- end -}}
+{{- end }}
 
 {{- if and .Values.volume.logs .Values.volume.logs.enabled -}}
 {{- if not .Values.volume.logs.existingClaim -}}
@@ -94,7 +94,7 @@ spec:
     requests:
       storage: {{ .Values.volume.logs.size }}
 {{- end -}}
-{{- end -}}
+{{- end }}
 
 #################
 # MSSQL Volumes #
@@ -121,11 +121,11 @@ spec:
   storageClassName: {{ .Values.database.volume.storageClass }}
   {{- else -}}
   storageClassName: {{ .Values.sharedStorageClassName }}
-  {{- end -}}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.database.volume.log.size }}
-{{- end -}}
+{{- end }}
 
 {{- if not .Values.database.volume.backups.existingClaim -}}
 ---
@@ -147,7 +147,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.database.volume.backups.size }}
-{{- end -}}
+{{- end }}
 
 {{- if not .Values.database.volume.data.existingClaim -}}
 ---
@@ -169,6 +169,6 @@ spec:
   resources:
     requests:
       storage: {{ .Values.database.volume.data.size }}
-{{- end -}}
+{{- end }}
 
 {{- end -}}
