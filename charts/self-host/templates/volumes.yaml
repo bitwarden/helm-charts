@@ -1,4 +1,4 @@
-{{- if not .Values.volume.dataprotection.existingClaim -}}
+{{- if not .Values.volume.dataprotection.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -13,19 +13,19 @@ metadata:
 {{- end }}
 spec:
   accessModes:
-    {{- if .Values.volume.dataprotection.accessMode -}}
+    {{- if .Values.volume.dataprotection.accessMode }}
     - {{ .Values.volume.dataprotection.accessMode }}
-    {{- else -}}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
-    {{- end -}}
+    {{- end }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
       storage: {{ .Values.volume.dataprotection.size }}
 {{- end }}
 
-{{- if .Values.volume.licenses -}}
-{{- if not .Values.volume.licenses.existingClaim -}}
+{{- if .Values.volume.licenses }}
+{{- if not .Values.volume.licenses.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -45,11 +45,11 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.licenses.size }}
-{{- end -}}
+{{- end }}
 {{- end }}
 
-{{- if .Values.volume.attachments -}}
-{{- if not .Values.volume.attachments.existingClaim -}}
+{{- if .Values.volume.attachments }}
+{{- if not .Values.volume.attachments.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -69,11 +69,11 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.attachments.size }}
-{{- end -}}
+{{- end }}
 {{- end }}
 
-{{- if and .Values.volume.logs .Values.volume.logs.enabled -}}
-{{- if not .Values.volume.logs.existingClaim -}}
+{{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+{{- if not .Values.volume.logs.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -93,7 +93,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.logs.size }}
-{{- end -}}
+{{- end }}
 {{- end }}
 
 #################
@@ -101,7 +101,7 @@ spec:
 #################
 {{- if .Values.database.enabled }}
 
-{{- if not .Values.database.volume.log.existingClaim -}}
+{{- if not .Values.database.volume.log.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -117,9 +117,9 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.general.volumeAccessMode }}
-  {{- if .Values.database.volume.storageClass -}}
+  {{- if .Values.database.volume.storageClass }}
   storageClassName: {{ .Values.database.volume.storageClass }}
-  {{- else -}}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   {{- end }}
   resources:
@@ -127,7 +127,7 @@ spec:
       storage: {{ .Values.database.volume.log.size }}
 {{- end }}
 
-{{- if not .Values.database.volume.backups.existingClaim -}}
+{{- if not .Values.database.volume.backups.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -149,7 +149,7 @@ spec:
       storage: {{ .Values.database.volume.backups.size }}
 {{- end }}
 
-{{- if not .Values.database.volume.data.existingClaim -}}
+{{- if not .Values.database.volume.data.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -171,4 +171,4 @@ spec:
       storage: {{ .Values.database.volume.data.size }}
 {{- end }}
 
-{{- end -}}
+{{- end }}
