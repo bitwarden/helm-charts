@@ -2322,6 +2322,9 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "storageClass": {
+                            "type": "string"
+                        },
                         "backups": {
                             "type": "object",
                             "required": [],

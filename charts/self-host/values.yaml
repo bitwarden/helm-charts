@@ -313,6 +313,8 @@ supportComponents:
       tag: 1.21
 # Data volume sizes for shared PVCs
 volume:
+  # Override the storageClassName specified in sharedStorageClassName for all database volumes
+  # storageClass: storageClassName
   dataprotection:
     # Use an existing PVC by specifying the name.
     # existingClaim: claimName
