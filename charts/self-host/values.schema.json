@@ -10,7 +10,9 @@
         },
         "general": {
             "type": "object",
-            "required": [],
+            "required": [
+                "volumeAccessMode"
+            ],
             "properties": {
                 "domain": {
                     "type": "string"
@@ -2169,6 +2171,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "existingClaim": {
+                            "type": "string"
+                        },
+                        "accessMode": {
+                            "type": "string"
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2183,6 +2191,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "existingClaim": {
+                            "type": "string"
+                        },
+                        "accessMode": {
+                            "type": "string"
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2197,6 +2211,12 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "existingClaim": {
+                            "type": "string"
+                        },
+                        "accessMode": {
+                            "type": "string"
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2213,6 +2233,12 @@
                     "properties": {
                         "enabled": {
                             "type": "boolean"
+                        },
+                        "existingClaim": {
+                            "type": "string"
+                        },
+                        "accessMode": {
+                            "type": "string"
                         },
                         "size": {
                             "type": "string"
@@ -2300,8 +2326,19 @@
                             "type": "object",
                             "required": [],
                             "properties": {
+                                "existingClaim": {
+                                    "type": "string"
+                                },
+                                "accessMode": {
+                                    "type": "string"
+                                },
                                 "size": {
                                     "type": "string"
+                                },
+                                "labels": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {}
                                 }
                             }
                         },
@@ -2309,8 +2346,19 @@
                             "type": "object",
                             "required": [],
                             "properties": {
+                                "existingClaim": {
+                                    "type": "string"
+                                },
+                                "accessMode": {
+                                    "type": "string"
+                                },
                                 "size": {
                                     "type": "string"
+                                },
+                                "labels": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {}
                                 }
                             }
                         },
@@ -2318,8 +2366,19 @@
                             "type": "object",
                             "required": [],
                             "properties": {
+                                "existingClaim": {
+                                    "type": "string"
+                                },
+                                "accessMode": {
+                                    "type": "string"
+                                },
                                 "size": {
                                     "type": "string"
+                                },
+                                "labels": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {}
                                 }
                             }
                         }

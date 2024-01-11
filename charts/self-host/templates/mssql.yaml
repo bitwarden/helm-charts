@@ -38,8 +38,10 @@ spec:
         - name: {{ template "bitwarden.mssql" . }}
           image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"
           imagePullPolicy: Always
+          {{- if .Values.database.resources }}
           resources:
 {{ toYaml .Values.database.resources | indent 12 }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config-map
@@ -57,7 +59,7 @@ spec:
               mountPath: /var/opt/mssql/log
             - name: mssql-backups
               mountPath: /var/opt/mssql/backups
-            {{- if .Values.secrets.secretProviderClass}}
+            {{- if .Values.secrets.secretProviderClass }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -83,8 +85,10 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 3
+          {{- if .Values.database.securityContext }}
           securityContext:
 {{ toYaml .Values.database.securityContext | indent 12 }}
+          {{- end }}
       enableServiceLinks: false
       volumes:
         - name: mssql-data
@@ -96,7 +100,7 @@ spec:
         - name: mssql-backups
           persistentVolumeClaim:
             claimName: {{ template "bitwarden.mssqlBackups" . }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
