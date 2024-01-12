@@ -16,7 +16,7 @@ spec:
   serviceName: {{ template "bitwarden.mssql" . }}
   replicas: 1
   updateStrategy:
-    type: "{{ .Values.database.updateStrategy }}"
+    type: {{ .Values.database.updateStrategy | quote }}
   selector:
     matchLabels:
       app: {{ template "bitwarden.mssql" . }}
@@ -31,8 +31,8 @@ spec:
 {{- end }}
     spec:
     {{- if .Values.database.podServiceAccount }}
-      serviceAccount: "{{ .Values.database.podServiceAccount }}"
-      serviceAccountName: "{{ .Values.database.podServiceAccount }}"
+      serviceAccount: {{ .Values.database.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.database.podServiceAccount | quote }}
     {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
@@ -46,7 +46,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config-map
             - secretRef:
-                name: "{{ .Values.secrets.secretName }}"
+                name: {{ .Values.secrets.secretName | quote }}
             - secretRef:
                 name: {{ .Release.Name }}-sql-connection-string
           ports:
@@ -93,13 +93,13 @@ spec:
       volumes:
         - name: mssql-data
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlData" . }}
+            claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
         - name: mssql-log
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlLog" . }}
+            claimName: {{ default ( include "bitwarden.mssqlLog" . ) .Values.database.volume.log.existingClaim }}
         - name: mssql-backups
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlBackups" . }}
+            claimName: {{ default ( include "bitwarden.mssqlBackups" . ) .Values.database.volume.backups.existingClaim }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
