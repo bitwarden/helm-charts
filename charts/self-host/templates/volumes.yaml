@@ -24,7 +24,6 @@ spec:
       storage: {{ .Values.volume.dataprotection.size }}
 {{- end }}
 
-{{- if .Values.volume.licenses }}
 {{- if not .Values.volume.licenses.existingClaim }}
 ---
 apiVersion: v1
@@ -40,15 +39,17 @@ metadata:
 {{- end }}
 spec:
   accessModes:
+    {{- if .Values.volume.licenses.accessMode }}
+    - {{ .Values.volume.licenses.accessMode }}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
+    {{- end }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
       storage: {{ .Values.volume.licenses.size }}
 {{- end }}
-{{- end }}
 
-{{- if .Values.volume.attachments }}
 {{- if not .Values.volume.attachments.existingClaim }}
 ---
 apiVersion: v1
@@ -64,16 +65,18 @@ metadata:
 {{- end }}
 spec:
   accessModes:
+    {{- if .Values.volume.attachments.accessMode }}
+    - {{ .Values.volume.attachments.accessMode }}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
+    {{- end }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
       storage: {{ .Values.volume.attachments.size }}
 {{- end }}
-{{- end }}
 
-{{- if and .Values.volume.logs .Values.volume.logs.enabled }}
-{{- if not .Values.volume.logs.existingClaim }}
+{{- if and .Values.volume.logs.enabled (not .Values.volume.logs.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -88,12 +91,15 @@ metadata:
 {{- end }}
 spec:
   accessModes:
+    {{- if .Values.volume.logs.accessMode }}
+    - {{ .Values.volume.logs.accessMode }}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
+    {{- end }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   resources:
     requests:
       storage: {{ .Values.volume.logs.size }}
-{{- end }}
 {{- end }}
 
 #################
@@ -116,7 +122,11 @@ metadata:
 {{- end }}
 spec:
   accessModes:
+    {{- if .Values.database.volume.log.accessMode }}
+    - {{ .Values.database.volume.log.accessMode }}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
+    {{- end }}
   {{- if .Values.database.volume.storageClass }}
   storageClassName: {{ .Values.database.volume.storageClass }}
   {{- else }}
@@ -142,8 +152,16 @@ metadata:
 {{- end }}
 spec:
   accessModes:
+    {{- if .Values.database.volume.backups.accessMode }}
+    - {{ .Values.database.volume.backups.accessMode }}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
+    {{- end }}
+  {{- if .Values.database.volume.storageClass }}
+  storageClassName: {{ .Values.database.volume.storageClass }}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.database.volume.backups.size }}
@@ -164,8 +182,16 @@ metadata:
 {{- end }}
 spec:
   accessModes:
+    {{- if .Values.database.volume.data.accessMode }}
+    - {{ .Values.database.volume.data.accessMode }}
+    {{- else }}
     - {{ .Values.general.volumeAccessMode }}
+    {{- end }}
+  {{- if .Values.database.volume.storageClass }}
+  storageClassName: {{ .Values.database.volume.storageClass }}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.database.volume.data.size }}
