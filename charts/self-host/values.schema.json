@@ -10,9 +10,7 @@
         },
         "general": {
             "type": "object",
-            "required": [
-                "volumeAccessMode"
-            ],
+            "required": [],
             "properties": {
                 "domain": {
                     "type": "string"
