@@ -318,6 +318,8 @@ volume:
     # existingClaim: claimName
     # Override the accessMode specified in general.volumeAccessMode
     # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: "1Gi"
     labels: {}
   attachments:
@@ -325,6 +327,8 @@ volume:
     # existingClaim: claimName
     # Override the accessMode specified in general.volumeAccessMode
     # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
   licenses:
@@ -332,6 +336,8 @@ volume:
     # existingClaim: claimName
     # Override the accessMode specified in general.volumeAccessMode
     # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
   logs:
@@ -341,6 +347,8 @@ volume:
     # existingClaim: claimName
     # Override the accessMode specified in general.volumeAccessMode
     # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
 
@@ -377,13 +385,13 @@ database:
 
   # The MSSQL volumes for the PVCs
   volume:
-    # Override the storageClassName specified in sharedStorageClassName for all database volumes
-    # storageClass: storageClassName
     backups:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
       # Override the accessMode specified in general.volumeAccessMode
       # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 1Gi
       labels: {}
     data:
@@ -391,6 +399,8 @@ database:
       # existingClaim: claimName
       # Override the accessMode specified in general.volumeAccessMode
       # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
     log:
@@ -398,6 +408,8 @@ database:
       # existingClaim: claimName
       # Override the accessMode specified in general.volumeAccessMode
       # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.

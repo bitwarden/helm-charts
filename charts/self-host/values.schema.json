@@ -2177,6 +2177,9 @@
                         "accessMode": {
                             "type": "string"
                         },
+                        "storageClass": {
+                            "type": "string"
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2197,6 +2200,9 @@
                         "accessMode": {
                             "type": "string"
                         },
+                        "storageClass": {
+                            "type": "string"
+                        },
                         "size": {
                             "type": "string"
                         },
@@ -2215,6 +2221,9 @@
                             "type": "string"
                         },
                         "accessMode": {
+                            "type": "string"
+                        },
+                        "storageClass": {
                             "type": "string"
                         },
                         "size": {
@@ -2238,6 +2247,9 @@
                             "type": "string"
                         },
                         "accessMode": {
+                            "type": "string"
+                        },
+                        "storageClass": {
                             "type": "string"
                         },
                         "size": {
@@ -2322,9 +2334,6 @@
                     "type": "object",
                     "required": [],
                     "properties": {
-                        "storageClass": {
-                            "type": "string"
-                        },
                         "backups": {
                             "type": "object",
                             "required": [],
@@ -2333,6 +2342,9 @@
                                     "type": "string"
                                 },
                                 "accessMode": {
+                                    "type": "string"
+                                },
+                                "storageClass": {
                                     "type": "string"
                                 },
                                 "size": {
@@ -2355,6 +2367,9 @@
                                 "accessMode": {
                                     "type": "string"
                                 },
+                                "storageClass": {
+                                    "type": "string"
+                                },
                                 "size": {
                                     "type": "string"
                                 },
@@ -2373,6 +2388,9 @@
                                     "type": "string"
                                 },
                                 "accessMode": {
+                                    "type": "string"
+                                },
+                                "storageClass": {
                                     "type": "string"
                                 },
                                 "size": {

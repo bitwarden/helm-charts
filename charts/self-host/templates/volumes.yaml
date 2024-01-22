@@ -18,7 +18,11 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
+  {{- if .Values.volume.dataprotection.storageClass }}
+  storageClassName: {{ .Values.volume.dataprotection.storageClass }}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.dataprotection.size }}
@@ -44,7 +48,11 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
+  {{- if .Values.volume.licenses.storageClass }}
+  storageClassName: {{ .Values.volume.licenses.storageClass }}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.licenses.size }}
@@ -70,7 +78,11 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
+  {{- if .Values.volume.attachments.storageClass }}
+  storageClassName: {{ .Values.volume.attachments.storageClass }}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.attachments.size }}
@@ -96,7 +108,11 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
+  {{- if .Values.volume.logs.storageClass }}
+  storageClassName: {{ .Values.volume.logs.storageClass }}
+  {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.volume.logs.size }}
@@ -127,8 +143,8 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
-  {{- if .Values.database.volume.storageClass }}
-  storageClassName: {{ .Values.database.volume.storageClass }}
+  {{- if .Values.database.volume.log.storageClass }}
+  storageClassName: {{ .Values.database.volume.log.storageClass }}
   {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   {{- end }}
@@ -157,8 +173,8 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
-  {{- if .Values.database.volume.storageClass }}
-  storageClassName: {{ .Values.database.volume.storageClass }}
+  {{- if .Values.database.volume.backups.storageClass }}
+  storageClassName: {{ .Values.database.volume.backups.storageClass }}
   {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   {{- end }}
@@ -187,8 +203,8 @@ spec:
     {{- else }}
     - {{ .Values.general.volumeAccessMode }}
     {{- end }}
-  {{- if .Values.database.volume.storageClass }}
-  storageClassName: {{ .Values.database.volume.storageClass }}
+  {{- if .Values.database.volume.data.storageClass }}
+  storageClassName: {{ .Values.database.volume.data.storageClass }}
   {{- else }}
   storageClassName: {{ .Values.sharedStorageClassName }}
   {{- end }}
