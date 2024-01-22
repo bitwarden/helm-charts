@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.dataprotection" . }}
   labels:
-    app.kubernetes.io/component: licenses
+    app.kubernetes.io/component: dataprotection
 {{ include "bitwarden.labels" . | indent 4 }}
 {{- with .Values.volume.dataprotection.labels }}
 {{ toYaml . | indent 4 }}
