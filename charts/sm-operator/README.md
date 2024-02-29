@@ -1,4 +1,4 @@
 # Bitwarden Secrets Manager Operator
 
-This Operator is a tool for teams to integrate Bitwarden Secrets Manager into their  Kubernetes workflows seamlessly.
+This chart is for the deployment of the Kubernetes Operator for Secrets Manager.
 
