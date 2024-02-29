@@ -4,22 +4,20 @@ name: Version Bump
 on:
   workflow_dispatch:
     inputs:
-      version_number:
-        description: "New Version"
-        required: true
+      version_number_override:
+        description: "New version override (leave blank for automatic calculation, example: '2024.1.0')"
+        required: false
+        type: string
 
 jobs:
   bump_version:
-    name: "Bump Version to ${{ github.event.inputs.version_number }}"
+    name: Bump Version
     runs-on: ubuntu-22.04
     environment: Production
     permissions:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
       - name: Login to Azure - CI Subscription
         uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
         with:
@@ -32,6 +30,11 @@ jobs:
           keyvault: "bitwarden-ci"
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
 
+      - name: Checkout Branch
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: main
+
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
         with:
@@ -40,14 +43,58 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: "Create version_bump_${{ github.event.inputs.version_number }} branch"
-        run: git switch -c version_bump_${{ github.event.inputs.version_number }}
+      - name: Create version branch
+        id: create-branch
+        run: |
+          NAME=version_bump_${{ github.ref_name }}_$(date +"%Y-%m-%d")
+          git switch -c $NAME
+          echo "name=$NAME" >> $GITHUB_OUTPUT
 
-      - name: Bump Version
+      - name: Verify input version
+        if: ${{ inputs.version_number_override != '' }}
+        env:
+          NEW_VERSION: ${{ inputs.version_number_override }}
+        run: |
+          CURRENT_VERSION=$(yq -r '.version' charts/self-host/Chart.yaml)
+
+          # Error if version has not changed.
+          if [[ "$NEW_VERSION" == "$CURRENT_VERSION" ]]; then
+            echo "Version has not changed."
+            exit 1
+          fi
+
+          # Check if version is newer.
+          printf '%s\n' "${CURRENT_VERSION}" "${NEW_VERSION}" | sort -C -V
+          if [ $? -eq 0 ]; then
+            echo "Version check successful."
+          else
+            echo "Version check failed."
+            exit 1
+          fi
+
+      - name: Bump Chart Version - Version Override
+        if: ${{ inputs.version_number_override != '' }}
+        id: bump-version-override
         uses: bitwarden/gh-actions/version-bump@main
         with:
-          version: ${{ github.event.inputs.version_number }}
           file_path: "charts/self-host/Chart.yaml"
+          version: ${{ inputs.version_number_override }}
+
+      - name: Bump Chart Version - Automatic Calculation
+        if: ${{ inputs.version_number_override == '' }}
+        id: bump-version-automatic
+        uses: bitwarden/gh-actions/version-bump@main
+        with:
+          file_path: "charts/self-host/Chart.yaml"
+
+      - name: Set Job output
+        id: set-job-output
+        run: |
+          if [[ "${{ steps.bump-version-override.outcome }}" == "success" ]]; then
+            echo "version=${{ steps.bump-version-override.outputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.bump-version-automatic.outcome }}" == "success" ]]; then
+            echo "version=${{ steps.bump-version-automatic.outputs.version }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup git
         run: |
@@ -66,22 +113,24 @@ jobs:
 
       - name: Commit files
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Bumped version to ${{ github.event.inputs.version_number }}" -a
+        run: git commit -m "Bumped version to ${{ steps.set-job-output.outputs.version }}" -a
 
       - name: Push changes
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git push -u origin version_bump_${{ github.event.inputs.version_number }}
-
-      - name: Create Version PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
-          PR_BRANCH: "version_bump_${{ github.event.inputs.version_number }}"
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          BASE_BRANCH: main
-          TITLE: "Bump version to ${{ github.event.inputs.version_number }}"
+          PR_BRANCH: ${{ steps.create-branch.outputs.name }}
+        run: git push -u origin $PR_BRANCH
+
+      - name: Create version PR
+        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
+          PR_BRANCH: ${{ steps.create-branch.outputs.name }}
+          TITLE: "Bump version to ${{ steps.set-job-output.outputs.version }}"
         run: |
-          gh pr create --title "$TITLE" \
-            --base "$BASE" \
+          PR_URL=$(gh pr create --title "$TITLE" \
+            --base "main" \
             --head "$PR_BRANCH" \
             --label "version update" \
             --label "automated pr" \
@@ -94,4 +143,19 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version bump to ${{ github.event.inputs.version_number }}"
+              Automated version bump to ${{ steps.set-job-output.outputs.version }}")
+          echo "pr_number=${PR_URL##*/}" >> $GITHUB_OUTPUT
+
+      - name: Approve PR
+        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
+        run: gh pr review $PR_NUMBER --approve
+
+      - name: Merge PR
+        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        env:
+          GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
+          PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
+        run: gh pr merge $PR_NUMBER --squash --auto --delete-branch
