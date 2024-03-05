@@ -16,7 +16,7 @@ settings:
 containers:
   manager:
     image:
-      #NOTE:  This should be updated before the final PR
+      # NOTE:  This should be updated before the final PR
       repository: localhost/sm-operator
       # Will default to the Chart's AppVersion, but you can override here.
       tag:
