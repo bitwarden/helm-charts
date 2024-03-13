@@ -18,6 +18,17 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Validate version input
+        if: ${{ inputs.version_number_override != '' }}
+        uses: bitwarden/gh-actions/version-check@main
+        with:
+          version: ${{ inputs.version_number_override }}
+
+      - name: Checkout Branch
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: main
+
       - name: Login to Azure - CI Subscription
         uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
         with:
@@ -30,11 +41,6 @@ jobs:
           keyvault: "bitwarden-ci"
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
 
-      - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          ref: main
-
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
         with:
@@ -43,6 +49,11 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
+      - name: Setup git
+        run: |
+          git config --local user.email "106330231+bitwarden-devops-bot@users.noreply.github.com"
+          git config --local user.name "bitwarden-devops-bot"
+
       - name: Create version branch
         id: create-branch
         run: |
@@ -50,13 +61,18 @@ jobs:
           git switch -c $NAME
           echo "name=$NAME" >> $GITHUB_OUTPUT
 
+      - name: Get current version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(yq -r '.version' charts/self-host/Chart.yaml)
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
       - name: Verify input version
         if: ${{ inputs.version_number_override != '' }}
         env:
+          CURRENT_VERSION: ${{ steps.current-version.outputs.version }}
           NEW_VERSION: ${{ inputs.version_number_override }}
         run: |
-          CURRENT_VERSION=$(yq -r '.version' charts/self-host/Chart.yaml)
-
           # Error if version has not changed.
           if [[ "$NEW_VERSION" == "$CURRENT_VERSION" ]]; then
             echo "Version has not changed."
@@ -72,6 +88,13 @@ jobs:
             exit 1
           fi
 
+      - name: Calculate next release version
+        if: ${{ inputs.version_number_override == '' }}
+        id: calculate-next-version
+        uses: bitwarden/gh-actions/version-next@main
+        with:
+          version: ${{ steps.current-version.outputs.version }}
+
       - name: Bump Chart Version - Version Override
         if: ${{ inputs.version_number_override != '' }}
         id: bump-version-override
@@ -86,20 +109,16 @@ jobs:
         uses: bitwarden/gh-actions/version-bump@main
         with:
           file_path: "charts/self-host/Chart.yaml"
+          version: ${{ steps.calculate-next-version.outputs.version }}
 
-      - name: Set Job output
-        id: set-job-output
+      - name: Set final version output
+        id: set-final-version-output
         run: |
           if [[ "${{ steps.bump-version-override.outcome }}" == "success" ]]; then
-            echo "version=${{ steps.bump-version-override.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "version=${{ inputs.version_number_override }}" >> $GITHUB_OUTPUT
           elif [[ "${{ steps.bump-version-automatic.outcome }}" == "success" ]]; then
-            echo "version=${{ steps.bump-version-automatic.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "version=${{ steps.calculate-next-version.outputs.version }}" >> $GITHUB_OUTPUT
           fi
-
-      - name: Setup git
-        run: |
-          git config --local user.email "106330231+bitwarden-devops-bot@users.noreply.github.com"
-          git config --local user.name "bitwarden-devops-bot"
 
       - name: Check if version changed
         id: version-changed
@@ -113,7 +132,7 @@ jobs:
 
       - name: Commit files
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Bumped version to ${{ steps.set-job-output.outputs.version }}" -a
+        run: git commit -m "Bumped version to ${{ steps.set-final-version-output.outputs.version }}" -a
 
       - name: Push changes
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
@@ -122,12 +141,13 @@ jobs:
         run: git push -u origin $PR_BRANCH
 
       - name: Create version PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        #if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        if: false #TODO: Remove before merge to main.
         id: create-pr
         env:
           GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
           PR_BRANCH: ${{ steps.create-branch.outputs.name }}
-          TITLE: "Bump version to ${{ steps.set-job-output.outputs.version }}"
+          TITLE: "Bump version to ${{ steps.set-final-version-output.outputs.version }}"
         run: |
           PR_URL=$(gh pr create --title "$TITLE" \
             --base "main" \
@@ -143,18 +163,20 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version bump to ${{ steps.set-job-output.outputs.version }}")
+              Automated version bump to ${{ steps.set-final-version-output.outputs.version }}")
           echo "pr_number=${PR_URL##*/}" >> $GITHUB_OUTPUT
 
       - name: Approve PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        #if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        if: false #TODO: Remove before merge to main.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
         run: gh pr review $PR_NUMBER --approve
 
       - name: Merge PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        #if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        if: false #TODO: Remove before merge to main.
         env:
           GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
           PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
