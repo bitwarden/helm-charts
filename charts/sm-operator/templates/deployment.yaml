@@ -37,6 +37,10 @@ spec:
                   operator: In
                   values:
                     - linux
+      {{- if .Values.containers.manager.image.imagePullSecrets }}
+      imagePullSecrets:
+      - name: {{ .Values.containers.manager.image.imagePullSecrets }}
+      {{- end }}
       containers:
       - args:
           - --secure-listen-address=0.0.0.0:8443
