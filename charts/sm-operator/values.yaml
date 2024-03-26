@@ -20,8 +20,6 @@ containers:
       repository: ghcr.io/bitwarden/sm-operator
       # Will default to the Chart's AppVersion, but you can override here.
       tag:
-      # Optional value if you have privatized the image and need to pull with credentials
-      imagePullSecrets:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       limits:
@@ -51,6 +49,8 @@ containers:
   # to make containers restrictive.
   # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
   enableSeccompProfileRuntimeDefault: true
+  # Optional value if you have privatized the image and need to pull with credentials
+  imagePullSecrets:
 
 # Service endpoint configuration for the metrics service.
 metricsService:

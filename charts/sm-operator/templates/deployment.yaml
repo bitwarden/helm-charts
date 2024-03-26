@@ -37,9 +37,9 @@ spec:
                   operator: In
                   values:
                     - linux
-      {{- if .Values.containers.manager.image.imagePullSecrets }}
+      {{- if .Values.containers.imagePullSecrets }}
       imagePullSecrets:
-      - name: {{ .Values.containers.manager.image.imagePullSecrets }}
+      - name: {{ .Values.containers.imagePullSecrets }}
       {{- end }}
       containers:
       - args:
