@@ -96,6 +96,12 @@
                         }
                     },
                     "type": "object"
+                },
+                "enableSeccompProfileRuntimeDefault": {
+                    "type": "boolean"
+                },
+                "imagePullSecrets": {
+                    "type": [ "null", "string"]
                 }
             },
             "type": "object"
