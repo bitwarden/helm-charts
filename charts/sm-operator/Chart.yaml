@@ -1,0 +1,10 @@
+apiVersion: v2
+name: sm-operator
+description: A Helm chart to install the Bitwarden Secrets Manager operator.
+type: application
+version: 0.1.0-Beta
+appVersion: "0.0.1-Beta"
+home: https://github.com/bitwarden/helm-charts/tree/main/charts/sm-operator
+icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
+maintainers:
+- name: dept-devops

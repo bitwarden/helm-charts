@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sm-operator.fullname" . }}-controller-manager-metrics-service
+  labels:
+    app.kubernetes.io/component: kube-rbac-proxy
+    control-plane: controller-manager
+    {{- include "sm-operator.fullLabels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.metricsService.type }}
+  selector:
+    control-plane: controller-manager
+  {{- include "sm-operator.selectorLabels" . | nindent 4 }}
+  ports:
+  	{{- .Values.metricsService.ports | toYaml | nindent 2 }}
