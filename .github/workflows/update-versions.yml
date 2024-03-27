@@ -116,6 +116,7 @@ jobs:
       needs.setup.outputs.web_version_update == 1
     runs-on: ubuntu-22.04
     needs: setup
+    environment: Production
     permissions:
       contents: write
       pull-requests: write
