@@ -1,5 +1,5 @@
 ---
-name: Update Versions
+name: Update Versions - Self Host
 
 on:
   workflow_dispatch:
@@ -81,9 +81,9 @@ jobs:
           WEBVERSION: ${{ steps.get-web.outputs.version }}
         run: |
           echo "Checking..."
-          
+
           coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
-          
+
           test_image() {
               image=$1
               version=$2
@@ -98,7 +98,7 @@ jobs:
           }
 
           echo "Core Images ($COREVERSION)..."
-          
+
           for key in "${!coreimages[@]}"
           do
               image=${coreimages[$key]}
@@ -106,7 +106,7 @@ jobs:
           done
 
           echo "Web Image ($WEBVERSION)..."
-          
+
           test_image "web" $WEBVERSION
 
   update-versions:
