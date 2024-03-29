@@ -37,7 +37,7 @@ jobs:
         env:
           LATEST_OPERATOR_VERSION: ${{ steps.get-operator-version.outputs.version }}
         run: |
-          OPERATOR_VERSION=$(sed -i -E '/^appVersion:\s+[^\s]+/!b;cappVersion: "0.1.0-Beta"' Chart.yaml)
+          OPERATOR_VERSION=$(sed -nE 's/^appVersion:\s+([^\s]+)/\1/p' Chart.yaml)
 
           echo "Operator Version: $OPERATOR_VERSION"
           echo "Latest Operator Version: $LATEST_OPERATOR_VERSION"
