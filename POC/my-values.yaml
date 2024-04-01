@@ -12,9 +12,9 @@ general:
     className: "nginx"
      ## - Annotations to add to the Ingress resource.
     annotations:
-      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      # nginx.ingress.kubernetes.io/use-regex: "true"
-      # nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -57,8 +57,8 @@ general:
         pathType: ImplementationSpecific
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
-  coreVersionOverride: ""
-  webVersionOverride: ""
+  coreVersionOverride: "2024.1.0"
+  webVersionOverride: "2024.1.0"
   # Disable account registration on web vault
   disableUserRegistration: "false"
   # Comma-separated list of email addresses for Admin users
