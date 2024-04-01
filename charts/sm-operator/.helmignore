@@ -21,3 +21,8 @@
 .idea/
 *.tmproj
 .vscode/
+
+
+/ci
+
+README.md
