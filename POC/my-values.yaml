@@ -57,8 +57,8 @@ general:
         pathType: ImplementationSpecific
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
-  coreVersionOverride: "2024.1.0"
-  webVersionOverride: "2024.1.0"
+  coreVersionOverride: "2024.3.0"
+  webVersionOverride: "2024.3.0"
   # Disable account registration on web vault
   disableUserRegistration: "false"
   # Comma-separated list of email addresses for Admin users
