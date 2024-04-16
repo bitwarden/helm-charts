@@ -179,6 +179,25 @@ jobs:
 
           echo "Admin OK."
 
+
+      - name: Test install (sm-operator)
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        run: |
+          #For review purposes
+          echo "*****DEPLOYMENTS*****"
+          kubectl get deployments
+
+          echo "*****PODS*****"
+          pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 2/2)
+          echo $pods
+
+
+          if [[ -z "$pods" ]]; then
+            exit 1
+          fi
+
+          echo "Operator OK."
+
       - name: Clean-up
         if: steps.list-changed.outputs.changed == 'true'
         run: |
