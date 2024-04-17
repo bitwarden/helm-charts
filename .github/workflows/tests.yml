@@ -216,7 +216,7 @@ jobs:
 
           sleep 3s
 
-          kubectl logs -l app.kubernetes.io/name=sm-operator -c manager
+          kubectl logs -l app.kubernetes.io/name=sm-operator -c manager --tail=-1
 
           kubectl get secrets
         env:
