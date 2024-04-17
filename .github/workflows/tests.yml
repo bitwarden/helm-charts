@@ -212,6 +212,8 @@ jobs:
 
           kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token=$AUTH_TOKEN
 
+          echo "Token length is ${#AUTH_TOKEN}"
+
           kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
 
           sleep 3s
