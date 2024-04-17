@@ -214,6 +214,10 @@ jobs:
 
           kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
 
+          sleep 3s
+
+          kubectl logs -l app.kubernetes.io/name=sm-operator -c manager
+
           kubectl get secrets
         env:
           AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
