@@ -210,7 +210,7 @@ jobs:
 
           echo "Operator OK."
 
-          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token=$AUTH_TOKEN
+          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
 
           echo "Token length is ${#AUTH_TOKEN}"
 
@@ -222,7 +222,7 @@ jobs:
 
           kubectl get secrets
         env:
-          AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
+          AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
       - name: Clean-up
         if: steps.list-changed.outputs.changed == 'true'
