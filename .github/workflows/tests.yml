@@ -210,7 +210,7 @@ jobs:
 
           echo "Operator OK."
 
-          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
+          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token=$AUTH_TOKEN
 
           kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
 
