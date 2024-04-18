@@ -220,7 +220,7 @@ jobs:
 
           completed=$(echo "$logs"| grep "Completed sync for bitwarden/bitwardensecret-sample")
 
-          if [[ -n "$completed" ]]; then
+          if [[ -z "$completed" ]]; then
             echo "::error::Secret did not sync."
             exit 1
           fi
@@ -230,7 +230,7 @@ jobs:
 
           secretCreated=$(echo "$secrets" | grep "bw-sample-secret                               Opaque                           3")
 
-          if [[ -n "$secretCreated" ]]; then
+          if [[ -z "$secretCreated" ]]; then
             echo "::error::Secret not created correctly."
             exit 1
           fi
