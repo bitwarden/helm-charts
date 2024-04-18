@@ -213,6 +213,8 @@ jobs:
 
           kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
 
+          sleep 2s
+
           logs=$(kubectl logs -l app.kubernetes.io/name=sm-operator -c manager)
           echo "$logs"
 
