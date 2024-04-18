@@ -205,22 +205,35 @@ jobs:
           echo $pods
 
           if [[ -z "$pods" ]]; then
+            echo "::error::No pods found."
+            exit 1
+          fi
+
+          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
+
+          kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
+
+          logs=$(kubectl logs -l app.kubernetes.io/name=sm-operator -c manager)
+          echo "$logs"
+
+          completed=$(echo "$logs"| grep "Completed sync for bitwarden/bitwardensecret-sample")
+
+          if [[ -n "$completed" ]]; then
+            echo "::error::Secret did not sync."
+            exit 1
+          fi
+
+          secrets=$(kubectl get secrets)
+          echo "$secrets"
+
+          secretCreated=$(echo "$secrets" | grep "bw-sample-secret                               Opaque                           3")
+
+          if [[ -n "$secretCreated" ]]; then
+            echo "::error::Secret not created correctly."
             exit 1
           fi
 
           echo "Operator OK."
-
-          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
-
-          echo "Token length is ${#AUTH_TOKEN}"
-
-          kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
-
-          sleep 3s
-
-          kubectl logs -l app.kubernetes.io/name=sm-operator -c manager --tail=-1
-
-          kubectl get secrets
         env:
           AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
