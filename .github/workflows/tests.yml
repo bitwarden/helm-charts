@@ -209,12 +209,14 @@ jobs:
             exit 1
           fi
 
+          echo "*****CREATING AUTH SECRET*****"
           kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
-
+          echo "*****CREATING BW SECRET*****"
           kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
 
           sleep 2s
 
+          echo "*****LOGS*****"
           logs=$(kubectl logs -l app.kubernetes.io/name=sm-operator -c manager)
           echo "$logs"
 
@@ -225,6 +227,7 @@ jobs:
             exit 1
           fi
 
+          echo "*****RESULTING SECRETS*****"
           secrets=$(kubectl get secrets)
           echo "$secrets"
 
@@ -235,7 +238,7 @@ jobs:
             exit 1
           fi
 
-          echo "Operator OK."
+          echo "*****OPERATOR OK*****"
         env:
           AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
