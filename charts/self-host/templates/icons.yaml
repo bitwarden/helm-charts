@@ -19,7 +19,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: "{{ .Values.component.icons.deploymentStrategy }}"
+    type: {{ .Values.component.icons.deploymentStrategy | quote }}
   selector:
     matchLabels:
       app: {{ template "bitwarden.icons" . }}
@@ -39,10 +39,10 @@ spec:
 {{- end }}
     spec:
     {{- if .Values.component.icons.podServiceAccount }}
-      serviceAccount: "{{ .Values.component.icons.podServiceAccount }}"
-      serviceAccountName: "{{ .Values.component.icons.podServiceAccount }}"
+      serviceAccount: {{ .Values.component.icons.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.component.icons.podServiceAccount | quote }}
     {{- end }}
-    {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+    {{- if .Values.volume.logs.enabled }}
       initContainers:
       - name: create-mount-subdir
         command:
@@ -86,7 +86,7 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
-        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        {{- if .Values.volume.logs.enabled }}
         - name: applogs
           mountPath: /etc/bitwarden/logs
           subPath: icons
@@ -96,7 +96,7 @@ spec:
         securityContext:
 {{ toYaml .Values.component.icons.securityContext | indent 10 }}
       volumes:
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -104,10 +104,10 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
-        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        {{- if .Values.volume.logs.enabled }}
         - name: applogs
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.applogs" . }}
+            claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
         {{- end }}
 
 ---

@@ -1,6 +1,6 @@
-{{- $identityCertPasswordTxtValue := (randAlpha 32) }}
-{{- $currentIdentityCert := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert") }}
-{{- $identityCertPasswordTxtValue := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password") }}
+{{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
+{{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
+{{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
 
 {{- if $currentIdentityCert }}
 {{- $identityCertPasswordTxtValue := index $currentIdentityCert.data "globalSettings__identityServer__certificatePassword" | b64dec }}
@@ -41,7 +41,7 @@ spec:
 {{- end }}
     spec:
     {{- if .Values.serviceAccount.name }}
-      serviceAccountName: "{{ .Values.serviceAccount.name }}"
+      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
     {{- end }}
 
 {{- if not $currentIdentityCert }}

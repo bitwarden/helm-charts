@@ -6,3 +6,6 @@
 
 # Default file owners.
 * @bitwarden/dept-devops
+
+## Secrets Manager team files ##
+charts/sm-operator @bitwarden/team-secrets-manager-dev

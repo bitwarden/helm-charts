@@ -19,7 +19,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: "{{ .Values.component.web.deploymentStrategy }}"
+    type: {{ .Values.component.web.deploymentStrategy | quote }}
   selector:
     matchLabels:
       app: {{ template "bitwarden.web" . }}
@@ -39,8 +39,8 @@ spec:
 {{- end }}
     spec:
     {{- if .Values.component.web.podServiceAccount }}
-      serviceAccount: "{{ .Values.component.web.podServiceAccount }}"
-      serviceAccountName: "{{ .Values.component.web.podServiceAccount }}"
+      serviceAccount: {{ .Values.component.web.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.component.web.podServiceAccount | quote }}
     {{- end }}
       containers:
       - name: {{ template "bitwarden.web" . }}
@@ -49,7 +49,7 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
-              name: "{{ .Values.secrets.secretName }}"
+              name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
               name: {{ template "bitwarden.keyssecret" . }}
           {{- if .Values.database.enabled }}
@@ -71,7 +71,7 @@ spec:
         volumeMounts:
         - name: web
           mountPath: /etc/bitwarden/web
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
@@ -82,7 +82,7 @@ spec:
         - name: web
           configMap:
             name: {{ .Release.Name }}-config-map-web
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io

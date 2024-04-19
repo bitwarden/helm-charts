@@ -21,7 +21,7 @@ spec:
   serviceName: {{ template "bitwarden.mssql" . }}
   replicas: 1
   updateStrategy:
-    type: "{{ .Values.database.updateStrategy }}"
+    type: {{ .Values.database.updateStrategy | quote }}
   selector:
     matchLabels:
       app: {{ template "bitwarden.mssql" . }}
@@ -47,20 +47,22 @@ spec:
 {{- end }}
     spec:
     {{- if .Values.database.podServiceAccount }}
-      serviceAccount: "{{ .Values.database.podServiceAccount }}"
-      serviceAccountName: "{{ .Values.database.podServiceAccount }}"
+      serviceAccount: {{ .Values.database.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.database.podServiceAccount | quote }}
     {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
           image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"
           imagePullPolicy: Always
+          {{- if .Values.database.resources }}
           resources:
 {{ toYaml .Values.database.resources | indent 12 }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config-map
             - secretRef:
-                name: "{{ .Values.secrets.secretName }}"
+                name: {{ .Values.secrets.secretName | quote }}
             - secretRef:
                 name: {{ .Release.Name }}-sql-connection-string
           ports:
@@ -73,7 +75,7 @@ spec:
               mountPath: /var/opt/mssql/log
             - name: mssql-backups
               mountPath: /var/opt/mssql/backups
-            {{- if .Values.secrets.secretProviderClass}}
+            {{- if .Values.secrets.secretProviderClass }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -99,20 +101,22 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 3
+          {{- if .Values.database.securityContext }}
           securityContext:
 {{ toYaml .Values.database.securityContext | indent 12 }}
+          {{- end }}
       enableServiceLinks: false
       volumes:
         - name: mssql-data
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlData" . }}
+            claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
         - name: mssql-log
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlLog" . }}
+            claimName: {{ default ( include "bitwarden.mssqlLog" . ) .Values.database.volume.log.existingClaim }}
         - name: mssql-backups
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlBackups" . }}
-        {{- if .Values.secrets.secretProviderClass}}
+            claimName: {{ default ( include "bitwarden.mssqlBackups" . ) .Values.database.volume.backups.existingClaim }}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io

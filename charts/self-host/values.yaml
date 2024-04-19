@@ -419,17 +419,41 @@ supportComponents:
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: "1Gi"
     labels: {}
   attachments:
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
   licenses:
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
   logs:
     # Logs are disabled by default
     enabled: false
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
 
@@ -460,7 +484,7 @@ database:
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2019-CU17-ubuntu-20.04
+    tag: 2022-CU11-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -473,14 +497,32 @@ database:
   # The MSSQL volumes for the PVCs
   volume:
     backups:
-      # Storage size
+      # Use an existing PVC by specifying the name.
+      # existingClaim: claimName
+      # Override the accessMode specified in general.volumeAccessMode
+      # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 1Gi
+      labels: {}
     data:
-      # Storage size
+      # Use an existing PVC by specifying the name.
+      # existingClaim: claimName
+      # Override the accessMode specified in general.volumeAccessMode
+      # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 10Gi
+      labels: {}
     log:
-      # Storage size
+      # Use an existing PVC by specifying the name.
+      # existingClaim: claimName
+      # Override the accessMode specified in general.volumeAccessMode
+      # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 10Gi
+      labels: {}
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
   # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.
   updateStrategy: OnDelete

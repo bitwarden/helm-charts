@@ -77,17 +77,17 @@ spec:
               {{- if .Values.database.enabled }}
               name: {{ .Release.Name }}-sql-connection-string
               {{- else }}
-              name: "{{ .Values.secrets.secretName }}"
+              name: {{ .Values.secrets.secretName | quote }}
               {{- end }}
               key: globalSettings__sqlServer__connectionString
         image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
-        {{- if or (not .Values.database.enabled) (and .Values.database.enabled .Release.IsUpgrade) }}
+        {{- if or ( not .Values.database.enabled ) ( and .Values.database.enabled .Release.IsUpgrade ) }}
         args: [ "-f", "DbScripts_transition", "-r"]
         {{- end }}
       restartPolicy: Never
@@ -95,9 +95,9 @@ spec:
         {{- if .Values.database.enabled }}
         - name: mssql-data
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.mssqlData" . }}
+            claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
