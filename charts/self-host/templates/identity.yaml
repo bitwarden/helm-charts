@@ -30,7 +30,7 @@ spec:
         app.kubernetes.io/component: identity
 {{ include "bitwarden.podLabels" . | indent 8 }}
 {{- with .Values.component.identity.podLabels }}
-{{ toYaml . | indent 4 }}
+{{ toYaml . | indent 8 }}
 {{- end }}
       annotations:
 {{- include "bitwarden.podAnnotations" . | indent 8 }}
