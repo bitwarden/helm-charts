@@ -7,7 +7,7 @@ This chart is for the deployment of the Kubernetes Operator for Secrets Manager 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [Helm 3](https://v3.helm.sh/docs/intro/install/)
 - A [Bitwarden Organization with Secrets Manager](https://bitwarden.com/help/sign-up-for-secrets-manager/).  You will need the organization ID GUID for your organization.
-- One or more [access tokens](https://bitwarden.com/help/access-tokens/) for a Secrets Manager service account tied to the projects you want to pull.
+- One or more [access tokens](https://bitwarden.com/help/access-tokens/) for a Secrets Manager machine account tied to the projects you want to pull.
 
 ---
 
@@ -55,7 +55,7 @@ Below is an example of creating a BitwardenSecret object to synchronsize secrets
 
 ### Create an authorization token secret
 
-Each namespace where a BitwardenSecret is created will require a Kubenetes secret be created to authenticate against Secrets Manager.
+Each namespace where a BitwardenSecret is created will require a Kubernetes secret be created to authenticate against Secrets Manager.
 
 ```shell
 kubectl create secret generic bw-auth-token -n <YOUR_NAMESPACE> --from-literal=token="<TOKEN_HERE>"
@@ -65,7 +65,7 @@ __*NOTE: This command is recorded in your shell history. To avoid this, consider
 
 ### Deploy a BitwardenSecret
 
-Think of the BitwardenSecret object as the synchronization settings that will be used by the operator to create and synchronize a Kubernetes secret. This Kubernetes secret will live inside of a namespace and will be injected with the data available to a Secrets Manager service account. The resulting Kubernetes secret will include all secrets that a specific service account has access to. The key settings that you will want to update are listed below:
+Think of the BitwardenSecret object as the synchronization settings that will be used by the operator to create and synchronize a Kubernetes secret. This Kubernetes secret will live inside of a namespace and will be injected with the data available to a Secrets Manager machine account. The resulting Kubernetes secret will include all secrets that a specific machine account has access to. The key settings that you will want to update are listed below:
 
 - __metadata.name__: The name of the BitwardenSecret object you are deploying
 
@@ -73,7 +73,7 @@ Think of the BitwardenSecret object as the synchronization settings that will be
 
 - __spec.secretName__: The name of the Kubernetes secret that will be created and injected with Secrets Manager data.
 
-- __spec.authToken__: The name of a secret inside of the Kubernetes namespace that the BitwardenSecrets object is being deployed into that contains the Secrets Manager service account authorization token being used to access secrets.
+- __spec.authToken__: The name of a secret inside of the Kubernetes namespace that the BitwardenSecrets object is being deployed into that contains the Secrets Manager machine account authorization token being used to access secrets.
 
 Secrets Manager does not guarantee unique secret names across projects, so by default secrets will be created with the Secrets Manager secret UUID used as the key.  To make your generated secret easier to use, you can create a map of Bitwarden Secret IDs to Kubernetes secret keys.  The generated secret will replace the Bitwarden Secret IDs with the mapped friendly name you provide.  Below are the map settings available:
 
