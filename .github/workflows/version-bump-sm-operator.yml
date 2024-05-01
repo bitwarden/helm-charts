@@ -10,7 +10,7 @@ on:
 
 jobs:
   bump_version:
-    name: "Bump Version to ${{ github.event.inputs.version_number }}"
+    name: "Bump Version to ${{ inputs.version_number }}"
     runs-on: ubuntu-22.04
     environment: Production
     permissions:
@@ -40,13 +40,13 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: "Create version_bump_${{ github.event.inputs.version_number }} branch"
-        run: git switch -c version_bump_${{ github.event.inputs.version_number }}
+      - name: "Create version_bump_${{ inputs.version_number }} branch"
+        run: git switch -c version_bump_${{ inputs.version_number }}
 
       - name: Bump Version
         uses: bitwarden/gh-actions/version-bump@main
         with:
-          version: ${{ github.event.inputs.version_number }}
+          version: ${{ inputs.version_number }}
           file_path: "charts/sm-operator/Chart.yaml"
 
       - name: Setup git
@@ -66,19 +66,19 @@ jobs:
 
       - name: Commit files
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Bumped version to ${{ github.event.inputs.version_number }}" -a
+        run: git commit -m "Bumped version to ${{ inputs.version_number }}" -a
 
       - name: Push changes
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git push -u origin version_bump_${{ github.event.inputs.version_number }}
+        run: git push -u origin version_bump_${{ inputs.version_number }}
 
       - name: Create Version PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
-          PR_BRANCH: "version_bump_${{ github.event.inputs.version_number }}"
+          PR_BRANCH: "version_bump_${{ inputs.version_number }}"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           BASE_BRANCH: main
-          TITLE: "Bump version to ${{ github.event.inputs.version_number }}"
+          TITLE: "Bump version to ${{ inputs.version_number }}"
         run: |
           gh pr create --title "$TITLE" \
             --base "$BASE" \
@@ -94,4 +94,4 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version bump to ${{ github.event.inputs.version_number }}"
+              Automated version bump to ${{ inputs.version_number }}"
