@@ -38,6 +38,8 @@ Edit the `my-values.yaml` file and fill out the values. Required values that mus
 - settings.bwIdentityUrlOverride (if you are self-hosting Bitwarden)
 - containers.enableSeccompProfileRuntimeDefault
 
+__NOTE: If you are testing this chart via the DevContainer and trying to point to a locally running copy of Bitwarden server, you will need to use the `host.docker.internal` hostname.__
+
 #### Using non-default chart images
 
 Update `containers.manager.image.tag` to use a different operator image version than the one shipped with the chart.
