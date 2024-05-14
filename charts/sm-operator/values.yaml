@@ -44,7 +44,7 @@ containers:
   serviceAccount:
     annotations: {}
   # Set to false to work on older Kubernetes versions (< 1.19) or on vendors versions
-  # which do NOT support this field by default (i.e. Openshift < 4.11 ).
+  # which do NOT support this field by default (i.e. OpenShift < 4.11 ).
   # This setting is recommended for most common cases that do not require escalating privileges
   # to make containers restrictive.
   # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
