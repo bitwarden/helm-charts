@@ -50,7 +50,8 @@ containers:
   # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
   enableSeccompProfileRuntimeDefault: true
   # Optional value if you have privatized the image and need to pull with credentials
-  imagePullSecrets:
+  imagePullSecrets: ghcr-login-secret
+
 
 # Service endpoint configuration for the metrics service.
 metricsService:
