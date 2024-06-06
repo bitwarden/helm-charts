@@ -13,9 +13,10 @@ metadata:
   labels:
     app.kubernetes.io/component: pre-install-hook
   annotations:
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "2"
-    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    "argocd.argoproj.io/hook": PreSync
+    "argocd.argoproj.io/sync-wave": "-1"
+    "argocd.argoproj.io/hook-delete-policy": HookSucceeded,HookFailed,BeforeHookCreation
+
 spec:
   template:
     metadata:

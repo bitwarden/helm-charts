@@ -128,6 +128,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    "argocd.argoproj.io/hook": PreSync
+    "argocd.argoproj.io/sync-wave": "0"
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.mssqlLog" . }}
   labels:
@@ -158,6 +161,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    "argocd.argoproj.io/hook": PreSync
+    "argocd.argoproj.io/sync-wave": "0"
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.mssqlBackups" . }}
   labels:
@@ -188,6 +194,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    "argocd.argoproj.io/hook": PreSync
+    "argocd.argoproj.io/sync-wave": "0"
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.mssqlData" . }}
   labels:

@@ -6,9 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/component: post-install-db-migrator-job
   annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    "argocd.argoproj.io/hook": PostSync
+    "argocd.argoproj.io/hook-delete-policy": HookSucceeded,HookFailed,BeforeHookCreation
 spec:
   template:
     metadata:

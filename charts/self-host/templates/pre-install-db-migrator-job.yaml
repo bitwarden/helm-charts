@@ -6,13 +6,9 @@ metadata:
   labels:
     app.kubernetes.io/component: pre-install-db-migrator-job
   annotations:
-    {{- if .Values.database.enabled }}
-    "helm.sh/hook": pre-upgrade
-    {{- else }}
-    "helm.sh/hook": pre-install,pre-upgrade
-    {{- end }}
-    "helm.sh/hook-weight": "4"
-    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    "argocd.argoproj.io/hook": PreSync
+    "argocd.argoproj.io/sync-wave": "1"
+    "argocd.argoproj.io/hook-delete-policy": HookSucceeded
 spec:
   template:
     metadata:
