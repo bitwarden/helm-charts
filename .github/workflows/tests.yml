@@ -216,6 +216,7 @@ jobs:
           echo "*****CREATING BW SECRET*****"
           kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
 
+          # Sleeping while BitwardenSecret is being created and synced
           sleep 2s
 
           echo "*****LOGS*****"

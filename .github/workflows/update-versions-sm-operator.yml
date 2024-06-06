@@ -30,7 +30,7 @@ jobs:
 
           echo "Operator Image ($latestTag)..."
 
-            echo "version=$latestTag" >> $GITHUB_OUTPUT
+          echo "version=$latestTag" >> $GITHUB_OUTPUT
 
       - name: Check if operator needs updating
         id: operator-update
