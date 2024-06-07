@@ -121,11 +121,6 @@ jobs:
 
           kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
 
-          #Setup image pull secret
-          kubectl create secret -n bitwarden docker-registry ghcr-login-secret --docker-server=ghcr.io --docker-username=bitwarden-devops-bot --docker-password=${{ secrets.GITHUB_TOKEN }} --docker-email=106330231+bitwarden-devops-bot@users.noreply.github.com
-
-
-
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
@@ -230,11 +225,15 @@ jobs:
             exit 1
           fi
 
+          # Sleeping to ensure everything completes
+          sleep 2s
+
+
           echo "*****RESULTING SECRETS*****"
           secrets=$(kubectl get secrets)
           echo "$secrets"
-
-          secretCreated=$(echo "$secrets" | grep "bw-sample-secret                               Opaque                           3")
+          
+          secretCreated=$(echo "$secrets" | grep -Po "bw-sample-secret\s+Opaque\s+3")
 
           if [[ -z "$secretCreated" ]]; then
             echo "::error::Secret not created correctly."
