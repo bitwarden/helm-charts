@@ -19,6 +19,7 @@ jobs:
       matrix:
         include:
           - chart_name: self-host
+          - chart_name: sm-operator
     steps:
       - name: Checkout repo
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6

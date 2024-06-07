@@ -16,6 +16,7 @@ jobs:
   test:
     name: Test Helm charts
     runs-on: ubuntu-22.04
+    environment: Production
     steps:
       - name: Checkout repo
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
@@ -26,6 +27,18 @@ jobs:
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
         with:
           version: 'v3.13.1'
+
+      - name: Login to Azure - CI Subscription
+        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
+        with:
+          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+
+      - name: Retrieve secrets
+        id: retrieve-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: "bitwarden-ci"
+          secrets: "helm-sm-operator-ci-test-access-token"
 
       - name: Set up lynx
         run: sudo apt install lynx
@@ -45,6 +58,7 @@ jobs:
           CHANGED=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
           if [[ -n "$CHANGED" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
+            echo "changed-list=$CHANGED" >> $GITHUB_OUTPUT
           fi
 
       - name: Create kind cluster
@@ -107,12 +121,17 @@ jobs:
 
           kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
 
+          #Setup image pull secret
+          kubectl create secret -n bitwarden docker-registry ghcr-login-secret --docker-server=ghcr.io --docker-username=bitwarden-devops-bot --docker-password=${{ secrets.GITHUB_TOKEN }} --docker-email=106330231+bitwarden-devops-bot@users.noreply.github.com
+
+
+
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
 
-      - name: Test install
-        if: steps.list-changed.outputs.changed == 'true'
+      - name: Test install (self-host)
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'self-host')
         run: |
           #For review purposes
           echo "*****DEPLOYMENTS*****"
@@ -174,6 +193,57 @@ jobs:
           fi
 
           echo "Admin OK."
+
+
+      - name: Test install (sm-operator)
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        run: |
+          #For review purposes
+          echo "*****DEPLOYMENTS*****"
+          kubectl get deployments
+
+          echo "*****PODS*****"
+          pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 2/2)
+          echo $pods
+
+          if [[ -z "$pods" ]]; then
+            echo "::error::No pods found."
+            exit 1
+          fi
+
+          echo "*****CREATING AUTH SECRET*****"
+          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
+          echo "*****CREATING BW SECRET*****"
+          kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
+
+          # Sleeping while BitwardenSecret is being created and synced
+          sleep 2s
+
+          echo "*****LOGS*****"
+          logs=$(kubectl logs -l app.kubernetes.io/name=sm-operator -c manager)
+          echo "$logs"
+
+          completed=$(echo "$logs"| grep "Completed sync for bitwarden/bitwardensecret-sample")
+
+          if [[ -z "$completed" ]]; then
+            echo "::error::Secret did not sync."
+            exit 1
+          fi
+
+          echo "*****RESULTING SECRETS*****"
+          secrets=$(kubectl get secrets)
+          echo "$secrets"
+
+          secretCreated=$(echo "$secrets" | grep "bw-sample-secret                               Opaque                           3")
+
+          if [[ -z "$secretCreated" ]]; then
+            echo "::error::Secret not created correctly."
+            exit 1
+          fi
+
+          echo "*****OPERATOR OK*****"
+        env:
+          AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
       - name: Clean-up
         if: steps.list-changed.outputs.changed == 'true'

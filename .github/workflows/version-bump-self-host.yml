@@ -1,5 +1,5 @@
 ---
-name: Version Bump
+name: Version Bump - Self Host
 
 on:
   workflow_dispatch:
