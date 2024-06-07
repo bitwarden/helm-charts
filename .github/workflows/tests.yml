@@ -225,11 +225,15 @@ jobs:
             exit 1
           fi
 
+          # Sleeping to ensure everything completes
+          sleep 2s
+
+
           echo "*****RESULTING SECRETS*****"
           secrets=$(kubectl get secrets)
           echo "$secrets"
-
-          secretCreated=$(echo "$secrets" | grep "bw-sample-secret                               Opaque                           3")
+          
+          secretCreated=$(echo "$secrets" | grep -Po "bw-sample-secret\s+Opaque\s+3")
 
           if [[ -z "$secretCreated" ]]; then
             echo "::error::Secret not created correctly."
