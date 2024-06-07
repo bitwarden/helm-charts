@@ -2,6 +2,8 @@
 
 This chart is for the deployment of the Kubernetes Operator for Secrets Manager to different Kubernetes environments.  The operator installs into your cluster and allows you to create a custom resource called a BitwardenSecret to synchronize secrets stored in Secrets Manager into your cluster as Kubernetes secrets.
 
+***NOTE:  This is a beta release and might be missing some functionality.***
+
 ## Requirements
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
