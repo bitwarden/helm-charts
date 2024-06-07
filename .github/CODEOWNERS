@@ -5,7 +5,12 @@
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Default file owners.
-* @bitwarden/dept-devops
 
 ## Secrets Manager team files ##
 charts/sm-operator @bitwarden/team-secrets-manager-dev
+
+# BRE for release workflow changes
+.github/workflows/release.yml @bitwarden/dept-bre
+
+# BRE for release workflow changes
+.github/workflows/release.yml @bitwarden/dept-bre
