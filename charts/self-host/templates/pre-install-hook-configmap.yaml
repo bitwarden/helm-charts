@@ -11,7 +11,7 @@ data:
   ACCEPT_EULA: "Y"
   MSSQL_PID: "Express"
   ASPNETCORE_ENVIRONMENT: "Production"
-  globalSettings__selfHosted: "true"
+  globalSettings__selfHosted: "{{ .Values.selfHosted }}"
   globalSettings__baseServiceUri__vault: "https://{{ .Values.general.domain }}"
   globalSettings__baseServiceUri__api: "https://{{ .Values.general.domain }}/api"
   globalSettings__baseServiceUri__identity: "https://{{ .Values.general.domain }}/identity"

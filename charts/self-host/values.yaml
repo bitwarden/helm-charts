@@ -2,6 +2,9 @@
 fullnameOverride: ""
 nameOverride: ""
 
+# Toggle self-hosted mode
+selfHosted: false
+
 general:
   # Domain name for the service
   domain: "REPLACE"

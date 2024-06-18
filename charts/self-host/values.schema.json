@@ -8,6 +8,9 @@
         "nameOverride": {
             "type": "string"
         },
+        "selfHosted": {
+            "type": "boolean"
+        },
         "general": {
             "type": "object",
             "required": [],
