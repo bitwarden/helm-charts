@@ -1,0 +1,56 @@
+{{- if not .Values.selfHosted }}
+apiVersion: storage.azure.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: {{ .Release.Name | lower | replace "-" "" | trunc 20 | trimSuffix "-" }}cert
+  labels:
+    app.kubernetes.io/component: pre-install-hook
+    bitwarden.upbound.io/name: {{ .Release.Name | lower | replace "-" "" | trunc 20 | trimSuffix "-" }}cert
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+spec:
+  forProvider:
+    resourceGroupNameRef:
+      name: {{ .Release.Name | lower | replace " " "-" }}
+    location: East US
+    accountKind: StorageV2
+    accountReplicationType: LRS
+    accountTier: Standard
+  writeConnectionSecretToRef:
+    name: az-storage-account-cert-connection
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: storage.azure.upbound.io/v1beta1
+kind: Container
+metadata:
+  name: certificates
+  labels:
+    app.kubernetes.io/component: pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+spec:
+  forProvider:
+    containerAccessType: private
+    storageAccountNameSelector:
+      matchLabels:
+        bitwarden.upbound.io/name: {{ .Release.Name | lower | replace "-" "" | trunc 20 | trimSuffix "-" }}cert
+
+---
+apiVersion: storage.azure.upbound.io/v1beta1
+kind: Container
+metadata:
+  name: aspnet-dataprotection
+  labels:
+    app.kubernetes.io/component: pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+spec:
+  forProvider:
+    containerAccessType: private
+    storageAccountNameSelector:
+      matchLabels:
+        bitwarden.upbound.io/name: {{ .Release.Name | lower | replace "-" "" | trunc 20 | trimSuffix "-" }}cert
+{{- end }}
