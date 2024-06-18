@@ -26,9 +26,16 @@ spec:
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
     {{- end }}
-
-{{- if not $currentIdentityCert }}
       initContainers:
+      - name: wait-for-az-resources
+        command:
+          - "/bin/bash"
+          - "-c"
+        args: ['
+          while [[ $(kubectl get container certificates -o jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") != "True" ]]; do sleep 1; done; echo "Azure Resources Ready!";
+        ']
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+{{- if not $currentIdentityCert }}
       - name: generate-identity-cert
         command:
           - "/bin/sh"
@@ -62,6 +69,23 @@ spec:
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
+      - name: azure-cert-sync
+        image: mcr.microsoft.com/azure-cli
+        command:
+          - "/bin/sh"
+          - "-c"
+        args: ['
+          az storage blob upload --connection-string "$(AZURE_CONNECTION_STRING)" --container-name certificates --name identity.pfx --file /bitwarden/identity.pfx;
+        ']
+        env:
+          - name: AZURE_CONNECTION_STRING
+            valueFrom:
+              secretKeyRef:
+                name: az-storage-account-cert-connection
+                key: attribute.primary_blob_connection_string
+        volumeMounts:
+          - name: temp
+            mountPath: "/bitwarden"
       restartPolicy: Never
       volumes:
         - name: temp
