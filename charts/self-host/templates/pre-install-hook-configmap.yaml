@@ -38,7 +38,7 @@ data:
 {{- end }}
   globalSettings__logRollBySizeLimit: ""
   globalSettings__syslog__destination: ""
-  globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"
+  # globalSettings__dataProtection__directory: "/etc/bitwarden/core/aspnet-dataprotection"
   globalSettings__licenseDirectory: "/etc/bitwarden/core/licenses"
   globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
   globalSettings__enableCloudCommunication: {{ .Values.general.enableCloudCommunication | quote }}
