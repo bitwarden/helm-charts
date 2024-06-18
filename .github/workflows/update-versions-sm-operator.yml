@@ -16,7 +16,7 @@ jobs:
       operator_version_update: ${{ steps.operator-update.outputs.update }}
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ env._BRANCH }}
 
@@ -59,7 +59,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ env._BRANCH }}
 
@@ -71,7 +71,7 @@ jobs:
           git push -u origin $PR_BRANCH
 
       - name: Checkout Update Versions Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ env.PR_BRANCH }}
 
