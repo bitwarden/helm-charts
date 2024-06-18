@@ -30,6 +30,8 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      securityContext:
+        fsGroup: 10001
     {{- if .Values.database.podServiceAccount }}
       serviceAccount: {{ .Values.database.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.database.podServiceAccount | quote }}
