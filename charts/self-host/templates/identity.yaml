@@ -59,6 +59,8 @@ spec:
           {{- end }}
           - secretRef:
               name: {{ .Release.Name }}-identity-cert-password
+          - secretRef:
+              name: dataprotection-cert-secrets
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
