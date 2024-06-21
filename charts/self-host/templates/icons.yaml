@@ -60,6 +60,10 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+          {{- if .Values.featureFlags }}
+          - name: globalSettings__launchDarkly__flagDataFilePath
+            value: /etc/bitwarden/core/flags.json
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /alive
@@ -78,6 +82,11 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: icons
         {{- end }}
+        {{- if .Values.featureFlags }}
+        - name: feature-flags-config
+          mountPath: /etc/bitwarden/core/flags.json
+          subPath: flags.json
+        {{- end }}
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
         securityContext:
@@ -95,6 +104,11 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- if .Values.featureFlags }}
+        - name: feature-flags-config
+          configMap:
+            name: {{ .Release.Name }}-feature-flags
         {{- end }}
 
 ---

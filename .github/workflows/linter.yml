@@ -6,8 +6,6 @@ on:
     paths:
       - 'charts/**'
   push:
-    branches:
-      - main
     paths:
       - 'charts/**'
   workflow_dispatch:

@@ -62,6 +62,10 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+          {{- if .Values.featureFlags }}
+          - name: globalSettings__launchDarkly__flagDataFilePath
+            value: /etc/bitwarden/core/flags.json
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /alive
@@ -88,6 +92,11 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- if .Values.featureFlags }}
+        - name: feature-flags-config
+          mountPath: /etc/bitwarden/core/flags.json
+          subPath: flags.json
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.sso.securityContext | indent 10 }}
       volumes:
@@ -112,6 +121,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- if .Values.featureFlags }}
+        - name: feature-flags-config
+          configMap:
+            name: {{ .Release.Name }}-feature-flags
         {{- end }}
 
 ---

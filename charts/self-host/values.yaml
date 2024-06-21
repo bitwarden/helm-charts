@@ -2,6 +2,11 @@
 fullnameOverride: ""
 nameOverride: ""
 
+# LaunchDarkly feature flags
+# Flags can be added as key-value pairs, e.g., flagName: true. See the documentation for more information.
+# See https://contributing.bitwarden.com/contributing/feature-flags/#flag-data-sources for more information.
+# featureFlags: {}
+
 general:
   # Domain name for the service
   domain: "REPLACE"

@@ -8,6 +8,13 @@
         "nameOverride": {
             "type": "string"
         },
+        "featureFlags": {
+            "type": "object",
+            "description": "LaunchDarkly feature flags. Flags can be added as key-value pairs, e.g., flagName: true. See the documentation for more information.",
+            "additionalProperties": {
+                "type": "boolean"
+            }
+        },
         "general": {
             "type": "object",
             "required": [],
