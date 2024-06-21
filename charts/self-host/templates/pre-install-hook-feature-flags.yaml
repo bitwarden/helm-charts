@@ -3,7 +3,14 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-feature-flags
+  labels:
+    app.kubernetes.io/component: pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
 data:
+  # Iterate over the featureFlags map and create a JSON object.
+  # Ensure that the last entry does not have a trailing comma by using a key of $first.
   flags.json: |
     {
       "flagValues": {
