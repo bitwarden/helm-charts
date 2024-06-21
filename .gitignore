@@ -3,3 +3,4 @@
 .cr-index
 # Create a folder for placing user test files (Useful for the Dev Container)
 values/*
+test_values.yaml
