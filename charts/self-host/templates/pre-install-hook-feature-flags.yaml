@@ -7,8 +7,11 @@ data:
   flags.json: |
     {
       "flagValues": {
+        {{- $first := true }}
         {{- range $key, $value := .Values.featureFlags }}
-        "{{ $key }}": {{ $value | quote }},
+          {{- if not $first }},{{ end }}
+          "{{ $key }}": {{ $value | quote }}
+          {{- $first = false }}
         {{- end }}
       }
     }
