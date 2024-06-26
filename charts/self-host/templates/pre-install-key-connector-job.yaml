@@ -1,0 +1,75 @@
+{{- if .Values.component.keyConnector.enabled }}
+
+{{- $keyConnectorCertPasswordTxtValue := ( randAlpha 32 ) }}
+{{- $currentKeyConnectorCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-key-connector-cert" ) }}
+{{- $currentKeyConnectorCertPassword := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-key-connector-cert-password") }}
+
+{{- if $currentKeyConnectorCert }}
+  {{- if eq .Values.component.keyConnector.config.certificateProvider "filesystem" }}
+    {{- $keyConnectorCertPasswordTxtValue = index $currentKeyConnectorCert.data "keyConnectorSettings__certificate__filesystemPassword" | b64dec }}
+  {{- end }}
+{{- end }}
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-key-connector-setup"
+  labels:
+    app.kubernetes.io/component: pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "2"
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-key-connector-setup"
+      labels:
+        app.kubernetes.io/component: pre-install-hook
+    spec:
+    {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+    {{- end }}
+{{- if and (not $currentKeyConnectorCert) (eq .Values.component.keyConnector.config.rsaKeyProvider "certificate") }}
+      initContainers:
+      - name: generate-key-connector-cert
+        command:
+          - "/bin/sh"
+          - "-c"
+        args: ['
+          openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout /bitwarden/bwkc.key -out /bitwarden/bwkc.crt -subj "/CN=Bitwarden Key Connector" -days 36500;
+          openssl pkcs12 -export -out bitwarden/bwkc.pfx -inkey /bitwarden/bwkc.key -in /bitwarden/bwkc.crt -passout pass:{{ $keyConnectorCertPasswordTxtValue }};
+          chmod 777 /bitwarden/bwkc.pfx;
+          echo Done;
+            ']
+        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        volumeMounts:
+        - name: temp
+          mountPath: "/bitwarden"
+{{- end }}
+      containers:
+      - name: create-key-connector-resources
+        command:
+          - "/bin/sh"
+          - "-c"
+        args: ['
+          ls -atlh /bitwarden;
+{{- if not $currentKeyConnectorCert }}
+{{- if eq .Values.component.keyConnector.config.rsaKeyProvider "certificate" }}
+          kubectl create secret generic {{ .Release.Name }}-key-connector-cert --from-file=/bitwarden/bwkc.pfx -n {{ .Release.Namespace }};
+          kubectl create secret generic {{ .Release.Name }}-key-connector-cert-password -n {{ .Release.Namespace }}
+            --from-literal=keyConnectorSettings__certificate__filesystemPassword={{ $keyConnectorCertPasswordTxtValue | quote }};
+{{- end }}
+{{- end }}
+          echo "Done";
+          ']
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        volumeMounts:
+        - name: temp
+          mountPath: "/bitwarden"
+      restartPolicy: Never
+      volumes:
+        - name: temp
+          emptyDir:
+            medium: Memory
+{{- end }}

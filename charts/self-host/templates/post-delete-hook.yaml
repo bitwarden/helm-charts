@@ -27,13 +27,23 @@ spec:
         args: ['
           kubectl delete configmap {{ .Release.Name }}-config-map -n {{ .Release.Namespace }};
           kubectl delete configmap {{ .Release.Name }}-config-map-web -n {{ .Release.Namespace }};
+          {{- if .Values.component.keyConnector.enabled }}
+          kubectl delete configmap {{ .Release.Name }}-config-map-key-connector -n {{ .Release.Namespace }};
+          {{- end }}
           {{- if .Values.database.enabled }}
           kubectl delete secret "{{ .Release.Name }}-sql-connection-string" -n {{ .Release.Namespace }};
           {{- end }}
           kubectl delete secret {{ .Release.Name }}-identity-cert -n {{ .Release.Namespace }};
           kubectl delete secret {{ .Release.Name }}-identity-cert-password  -n {{ .Release.Namespace }};
+          {{- if eq .Values.component.keyConnector.config.rsaKeyProvider "certificate" }}
+          kubectl delete secret {{ .Release.Name }}-key-connector-cert -n {{ .Release.Namespace }};
+          kubectl delete secret {{ .Release.Name }}-key-connector-cert-password -n {{ .Release.Namespace }};
+          {{- end }}
           kubectl delete job {{ .Release.Name }}-setup;
           kubectl delete job {{ .Release.Name }}-migrator;
+          {{- if .Values.component.keyConnector.enabled }}
+          kubectl delete job {{ .Release.Name }}-key-connector-setup -n {{ .Release.Namespace}};
+          {{- end }}
           echo "Done"
         ']
         image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"

@@ -1,0 +1,157 @@
+{{- if .Values.component.keyConnector.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.keyconnector" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.keyconnector" . }}
+    app.kubernetes.io/component: key-connector
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.keyConnector.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  strategy:
+    type: {{ .Values.component.keyConnector.deploymentStrategy | quote }}
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.keyconnector" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.keyconnector" . }}
+        app.kubernetes.io/component: key-connector
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+    {{- if .Values.component.keyConnector.podServiceAccount }}
+      serviceAccount: {{ .Values.component.keyConnector.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.component.keyConnector.podServiceAccount | quote }}
+    {{- end }}
+    {{- if .Values.volume.logs.enabled }}
+      initContainers:
+      - name: create-mount-subdir
+        command:
+          - "/bin/bash"
+          - "-c"
+        args: ['
+          mkdir -p /logs/keyconnector
+        ']
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        volumeMounts:
+          - name: applogs
+            mountPath: /logs
+    {{- end }}
+      containers:
+      - name: {{ template "bitwarden.keyconnector" . }}
+        image: "{{ .Values.component.keyConnector.image.name }}:{{ .Values.component.keyConnector.version }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map-key-connector
+          - secretRef:
+              name: {{ .Values.secrets.secretName | quote }}
+          - secretRef:
+              name: {{ template "bitwarden.keyssecret" . }}
+          {{- if .Values.database.enabled }}
+          - secretRef:
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
+          - secretRef:
+              name: {{ .Release.Name }}-key-connector-cert-password
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+          {{- if .Values.featureFlags }}
+          - name: globalSettings__launchDarkly__flagDataFilePath
+            value: /etc/bitwarden/core/flags.json
+          {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 5000
+          initialDelaySeconds: 180
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.keyConnector.resources | indent 10 }}
+        volumeMounts:
+        {{- if eq .Values.component.keyConnector.config.certificateProvider "filesystem" }}
+        - name: key-connector-cert
+          mountPath: /etc/bitwarden/bwkc.pfx
+          subPath: bwkc.pfx
+        {{- end }}
+        {{- if eq .Values.component.keyConnector.config.databaseProvider "json" }}
+        - name: key-connector-json-db
+          mountPath: /etc/bitwarden
+          subPath: data.json
+        {{- end }}
+        {{- if .Values.volume.logs.enabled }}
+        - name: applogs
+          mountPath: /etc/bitwarden/logs
+          subPath: identity
+        {{- end }}
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
+        {{- if .Values.featureFlags }}
+        - name: feature-flags-config
+          mountPath: /etc/bitwarden/core/flags.json
+          subPath: flags.json
+        {{- end }}
+        securityContext:
+{{ toYaml .Values.component.keyConnector.securityContext | indent 10 }}
+      volumes:
+        {{- if eq .Values.component.keyConnector.config.certificateProvider "filesystem" }}
+        - name: key-connector-cert
+          secret:
+            secretName: {{ .Release.Name }}-key-connector-cert
+        {{- end }}
+        {{- if eq .Values.component.keyConnector.config.databaseProvider "json" }}
+        - name: key-connector-json-db
+          persistentVolumeClaim:
+            claimName: {{ template "bitwarden.keyconnector" . }}-json-db
+        {{- end }}
+        {{- if .Values.volume.logs.enabled }}
+        - name: applogs
+          persistentVolumeClaim:
+            claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- if .Values.secrets.secretProviderClass }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- if .Values.featureFlags }}
+        - name: feature-flags-config
+          configMap:
+            name: {{ .Release.Name }}-feature-flags
+        {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.keyconnector" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: key-connector
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.keyConnector.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.keyconnector" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000
+{{- end }}

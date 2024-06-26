@@ -122,6 +122,12 @@ Name of Identity components
 {{ template "bitwarden.fullname" . }}-identity
 {{- end -}}
 
+{{/*
+Name of the Key Connector components
+*/}}
+{{- define "bitwarden.keyconnector" -}}
+{{ template "bitwarden.fullname" . }}-key-connector
+{{- end -}}
 
 {{/*
 Name of Notifications components

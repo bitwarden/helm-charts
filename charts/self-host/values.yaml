@@ -5,7 +5,7 @@ nameOverride: ""
 # LaunchDarkly feature flags
 # Flags can be added as key-value pairs, e.g., flagName: true. See the documentation for more information.
 # See https://contributing.bitwarden.com/contributing/feature-flags/#flag-data-sources for more information.
-# featureFlags: {}
+featureFlags: {}
 
 general:
   # Domain name for the service
@@ -64,6 +64,9 @@ general:
       admin:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
+      keyConnector:
+        path: /key-connector/(.*)
+        pathType: ImplementationSpecific
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
@@ -97,6 +100,10 @@ general:
   enableCloudCommunication: false
   # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
   cloudRegion: US
+  # Specify Bitwarden cloud URI endpoint. Default to US/EU production cloud based on cloudRegion.
+  cloudIdentityApiUri:
+  cloudApiUri:
+  cloudPushRelayBaseUri:
 
 # Specify the name of the shared storage class
 # This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
@@ -231,6 +238,36 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+  keyConnector:
+    # Enable or disable the Key Connector component
+    enabled: false
+    # Key Connector version
+    version: "2024.4.0"
+    # Additional deployment labels
+    labels: {}
+    # Image name, tag, and pull policy
+    image:
+      name: bitwarden/key-connector
+    # The pod resource requirements.  You can adjust these up and down for your environment
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
+    deploymentStrategy: RollingUpdate
+    # This will set the Kubernetes container security context
+    securityContext:
+    # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
+    podServiceAccount:
+    # Key Connector configuration
+    config:
+      databaseProvider: "json"
+      rsaKeyProvider: "certificate"
+      certificateProvider: "filesystem"
+
   notifications:
     # Additional deployment labels
     labels: {}

@@ -214,3 +214,27 @@ spec:
 {{- end }}
 
 {{- end }}
+
+# Key Connector Volumes
+{{- if .Values.component.keyConnector.enabled }}
+
+{{- if eq .Values.component.keyConnector.config.databaseProvider "json" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: 
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.keyconnector" . }}-json-db
+  labels:
+    app.kubernetes.io/component: key-connector-json-db
+{{ include "bitwarden.labels" . | indent 4 }}
+spec:
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}
+  
+{{- end }}
