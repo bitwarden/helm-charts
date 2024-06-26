@@ -1401,6 +1401,142 @@
                         }
                     }
                 },
+                "keyConnector": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "version": {
+                            "type": "string"
+                        },
+                        "labels": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "image": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "object",
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "properties": {
+                                        "memory": {
+                                            "type": "string"
+                                        },
+                                        "cpu": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "deploymentStrategy": {
+                            "type": "string",
+                            "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "securityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "properties": {
+                                "allowPrivilegeEscalation": {
+                                    "type": ["boolean", "null"]
+                                },
+                                "capabilities": {
+                                    "type": "object",
+                                    "properties": {
+                                        "add": {
+                                            "type": ["array", "null"],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "drop": {
+                                            "type": ["array", "null"],
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "privileged": {
+                                    "type": ["boolean", "null"]
+                                },
+                                "procMount": {
+                                    "type": ["string", "null"]
+                                },
+                                "readOnlyRootFilesystem": {
+                                    "type": ["boolean", "null"]
+                                },
+                                "runAsGroup": {
+                                    "type": ["integer", "null"]
+                                },
+                                "runAsNonRoot": {
+                                    "type": ["boolean", "null"]
+                                },
+                                "runAsUser": {
+                                    "type": ["integer", "null"]
+                                },
+                                "seLinuxOptions": {
+                                    "type": "object",
+                                    "properties": {
+                                        "level": {
+                                            "type": ["string", "null"]
+                                        },
+                                        "role": {
+                                            "type": ["string", "null"]
+                                        },
+                                        "type": {
+                                            "type": ["string", "null"]
+                                        },
+                                        "user": {
+                                            "type": ["string", "null"]
+                                        }
+                                    }
+                                },
+                                "seccompProfile": {
+                                    "type": "object",
+                                    "properties": {
+                                        "localhostProfile": {
+                                            "type": ["string", "null"]
+                                        },
+                                        "type": {
+                                            "type": ["string", "null"]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "podServiceAccount": {
+                            "type": ["string", "null"]
+                        },
+                        "config": {
+                            "type": ["object"]
+                        }
+                    }
+                },
                 "notifications": {
                     "type": "object",
                     "required": [],
