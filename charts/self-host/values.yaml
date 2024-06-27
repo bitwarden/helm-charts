@@ -97,6 +97,8 @@ secrets:
 component:
   # The Admin component
   admin:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -117,6 +119,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   api:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -137,6 +141,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   attachments:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -157,6 +163,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   events:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -177,6 +185,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   icons:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -197,6 +207,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   identity:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -217,6 +229,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   notifications:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -237,6 +251,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   scim:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
     # Additional deployment labels
@@ -259,6 +275,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   sso:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -279,6 +297,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   web:
+    # Block to configure topologySpreadConstraints if it's necessary
+    topologySpreadConstraints: []
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
