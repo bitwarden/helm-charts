@@ -102,6 +102,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/admin
+      tag:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
