@@ -6,3 +6,9 @@ helm:
   - name: admin.image.tag
     value: ephemeral-environment-hello-world@sha256:11f76c3a7a66eabf9c9a03a035ef21982f0f4840cd708297d7f6fb9b5b92f65d
     forcestring: true
+  - name: components.admin.image.name
+    value: bitwardenprod.azurecr.io/admin
+    forcestring: true
+  - name: components.admin.image.tag
+    value: ephemeral-environment-hello-world@sha256:11f76c3a7a66eabf9c9a03a035ef21982f0f4840cd708297d7f6fb9b5b92f65d
+    forcestring: true
