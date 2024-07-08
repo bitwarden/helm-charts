@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.attachments" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.attachments.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.attachments" . }}
     app.kubernetes.io/component: attachments
@@ -98,6 +99,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.attachments" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.attachments.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 4 }}

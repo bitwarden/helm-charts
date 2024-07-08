@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.api" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.api.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.api" . }}
     app.kubernetes.io/component: api
@@ -132,6 +133,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.api" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.api.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: api
 {{ include "bitwarden.labels" . | indent 4 }}

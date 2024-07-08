@@ -5,6 +5,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.scim" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.scim.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.scim" . }}
     app.kubernetes.io/component: scim
@@ -133,6 +134,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.scim" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.scim.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: scim
 {{ include "bitwarden.labels" . | indent 4 }}

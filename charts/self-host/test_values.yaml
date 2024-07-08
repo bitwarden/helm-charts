@@ -114,6 +114,8 @@ component:
     enabled: true
     # Key Connector version
     version: "2024.4.0"
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -140,6 +142,8 @@ component:
       certificateProvider: "filesystem"
   # The Admin component
   admin:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -160,6 +164,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   api:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -180,6 +186,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   attachments:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -200,6 +208,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   events:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -220,6 +230,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   icons:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -240,6 +252,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   identity:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -260,6 +274,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   notifications:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -282,6 +298,8 @@ component:
   scim:
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -302,6 +320,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   sso:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -322,6 +342,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   web:
+    # Additional deployment annotations
+    annotations: {}
     # Additional deployment labels
     labels: {}
     # Image name, tag, and pull policy
@@ -364,6 +386,7 @@ volume:
     # Override the storageClass specified in sharedStorageClassName
     # storageClass: "shared-storage"
     size: "1Gi"
+    annotations: {}
     labels: {}
   attachments:
     # Use an existing PVC by specifying the name.
@@ -373,6 +396,7 @@ volume:
     # Override the storageClass specified in sharedStorageClassName
     # storageClass: "shared-storage"
     size: 1Gi
+    annotations: {}
     labels: {}
   licenses:
     # Use an existing PVC by specifying the name.
@@ -382,6 +406,7 @@ volume:
     # Override the storageClass specified in sharedStorageClassName
     # storageClass: "shared-storage"
     size: 1Gi
+    annotations: {}
     labels: {}
   logs:
     # Logs are disabled by default
@@ -393,6 +418,7 @@ volume:
     # Override the storageClass specified in sharedStorageClassName
     # storageClass: "shared-storage"
     size: 1Gi
+    annotations: {}
     labels: {}
 
 #
@@ -410,6 +436,8 @@ serviceAccount:
 database:
   # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
   enabled: true
+  # Additional annotations
+  annotations: {}
   # Labels to add to the MSSQL deployment
   labels: {}
   # Image name, tag, and pull policy
@@ -436,6 +464,7 @@ database:
       # Override the storageClass specified in sharedStorageClassName
       # storageClass: "shared-storage"
       size: 1Gi
+      annotations: {}
       labels: {}
     data:
       # Use an existing PVC by specifying the name.
@@ -445,6 +474,7 @@ database:
       # Override the storageClass specified in sharedStorageClassName
       # storageClass: "shared-storage"
       size: 10Gi
+      annotations: {}
       labels: {}
     log:
       # Use an existing PVC by specifying the name.
@@ -454,6 +484,7 @@ database:
       # Override the storageClass specified in sharedStorageClassName
       # storageClass: "shared-storage"
       size: 10Gi
+      annotations: {}
       labels: {}
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
   # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.

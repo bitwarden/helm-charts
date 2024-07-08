@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.notifications" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.notifications.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.notifications" . }}
     app.kubernetes.io/component: notifications
@@ -117,6 +118,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.notifications" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.notifications.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 4 }}

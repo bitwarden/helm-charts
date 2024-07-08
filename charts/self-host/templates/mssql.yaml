@@ -5,6 +5,7 @@ kind: StatefulSet
 metadata:
   name: {{ template "bitwarden.mssql" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.database.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.mssql" . }}
     app.kubernetes.io/component: mssql
@@ -114,6 +115,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "bitwarden.mssql" . }}
+  annotations: {{ toYaml .Values.database.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 4 }}
