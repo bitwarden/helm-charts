@@ -9,6 +9,12 @@ featureFlags:
   unassigned-items-banner: true
   display-eu-environment: true
 
+# Enable Argo CD support
+# Adds annotations for sync waves and hooks on various jobs to ensure proper ordering of resources.
+# The existing hooks aren't ordered for Argo CD, so this is required for Argo CD deployments.
+# Components still require sync wave annotations and can be defined in the component section.
+argoCDSupport: true
+
 general:
   # Domain name for the service
   domain: "eehelm.bitwarden.pw"

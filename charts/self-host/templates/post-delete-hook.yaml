@@ -1,3 +1,4 @@
+{{- if not .Values.argoCDSupport }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -9,6 +10,7 @@ metadata:
     "helm.sh/hook": post-delete
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+
 spec:
   template:
     metadata:
@@ -48,3 +50,4 @@ spec:
         ']
         image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
       restartPolicy: Never
+{{- end }}
