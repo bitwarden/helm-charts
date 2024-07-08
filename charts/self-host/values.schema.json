@@ -15,6 +15,10 @@
                 "type": "boolean"
             }
         },
+        "argoCDSupport": {
+            "type": "boolean",
+            "description": "Converts sync hooks to Argo CD sync waves to support sync operations."
+        },
         "general": {
             "type": "object",
             "required": [],

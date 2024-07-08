@@ -20,6 +20,11 @@ metadata:
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "2"
+    {{- if .Values.argoCDSupport }}
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+    {{ end }}
 spec:
   template:
     metadata:

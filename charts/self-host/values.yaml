@@ -7,6 +7,12 @@ nameOverride: ""
 # See https://contributing.bitwarden.com/contributing/feature-flags/#flag-data-sources for more information.
 featureFlags: {}
 
+# Enable Argo CD support
+# Adds annotations for sync waves and hooks on various jobs to ensure proper ordering of resources.
+# The existing hooks aren't ordered for Argo CD, so this is required for Argo CD deployments.
+# Components still require sync wave annotations and can be defined in the component section.
+argoCDSupport: true
+
 general:
   # Domain name for the service
   domain: "REPLACE"
@@ -446,7 +452,9 @@ database:
   # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
   enabled: true
   # Additional annotations
-  annotations: {}
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "0"
   # Labels to add to the MSSQL deployment
   labels: {}
   # Image name, tag, and pull policy
@@ -474,7 +482,9 @@ database:
       # storageClass: "shared-storage"
       size: 1Gi
       labels: {}
-      annotations: {}
+      annotations:
+        argocd.argoproj.io/hook: PreSync
+        argocd.argoproj.io/sync-wave: "0"
     data:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
@@ -484,7 +494,9 @@ database:
       # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
-      annotations: {}
+      annotations:
+        argocd.argoproj.io/hook: PreSync
+        argocd.argoproj.io/sync-wave: "0"
     log:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
@@ -494,7 +506,9 @@ database:
       # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
-      annotations: {}
+      annotations:
+        argocd.argoproj.io/hook: PreSync
+        argocd.argoproj.io/sync-wave: "0"
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
   # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.
   updateStrategy: OnDelete
