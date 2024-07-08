@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.events" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.events.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.events" . }}
     app.kubernetes.io/component: events
@@ -117,6 +118,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.events" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.events.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 4 }}

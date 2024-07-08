@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.web" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.web.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.web" . }}
     app.kubernetes.io/component: web
@@ -84,6 +85,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.web" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.web.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: web
 {{ include "bitwarden.labels" . | indent 4 }}

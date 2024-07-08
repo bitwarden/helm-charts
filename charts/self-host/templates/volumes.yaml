@@ -5,6 +5,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.dataprotection" . }}
+  annotations: {{ toYaml .Values.volume.dataprotection.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: dataprotection
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -35,6 +36,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.licenses" . }}
+  annotations: {{ toYaml .Values.volume.licenses.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: licenses
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -65,6 +67,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.attachments" . }}
+  annotations: {{ toYaml .Values.volume.attachments.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -95,6 +98,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.applogs" . }}
+  annotations: {{ toYaml .Values.volume.logs.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: logs
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -130,6 +134,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.mssqlLog" . }}
+  annotations: {{ toYaml .Values.database.volume.log.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: mssql-log
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -160,6 +165,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.mssqlBackups" . }}
+  annotations: {{ toYaml .Values.database.volume.backups.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: mssql-backups
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -190,6 +196,7 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.mssqlData" . }}
+  annotations: {{ toYaml .Values.database.volume.data.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: mssql-data
 {{ include "bitwarden.labels" . | indent 4 }}
@@ -225,6 +232,7 @@ kind: PersistentVolumeClaim
 metadata: 
   namespace: {{ .Release.Namespace }}
   name: {{ template "bitwarden.keyconnector" . }}-json-db
+  annotations: {{ toYaml .Values.component.keyConnector.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: key-connector-json-db
 {{ include "bitwarden.labels" . | indent 4 }}

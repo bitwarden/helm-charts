@@ -5,6 +5,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.keyconnector" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.keyConnector.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.keyconnector" . }}
     app.kubernetes.io/component: key-connector
@@ -142,6 +143,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.keyconnector" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.keyConnector.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: key-connector
 {{ include "bitwarden.labels" . | indent 4 }}

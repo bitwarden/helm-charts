@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.icons" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.icons.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.icons" . }}
     app.kubernetes.io/component: icons
@@ -117,6 +118,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.icons" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.icons.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 4 }}

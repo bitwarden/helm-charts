@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.admin" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.admin.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: admin
     app: {{ template "bitwarden.admin" . }}
@@ -127,6 +128,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.admin" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.admin.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: admin
 {{ include "bitwarden.labels" . | indent 4 }}

@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "bitwarden.sso" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.sso.annotations | nindent 4 }}
   labels:
     app: {{ template "bitwarden.sso" . }}
     app.kubernetes.io/component: sso
@@ -134,6 +135,7 @@ kind: Service
 metadata:
   name: {{ template "bitwarden.sso" . }}
   namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.component.sso.annotations | nindent 4 }}
   labels:
     app.kubernetes.io/component: sso
 {{ include "bitwarden.labels" . | indent 4 }}

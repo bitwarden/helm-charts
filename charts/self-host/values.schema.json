@@ -265,6 +265,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -455,6 +460,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -645,6 +655,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -835,6 +850,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -1025,6 +1045,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -1215,6 +1240,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -1410,6 +1440,11 @@
                         "version": {
                             "type": "string"
                         },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "additionalProperties": {
@@ -1541,6 +1576,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -1734,6 +1774,11 @@
                         "enabled": {
                             "type": "boolean"
                         },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -1924,6 +1969,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -2116,6 +2166,11 @@
                     "type": "object",
                     "required": [],
                     "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -2324,6 +2379,11 @@
                         "size": {
                             "type": "string"
                         },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -2347,6 +2407,11 @@
                         "size": {
                             "type": "string"
                         },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
                         "labels": {
                             "type": "object",
                             "required": [],
@@ -2369,6 +2434,11 @@
                         },
                         "size": {
                             "type": "string"
+                        },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
                         },
                         "labels": {
                             "type": "object",
@@ -2395,6 +2465,11 @@
                         },
                         "size": {
                             "type": "string"
+                        },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
                         },
                         "labels": {
                             "type": "object",
@@ -2423,6 +2498,11 @@
             "properties": {
                 "enabled": {
                     "type": "boolean"
+                },
+                "annotations": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {}
                 },
                 "labels": {
                     "type": "object",
@@ -2491,6 +2571,11 @@
                                 "size": {
                                     "type": "string"
                                 },
+                                "annotations": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {}
+                                },
                                 "labels": {
                                     "type": "object",
                                     "required": [],
@@ -2514,6 +2599,11 @@
                                 "size": {
                                     "type": "string"
                                 },
+                                "annotations": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {}
+                                },
                                 "labels": {
                                     "type": "object",
                                     "required": [],
@@ -2536,6 +2626,11 @@
                                 },
                                 "size": {
                                     "type": "string"
+                                },
+                                "annotations": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {}
                                 },
                                 "labels": {
                                     "type": "object",
