@@ -18,6 +18,8 @@ metadata:
 {{- with .Values.general.ingress.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
 spec:
   ingressClassName: {{.Values.general.ingress.className}}
   rules:
