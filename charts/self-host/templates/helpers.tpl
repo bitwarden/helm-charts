@@ -237,3 +237,11 @@ Name of the keys secret
 {{- define "bitwarden.keyssecret" -}}
 {{ template "bitwarden.fullname" . }}-secretkeys
 {{- end -}}
+
+
+{{/*
+Name of the shared cloud resource secret
+*/}}
+{{- define "bitwarden.sharedCloudResourcesSecret" -}}
+{{ template "bitwarden.fullname" . }}-shared-cloud-resources
+{{- end -}}

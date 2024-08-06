@@ -37,12 +37,14 @@ spec:
           {{- end }}
           kubectl delete secret {{ .Release.Name }}-identity-cert -n {{ .Release.Namespace }};
           kubectl delete secret {{ .Release.Name }}-identity-cert-password  -n {{ .Release.Namespace }};
+          kubectl delete secret {{ .Values.secrets.secretName }} -n {{ .Release.Namespace }};
           {{- if eq .Values.component.keyConnector.config.rsaKeyProvider "certificate" }}
           kubectl delete secret {{ .Release.Name }}-key-connector-cert -n {{ .Release.Namespace }};
           kubectl delete secret {{ .Release.Name }}-key-connector-cert-password -n {{ .Release.Namespace }};
           {{- end }}
           kubectl delete job {{ .Release.Name }}-setup;
           kubectl delete job {{ .Release.Name }}-migrator;
+          kubectl delete job {{ .Release.Name }}-secret-gen-main -n {{ .Release.Namespace }};
           {{- if .Values.component.keyConnector.enabled }}
           kubectl delete job {{ .Release.Name }}-key-connector-setup -n {{ .Release.Namespace}};
           {{- end }}

@@ -55,6 +55,8 @@ spec:
           - secretRef:
               name: {{ template "bitwarden.keyssecret" . }}
           - secretRef:
+              name: {{ template "bitwarden.sharedCloudResourcesSecret" . }}
+          - secretRef:
               name: {{ .Release.Name }}-identity-cert-password
           {{- if .Values.database.enabled }}
           - secretRef:
