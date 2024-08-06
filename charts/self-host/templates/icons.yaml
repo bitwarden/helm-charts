@@ -54,6 +54,8 @@ spec:
               name: "{{ .Values.secrets.secretName }}"
           - secretRef:
               name: {{ template "bitwarden.keyssecret" . }}
+          - secretRef:
+              name: {{ template "bitwarden.sharedCloudResourcesSecret" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string

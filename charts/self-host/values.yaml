@@ -111,6 +111,9 @@ secrets:
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass:
 
+  # Azure Key Vault name for shared cloud resources secret
+  azureKeyVaultName: CI
+
 # Settings for individual service containers
 component:
   # The Admin component

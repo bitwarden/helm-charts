@@ -13,7 +13,7 @@ featureFlags:
 # Adds annotations for sync waves and hooks on various jobs to ensure proper ordering of resources.
 # The existing hooks aren't ordered for Argo CD, so this is required for Argo CD deployments.
 # Components still require sync wave annotations and can be defined in the component section.
-argoCDSupport: true
+argoCDSupport: false
 
 general:
   # Domain name for the service
@@ -113,11 +113,14 @@ secrets:
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass:
 
+  # Azure Key Vault name for shared cloud resources secret
+  azureKeyVaultName: bw-cluster-mmartin
+
 # Settings for individual service containers
 component:
   keyConnector:
     # Enable or disable the Key Connector component
-    enabled: true
+    enabled: false
     # Key Connector version
     version: "2024.4.0"
     # Additional deployment annotations
