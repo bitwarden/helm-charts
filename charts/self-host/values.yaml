@@ -97,8 +97,8 @@ general:
   # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
   cloudRegion: US
   # Specify Bitwarden cloud URI endpoint. Default to US/EU production cloud based on cloudRegion.
-  cloudIdentityApiUri:
-  cloudApiUri:
+  cloudIdentityApiUri: "https://identity.usdev.bitwarden.pw"
+  cloudApiUri: "https://api.usdev.bitwarden.pw"
   cloudPushRelayBaseUri:
 
 # Specify the name of the shared storage class
