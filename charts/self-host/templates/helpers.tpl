@@ -245,3 +245,30 @@ Name of the shared cloud resource secret
 {{- define "bitwarden.sharedCloudResourcesSecret" -}}
 {{ template "bitwarden.fullname" . }}-shared-cloud-resources
 {{- end -}}
+
+
+{{/*
+GitHub endpoints
+*/}}
+{{- define "bitwarden.endpoint.web" -}}
+https://{{ .Values.general.domain }}/web
+{{- end -}}
+
+{{- define "bitwarden.endpoint.api" -}}
+https://{{ .Values.general.domain }}/api
+{{- end -}}
+
+{{- define "bitwarden.endpoint.identity" -}}
+https://{{ .Values.general.domain }}/identity
+{{- end -}}
+
+{{/*
+Argo CD environment URL
+*/}}
+{{- define "bitwarden.endpoint.argocd-badge"}}
+https://bw-akp-sandbox-01.cd.akuity.cloud/api/badge?name={{ .Release.Name }}&revision=true&showAppName=true
+{{- end -}}
+
+{{- define "bitwarden.endpoint.argocd"}}
+https://bw-akp-sandbox-01.cd.akuity.cloud/applications/argocd/{{ .Release.Name }}
+{{- end -}}

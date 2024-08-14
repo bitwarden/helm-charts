@@ -1,0 +1,71 @@
+# Publishes the URI endpoints for the environment to a comment of the GitHub pull request.
+---
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: "{{ .Release.Name }}-publish-endpoints-github"
+  labels:
+    app.kubernetes.io/component: post-install-publish-endpoints
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+    {{- if .Values.argoCDSupport }}
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    {{- end }}
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-publish-endpoints-github"
+      labels:
+        app.kubernetes.io/component: post-install-publish-endpoints
+    spec:
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: "{{ .Values.serviceAccount.name }}"
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: publish-endpoints
+          image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+          command:
+            - "/bin/bash"
+            - "-c"
+          args:
+            - |
+              echo "Validating that we can curl GitHub..."
+              curl -s -H "Authorization: token ${GITHUB_TOKEN}" -X GET "https://api.github.com/orgs/{{ .Values.github.owner }}"
+
+              # Comment data
+              comment_body=$(cat <<EOF
+              Ephemeral Environment Details:
+              Web: [{{ template "bitwarden.endpoint.web" . }}]({{ template "bitwarden.endpoint.web" . }})
+              Api: [{{ template "bitwarden.endpoint.api" . }}]({{ template "bitwarden.endpoint.api" . }})
+              EOF
+              )
+
+              # Escape newlines and special characters
+              comment_body=$(echo "$comment_body" | jq -sR .)
+              
+              # Create a comment if we haven't already
+              if [ -z "$(kubectl get configmap {{ .Release.Name }}-pr-comment-id -o jsonpath='{.data.comment_id}')" ]; then
+                # Post comment
+                echo "Creating comment on PR ${GITHUB_PR_ID}"
+
+                RESPONSE=$(curl -s -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/json" \
+                -d "{\"body\": $comment_body}" \
+                "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_PROJECT}/issues/${GITHUB_PR_ID}/comments" | jq)
+
+                # Get comment ID and save it to configmap
+                COMMENT_ID=$(echo "$RESPONSE" | grep -o '"id": [0-9]*' | awk '{print $2}' | head -n 1)
+                kubectl create configmap {{ .Release.Name }}-pr-comment-id --from-literal=comment_id=${COMMENT_ID}
+              fi
+
+              echo "Comment URL: https://github.com/${GITHUB_OWNER}/${GITHUB_PROJECT}/issues/${GITHUB_PR_ID}#issuecomment-${COMMENT_ID}"
+
+
+          envFrom:
+            - secretRef:
+                name: {{ template "bitwarden.sharedCloudResourcesSecret" . }}
+            - configMapRef:
+                name: {{ .Release.Name }}-config-map
