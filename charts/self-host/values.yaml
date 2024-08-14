@@ -112,7 +112,7 @@ secrets:
   secretProviderClass:
 
   # Azure Key Vault name for shared cloud resources secret
-  azureKeyVaultName: CI
+  azureKeyVaultName: ephemeral-env-kv
 
 # Settings for individual service containers
 component:
