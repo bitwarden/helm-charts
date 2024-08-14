@@ -11,7 +11,7 @@ metadata:
     {{- if .Values.argoCDSupport }}
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/sync-wave: "0"
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded,BeforeHookCreation
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     {{ end }}
 data:
   # Iterate over the featureFlags map and create a JSON object.

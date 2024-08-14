@@ -13,6 +13,13 @@ featureFlags: {}
 # Components still require sync wave annotations and can be defined in the component section.
 argoCDSupport: true
 
+# GitHub values to be used for interacting with the GitHub API.
+# These are not required, but functionality will be disabled if they are not provided.
+github:
+  project:
+  owner:
+  prId:
+
 general:
   # Domain name for the service
   domain: "REPLACE"

@@ -19,6 +19,21 @@
             "type": "boolean",
             "description": "Converts sync hooks to Argo CD sync waves to support sync operations."
         },
+        "github": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "project": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "prId": {
+                    "type": "string"
+                }
+            }
+        },
         "general": {
             "type": "object",
             "required": [],

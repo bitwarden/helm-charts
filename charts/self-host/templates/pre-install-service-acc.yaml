@@ -32,6 +32,9 @@ rules:          # Authorization rules for this role
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get","create","update","patch","delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get","create"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
