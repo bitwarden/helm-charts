@@ -25,6 +25,20 @@ spec:
         app.kubernetes.io/component: attachments
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+      nodeSelector:
+        {{- if .Values.component.attachments.nodeSelector }}
+        {{ toYaml .Values.component.attachments.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- if or .Values.component.attachments.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.attachments.tolerations }}
+        {{ toYaml .Values.component.attachments.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.attachments.podServiceAccount }}
       serviceAccount: {{ .Values.component.attachments.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.attachments.podServiceAccount | quote }}

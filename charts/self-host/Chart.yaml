@@ -4,7 +4,7 @@ description: A Helm chart for deploying a Bitwarden instance on Kubernetes
 home: https://github.com/bitwarden/helm-charts/tree/main/charts/self-host
 icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
 maintainers:
-- name: dept-devops
+  - name: dept-devops
 name: self-host
 type: application
-version: 2024.7.2
+version: 2024.8.15

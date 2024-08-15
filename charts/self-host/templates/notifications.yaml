@@ -25,6 +25,20 @@ spec:
         app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+      nodeSelector:
+        {{- if .Values.component.notifications.nodeSelector }}
+        {{ toYaml .Values.component.notifications.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- if or .Values.component.notifications.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.notifications.tolerations }}
+        {{ toYaml .Values.component.notifications.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.notifications.podServiceAccount }}
       serviceAccount: {{ .Values.component.notifications.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.notifications.podServiceAccount | quote }}

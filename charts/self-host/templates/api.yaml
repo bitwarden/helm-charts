@@ -25,6 +25,20 @@ spec:
         app.kubernetes.io/component: api
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+      nodeSelector:
+        {{- if .Values.component.api.nodeSelector }}
+        {{ toYaml .Values.component.api.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- if or .Values.component.api.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.api.tolerations }}
+        {{ toYaml .Values.component.api.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.api.podServiceAccount }}
       serviceAccount: {{ .Values.component.api.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.api.podServiceAccount | quote }}

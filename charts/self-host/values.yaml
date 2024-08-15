@@ -9,8 +9,9 @@ general:
     # Set to false if using a custom ingress
     enabled: true
     # Current supported values for ingress type include: nginx
-    className: "nginx"
-     ## - Annotations to add to the Ingress resource.
+    className:
+      "nginx"
+      ## - Annotations to add to the Ingress resource.
     annotations:
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/use-regex: "true"
@@ -55,7 +56,8 @@ general:
       admin:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
-
+  nodeSelector: {}
+  tolerations: {}
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
   webVersionOverride: ""
@@ -116,6 +118,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   api:
     # Additional deployment labels
     labels: {}
@@ -136,6 +140,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   attachments:
     # Additional deployment labels
     labels: {}
@@ -156,6 +162,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   events:
     # Additional deployment labels
     labels: {}
@@ -176,6 +184,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   icons:
     # Additional deployment labels
     labels: {}
@@ -196,6 +206,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   identity:
     # Additional deployment labels
     labels: {}
@@ -216,6 +228,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   notifications:
     # Additional deployment labels
     labels: {}
@@ -258,6 +272,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   sso:
     # Additional deployment labels
     labels: {}
@@ -278,6 +294,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
   web:
     # Additional deployment labels
     labels: {}
@@ -298,6 +316,8 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    nodeSelector: {}
+    tolerations: {}
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
