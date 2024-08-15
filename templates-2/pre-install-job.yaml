@@ -1,6 +1,6 @@
-{{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
-{{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
-{{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
+{{- $identityCertPasswordTxtValue := (randAlpha 32) }}
+{{- $currentIdentityCert := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert") }}
+{{- $identityCertPasswordTxtValue := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password") }}
 
 {{- if $currentIdentityCert }}
 {{- $identityCertPasswordTxtValue := index $currentIdentityCert.data "globalSettings__identityServer__certificatePassword" | b64dec }}
@@ -23,18 +23,17 @@ spec:
       labels:
         app.kubernetes.io/component: pre-install-hook
     spec:
-    {{- with .Values.general.nodeSelector }}
+      {{- with .Values.general.nodeSelector }}
       nodeSelector:
-    {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.general.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.general.tolerations }}
       tolerations:
-    {{- toYaml . | nindent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     {{- if .Values.serviceAccount.name }}
-      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+      serviceAccountName: "{{ .Values.serviceAccount.name }}"
     {{- end }}
-
 {{- if not $currentIdentityCert }}
       initContainers:
       - name: generate-identity-cert
@@ -47,7 +46,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        image: "docker.io/nginx"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -66,7 +65,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "bitnami/kubectl:1.26.11"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"

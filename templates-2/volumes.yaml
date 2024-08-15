@@ -1,0 +1,141 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.dataprotection" . }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.dataprotection.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.licenses" . }}
+  labels:
+    app.kubernetes.io/component: licenses
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.volume.licenses.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.licenses.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.attachments" . }}
+  labels:
+    app.kubernetes.io/component: attachments
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.volume.attachments.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.attachments.size }}
+
+{{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.applogs" . }}
+  labels:
+    app.kubernetes.io/component: logs
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.volume.logs.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.logs.size }}
+{{- end }}
+
+#################
+# MSSQL Volumes #
+#################
+{{- if .Values.database.enabled }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.mssqlLog" . }}
+  labels:
+    app.kubernetes.io/component: mssql-log
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.database.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.database.volume.log.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.mssqlBackups" . }}
+  labels:
+    app.kubernetes.io/component: mssql-backups
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.database.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.database.volume.backups.size }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "bitwarden.mssqlData" . }}
+  labels:
+    app.kubernetes.io/component: mssql-data
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.database.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.general.volumeAccessMode }}
+  storageClassName: {{ .Values.sharedStorageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.database.volume.data.size }}
+{{- end }}

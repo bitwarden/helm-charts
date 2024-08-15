@@ -1,0 +1,106 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.web" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.web" . }}
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.web.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  replicas: 1
+  strategy:
+    type: "{{ .Values.component.web.deploymentStrategy }}"
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.web" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.web" . }}
+        app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 8 }}
+    spec:
+      {{- with .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.general.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- if .Values.component.web.podServiceAccount }}
+      serviceAccount: "{{ .Values.component.web.podServiceAccount }}"
+      serviceAccountName: "{{ .Values.component.web.podServiceAccount }}"
+    {{- end }}
+      containers:
+      - name: {{ template "bitwarden.web" . }}
+        image: "{{ .Values.component.web.image.name }}:{{ default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride }}"
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config-map
+          - secretRef:
+              name: "{{ .Values.secrets.secretName }}"
+          - secretRef:
+              name: {{ template "bitwarden.keyssecret" . }}
+          {{- if .Values.database.enabled }}
+          - secretRef:
+              name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:5000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 180
+        ports:
+        - containerPort: 5000
+        resources:
+{{ toYaml .Values.component.web.resources | indent 10 }}
+        volumeMounts:
+        - name: web
+          mountPath: /etc/bitwarden/web
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        {{- end }}
+        securityContext:
+{{ toYaml .Values.component.web.securityContext | indent 10 }}
+      volumes:
+        - name: web
+          configMap:
+            name: {{ .Release.Name }}-config-map-web
+        {{- if .Values.secrets.secretProviderClass}}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.web" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: web
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.component.web.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "bitwarden.web" . }}
+  ports:
+  - port: 5000
+    targetPort: 5000

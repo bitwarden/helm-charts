@@ -1,0 +1,141 @@
+{{- if .Values.general.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "bitwarden.ingress" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- if .Values.general.ingress.tls.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.general.ingress.tls.clusterIssuer }}
+    {{- end }}
+{{- with .Values.general.ingress.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: ingress
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.general.ingress.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  ingressClassName: {{.Values.general.ingress.className}}
+  rules:
+    - host: {{ .Values.general.domain }}
+      http:
+        paths:
+          - path: {{ .Values.general.ingress.paths.web.path }}
+            {{ if .Values.general.ingress.paths.web.pathType }}
+            pathType: {{ .Values.general.ingress.paths.web.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.web" . }}
+                port:
+                  number: 5000
+
+          - path: {{ .Values.general.ingress.paths.attachments.path }}
+            {{ if .Values.general.ingress.paths.attachments.pathType }}
+            pathType: {{ .Values.general.ingress.paths.attachments.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.attachments" . }}
+                port:
+                  number: 5000
+
+
+          - path: {{ .Values.general.ingress.paths.api.path }}
+            {{ if .Values.general.ingress.paths.api.pathType }}
+            pathType: {{ .Values.general.ingress.paths.api.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.api" . }}
+                port:
+                  number: 5000
+
+
+          - path: {{ .Values.general.ingress.paths.icons.path }}
+            {{ if .Values.general.ingress.paths.icons.pathType }}
+            pathType: {{ .Values.general.ingress.paths.icons.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.icons" . }}
+                port:
+                  number: 5000
+
+
+          - path: {{ .Values.general.ingress.paths.notifications.path }}
+            {{ if .Values.general.ingress.paths.notifications.pathType }}
+            pathType: {{ .Values.general.ingress.paths.notifications.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.notifications" . }}
+                port:
+                  number: 5000
+
+
+          - path: {{ .Values.general.ingress.paths.events.path }}
+            {{ if .Values.general.ingress.paths.events.pathType }}
+            pathType: {{ .Values.general.ingress.paths.events.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.events" . }}
+                port:
+                  number: 5000
+
+          {{- if .Values.component.scim.enabled }}
+          - path: {{ .Values.general.ingress.paths.scim.path }}
+            {{ if .Values.general.ingress.paths.scim.pathType }}
+            pathType: {{ .Values.general.ingress.paths.scim.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.scim" . }}
+                port:
+                  number: 5000
+          {{- end }}
+
+          - path: {{ .Values.general.ingress.paths.sso.path }}
+            {{ if .Values.general.ingress.paths.sso.pathType }}
+            pathType: {{ .Values.general.ingress.paths.sso.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.sso" . }}
+                port:
+                  number: 5000
+
+
+          - path: {{ .Values.general.ingress.paths.identity.path }}
+            {{ if .Values.general.ingress.paths.identity.pathType }}
+            pathType: {{ .Values.general.ingress.paths.identity.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.identity" . }}
+                port:
+                  number: 5000
+
+
+          - path: {{ .Values.general.ingress.paths.admin.path }}
+            {{ if .Values.general.ingress.paths.admin.pathType }}
+            pathType: {{ .Values.general.ingress.paths.admin.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.admin" . }}
+                port:
+                  number: 5000
+
+  tls:
+    - hosts:
+      - {{ .Values.general.domain }}
+      {{- if .Values.general.ingress.tls.name }}
+      secretName: {{ .Values.general.ingress.tls.name }}
+      {{- end }}
+{{- end }}

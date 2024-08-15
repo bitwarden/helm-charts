@@ -53,7 +53,7 @@ spec:
           echo "Admin Ready!"
         ']
         {{- end }}
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "bitnami/kubectl:1.26.11"
         volumeMounts:
           {{- if .Values.database.enabled }}
           - name: mssql-data
@@ -68,17 +68,17 @@ spec:
               {{- if .Values.database.enabled }}
               name: {{ .Release.Name }}-sql-connection-string
               {{- else }}
-              name: {{ .Values.secrets.secretName | quote }}
+              name: "{{ .Values.secrets.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "bitwarden/mssqlmigratorutility:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
-        {{- if .Values.secrets.secretProviderClass }}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
-        {{- if or ( not .Values.database.enabled ) ( and .Values.database.enabled .Release.IsUpgrade ) }}
+        {{- if or (not .Values.database.enabled) (and .Values.database.enabled .Release.IsUpgrade) }}
         args: [ "-f", "DbScripts_transition", "-r"]
         {{- end }}
       restartPolicy: Never
@@ -86,9 +86,9 @@ spec:
         {{- if .Values.database.enabled }}
         - name: mssql-data
           persistentVolumeClaim:
-            claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
+            claimName: {{ template "bitwarden.mssqlData" . }}
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass }}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io

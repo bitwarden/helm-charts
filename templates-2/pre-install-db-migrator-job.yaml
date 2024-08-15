@@ -29,7 +29,7 @@ spec:
     {{- toYaml . | nindent 8 }}
     {{- end }}
       {{- if .Values.serviceAccount.name }}
-      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+      serviceAccountName: "{{ .Values.serviceAccount.name }}"
       {{- end }}
       containers:
       - name: migrate-db
@@ -40,19 +40,19 @@ spec:
               {{- if .Values.database.enabled }}
               name: {{ .Release.Name }}-sql-connection-string
               {{- else }}
-              name: {{ .Values.secrets.secretName | quote }}
+              name: "{{ .Values.secrets.secretName }}"
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "bitwarden/mssqlmigratorutility:{{default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
-        {{- if .Values.secrets.secretProviderClass }}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
       restartPolicy: Never
       volumes:
-        {{- if .Values.secrets.secretProviderClass }}
+        {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
