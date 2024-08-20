@@ -1,3 +1,6 @@
+# Get tag from image.tag, or coreVersionOverride, or default to coreVersionDefault
+{{- $tag := default ( default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride ) .Values.component.sso.image.tag -}}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,7 +49,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.sso" . }}
-        image: "{{ .Values.component.sso.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ .Values.component.sso.image.name }}:{{ $tag }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

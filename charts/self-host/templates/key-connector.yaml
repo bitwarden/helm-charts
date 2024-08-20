@@ -47,7 +47,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.keyconnector" . }}
-        image: "{{ .Values.component.keyConnector.image.name }}:{{ .Values.component.keyConnector.version }}"
+        image: "{{ .Values.component.keyConnector.image.name }}:{{ .Values.component.keyConnector.image.tag }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
