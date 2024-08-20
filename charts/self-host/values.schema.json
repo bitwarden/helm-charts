@@ -300,6 +300,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -495,6 +498,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -690,6 +696,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -885,6 +894,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -1080,6 +1092,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -1275,6 +1290,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -1456,9 +1474,6 @@
                         "enabled": {
                             "type": "boolean"
                         },
-                        "version": {
-                            "type": "string"
-                        },
                         "annotations": {
                             "type": "object",
                             "required": [],
@@ -1474,6 +1489,9 @@
                             "type": "object",
                             "properties": {
                                 "name": {
+                                    "type": "string"
+                                },
+                                "tag": {
                                     "type": "string"
                                 }
                             }
@@ -1611,6 +1629,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -1809,6 +1830,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -2004,6 +2028,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },
@@ -2201,6 +2228,9 @@
                             "properties": {
                                 "name": {
                                     "type": "string"
+                                },
+                                "tag": {
+                                    "type": ["string", "null"]
                                 }
                             }
                         },

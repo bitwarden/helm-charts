@@ -259,8 +259,6 @@ component:
   keyConnector:
     # Enable or disable the Key Connector component
     enabled: false
-    # Key Connector version
-    version: "2024.4.0"
     # Additional deployment annotations
     annotations: {}
     # Additional deployment labels
@@ -268,6 +266,8 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwarden/key-connector
+    # Key Connector version
+      tag: "2024.4.0"
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:

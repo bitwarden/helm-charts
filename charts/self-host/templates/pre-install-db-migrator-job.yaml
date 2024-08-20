@@ -1,3 +1,6 @@
+# Get tag from image.tag, or coreVersionOverride, or default to coreVersionDefault
+{{- $tag := default ( default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride ) .Values.supportComponents.dbMigrator.image.tag -}}
+
 ---
 apiVersion: batch/v1
 kind: Job
@@ -40,7 +43,7 @@ spec:
               name: {{ .Values.secrets.secretName | quote }}
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{ $tag }}"
         volumeMounts:
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
