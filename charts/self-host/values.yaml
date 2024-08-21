@@ -88,7 +88,7 @@ general:
     # Email address used for invitations, typically no-reply@smtp-host
     replyToEmail: "no-reply@bitwarden.localhost"
     # Your SMTP server hostname (recommended) or IP address
-    smtpHost: "smtp.gmail.com"
+    smtpHost: "smtp.sendgrid.net"
     # The SMTP port used by the SMTP server
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
