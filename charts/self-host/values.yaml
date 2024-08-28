@@ -72,6 +72,13 @@ general:
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
     smtpSsl: "false"
+    # Specify true to explicitly trust the certificate presented by the SMTP server (not recommended for production).
+    smtpTrustServer: "false"
+    # Specify true to use SSL (not TLS) on port 25.
+    smtpSslOverride: "false"
+    # Specify true to force STARTTLS (Opportunistic TLS).
+    smtpStartTls: "false"
+
   # Custom labels to add throughout the installation
   labels: {}
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
