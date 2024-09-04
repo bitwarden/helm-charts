@@ -36,8 +36,6 @@ data:
   globalSettings__mail__smtp__trustServer: "{{ .Values.general.email.smtpTrustServer }}"
   globalSettings__mail__smtp__sslOverride: "{{ .Values.general.email.smtpSslOverride }}"
   globalSettings__mail__smtp__startTls: "{{ .Values.general.email.smtpStartTls }}"
-
-
 {{- if not (and .Values.volume.logs .Values.volume.logs.enabled) }}
   globalSettings__logDirectory: "/dev/null"
 {{- end }}
