@@ -131,7 +131,17 @@ spec:
                 name: {{ template "bitwarden.admin" . }}
                 port:
                   number: 5000
-
+{{- if .Values.database.enabled }}
+          - path: {{ .Values.general.ingress.paths.mssql.path }}
+            {{ if .Values.general.ingress.paths.mssql.pathType }}
+            pathType: {{ .Values.general.ingress.paths.mssql.pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ template "bitwarden.mssql" . }}
+                port:
+                  number: 1433
+{{- end }}
 {{- if .Values.component.keyConnector.enabled }}
           - path: {{ .Values.general.ingress.paths.keyConnector.path }}
             {{ if .Values.general.ingress.paths.keyConnector.pathType }}
