@@ -78,6 +78,9 @@ general:
       keyConnector:
         path: /key-connector/(.*)
         pathType: ImplementationSpecific
+      mssql:
+        path: /(mssql/.*)
+        pathType: ImplementationSpecific
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
