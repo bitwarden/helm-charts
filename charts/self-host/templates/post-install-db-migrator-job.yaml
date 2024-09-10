@@ -40,10 +40,6 @@ spec:
           while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}") != "true" ]]; do sleep 1; done
 
           echo "Admin Ready!"
-
-          while [ ! -f /db/vault.mdf ]; do sleep 1; done
-
-          echo "DB Ready!"
         ']
         {{- else }}
         args: ['
@@ -53,11 +49,6 @@ spec:
         ']
         {{- end }}
         image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
-        volumeMounts:
-          {{- if .Values.database.enabled }}
-          - name: mssql-data
-            mountPath: /db
-          {{- end }}
       containers:
       - name: migrate-db
         env:
@@ -82,11 +73,6 @@ spec:
         {{- end }}
       restartPolicy: Never
       volumes:
-        {{- if .Values.database.enabled }}
-        - name: mssql-data
-          persistentVolumeClaim:
-            claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
-        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:

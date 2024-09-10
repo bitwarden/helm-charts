@@ -487,10 +487,10 @@ database:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
       # Override the accessMode specified in general.volumeAccessMode
-      # accessMode: ReadWriteOnce
+      accessMode: ReadWriteOnce
       # Override the storageClass specified in sharedStorageClassName
-      # storageClass: "shared-storage"
-      size: 1Gi
+      storageClass: "managed"
+      size: 10Gi
       labels: {}
       annotations:
         argocd.argoproj.io/hook: PreSync
@@ -500,10 +500,10 @@ database:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
       # Override the accessMode specified in general.volumeAccessMode
-      # accessMode: ReadWriteOnce
+      accessMode: ReadWriteOnce
       # Override the storageClass specified in sharedStorageClassName
-      # storageClass: "shared-storage"
-      size: 10Gi
+      storageClass: "managed"
+      size: 20Gi
       labels: {}
       annotations:
         argocd.argoproj.io/hook: PreSync
@@ -513,9 +513,9 @@ database:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
       # Override the accessMode specified in general.volumeAccessMode
-      # accessMode: ReadWriteOnce
+      accessMode: ReadWriteOnce
       # Override the storageClass specified in sharedStorageClassName
-      # storageClass: "shared-storage"
+      storageClass: "managed"
       size: 10Gi
       labels: {}
       annotations:
