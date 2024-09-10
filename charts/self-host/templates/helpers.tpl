@@ -248,6 +248,14 @@ Name of the shared cloud resource secret
 
 
 {{/*
+Name of the extension: dbClient
+*/}}
+{{- define "bitwarden.dbClient" -}}
+{{ template "bitwarden.fullname" . }}-db-client
+{{- end -}}
+
+
+{{/*
 GitHub endpoints
 */}}
 {{- define "bitwarden.endpoint.web" -}}

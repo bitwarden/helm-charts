@@ -34,6 +34,47 @@
                 }
             }
         },
+        "extensions": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "dbClient": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "image": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "tag": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "service": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "port": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "general": {
             "type": "object",
             "required": [],

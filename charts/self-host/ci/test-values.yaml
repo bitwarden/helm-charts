@@ -22,6 +22,17 @@ github:
   owner:
   prId:
 
+# Optional extensions that can be toggled for additional functionality.
+extensions:
+  dbClient:
+    enabled: true
+    annotations: {}
+    image:
+      name: dbeaver/cloudbeaver
+      tag: latest
+    service:
+      port: 8978
+
 general:
   # Domain name for the service
   domain: "bitwarden.localhost"

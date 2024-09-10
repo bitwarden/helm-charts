@@ -1,0 +1,57 @@
+{{- if .Values.extensions.dbClient.enabled }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.dbClient" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.extensions.dbClient.annotations | nindent 4 }}
+  labels:
+    app: {{ template "bitwarden.dbClient" . }}
+    app.kubernetes.io/component: db-client
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.dbClient" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.dbClient" . }}
+    spec:
+      containers:
+        - name: db-client
+          image: "{{ .Values.extensions.dbClient.image.name }}:{{ .Values.extensions.dbClient.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.extensions.dbClient.service.port }}
+          env:
+            - name: CB_SERVER_NAME
+              value: {{ template "bitwarden.dbClient" . }}
+            - name: CB_SERVER_URL
+              value: "http://localhost:8978"
+            - name: CB_ADMIN_NAME
+              value: ee
+            - name: CB_ADMIN_PASSWORD
+              value: {{ .Release.Name }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.dbClient" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.dbClient" . }}
+    app.kubernetes.io/component: db-client
+spec:
+  selector:
+    app: {{ template "bitwarden.dbClient" . }}
+  ports:
+    - port: {{ .Values.extensions.dbClient.service.port }}
+      targetPort: {{ .Values.extensions.dbClient.service.port }}
+
+{{- end }}

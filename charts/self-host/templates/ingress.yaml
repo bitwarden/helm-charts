@@ -154,6 +154,16 @@ spec:
                   number: 5000
 {{- end }}
 
+{{- if .Values.extensions.dbClient.enabled }}
+          - path: /db
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "bitwarden.dbClient" . }}
+                port:
+                  number: {{ .Values.extensions.dbClient.service.port }}
+{{- end }}
+
   tls:
     - hosts:
       - {{ .Values.general.domain }}
