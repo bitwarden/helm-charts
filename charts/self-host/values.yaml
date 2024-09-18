@@ -285,9 +285,9 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/key-connector
+      name: bitwardenprod.azurecr.io/key-connector
     # Key Connector version
-      tag: "2024.4.0"
+      tag: "2024.8.0"
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
