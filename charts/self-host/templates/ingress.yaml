@@ -6,6 +6,9 @@ metadata:
   name: {{ template "bitwarden.ingress" . }}
   namespace: {{ .Release.Namespace }}
   annotations:
+    {{- if .Values.argoCDSupport }}
+    link.argocd.argoproj.io/environment: "Go to Environment|https://{{ .Values.general.domain }}"
+    {{- end }}
     {{- if .Values.general.ingress.tls.clusterIssuer }}
     cert-manager.io/cluster-issuer: {{ .Values.general.ingress.tls.clusterIssuer }}
     {{- end }}
@@ -155,8 +158,8 @@ spec:
 {{- end }}
 
 {{- if .Values.extensions.dbClient.enabled }}
-          - path: /db
-            pathType: Prefix
+          - path: /db(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: {{ template "bitwarden.dbClient" . }}
