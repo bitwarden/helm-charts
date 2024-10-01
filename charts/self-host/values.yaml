@@ -146,6 +146,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/admin
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -168,6 +169,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/api
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -190,6 +192,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/attachments
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -212,6 +215,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/events
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -234,6 +238,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/icons
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -256,6 +261,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/identity
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -310,6 +316,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/notifications
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -334,6 +341,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/scim
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -356,6 +364,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/sso
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -378,6 +387,7 @@ component:
     # Image name, tag, and pull policy
     image:
       name: bitwardenprod.azurecr.io/web
+      tag: dev
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -397,6 +407,7 @@ supportComponents:
   dbMigrator:
     image:
       name: bitwardenprod.azurecr.io/mssqlmigratorutility
+      tag: dev
   certGenerator:
     image:
       name: docker.io/nginx
