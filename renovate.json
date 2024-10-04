@@ -15,7 +15,7 @@
     "helmv3"
   ],
   "ignorePaths": [
-    "/charts/sm-operator"
+    "charts/sm-operator"
   ],
   "packageRules": [
     {
