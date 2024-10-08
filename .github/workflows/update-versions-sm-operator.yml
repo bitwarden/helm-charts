@@ -10,7 +10,7 @@ env:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       operator_version: ${{ steps.operator-update.outputs.version }}
       operator_version_update: ${{ steps.operator-update.outputs.update }}
@@ -52,7 +52,7 @@ jobs:
   update-versions:
     name: "Update Versions"
     if: needs.setup.outputs.operator_version_update == 1
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: setup
     permissions:
       contents: write
