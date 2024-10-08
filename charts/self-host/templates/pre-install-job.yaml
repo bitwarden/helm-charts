@@ -12,16 +12,33 @@ metadata:
   name: "{{ .Release.Name }}-setup"
   labels:
     app.kubernetes.io/component: pre-install-hook
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.job.setup.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.job.setup.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-setup"
       labels:
         app.kubernetes.io/component: pre-install-hook
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.job.setup.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.job.setup.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}

@@ -84,6 +84,12 @@ general:
     smtpStartTls: "false"
   # Custom labels to add throughout the installation
   labels: {}
+  # Custom annotations to add throughout the installation
+  annotations: {}
+  # Additional default pod labels
+  podLabels: {}
+  # Additional default pod annotations
+  podAnnotations: {}
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
@@ -103,12 +109,57 @@ secrets:
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass:
 
+# Settings for individual jobs
+job:
+  db:
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+  setup:
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+  cleanup:
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+  secret:
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+
 # Settings for individual service containers
 component:
   # The Admin component
   admin:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/admin
@@ -129,6 +180,12 @@ component:
   api:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/api
@@ -149,6 +206,12 @@ component:
   attachments:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/attachments
@@ -169,6 +232,12 @@ component:
   events:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/events
@@ -189,6 +258,12 @@ component:
   icons:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/icons
@@ -209,6 +284,12 @@ component:
   identity:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/identity
@@ -229,6 +310,12 @@ component:
   notifications:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/notifications
@@ -251,6 +338,12 @@ component:
     enabled: false
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/scim
@@ -271,6 +364,12 @@ component:
   sso:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/sso
@@ -291,6 +390,12 @@ component:
   web:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Image name, tag, and pull policy
     image:
       name: bitwarden/web
@@ -379,6 +484,12 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
+  # Annotations to add to the MSSQL deployment
+  annotations: {}
+  # Additional labels to the MSSQL pod
+  podLabels: {}
+  # Additional annotations to the MSSQL pod
+  podAnnotations: {}
   # Image name, tag, and pull policy
   image:
     name: mcr.microsoft.com/mssql/server
