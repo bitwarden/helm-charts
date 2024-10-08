@@ -3,6 +3,20 @@ entries:
   self-host:
   - apiVersion: v2
     appVersion: 2024.9.2
+    created: "2024-10-08T21:18:55.677371805Z"
+    description: A Helm chart for deploying a Bitwarden instance on Kubernetes
+    digest: e9658600df5805391b4fde7ee717a80ed3c3f630da0fdd3eadc51100ad2bc402
+    home: https://github.com/bitwarden/helm-charts/tree/main/charts/self-host
+    icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
+    maintainers:
+    - name: dept-devops
+    name: self-host
+    type: application
+    urls:
+    - https://github.com/bitwarden/helm-charts/releases/download/self-host-2024.10.0/self-host-2024.10.0.tgz
+    version: 2024.10.0
+  - apiVersion: v2
+    appVersion: 2024.9.2
     created: "2024-10-04T08:25:52.54916346Z"
     description: A Helm chart for deploying a Bitwarden instance on Kubernetes
     digest: a61c87675ab2ff8fd8bedd4a3f9c93a22a1bfcf05651098d8b60cb34c18a3ba4
@@ -604,4 +618,18 @@ entries:
     urls:
     - https://github.com/bitwarden/helm-charts/releases/download/sm-operator-0.1.0-Beta/sm-operator-0.1.0-Beta.tgz
     version: 0.1.0-Beta
-generated: "2024-10-08T19:19:11.673176862Z"
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-10-08T21:18:55.815624522Z"
+    description: A Helm chart to install the Bitwarden Secrets Manager operator.
+    digest: f0e378c15311c7c3ece13a666a6df300c6147ea500151d09c4898de61088c047
+    home: https://github.com/bitwarden/helm-charts/tree/main/charts/sm-operator
+    icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
+    maintainers:
+    - name: dept-devops
+    name: sm-operator
+    type: application
+    urls:
+    - https://github.com/bitwarden/helm-charts/releases/download/sm-operator-0.1.0-Beta/sm-operator-0.1.0-Beta.tgz
+    version: 0.1.0-Beta
+generated: "2024-10-08T21:18:55.815975839Z"
