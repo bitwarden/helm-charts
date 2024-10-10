@@ -10,7 +10,7 @@ env:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       core_version: ${{ steps.get-core.outputs.version }}
       core_version_update: ${{ steps.core-update.outputs.update }}
@@ -114,7 +114,7 @@ jobs:
     if: |
       needs.setup.outputs.core_version_update == 1 ||
       needs.setup.outputs.web_version_update == 1
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: setup
     environment: Production
     permissions:
