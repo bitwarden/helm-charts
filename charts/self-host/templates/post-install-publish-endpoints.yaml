@@ -33,9 +33,6 @@ spec:
             - "-c"
           args:
             - |
-              echo "Validating that we can curl GitHub..."
-              curl -s -H "Authorization: token ${GITHUB_TOKEN}" -X GET "https://api.github.com/orgs/{{ .Values.github.owner }}"
-
               # Comment data
               comment_body=$(cat <<EOF
               Ephemeral Environment Details:
@@ -52,18 +49,38 @@ spec:
                 # Post comment
                 echo "Creating comment on PR ${GITHUB_PR_ID}"
 
-                RESPONSE=$(curl -s -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/json" \
-                -d "{\"body\": $comment_body}" \
-                "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_PROJECT}/issues/${GITHUB_PR_ID}/comments" | jq)
+                while true; do
+                  RESPONSE=$(curl -s -D - -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/json" \
+                  -d "{\"body\": $comment_body}" \
+                  "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_PROJECT}/issues/${GITHUB_PR_ID}/comments")
+                  
+                  HTTP_STATUS=$(echo "$RESPONSE" | grep HTTP | awk '{print $2}')
+                  RATE_LIMIT_REMAINING=$(echo "$RESPONSE" | grep -i 'x-ratelimit-remaining:' | awk '{print $2}')
+                  RATE_LIMIT_RESET=$(echo "$RESPONSE" | grep -i 'x-ratelimit-reset:' | awk '{print $2}')
+                  RESPONSE_BODY=$(echo "$RESPONSE" | sed -n '/^\r$/,$p' | jq)
+                  
+                  echo "HTTP Status: $HTTP_STATUS"
+                  echo "Rate Limit Remaining: $RATE_LIMIT_REMAINING"
+                  echo "Response: $RESPONSE_BODY"
 
-                # Get comment ID and save it to configmap
-                COMMENT_ID=$(echo "$RESPONSE" | grep -o '"id": [0-9]*' | awk '{print $2}' | head -n 1)
-                kubectl create configmap {{ .Release.Name }}-pr-comment-id --from-literal=comment_id=${COMMENT_ID}
+                  if [[ "$HTTP_STATUS" == "201" ]]; then
+                    # Get comment ID and save it to configmap
+                    COMMENT_ID=$(echo "$RESPONSE_BODY" | grep -o '"id": [0-9]*' | awk '{print $2}' | head -n 1)
+                    kubectl create configmap {{ .Release.Name }}-pr-comment-id --from-literal=comment_id=${COMMENT_ID}
+                    break
+                  elif [[ "$HTTP_STATUS" == "403" || "$HTTP_STATUS" == "429" ]]; then
+                    CURRENT_TIME=$(date +%s)
+                    SLEEP_TIME=$((RATE_LIMIT_RESET - CURRENT_TIME))
+                    echo "Rate limit exceeded, waiting ${SLEEP_TIME} seconds until reset..."
+                    sleep $SLEEP_TIME
+                  else
+                    echo "Received error from GitHub, retrying in 5 minutes..."
+                    sleep 300
+                  fi
+                done
+
+                echo "Comment URL: https://github.com/${GITHUB_OWNER}/${GITHUB_PROJECT}/issues/${GITHUB_PR_ID}#issuecomment-${COMMENT_ID}"
               fi
-
-              echo "Comment URL: https://github.com/${GITHUB_OWNER}/${GITHUB_PROJECT}/issues/${GITHUB_PR_ID}#issuecomment-${COMMENT_ID}"
-
-
           envFrom:
             - secretRef:
                 name: {{ template "bitwarden.sharedCloudResourcesSecret" . }}
