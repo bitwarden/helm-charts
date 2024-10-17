@@ -5,16 +5,33 @@ metadata:
   name: "{{ .Release.Name }}-migrator"
   labels:
     app.kubernetes.io/component: post-install-db-migrator-job
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.job.db.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.job.db.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-migrator"
       labels:
         app.kubernetes.io/component: post-install-db-migrator-job
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.job.db.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.job.db.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
       {{- if .Values.serviceAccount.name }}
       serviceAccountName: "{{ .Values.serviceAccount.name }}"

@@ -1,5 +1,6 @@
 {{- range .Values.rawManifests.postInstall }}
 {{- $manifest := include "bitwarden.labels" $ | fromYaml | dict "labels" | dict "metadata" | mergeOverwrite . }}
+{{- $manifest := include "bitwarden.annotations" $ | fromYaml | dict "annotations" | dict "metadata" | mergeOverwrite . }}
 {{- $manifest := include "bitwarden.rawPostInstallAnnotations" $ | fromYaml | dict "annotations" | mergeOverwrite $manifest }}
 {{- toYaml $manifest }}
 ---
