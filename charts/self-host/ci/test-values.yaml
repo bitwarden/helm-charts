@@ -34,6 +34,9 @@ extensions:
       port: 8978
 
 general:
+  # Generate identity certificate
+  # Defaults to a shared certificate for encryption (required for dataset sharing)
+  generateIdentityCertificate: false
   # Domain name for the service
   domain: "bitwarden.localhost"
   ingress:
