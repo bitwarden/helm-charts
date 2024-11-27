@@ -5,20 +5,37 @@ metadata:
   name: "{{ .Release.Name }}-db-pre-upgrade"
   labels:
     app.kubernetes.io/component: pre-install-db-migrator-job
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.job.db.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
-    {{- if .Values.database.enabled }}
+{{- if .Values.database.enabled }}
     "helm.sh/hook": pre-upgrade
-    {{- else }}
+{{- else }}
     "helm.sh/hook": pre-install,pre-upgrade
-    {{- end }}
+{{- end }}
     "helm.sh/hook-weight": "4"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.job.db.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-db-pre-upgrade"
       labels:
         app.kubernetes.io/component: pre-install-db-migrator-job
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.job.db.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.job.db.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
       {{- if .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
