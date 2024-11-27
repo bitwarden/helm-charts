@@ -14,7 +14,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    type: "{{ .Values.component.api.deploymentStrategy }}"
+    type: {{ .Values.component.api.deploymentStrategy | quote }}
   selector:
     matchLabels:
       app: {{ template "bitwarden.api" . }}
@@ -26,10 +26,10 @@ spec:
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
     {{- if .Values.component.api.podServiceAccount }}
-      serviceAccount: "{{ .Values.component.api.podServiceAccount }}"
-      serviceAccountName: "{{ .Values.component.api.podServiceAccount }}"
+      serviceAccount: {{ .Values.component.api.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.component.api.podServiceAccount | quote }}
     {{- end }}
-    {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+    {{- if .Values.volume.logs.enabled }}
       initContainers:
       - name: create-mount-subdir
         command:
@@ -38,7 +38,7 @@ spec:
         args: ['
           mkdir -p /logs/api
         ']
-        image: "bitnami/kubectl:1.19"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
@@ -50,7 +50,7 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
-              name: "{{ .Values.secrets.secretName }}"
+              name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
               name: {{ template "bitwarden.keyssecret" . }}
           {{- if .Values.database.enabled }}
@@ -76,12 +76,12 @@ spec:
           mountPath: /etc/bitwarden/core/aspnet-dataprotection
         - name: licenses
           mountPath: /etc/bitwarden/core/licenses
-        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        {{- if .Values.volume.logs.enabled }}
         - name: applogs
           mountPath: /etc/bitwarden/logs
           subPath: api
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
@@ -91,19 +91,19 @@ spec:
       volumes:
         - name: dataprotection
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.dataprotection" . }}
+            claimName: {{ default ( include "bitwarden.dataprotection" . ) .Values.volume.dataprotection.existingClaim }}
         - name: attachments
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.attachments" . }}
+            claimName: {{ default ( include "bitwarden.attachments" . ) .Values.volume.attachments.existingClaim }}
         - name: licenses
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.licenses" . }}
-        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+            claimName: {{ default ( include "bitwarden.licenses" . ) .Values.volume.licenses.existingClaim }}
+        {{- if .Values.volume.logs.enabled }}
         - name: applogs
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.applogs" . }}
+            claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io

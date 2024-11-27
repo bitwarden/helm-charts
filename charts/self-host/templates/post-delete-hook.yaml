@@ -36,5 +36,5 @@ spec:
           kubectl delete job {{ .Release.Name }}-migrator;
           echo "Done"
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
       restartPolicy: Never

@@ -1,0 +1,63 @@
+settings:
+  # How often the secrets synchronize in seconds.  Minimum value is 180.
+  bwSecretsManagerRefreshInterval: 300
+  # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
+  cloudRegion: US
+  # Set only if self-hosted.  These are the URLs for the Bitwarden API and Identity services
+  bwApiUrlOverride:
+  bwIdentityUrlOverride:
+  # This is the internal Kubernetes DNS zone.  You will likely not need to change this
+  # unless you have specifically changed the internal DNS name.
+  kubernetesClusterDomain: cluster.local
+  # The number of operator pod replicas to run.  When in doubt, leave at 1
+  replicas: 1
+
+# Settings specific to the pod containers
+containers:
+  manager:
+    image:
+      # NOTE:  This should be updated before the final PR
+      repository: ghcr.io/bitwarden/sm-operator
+      # Will default to the Chart's AppVersion, but you can override here.
+      tag:
+    # The pod resource requirements.  You can adjust these up and down for your environment
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+  kubeRbacProxy:
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      tag: v0.14.1
+    # The pod resource requirements.  You can adjust these up and down for your environment
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+  # Provide annotations for the service account
+  serviceAccount:
+    annotations: {}
+  # Set to false to work on older Kubernetes versions (< 1.19) or on vendors versions
+  # which do NOT support this field by default (i.e. Openshift < 4.11 ).
+  # This setting is recommended for most common cases that do not require escalating privileges
+  # to make containers restrictive.
+  # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
+  enableSeccompProfileRuntimeDefault: true
+  # Optional value if you have privatized the image and need to pull with credentials
+  imagePullSecrets:
+
+
+# Service endpoint configuration for the metrics service.
+metricsService:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  type: ClusterIP

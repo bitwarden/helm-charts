@@ -31,7 +31,7 @@ helm repo update
 Run the following command to create a custom values file used for deployment:
 
 ```shell
-helm show values bitwarden/self-host --devel > my-values.yaml
+helm show values bitwarden/self-host > my-values.yaml
 ```
 
 ### Update the config file
@@ -145,7 +145,7 @@ rawManifests:
           - /notifications
           - /events
           - /scim
-          ##### NOTE:  Admin will not function correctly with path strip middleware
+          ##### NOTE:  Admin, Identity, and SSO will not function correctly with path strip middleware
   - apiVersion: traefik.containo.us/v1alpha1
     kind: IngressRoute
     metadata:
@@ -238,7 +238,7 @@ Note that the certResolver is deployed with the Traefik ingress configuration.
 
 ### Install Helm Chart
 
-1. Run `helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml`.
+1. Run `helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml`.
     - This installs/upgrades a release named `bitwarden`, in the namespace `bitwarden`, using values from `my-values.yaml`.
     - This may take over a minute to fully come up (some of the services might register as failed in the meantime)
     - You can see help information for the `helm install` command by running `helm install --help`.
@@ -316,34 +316,34 @@ general:
     paths:
       web:
         path: /*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       attachments:
         path: /attachments/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       api:
         path: /api/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       icons:
         path: /icons/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       notifications:
         path: /notifications/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       events:
         path: /events/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       scim:
         path: /scim/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       sso:
         path: /sso/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       identity:
         path: /identity/*
-        pathType: Prefix
+        pathType: ImplementationSpecific
       admin:
         path: /admin*
-        pathType: Prefix
+        pathType: ImplementationSpecific
 ```
 
 __*NOTE: Make sure to update the paths to what you see here.*__
@@ -599,7 +599,7 @@ We will need to create a rewrite set on the Application Gateway. There are vario
 ### Helm
 
 ```shell
-helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml
 ```
 
 ### Update Azure Application Gateway Rewrite Set
@@ -618,7 +618,7 @@ We will need to finish the rewrite set on the Application Gateway we created ear
      - Server variable: uri_path
      - Case-sensitive: No
      - Operator: equal (=)
-     - Pattern to match: `^(\/(?!admin)[^\/]*)\/(.*)`
+     - Pattern to match: `^(\/(?!admin)(?!identity)(?!sso)[^\/]*)\/(.*)`
      - Click OK
   7. Add an action and set the following values:
      - Rewrite type: URL
@@ -961,7 +961,7 @@ Update the other settings in `my-values.yaml` based on your environment. Follow 
 ### Deploy via Helm
 
 ```shell
-helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml
 ```
 
 ## Example Deployment on AWS EKS
@@ -1271,7 +1271,7 @@ Update the other settings in `my-values.yaml` based on your environment. Follow 
 ### Deploy to AWS via Helm
 
 ```shell
-helm upgrade bitwarden bitwarden/self-host --install --devel --namespace bitwarden --values my-values.yaml
+helm upgrade bitwarden bitwarden/self-host --install --namespace bitwarden --values my-values.yaml
 ```
 
 ## Database Pod Backup and Restore

@@ -1,6 +1,6 @@
-{{- $identityCertPasswordTxtValue := (randAlpha 32) }}
-{{- $currentIdentityCert := (lookup "v1" "Secret" "{.Release.Namespace}" "{{ .Release.Name }}-identity-cert") }}
-{{- $identityCertPasswordTxtValue := (lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password") }}
+{{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
+{{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
+{{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
 
 {{- if $currentIdentityCert }}
 {{- $identityCertPasswordTxtValue := index $currentIdentityCert.data "globalSettings__identityServer__certificatePassword" | b64dec }}
@@ -24,7 +24,7 @@ spec:
         app.kubernetes.io/component: pre-install-hook
     spec:
     {{- if .Values.serviceAccount.name }}
-      serviceAccountName: "{{ .Values.serviceAccount.name }}"
+      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
     {{- end }}
 
 {{- if not $currentIdentityCert }}
@@ -39,7 +39,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "docker.io/nginx"
+        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -58,7 +58,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "bitnami/kubectl:1.21"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"

@@ -12,9 +12,13 @@ general:
     className: "nginx"
      ## - Annotations to add to the Ingress resource.
     annotations:
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      # nginx.ingress.kubernetes.io/use-regex: "true"
+      # nginx.ingress.kubernetes.io/rewrite-target: /$1
+      # nginx.ingress.kubernetes.io/proxy-body-size: 500m
+      # nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      # nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      # nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -72,12 +76,22 @@ general:
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
     smtpSsl: "false"
+    # Specify true to explicitly trust the certificate presented by the SMTP server (not recommended for production).
+    smtpTrustServer: "false"
+    # Specify true to use SSL (not TLS) on port 25.
+    smtpSslOverride: "false"
+    # Specify true to force STARTTLS (Opportunistic TLS).
+    smtpStartTls: "false"
   # Custom labels to add throughout the installation
   labels: {}
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
   volumeAccessMode: "ReadWriteMany"
+  # Set to true to allow communication between your server and our cloud system. Doing so enables billing and license sync.  Please see: https://bitwarden.com/help/self-host-an-organization/#step-4-setup-billing-and-license-sync
+  enableCloudCommunication: false
+  # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
+  cloudRegion: US
 
 # Specify the name of the shared storage class
 # This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
@@ -294,20 +308,57 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+# Images used for jobs and init containers
+supportComponents:
+  dbMigrator:
+    image:
+      name: bitwarden/mssqlmigratorutility
+  certGenerator:
+    image:
+      name: docker.io/nginx
+      tag: 1.25.3
+  kubectl:
+    image:
+      name: bitnami/kubectl
+      tag: 1.21
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: "1Gi"
     labels: {}
   attachments:
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
   licenses:
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
   logs:
     # Logs are disabled by default
     enabled: false
+    # Use an existing PVC by specifying the name.
+    # existingClaim: claimName
+    # Override the accessMode specified in general.volumeAccessMode
+    # accessMode: ReadWriteOnce
+    # Override the storageClass specified in sharedStorageClassName
+    # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
 
@@ -332,7 +383,7 @@ database:
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2019-CU17-ubuntu-20.04
+    tag: 2022-CU11-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -345,14 +396,32 @@ database:
   # The MSSQL volumes for the PVCs
   volume:
     backups:
-      # Storage size
+      # Use an existing PVC by specifying the name.
+      # existingClaim: claimName
+      # Override the accessMode specified in general.volumeAccessMode
+      # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 1Gi
+      labels: {}
     data:
-      # Storage size
+      # Use an existing PVC by specifying the name.
+      # existingClaim: claimName
+      # Override the accessMode specified in general.volumeAccessMode
+      # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 10Gi
+      labels: {}
     log:
-      # Storage size
+      # Use an existing PVC by specifying the name.
+      # existingClaim: claimName
+      # Override the accessMode specified in general.volumeAccessMode
+      # accessMode: ReadWriteOnce
+      # Override the storageClass specified in sharedStorageClassName
+      # storageClass: "shared-storage"
       size: 10Gi
+      labels: {}
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
   # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.
   updateStrategy: OnDelete

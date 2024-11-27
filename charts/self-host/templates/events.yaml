@@ -15,7 +15,7 @@ spec:
 
   replicas: 1
   strategy:
-    type: "{{ .Values.component.events.deploymentStrategy }}"
+    type: {{ .Values.component.events.deploymentStrategy | quote }}
   selector:
     matchLabels:
       app: {{ template "bitwarden.events" . }}
@@ -28,10 +28,10 @@ spec:
     spec:
 {{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.events.podServiceAccount }}
-      serviceAccount: "{{ .Values.component.events.podServiceAccount }}"
-      serviceAccountName: "{{ .Values.component.events.podServiceAccount }}"
+      serviceAccount: {{ .Values.component.events.podServiceAccount | quote }}
+      serviceAccountName: {{ .Values.component.events.podServiceAccount | quote }}
     {{- end }}
-    {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+    {{- if .Values.volume.logs.enabled }}
       initContainers:
       - name: create-mount-subdir
         command:
@@ -40,7 +40,7 @@ spec:
         args: ['
           mkdir -p /logs/events
         ']
-        image: "bitnami/kubectl:1.19"
+        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
@@ -52,7 +52,7 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
-              name: "{{ .Values.secrets.secretName }}"
+              name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
               name: {{ template "bitwarden.keyssecret" . }}
           {{- if .Values.database.enabled }}
@@ -72,12 +72,12 @@ spec:
         resources:
 {{ toYaml .Values.component.events.resources | indent 10 }}
         volumeMounts:
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
-        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        {{- if .Values.volume.logs.enabled }}
         - name: applogs
           mountPath: /etc/bitwarden/logs
           subPath: events
@@ -85,7 +85,7 @@ spec:
         securityContext:
 {{ toYaml .Values.component.events.securityContext | indent 10 }}
       volumes:
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -93,10 +93,10 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
-        {{- if and .Values.volume.logs .Values.volume.logs.enabled }}
+        {{- if .Values.volume.logs.enabled }}
         - name: applogs
           persistentVolumeClaim:
-            claimName: {{ template "bitwarden.applogs" . }}
+            claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
         {{- end }}
 
 ---

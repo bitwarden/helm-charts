@@ -1,5 +1,4 @@
----
-name: Version Bump
+name: Version Bump - SM Operator
 
 on:
   workflow_dispatch:
@@ -10,7 +9,7 @@ on:
 
 jobs:
   bump_version:
-    name: "Bump Version to ${{ github.event.inputs.version_number }}"
+    name: "Bump Version to ${{ inputs.version_number }}"
     runs-on: ubuntu-22.04
     environment: Production
     permissions:
@@ -18,10 +17,10 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Login to Azure - CI Subscription
-        uses: Azure/login@de95379fe4dadc2defb305917eaa7e5dde727294 # v1.5.1
+        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
         with:
           creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
 
@@ -33,21 +32,21 @@ jobs:
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
 
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@82a020f1f7f605c65dd2449b392a52c3fcfef7ef # v6.0.0
+        uses: crazy-max/ghaction-import-gpg@cb9bde2e2525e640591a934b1fd28eef1dcaf5e5 # v6.2.0
         with:
           gpg_private_key: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
           passphrase: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key-passphrase }}
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: "Create version_bump_${{ github.event.inputs.version_number }} branch"
-        run: git switch -c version_bump_${{ github.event.inputs.version_number }}
+      - name: "Create version_bump_${{ inputs.version_number }} branch"
+        run: git switch -c version_bump_${{ inputs.version_number }}
 
       - name: Bump Version
         uses: bitwarden/gh-actions/version-bump@main
         with:
-          version: ${{ github.event.inputs.version_number }}
-          file_path: "charts/self-host/Chart.yaml"
+          version: ${{ inputs.version_number }}
+          file_path: "charts/sm-operator/Chart.yaml"
 
       - name: Setup git
         run: |
@@ -66,19 +65,19 @@ jobs:
 
       - name: Commit files
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Bumped version to ${{ github.event.inputs.version_number }}" -a
+        run: git commit -m "Bumped version to ${{ inputs.version_number }}" -a
 
       - name: Push changes
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git push -u origin version_bump_${{ github.event.inputs.version_number }}
+        run: git push -u origin version_bump_${{ inputs.version_number }}
 
       - name: Create Version PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
-          PR_BRANCH: "version_bump_${{ github.event.inputs.version_number }}"
+          PR_BRANCH: "version_bump_${{ inputs.version_number }}"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           BASE_BRANCH: main
-          TITLE: "Bump version to ${{ github.event.inputs.version_number }}"
+          TITLE: "Bump version to ${{ inputs.version_number }}"
         run: |
           gh pr create --title "$TITLE" \
             --base "$BASE" \
@@ -94,4 +93,4 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version bump to ${{ github.event.inputs.version_number }}"
+              Automated version bump to ${{ inputs.version_number }}"
