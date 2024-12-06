@@ -1,4 +1,4 @@
-name: Build
+name: Build SM Operator
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-self-host:
+  build-sm-operator:
     uses: ./.github/workflows/_build.yml
     with:
-      chart_name: self-host
+      chart_name: sm-operator
