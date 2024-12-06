@@ -1,0 +1,15 @@
+name: Build SM Operator
+
+on:
+  push:
+    branches-ignore:
+      - "gh-pages"
+    paths-ignore:
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+jobs:
+  build-self-host:
+    uses: ./.github/workflows/_build.yml
+    with:
+      chart_name: sm-operator
