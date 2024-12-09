@@ -2,8 +2,10 @@ name: Build Self Host
 
 on:
   push:
-    branches:
-      - BRE-131-split-workflows
+    branches-ignore:
+      - "gh-pages"
+    paths-ignore:
+      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
