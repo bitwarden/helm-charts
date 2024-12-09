@@ -2,8 +2,8 @@ name: Build SM Operator
 
 on:
   push:
-    branches-ignore:
-      - "gh-pages"
+    branches:
+      - BRE-131-split-workflows
     paths-ignore:
       - ".github/workflows/**"
   workflow_dispatch:
