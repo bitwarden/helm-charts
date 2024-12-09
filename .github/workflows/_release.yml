@@ -1,16 +1,14 @@
-name: Release
-run-name: Release - ${{ inputs.release_mode }}
+name: Release Helm Chart
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      release_mode:
-        description: "Release Mode"
-        default: "Standard Release"
-        type: choice
-        options:
-          - Standard Release
-          - Dry Run
+      dry_run:
+        type: boolean
+        required: true
+      build_workflow:
+        type: string
+        required: true
 
 jobs:
   release:
@@ -63,11 +61,12 @@ jobs:
         with:
           branch: main
           path: .cr-release-packages
-          workflow: build.yml
+          workflow: ${{ inputs.build_workflow }}
           workflow_conclusion: success
+          # TODO: Does this need to pull down both workflows to get both charts
 
       - name: Release Helm chart
-        if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
+        if: ${{ !inputs.dry_run }}
         env:
           CR_GENERATE_RELEASE_NOTES: true
           CR_MAKE_RELEASE_LATEST: true
