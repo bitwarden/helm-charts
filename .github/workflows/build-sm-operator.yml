@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - BRE-131-split-workflows
-    paths-ignore:
-      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
