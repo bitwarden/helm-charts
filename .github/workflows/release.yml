@@ -1,14 +1,16 @@
-name: Release Helm Chart
+name: Release
+run-name: Release - ${{ inputs.release_mode }}
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
-      dry_run:
-        type: boolean
-        required: true
-      build_workflow:
-        type: string
-        required: true
+      release_mode:
+        description: "Release Mode"
+        default: "Standard Release"
+        type: choice
+        options:
+          - Standard Release
+          - Dry Run
 
 jobs:
   release:
@@ -61,12 +63,19 @@ jobs:
         with:
           branch: main
           path: .cr-release-packages
-          workflow: ${{ inputs.build_workflow }}
+          workflow: build-self-host.yml
           workflow_conclusion: success
-          # TODO: Does this need to pull down both workflows to get both charts
+
+      - name: Download Helm chart artifact
+        uses: bitwarden/gh-actions/download-artifacts@main
+        with:
+          branch: main
+          path: .cr-release-packages
+          workflow: build-sm-operator.yml
+          workflow_conclusion: success
 
       - name: Release Helm chart
-        if: ${{ !inputs.dry_run }}
+        if: ${{ inputs.release_mode != 'Dry Run' }}
         env:
           CR_GENERATE_RELEASE_NOTES: true
           CR_MAKE_RELEASE_LATEST: true
