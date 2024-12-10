@@ -1,24 +1,17 @@
-name: Build
+name: _build
 
 on:
-  push:
-    branches-ignore:
-      - "gh-pages"
-    paths-ignore:
-      - ".github/workflows/**"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      chart_name:
+        type: string
+        required: true
 
 jobs:
   build:
     name: Build Helm charts
     runs-on: ubuntu-22.04
     environment: Production
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - chart_name: self-host
-          - chart_name: sm-operator
     steps:
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -61,7 +54,7 @@ jobs:
             --key "DevOps Team" \
             --keyring private.gpg \
             --passphrase-file .passphrase \
-            charts/${{ matrix.chart_name }}
+            charts/${{ inputs.chart_name }}
           PKG_NAME=$(ls *.tgz)
           echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
 
@@ -71,7 +64,7 @@ jobs:
       - name: Upload Helm chart artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
-          name: ${{ matrix.chart_name }}
+          name: ${{ inputs.chart_name }}
           path: |
             ${{ steps.helm_package.outputs.name }}
             ${{ steps.helm_package.outputs.name }}.prov
