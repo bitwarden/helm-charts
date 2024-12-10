@@ -13,3 +13,4 @@ jobs:
     uses: ./.github/workflows/_build.yml
     with:
       chart_name: self-host
+    secrets: inherit
