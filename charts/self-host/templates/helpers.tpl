@@ -259,7 +259,7 @@ Name of the extension: dbClient
 GitHub endpoints
 */}}
 {{- define "bitwarden.endpoint.web" -}}
-https://{{ .Values.general.domain }}/web
+https://{{ .Values.general.domain }}/
 {{- end -}}
 
 {{- define "bitwarden.endpoint.api" -}}
