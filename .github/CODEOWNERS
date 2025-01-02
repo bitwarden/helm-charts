@@ -4,6 +4,5 @@
 #
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-
-## Secrets Manager team files ##
-charts/sm-operator @bitwarden/team-secrets-manager-dev
+# Default file owners.
+* @bitwarden/dept-bre
