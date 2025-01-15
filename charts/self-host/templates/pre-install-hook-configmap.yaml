@@ -49,9 +49,17 @@ data:
 {{- if eq .Values.general.cloudRegion "EU" }}
   globalSettings__installation__identityUri: "https://identity.bitwarden.eu"
   globalSettings__installation__apiUri: "https://api.bitwarden.eu"
+  {{- if .Values.general.pushRelayBaseUri }}
+  globalSettings__pushRelayBaseUri: "{{ .Values.general.pushRelayBaseUri }}"
+  {{- else }}
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.eu"
+  {{- end }}
 {{- else }}
+  {{- if .Values.general.pushRelayBaseUri }}
+  globalSettings__pushRelayBaseUri: "{{ .Values.general.pushRelayBaseUri }}"
+  {{- else }}
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
+  {{- end }}
 {{- end }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
