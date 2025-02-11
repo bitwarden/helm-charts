@@ -5,16 +5,33 @@ metadata:
   name: "{{ .Release.Name }}-cleanup"
   labels:
     app.kubernetes.io/component: post-delete-hook
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.job.cleanup.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
     "helm.sh/hook": post-delete
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.job.cleanup.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-cleanup"
       labels:
         app.kubernetes.io/component: post-delete-hook
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.job.cleanup.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.job.cleanup.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: "{{ .Values.serviceAccount.name }}"

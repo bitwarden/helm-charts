@@ -11,6 +11,11 @@ metadata:
 {{- with .Values.component.events.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.component.events.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   replicas: 1
   strategy:
@@ -23,7 +28,15 @@ spec:
       labels:
         app: {{ template "bitwarden.events" . }}
         app.kubernetes.io/component: events
-{{ include "bitwarden.labels" . | indent 8 }}
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.component.events.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.component.events.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
     {{- if .Values.component.events.podServiceAccount }}
       serviceAccount: {{ .Values.component.events.podServiceAccount | quote }}
