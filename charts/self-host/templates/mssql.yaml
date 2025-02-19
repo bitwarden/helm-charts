@@ -55,7 +55,7 @@ spec:
       containers:
         - name: {{ template "bitwarden.mssql" . }}
           image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           {{- if .Values.database.resources }}
           resources:
 {{ toYaml .Values.database.resources | indent 12 }}
