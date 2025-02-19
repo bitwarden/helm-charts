@@ -27,8 +27,10 @@ spec:
         args: ['
           kubectl delete configmap {{ .Release.Name }}-config-map -n {{ .Release.Namespace }};
           kubectl delete configmap {{ .Release.Name }}-config-map-web -n {{ .Release.Namespace }};
+          {{- if eq "sqlserver" (default "sqlserver" .Values.databaseProvider) }}
           {{- if .Values.database.enabled }}
           kubectl delete secret "{{ .Release.Name }}-sql-connection-string" -n {{ .Release.Namespace }};
+          {{- end }}
           {{- end }}
           kubectl delete secret {{ .Release.Name }}-identity-cert -n {{ .Release.Namespace }};
           kubectl delete secret {{ .Release.Name }}-identity-cert-password  -n {{ .Release.Namespace }};
