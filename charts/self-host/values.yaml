@@ -30,6 +30,12 @@ extensions:
       tag: latest
     service:
       port: 8978
+  splunk:
+    enabled: false
+    annotations: {}
+    version: 9.3
+    bitwardenSplunkAppArtifact:
+      artifactURL: ""
 
 general:
   # Generate identity certificate

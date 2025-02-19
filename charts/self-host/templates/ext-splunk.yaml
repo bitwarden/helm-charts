@@ -1,0 +1,156 @@
+{{- if .Values.extensions.splunk.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "bitwarden.fullname" . }}-splunk
+  namespace: {{ .Release.Namespace }}
+  annotations: {{ toYaml .Values.extensions.splunk.annotations | nindent 4 }}
+  labels:
+    app: {{ template "bitwarden.fullname" . }}-splunk
+    app.kubernetes.io/component: splunk
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "bitwarden.fullname" . }}-splunk
+  template:
+    metadata:
+      labels:
+        app: {{ template "bitwarden.fullname" . }}-splunk
+        bitwarden.com/splunkArtifactId: {{ regexFind "[0-9]+$" .Values.extensions.splunk.bitwardenSplunkAppArtifact.artifactURL | quote }}
+    spec:
+      volumes:
+      - name: bitwarden-splunk-artifact
+        emptyDir: {}
+      initContainers:
+        - name: download-bitwarden-splunk-artifact
+          image: curlimages/curl:8.12.1
+          volumeMounts:
+          - name: bitwarden-splunk-artifact
+            mountPath: /bitwarden/splunk
+          env:
+          - name: ARTIFACT_ID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['bitwarden.com/splunkArtifactId']
+          envFrom:
+          - secretRef:
+              name: {{ template "bitwarden.sharedCloudResourcesSecret" . }}
+          command:
+          - "/bin/sh"
+          - "-c"
+          args:
+          - |
+              # Download the artifact from the GitHub API.
+              curl -L \
+                  -H "Accept: application/vnd.github+json" \
+                  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                  https://api.github.com/repos/bitwarden/splunk/actions/artifacts/$ARTIFACT_ID/zip \
+                  -o /bitwarden/splunk/bitwarden-splunk-app.zip
+
+              unzip /bitwarden/splunk/bitwarden-splunk-app.zip -d /bitwarden/splunk
+      containers:
+        - name: splunk
+          image: "splunk/splunk:{{ .Values.extensions.splunk.version }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: web
+              containerPort: 8000
+            - name: api
+              containerPort: 8089
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 300
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1024Mi
+            limits:
+              cpu: 500m
+              memory: 2048Mi
+          env:
+            - name: SPLUNK_START_ARGS
+              value: "--accept-license"
+            - name: SPLUNK_PASSWORD
+              value: "password"
+            - name: SPLUNK_APPS_URL
+              value: "/bitwarden/splunk/bitwarden_event_logs.tar.gz"
+          volumeMounts:
+            - name: bitwarden-splunk-artifact
+              mountPath: /bitwarden/splunk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "bitwarden.fullname" . }}-splunk
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "bitwarden.fullname" . }}-splunk
+    app.kubernetes.io/component: splunk
+spec:
+  selector:
+    app: {{ template "bitwarden.fullname" . }}-splunk
+  ports:
+    - name: web
+      port: 8000
+      targetPort: 8000
+    - name: api
+      port: 8089
+      targetPort: 8089
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress  
+metadata:
+  name: {{ template "bitwarden.fullname" . }}-splunk-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    {{- if .Values.argoCDSupport }}
+    link.argocd.argoproj.io/environment: "Go to Splunk|https://splunk.{{ .Values.general.domain }}"
+    {{- end }}
+    {{- if .Values.general.ingress.tls.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.general.ingress.tls.clusterIssuer }}
+    {{- end }}
+  labels:
+    app.kubernetes.io/component: ingress
+{{ include "bitwarden.labels" . | indent 4 }}
+spec:
+  ingressClassName: {{ .Values.general.ingress.className }}
+  rules:
+    - host: splunk.{{ .Values.general.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "bitwarden.fullname" . }}-splunk
+                port:
+                  number: 8000
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ template "bitwarden.fullname" . }}-splunk
+                port:
+                  number: 8089
+  tls:
+    - hosts:
+      - splunk.{{ .Values.general.domain }}
+      {{- if .Values.general.ingress.tls.name }}
+      secretName: {{ .Values.general.ingress.tls.name }}-splunk
+      {{- end }}
+{{- end }}

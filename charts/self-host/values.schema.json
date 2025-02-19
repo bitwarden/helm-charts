@@ -72,6 +72,32 @@
                             }
                         }
                     }
+                },
+                "splunk": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "annotations": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
+                        },
+                        "version": {
+                            "type": "number"
+                        },
+                        "bitwardenSplunkAppArtifact": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {
+                                "artifactURL": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
