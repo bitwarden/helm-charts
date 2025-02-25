@@ -143,12 +143,12 @@ jobs:
           home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
           echo $home | lynx -stdin -dump -width=100
           httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
-          bodyCheck=$(echo "${home}" | grep -Po 'Bitwarden Web Vault')
+          bodyCheck=$(echo "${home}" | grep -Pio 'Bitwarden Web Vault')
           if [[ ${httpCode} -ne 200 ]]; then
             echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
             exit 1
           fi
-          if [[ "$bodyCheck" != "Bitwarden Web Vault" ]]; then
+          if [[ "${bodyCheck,,}" != "bitwarden web vault" ]]; then
             echo "::error::ERROR: Home page failed to load.  Please check body output above."
             exit 1
           fi
