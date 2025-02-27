@@ -372,10 +372,18 @@ serviceAccount:
   deployRolesOnly: false
 
 #
-# Configure database
+# Select database provider
+#
+# Available providers are sqlserver, postgresql, mysql/mariadb
+# Using sqlserver offers providing a mssql pod integrated with this chart, see option "database.enabled"
+# Otherwise the connection string needs to be provided through one of the configuration providers
+databaseProvider: "sqlserver"
+
+#
+# Configure MSSQL database
 #
 database:
-  # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
+  # deploy the MSSQL database pod? if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
