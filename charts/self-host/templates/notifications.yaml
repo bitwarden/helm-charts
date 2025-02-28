@@ -96,7 +96,10 @@ spec:
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
         {{- end }}
-
+      {{- with .Values.component.notifications.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml . | indent 12 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
