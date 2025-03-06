@@ -940,7 +940,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/admin
+      name: ghcr.io/bitwarden/admin
     resources:
       requests:
         memory: "64Mi"
@@ -1242,7 +1242,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/admin
+      name: ghcr.io/bitwarden/admin
     resources:
       requests:
         memory: "64Mi"
