@@ -73,19 +73,18 @@ jobs:
           fi
         working-directory: charts/self-host/templates
 
-      - name: Generate GH App token
-        uses: actions/create-github-app-token@c1a285145b9d317df6ced56c09f525b5c2b6f755 # v1.11.1
-        id: app-token
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
         with:
-          app-id: ${{ secrets.BW_GHAPP_ID }}
-          private-key: ${{ secrets.BW_GHAPP_KEY }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify if image versions are on Docker Hub
         id: verify-versions
         env:
           COREVERSION: ${{ steps.get-core.outputs.version }}
           WEBVERSION: ${{ steps.get-web.outputs.version }}
-          TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           echo "Checking..."
 
@@ -94,7 +93,7 @@ jobs:
           test_image() {
               image=$1
               version=$2
-              tag=$(skopeo list-tags --registry-token $TOKEN docker://ghcr.io/bitwarden/$image | grep $version | cat)
+              tag=$(skopeo list-tags docker://ghcr.io/bitwarden/$image | grep $version | cat)
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
