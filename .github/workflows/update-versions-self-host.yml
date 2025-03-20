@@ -73,6 +73,13 @@ jobs:
           fi
         working-directory: charts/self-host/templates
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Verify if image versions are on Docker Hub
         id: verify-versions
         env:
@@ -86,7 +93,7 @@ jobs:
           test_image() {
               image=$1
               version=$2
-              tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version | cat)
+              tag=$(skopeo list-tags docker://ghcr.io/bitwarden/$image | grep $version | cat)
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
@@ -107,6 +114,11 @@ jobs:
           echo "Web Image ($WEBVERSION)..."
 
           test_image "web" $WEBVERSION
+
+      - name: Log out of skopeo and ghcr.io
+        run: |
+          skopeo logout --all
+          docker logout ghcr.io
 
   update-versions:
     name: "Update Versions"
