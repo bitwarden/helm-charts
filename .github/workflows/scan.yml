@@ -29,7 +29,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Scan with Checkmarx
-        uses: checkmarx/ast-github-action@de327a92d7f419bfdc7c3e5535ad7b3bbce91677 # 2.0.38
+        uses: checkmarx/ast-github-action@7b7c2fd5b562de70e53fd3256b47c64e7e1951bd # 2.0.45
         env:
           INCREMENTAL: "${{ contains(github.event_name, 'pull_request') && '--sast-incremental' || '' }}"
         with:
@@ -44,7 +44,7 @@ jobs:
             --output-path . ${{ env.INCREMENTAL }}
 
       - name: Upload Checkmarx results to GitHub
-        uses: github/codeql-action/upload-sarif@f09c1c0a94de965c15400f5634aa42fac8fb8f88 # v3.27.5
+        uses: github/codeql-action/upload-sarif@5f8171a638ada777af81d42b55959a643bb29017 # v3.28.12
         with:
           sarif_file: cx_result.sarif
 
