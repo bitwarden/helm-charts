@@ -108,11 +108,6 @@ jobs:
 
           test_image "web" $WEBVERSION
 
-      - name: Log out of skopeo and ghcr.io
-        run: |
-          skopeo logout --all
-          docker logout ghcr.io
-
   update-versions:
     name: "Update Versions"
     if: |
