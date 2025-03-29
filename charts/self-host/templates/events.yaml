@@ -25,6 +25,22 @@ spec:
         app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+      {{- if or .Values.component.events.nodeSelector .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- if .Values.component.events.nodeSelector }}
+        {{ toYaml .Values.component.events.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.component.events.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.events.tolerations }}
+        {{ toYaml .Values.component.events.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.events.podServiceAccount }}
       serviceAccount: {{ .Values.component.events.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.events.podServiceAccount | quote }}
