@@ -60,6 +60,7 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 
+  # These will apply to all templates in the Helm chart and can be overridden individually
   nodeSelector: {}
   tolerations: {}
 
