@@ -190,12 +190,12 @@
                     "default": {}
                 },
                 "tolerations": {
-                    "type": "object",
+                    "type": "array",
                     "items": {
                         "type": "object",
                         "additionalProperties": true
                     },
-                    "default": {}
+                    "default": []
                 },
                 "coreVersionOverride": {
                     "type": "string"
@@ -461,12 +461,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -664,12 +664,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -867,12 +867,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -1070,12 +1070,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -1273,12 +1273,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -1476,12 +1476,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -1679,12 +1679,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -1885,12 +1885,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -2090,12 +2090,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 },
@@ -2293,12 +2293,12 @@
                             "default": {}
                         },
                         "tolerations": {
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "type": "object",
                                 "additionalProperties": true
                             },
-                            "default": {}
+                            "default": []
                         }
                     }
                 }

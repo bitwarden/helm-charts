@@ -62,7 +62,12 @@ general:
 
   # These will apply to all templates in the Helm chart and can be overridden individually
   nodeSelector: {}
-  tolerations: {}
+  tolerations: []
+  # tolerations:
+  # - key: kubernetes.azure.com/scalesetpriority
+  # operator: Equal
+  # value: spot
+  # effect: NoSchedule
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
@@ -131,7 +136,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   api:
     # Additional deployment labels
     labels: {}
@@ -153,7 +158,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   attachments:
     # Additional deployment labels
     labels: {}
@@ -175,7 +180,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   events:
     # Additional deployment labels
     labels: {}
@@ -197,7 +202,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   icons:
     # Additional deployment labels
     labels: {}
@@ -219,7 +224,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   identity:
     # Additional deployment labels
     labels: {}
@@ -241,7 +246,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   notifications:
     # Additional deployment labels
     labels: {}
@@ -263,7 +268,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   scim:
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
@@ -287,7 +292,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   sso:
     # Additional deployment labels
     labels: {}
@@ -309,7 +314,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
   web:
     # Additional deployment labels
     labels: {}
@@ -331,7 +336,7 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
-    tolerations: {}
+    tolerations: []
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
@@ -454,7 +459,7 @@ database:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
   nodeSelector: {}
-  tolerations: {}
+  tolerations: []
 
 # You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
 # Please see the chart README in GitHub for more information and examples.

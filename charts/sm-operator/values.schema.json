@@ -110,12 +110,12 @@
                     "default": {}
                 },
                 "tolerations": {
-                    "type": "object",
+                    "type": "array",
                     "items": {
                         "type": "object",
                         "additionalProperties": true
                     },
-                    "default": {}
+                    "default": []
                 }
             },
             "type": "object"
