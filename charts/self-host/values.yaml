@@ -63,11 +63,6 @@ general:
   # These will apply to all templates in the Helm chart and can be overridden individually
   nodeSelector: {}
   tolerations: []
-  # tolerations:
-  # - key: kubernetes.azure.com/scalesetpriority
-  # operator: Equal
-  # value: spot
-  # effect: NoSchedule
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
