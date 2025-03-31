@@ -214,6 +214,15 @@
                         }
                     }
                 },
+                "sso": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "enforceSsoPolicyForAllUsers": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "labels": {
                     "type": "object",
                     "required": [],
