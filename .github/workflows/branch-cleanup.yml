@@ -1,0 +1,32 @@
+name: Branch Cleanup
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the current repository
+      - name: Check out ephemeral-environment-charts repo
+        uses: actions/checkout@v3
+
+      # Clone the relevant repositories
+      - name: Clone Server repository
+        run: |
+          git clone https://github.com/bitwarden/server.git serverRepo
+
+      - name: Clone Billing Relay repository
+        run: |
+          git clone https://github.com/billing-relay.git billingRelayRepo
+
+      # Run the shell script to compare branches and delete unused ones
+      - name: Cleanup branches
+        run: |
+          chmod +x cleanup_branches.sh
+          ./cleanup_branches.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
