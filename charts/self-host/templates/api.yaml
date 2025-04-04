@@ -111,7 +111,10 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
-
+      {{- with .Values.component.api.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml . | indent 12 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
