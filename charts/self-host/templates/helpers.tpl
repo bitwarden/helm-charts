@@ -4,7 +4,7 @@
 {{- define "bitwarden.webVersionDefault" -}}
 {{- "2025.2.1" -}}
 {{- end -}}
-
+ 
 {{/*
 Expand the name of the chart.
 */}}
