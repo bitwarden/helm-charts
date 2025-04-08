@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eo pipefail
+set -e
 
 function createKindCluster() {
     dirname=$(dirname "$0")
