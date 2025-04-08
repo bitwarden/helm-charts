@@ -15,6 +15,10 @@ general:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/proxy-body-size: 500m
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -74,6 +78,12 @@ general:
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
     smtpSsl: "false"
+    # Specify true to explicitly trust the certificate presented by the SMTP server (not recommended for production).
+    smtpTrustServer: "false"
+    # Specify true to use SSL (not TLS) on port 25.
+    smtpSslOverride: "false"
+    # Specify true to force STARTTLS (Opportunistic TLS).
+    smtpStartTls: "false"
   # Custom labels to add throughout the installation
   labels: {}
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
@@ -107,10 +117,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -125,10 +135,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "256Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "512Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -197,10 +207,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -233,10 +243,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -251,10 +261,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -272,7 +282,7 @@ component:
         memory: "64Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "248Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -354,7 +364,7 @@ database:
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2022-CU11-ubuntu-22.04
+    tag: 2022-CU18-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
