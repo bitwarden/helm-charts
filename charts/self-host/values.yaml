@@ -361,6 +361,11 @@ volume:
     # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
+  caCertificates:
+    # Extra root certificates are disabled by default
+    enabled: false
+    # Load custom Certificates from the following ConfigMap
+    configMapName: cacert
 
 #
 # Configure service account for pre- and post-install hooks
@@ -434,4 +439,14 @@ database:
 # Please see the chart README in GitHub for more information and examples.
 rawManifests:
   preInstall: []
+  # E.g. add a custom certificate to your bitwarden installation.
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: cacert
+  #   data:
+  #     rootca.crt: |
+  #       -----BEGIN CERTIFICATE-----
+  #       xxxx
+  #       -----END CERTIFICATE-----
   postInstall: []
