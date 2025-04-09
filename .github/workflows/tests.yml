@@ -27,18 +27,6 @@ jobs:
         with:
           version: 'v3.13.1'
 
-      - name: Login to Azure - CI Subscription
-        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
-        with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
-
-      - name: Retrieve secrets
-        id: retrieve-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@main
-        with:
-          keyvault: "bitwarden-ci"
-          secrets: "helm-sm-operator-ci-test-access-token"
-
       - name: Set up lynx
         run: sudo apt install lynx
 
@@ -64,61 +52,11 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@0025e74a8c7512023d06dc019c617aa3cf561fde # v1.10.0
         with:
-          config: .github/workflows/config/cluster.yaml
+          config: scripts/cluster.yaml
 
       - name: Set up cluster
         if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          installation_id=$(uuidgen)
-          echo $installation_id
-          installation_key=$(openssl rand -base64 12)
-          sa_password=$(openssl rand -base64 12)
-          cert_pass=$(openssl rand -base64 12)
-
-          #TLS setup
-          echo "Creating root CA cert"
-          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt -subj "/CN=Bitwarden Ingress" --passout pass:$cert_pass
-          echo "Generating TLS key"
-          openssl genrsa -out bitwarden.localhost.key 2048
-          echo "Generating TLS cert"
-          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$cert_pass -subj "/CN=bitwarden.localhost"
-
-          echo "Signing TLS cert"
-          cat > bitwarden.localhost.ext << EOF
-          authorityKeyIdentifier=keyid,issuer
-          basicConstraints=CA:FALSE
-          subjectAltName = @alt_names
-          [alt_names]
-          DNS.1 = bitwarden.localhost
-          EOF
-
-          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext  --passin pass:$cert_pass
-
-          echo "Exporting TLS certs to PEM"
-          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$cert_pass
-          openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$cert_pass
-
-          #Ingress
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-          kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
-          sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
-
-          #Namespace
-          kubectl create ns bitwarden
-
-          kubectl config set-context --current --namespace=bitwarden
-
-          #Secrets
-          kubectl create secret generic custom-secret \
-            --from-literal=globalSettings__installation__id=$installation_id \
-            --from-literal=globalSettings__installation__key=$installation_key \
-            --from-literal=globalSettings__mail__smtp__username="REPLACE" \
-            --from-literal=globalSettings__mail__smtp__password="REPLACE" \
-            --from-literal=globalSettings__yubico__clientId="REPLACE" \
-            --from-literal=globalSettings__yubico__key="REPLACE" \
-            --from-literal=SA_PASSWORD=$sa_password
-
-          kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
+        run: ./scripts/setup.sh setup-cluster
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
@@ -188,6 +126,19 @@ jobs:
 
           echo "Admin OK."
 
+      - name: Login to Azure - CI Subscription
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
+        with:
+          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+
+      - name: Retrieve secrets
+        id: retrieve-secrets
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: "bitwarden-ci"
+          secrets: "helm-sm-operator-ci-test-access-token"
 
       - name: Test install (sm-operator)
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
