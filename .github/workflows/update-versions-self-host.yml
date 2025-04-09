@@ -86,7 +86,7 @@ jobs:
           test_image() {
               image=$1
               version=$2
-              tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version | cat)
+              tag=$(skopeo list-tags docker://ghcr.io/bitwarden/$image | jq '.Tags[]' | grep $version)
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."

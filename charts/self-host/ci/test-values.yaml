@@ -15,6 +15,10 @@ general:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/proxy-body-size: 500m
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -74,6 +78,12 @@ general:
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
     smtpSsl: "false"
+    # Specify true to explicitly trust the certificate presented by the SMTP server (not recommended for production).
+    smtpTrustServer: "false"
+    # Specify true to use SSL (not TLS) on port 25.
+    smtpSslOverride: "false"
+    # Specify true to force STARTTLS (Opportunistic TLS).
+    smtpStartTls: "false"
   # Custom labels to add throughout the installation
   labels: {}
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
@@ -103,14 +113,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/admin
+      name: ghcr.io/bitwarden/admin
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -121,14 +131,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/api
+      name: ghcr.io/bitwarden/api
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "256Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "512Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -139,7 +149,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/attachments
+      name: ghcr.io/bitwarden/attachments
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -157,14 +167,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/events
+      name: ghcr.io/bitwarden/events
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -175,7 +185,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/icons
+      name: ghcr.io/bitwarden/icons
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -193,14 +203,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/identity
+      name: ghcr.io/bitwarden/identity
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -211,7 +221,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/notifications
+      name: ghcr.io/bitwarden/notifications
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -229,14 +239,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/scim
+      name: ghcr.io/bitwarden/scim
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -247,14 +257,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/sso
+      name: ghcr.io/bitwarden/sso
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -265,14 +275,14 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/web
+      name: ghcr.io/bitwarden/web
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
         memory: "64Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "248Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -282,7 +292,7 @@ component:
 supportComponents:
   dbMigrator:
     image:
-      name: bitwarden/mssqlmigratorutility
+      name: ghcr.io/bitwarden/mssqlmigratorutility
   certGenerator:
     image:
       name: docker.io/nginx
@@ -354,7 +364,7 @@ database:
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2022-CU11-ubuntu-22.04
+    tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
