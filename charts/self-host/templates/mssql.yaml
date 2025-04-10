@@ -1,3 +1,4 @@
+{{- if eq "sqlserver" (default "sqlserver" .Values.databaseProvider) }}
 {{- if .Values.database.enabled }}
 ---
 apiVersion: apps/v1
@@ -128,4 +129,5 @@ spec:
       targetPort: 1433
   selector:
     app: {{ template "bitwarden.mssql" . }}
+{{- end }}
 {{- end }}
