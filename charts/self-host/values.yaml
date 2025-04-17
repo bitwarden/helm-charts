@@ -82,6 +82,8 @@ general:
     smtpSslOverride: "false"
     # Specify true to force STARTTLS (Opportunistic TLS).
     smtpStartTls: "false"
+  sso:
+    enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
