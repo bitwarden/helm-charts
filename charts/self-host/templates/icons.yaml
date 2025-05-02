@@ -84,6 +84,10 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          mountPath: /etc/bitwarden/ca-certificates
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass}}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -106,6 +110,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.volume.caCertificates.configMapName }}
         {{- end }}
         {{- if .Values.volume.logs.enabled }}
         - name: applogs
