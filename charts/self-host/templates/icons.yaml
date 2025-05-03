@@ -25,6 +25,7 @@ spec:
         app.kubernetes.io/component: icons
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.icons.podServiceAccount }}
       serviceAccount: {{ .Values.component.icons.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.icons.podServiceAccount | quote }}
