@@ -103,6 +103,19 @@
                 },
                 "imagePullSecrets": {
                     "type": [ "null", "string"]
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "default": {}
+                },
+                "tolerations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "default": []
                 }
             },
             "type": "object"
