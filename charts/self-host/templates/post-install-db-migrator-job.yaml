@@ -40,7 +40,7 @@ spec:
         ']
         {{- else }}
         args: ['
-          while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}") != "true" ]]; do sleep 1; done
+          while [[ $(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}" | cut -f1 -d " ") != "true" ]]; do sleep 1; done
 
           echo "Admin Ready!"
         ']
