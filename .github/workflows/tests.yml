@@ -159,7 +159,7 @@ jobs:
           echo "*****CREATING AUTH SECRET*****"
           kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
           echo "*****CREATING BW SECRET*****"
-          kubectl apply -f .github/workflows/config/sample-bw-secret.yaml
+          kubectl apply -f .github/config/sample-bw-secret.yaml
 
           # Sleeping while BitwardenSecret is being created and synced
           sleep 2s
