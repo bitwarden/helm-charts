@@ -34,6 +34,10 @@ spec:
       serviceAccount: {{ .Values.database.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.database.podServiceAccount | quote }}
     {{- end }}
+    {{- if .Values.database.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.database.podSecurityContext | indent 8 }}
+    {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
           image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"

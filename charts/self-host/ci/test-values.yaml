@@ -373,6 +373,9 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  # This will set the Kubernetes pod security context
+  podSecurityContext:
+    fsGroup: 10001
 
   # The MSSQL volumes for the PVCs
   volume:

@@ -29,6 +29,10 @@ spec:
       serviceAccount: {{ .Values.component.admin.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.admin.podServiceAccount | quote }}
     {{- end }}
+    {{- if .Values.component.admin.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.admin.podSecurityContext | indent 8 }}
+    {{- end }}
     {{- if .Values.volume.logs.enabled }}
       initContainers:
       - name: create-mount-subdir
