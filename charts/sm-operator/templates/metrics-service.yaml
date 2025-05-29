@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "sm-operator.fullname" . }}-controller-manager-metrics-service
   labels:
-    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/component: manager
     control-plane: controller-manager
     {{- include "sm-operator.fullLabels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}

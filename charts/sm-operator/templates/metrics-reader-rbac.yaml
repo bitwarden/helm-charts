@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   name: {{ include "sm-operator.fullname" . }}-metrics-reader
   labels:
-    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/component: manager
     {{- include "sm-operator.fullLabels" . | nindent 4 }}
 rules:
 - nonResourceURLs:

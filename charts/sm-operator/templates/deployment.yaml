@@ -41,30 +41,10 @@ spec:
       {{- end }}
       containers:
       - args:
-          - --secure-listen-address=0.0.0.0:8443
-          - --upstream=http://127.0.0.1:8080/
-          - --logtostderr=true
-          - --v=0
-        envFrom:
-        - configMapRef:
-            name: {{ include "sm-operator.configmap" . }}
-        image: {{ .Values.containers.kubeRbacProxy.image.repository }}:{{ .Values.containers.kubeRbacProxy.image.tag }}
-        name: kube-rbac-proxy
-        ports:
-        - containerPort: 8443
-          name: https
-          protocol: TCP
-        resources: {{- toYaml .Values.containers.kubeRbacProxy.resources | nindent
-          10 }}
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-      - args:
           - --health-probe-bind-address=:8081
-          - --metrics-bind-address=127.0.0.1:8080
+          - --metrics-bind-address=:8443
           - --leader-elect
+          - --secure-metrics=true
         command:
         - /manager
         envFrom:
@@ -78,6 +58,10 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         name: manager
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
         readinessProbe:
           httpGet:
             path: /readyz
