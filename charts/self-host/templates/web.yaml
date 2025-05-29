@@ -29,6 +29,10 @@ spec:
       serviceAccount: {{ .Values.component.web.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.web.podServiceAccount | quote }}
     {{- end }}
+    {{- if .Values.component.web.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.web.podSecurityContext | indent 8 }}
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.web" . }}
         image: "{{ .Values.component.web.image.name }}:{{ default ( include "bitwarden.webVersionDefault" nil ) .Values.general.webVersionOverride }}"

@@ -126,6 +126,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   api:
@@ -146,6 +148,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   attachments:
@@ -166,6 +170,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   events:
@@ -186,6 +192,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   icons:
@@ -206,6 +214,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   identity:
@@ -226,6 +236,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   notifications:
@@ -246,6 +258,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   scim:
@@ -268,6 +282,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   sso:
@@ -288,6 +304,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   web:
@@ -308,6 +326,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
 # Images used for jobs and init containers
@@ -434,6 +454,8 @@ database:
   updateStrategy: OnDelete
   # This will set the Kubernetes container security context
   securityContext:
+  # This will set the Kubernetes pod security context (including fsGroup)
+  podSecurityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
 

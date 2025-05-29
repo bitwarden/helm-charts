@@ -373,6 +373,8 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  podSecurityContext:
+    fsGroup: 10001
 
   # The MSSQL volumes for the PVCs
   volume:

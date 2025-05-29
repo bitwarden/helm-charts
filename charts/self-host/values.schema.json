@@ -315,6 +315,13 @@
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
                         },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -504,6 +511,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -695,6 +709,13 @@
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
                         },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -884,6 +905,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1075,6 +1103,13 @@
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
                         },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -1265,6 +1300,13 @@
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
                         },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -1454,6 +1496,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1648,6 +1697,13 @@
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
                         },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
+                        },
                         "securityContext": {
                             "type": [
                                 "object",
@@ -1837,6 +1893,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -2029,6 +2092,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -2415,6 +2485,13 @@
                 "updateStrategy": {
                     "type": "string",
                     "enum": ["RollingUpdate", "OnDelete"]
+                },
+                "podSecurityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": []
                 },
                 "securityContext": {
                     "type": [
