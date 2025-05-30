@@ -30,6 +30,14 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- with .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.general.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- if .Values.database.podServiceAccount }}
       serviceAccount: {{ .Values.database.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.database.podServiceAccount | quote }}

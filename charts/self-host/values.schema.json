@@ -184,6 +184,19 @@
                         }
                     }
                 },
+                "nodeSelector": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "default": {}
+                },
+                "tolerations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "default": []
+                },
                 "coreVersionOverride": {
                     "type": "string"
                 },
@@ -457,6 +470,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -654,6 +680,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -851,6 +890,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -1048,6 +1100,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -1245,6 +1310,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -1442,6 +1520,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -1639,6 +1730,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -1839,6 +1943,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -2038,6 +2155,19 @@
                             ],
                             "required": [],
                             "properties": {}
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 },
@@ -2235,6 +2365,19 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
                         }
                     }
                 }
