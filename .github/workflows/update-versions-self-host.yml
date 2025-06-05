@@ -6,6 +6,10 @@ on:
 env:
   _BRANCH: main
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   setup:
     name: Setup
