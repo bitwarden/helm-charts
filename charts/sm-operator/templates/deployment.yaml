@@ -35,6 +35,14 @@ spec:
                   operator: In
                   values:
                     - linux
+      {{- with .Values.containers.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.containers.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.containers.imagePullSecrets }}
       imagePullSecrets:
       - name: {{ .Values.containers.imagePullSecrets }}
