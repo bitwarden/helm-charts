@@ -91,7 +91,7 @@ spec:
         - name: ca-certificates
           mountPath: /etc/bitwarden/ca-certificates
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
