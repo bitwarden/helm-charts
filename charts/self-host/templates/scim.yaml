@@ -13,7 +13,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.component.scim.replicas }}
   strategy:
     type: {{ .Values.component.scim.deploymentStrategy | quote }}
   selector:
