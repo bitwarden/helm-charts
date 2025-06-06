@@ -25,6 +25,7 @@ spec:
         app.kubernetes.io/component: notifications
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.notifications.podServiceAccount }}
       serviceAccount: {{ .Values.component.notifications.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.notifications.podServiceAccount | quote }}
