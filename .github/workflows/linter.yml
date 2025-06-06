@@ -11,6 +11,9 @@ on:
       - 'charts/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint Helm charts

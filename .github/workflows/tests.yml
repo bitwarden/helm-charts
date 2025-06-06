@@ -11,6 +11,10 @@ on:
       - 'charts/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   test:
     name: Test Helm charts
