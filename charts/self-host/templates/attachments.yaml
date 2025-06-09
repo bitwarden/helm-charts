@@ -45,6 +45,10 @@ spec:
       serviceAccount: {{ .Values.component.attachments.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.attachments.podServiceAccount | quote }}
     {{- end }}
+    {{- if .Values.component.attachments.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.attachments.podSecurityContext | indent 8 }}
+    {{- end }}
       containers:
       - name: {{ template "bitwarden.attachments" . }}
         image: "{{ .Values.component.attachments.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"

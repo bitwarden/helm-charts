@@ -110,9 +110,9 @@ spec:
   secretName: bw-sample-secret
   map:
     - bwSecretId: 6c230265-d472-45f7-b763-b11b01023ca6
-    secretKeyName: test__secret__1
+      secretKeyName: test__secret__1
     - bwSecretId: d132a5ed-12bd-49af-9b74-b11b01025d58
-    secretKeyName: test__secret__2
+      secretKeyName: test__secret__2
   authToken:
     secretName: bw-auth-token
     secretKey: token

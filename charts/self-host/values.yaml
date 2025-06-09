@@ -130,6 +130,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -152,6 +154,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -174,6 +178,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -196,6 +202,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -218,6 +226,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -240,6 +250,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -262,6 +274,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -286,6 +300,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -308,6 +324,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -330,6 +348,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
     nodeSelector: {}
@@ -414,7 +434,7 @@ database:
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2022-CU11-ubuntu-22.04
+    tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -458,6 +478,8 @@ database:
   updateStrategy: OnDelete
   # This will set the Kubernetes container security context
   securityContext:
+  # This will set the Kubernetes pod security context (including fsGroup)
+  podSecurityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
   nodeSelector: {}

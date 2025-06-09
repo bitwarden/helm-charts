@@ -45,6 +45,10 @@ spec:
       serviceAccount: {{ .Values.component.identity.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.identity.podServiceAccount | quote }}
     {{- end }}
+    {{- if .Values.component.identity.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.identity.podSecurityContext | indent 8 }}
+    {{- end }}
     {{- if .Values.volume.logs.enabled }}
       initContainers:
       - name: create-mount-subdir
@@ -103,7 +107,7 @@ spec:
         - name: ca-certificates
           mountPath: /etc/bitwarden/ca-certificates
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
