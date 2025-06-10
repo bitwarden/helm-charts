@@ -18,8 +18,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-
 defaults:
   run:
     shell: bash
@@ -30,6 +28,9 @@ jobs:
     uses: bitwarden/gh-actions/.github/workflows/check-run.yml@main
 
   run-workflow:
+    permissions:
+      contents: read
+      id-token: write
     name: Test Helm Charts
     needs: check-run
     if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
