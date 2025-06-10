@@ -12,6 +12,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
+
   replicas: 1
   strategy:
     type: {{ .Values.component.events.deploymentStrategy | quote }}
@@ -25,6 +26,7 @@ spec:
         app.kubernetes.io/component: events
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.events.podServiceAccount }}
       serviceAccount: {{ .Values.component.events.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.events.podServiceAccount | quote }}

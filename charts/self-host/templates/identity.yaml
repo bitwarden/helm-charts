@@ -25,6 +25,7 @@ spec:
         app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.identity.podServiceAccount }}
       serviceAccount: {{ .Values.component.identity.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.identity.podServiceAccount | quote }}

@@ -7,6 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/component: admin
     app: {{ template "bitwarden.admin" . }}
+
 {{ include "bitwarden.labels" . | indent 4 }}
 {{- with .Values.component.admin.labels }}
 {{ toYaml . | indent 4 }}
@@ -25,6 +26,7 @@ spec:
         app: {{ template "bitwarden.admin" . }}
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+{{ include "bitwarden.podCoLocation.affinity" . | indent 6 }}
     {{- if .Values.component.admin.podServiceAccount }}
       serviceAccount: {{ .Values.component.admin.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.admin.podServiceAccount | quote }}
