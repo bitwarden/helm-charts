@@ -86,7 +86,7 @@ general:
     enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
-  # These will apply to all templates in the Helm chart and can be overridden individually
+  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
   nodeSelector: {}
   tolerations: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
@@ -114,6 +114,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/admin
@@ -133,11 +137,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   api:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/api
@@ -157,11 +163,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   attachments:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/attachments
@@ -181,11 +189,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   events:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/events
@@ -205,11 +215,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   icons:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/icons
@@ -229,11 +241,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   identity:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/identity
@@ -253,11 +267,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   notifications:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/notifications
@@ -277,13 +293,15 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   scim:
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/scim
@@ -303,11 +321,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   sso:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/sso
@@ -327,11 +347,13 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
   web:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/web
@@ -351,8 +373,6 @@ component:
     podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    nodeSelector: {}
-    tolerations: []
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
@@ -429,6 +449,10 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
+  # Optionally place deployment on specifc nodes
+  nodeSelector: {}
+  # Optionally add taint tolerations
+  tolerations: []
   # Image name, tag, and pull policy
   image:
     name: mcr.microsoft.com/mssql/server
@@ -481,8 +505,6 @@ database:
   podSecurityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
-  nodeSelector: {}
-  tolerations: []
 
 # You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
 # Please see the chart README in GitHub for more information and examples.
