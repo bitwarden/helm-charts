@@ -184,19 +184,6 @@
                         }
                     }
                 },
-                "nodeSelector": {
-                    "type": "object",
-                    "additionalProperties": true,
-                    "default": {}
-                },
-                "tolerations": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": true
-                    },
-                    "default": []
-                },
                 "coreVersionOverride": {
                     "type": "string"
                 },
@@ -240,6 +227,19 @@
                     "type": "object",
                     "required": [],
                     "properties": {}
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "default": {}
+                },
+                "tolerations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "default": []
                 },
                 "volumeAccessMode": {
                     "type": "string",
@@ -285,6 +285,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -470,19 +483,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -495,6 +495,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -680,19 +693,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -705,6 +705,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -890,19 +903,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -915,6 +915,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1100,19 +1113,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -1125,6 +1125,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1310,19 +1323,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -1335,6 +1335,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1520,19 +1533,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -1545,6 +1545,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1730,19 +1743,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -1758,6 +1758,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1943,19 +1956,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 },
@@ -1968,6 +1968,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -2155,6 +2168,17 @@
                             ],
                             "required": [],
                             "properties": {}
+                        }
+                    }
+                },
+                "web": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "labels": {
+                            "type": "object",
+                            "required": [],
+                            "properties": {}
                         },
                         "nodeSelector": {
                             "type": "object",
@@ -2168,17 +2192,6 @@
                                 "additionalProperties": true
                             },
                             "default": []
-                        }
-                    }
-                },
-                "web": {
-                    "type": "object",
-                    "required": [],
-                    "properties": {
-                        "labels": {
-                            "type": "object",
-                            "required": [],
-                            "properties": {}
                         },
                         "image": {
                             "type": "object",
@@ -2365,19 +2378,6 @@
                                 "string",
                                 "null"
                             ]
-                        },
-                        "nodeSelector": {
-                            "type": "object",
-                            "additionalProperties": true,
-                            "default": {}
-                        },
-                        "tolerations": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": true
-                            },
-                            "default": []
                         }
                     }
                 }
