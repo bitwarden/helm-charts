@@ -7,6 +7,11 @@ on:
         type: string
         required: true
 
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
 jobs:
   build:
     name: Build Helm charts
