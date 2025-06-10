@@ -10,6 +10,9 @@ on:
     paths:
       - 'charts/**'
   workflow_dispatch:
+    inputs: {}
+  workflow_call:
+    inputs: {}
 
 permissions:
   contents: read
