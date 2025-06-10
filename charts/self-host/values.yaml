@@ -60,10 +60,6 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 
-  # These will apply to all templates in the Helm chart and can be overridden individually
-  nodeSelector: {}
-  tolerations: []
-
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
   webVersionOverride: ""
@@ -90,6 +86,9 @@ general:
     enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
+  # These will apply to all templates in the Helm chart and can be overridden individually
+  nodeSelector: {}
+  tolerations: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
