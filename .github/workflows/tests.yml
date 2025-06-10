@@ -11,6 +11,10 @@ on:
       - 'charts/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   test:
     name: Test Helm charts
@@ -45,7 +49,9 @@ jobs:
           CHANGED=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
           if [[ -n "$CHANGED" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "changed-list=$CHANGED" >> $GITHUB_OUTPUT
+            echo "changed-list<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
 
       - name: Create kind cluster
