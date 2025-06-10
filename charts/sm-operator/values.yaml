@@ -51,8 +51,9 @@ containers:
   enableSeccompProfileRuntimeDefault: true
   # Optional value if you have privatized the image and need to pull with credentials
   imagePullSecrets:
-  # Optional values if you need to deploy the pods to specific nodes
+  # Optionally place deployment on specifc nodes
   nodeSelector: {}
+  # Optionally add taint tolerations
   tolerations: []
 
 # Service endpoint configuration for the metrics service.
