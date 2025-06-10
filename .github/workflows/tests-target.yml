@@ -16,19 +16,21 @@ on:
       - '!*.txt'
       - '.github/workflows/tests.yml'
 
-permissions:
-  contents: read
-
 defaults:
   run:
     shell: bash
 
 jobs:
   check-run:
+    permissions:
+      contents: read
     name: Check PR run
     uses: bitwarden/gh-actions/.github/workflows/check-run.yml@main
 
   run-workflow:
+    permissions:
+      contents: read
+      id-token: write
     name: Test Helm Charts
     needs: check-run
     if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
