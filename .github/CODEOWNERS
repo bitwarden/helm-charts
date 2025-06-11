@@ -4,5 +4,5 @@
 #
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# BRE owns self-host charts
-charts/self-host/ @bitwarden/dept-bre
+# Self-host Orchestration and Tooling owns charts
+charts/ @bitwarden/dept-shot
