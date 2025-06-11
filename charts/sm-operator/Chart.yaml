@@ -4,7 +4,7 @@ description: A Helm chart to install the Bitwarden Secrets Manager operator.
 home: https://github.com/bitwarden/helm-charts/tree/main/charts/sm-operator
 icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
 maintainers:
-- name: dept-bre
+- name: bitwarden/dept-bre
 name: sm-operator
 type: application
 version: 0.1.0
