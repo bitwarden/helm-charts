@@ -45,6 +45,7 @@ jobs:
           if [[ -n "$CHANGED" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
+          exit 1
 
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
