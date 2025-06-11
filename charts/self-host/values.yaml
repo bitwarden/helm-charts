@@ -86,6 +86,9 @@ general:
     enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
+  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  nodeSelector: {}
+  tolerations: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
@@ -111,6 +114,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/admin
@@ -133,6 +140,10 @@ component:
   api:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/api
@@ -155,6 +166,10 @@ component:
   attachments:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/attachments
@@ -177,6 +192,10 @@ component:
   events:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/events
@@ -199,6 +218,10 @@ component:
   icons:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/icons
@@ -221,6 +244,10 @@ component:
   identity:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/identity
@@ -243,6 +270,10 @@ component:
   notifications:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/notifications
@@ -267,6 +298,10 @@ component:
     enabled: false
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/scim
@@ -289,6 +324,10 @@ component:
   sso:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/sso
@@ -311,6 +350,10 @@ component:
   web:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/web
@@ -406,6 +449,10 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
+  # Optionally place deployment on specifc nodes
+  nodeSelector: {}
+  # Optionally add taint tolerations
+  tolerations: []
   # Image name, tag, and pull policy
   image:
     name: mcr.microsoft.com/mssql/server
