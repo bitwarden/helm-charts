@@ -25,9 +25,29 @@ spec:
         app.kubernetes.io/component: identity
 {{ include "bitwarden.labels" . | indent 8 }}
     spec:
+      {{- if or .Values.component.identity.nodeSelector .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- if .Values.component.identity.nodeSelector }}
+        {{ toYaml .Values.component.identity.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.component.identity.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.identity.tolerations }}
+        {{ toYaml .Values.component.identity.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.identity.podServiceAccount }}
       serviceAccount: {{ .Values.component.identity.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.identity.podServiceAccount | quote }}
+    {{- end }}
+    {{- if .Values.component.identity.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.identity.podSecurityContext | indent 8 }}
     {{- end }}
     {{- if .Values.volume.logs.enabled }}
       initContainers:
@@ -87,7 +107,7 @@ spec:
         - name: ca-certificates
           mountPath: /etc/bitwarden/ca-certificates
         {{- end }}
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true

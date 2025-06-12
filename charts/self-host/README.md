@@ -949,6 +949,7 @@ component:
         memory: "128Mi"
         cpu: "100m"
     securityContext:
+    podSecurityContext:
     podServiceAccount: bitwarden-sa
 ```
 
@@ -1251,6 +1252,7 @@ component:
         memory: "128Mi"
         cpu: "100m"
     securityContext:
+    podSecurityContext:
     podServiceAccount: bitwarden-sa
 ```
 

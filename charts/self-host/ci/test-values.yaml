@@ -364,7 +364,7 @@ database:
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2022-CU12-ubuntu-22.04
+    # tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -373,6 +373,8 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  podSecurityContext:
+    fsGroup: 10001
 
   # The MSSQL volumes for the PVCs
   volume:

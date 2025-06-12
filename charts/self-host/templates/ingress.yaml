@@ -19,7 +19,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  ingressClassName: {{.Values.general.ingress.className}}
+  ingressClassName: {{ .Values.general.ingress.className }}
   rules:
     - host: {{ .Values.general.domain }}
       http:
