@@ -11,4 +11,4 @@ charts/ @bitwarden/dept-shot
 **/Chart.yaml
 
 ## BRE team owns these workflows ##
-.github/workflows/release.yml
+.github/workflows/release.yml @bitwarden/dept-bre
