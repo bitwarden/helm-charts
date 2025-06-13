@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "bitwarden.fullname" . }}-test-api-health"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "bitwarden.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+  - name: curl-test
+    image: curlimages/curl:8.4.0
+    command: ['curl']
+    args:
+      - '-f'
+      - '--max-time'
+      - '30'
+      - '--retry'
+      - '3'
+      - '--retry-delay'
+      - '5'
+      - 'http://{{ template "bitwarden.api" . }}:5000/alive'
+  activeDeadlineSeconds: 300 
