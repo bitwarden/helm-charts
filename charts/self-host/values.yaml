@@ -86,6 +86,9 @@ general:
     enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
+  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  nodeSelector: {}
+  tolerations: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
@@ -111,6 +114,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/admin
@@ -126,11 +133,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   api:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/api
@@ -146,11 +159,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   attachments:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/attachments
@@ -166,11 +185,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   events:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/events
@@ -186,11 +211,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   icons:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/icons
@@ -206,11 +237,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   identity:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/identity
@@ -226,11 +263,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   notifications:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/notifications
@@ -246,6 +289,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   scim:
@@ -253,6 +298,10 @@ component:
     enabled: false
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/scim
@@ -268,11 +317,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   sso:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/sso
@@ -288,11 +343,17 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   web:
     # Additional deployment labels
     labels: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
       name: ghcr.io/bitwarden/web
@@ -308,6 +369,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
 # Images used for jobs and init containers
@@ -386,11 +449,15 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
+  # Optionally place deployment on specifc nodes
+  nodeSelector: {}
+  # Optionally add taint tolerations
+  tolerations: []
   # Image name, tag, and pull policy
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2022-CU11-ubuntu-22.04
+    tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -434,6 +501,8 @@ database:
   updateStrategy: OnDelete
   # This will set the Kubernetes container security context
   securityContext:
+  # This will set the Kubernetes pod security context (including fsGroup)
+  podSecurityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
 
