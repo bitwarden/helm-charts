@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Azure Login
+      - name: Log in to Azure
         id: azure-login
         uses: bitwarden/gh-actions/azure-login@main
         with:
@@ -44,7 +44,7 @@ jobs:
           keyvault: "bitwarden-ci"
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
 
-      - name: Azure Logout
+      - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Import GPG key

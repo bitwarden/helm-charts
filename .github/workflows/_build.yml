@@ -29,7 +29,7 @@ jobs:
         with:
           version: 'v3.13.1'
 
-      - name: Azure Login
+      - name: Log in to Azure
         id: azure-login
         uses: bitwarden/gh-actions/azure-login@main
         with:
@@ -57,7 +57,7 @@ jobs:
           gpg --dearmor private
           gpg --dearmor public
 
-      - name: Azure Logout
+      - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Package Helm chart

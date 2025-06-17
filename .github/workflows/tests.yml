@@ -139,7 +139,7 @@ jobs:
 
           echo "Admin OK."
 
-      - name: Azure Login
+      - name: Log in to Azure
         id: azure-login
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
         uses: bitwarden/gh-actions/azure-login@main
@@ -156,7 +156,7 @@ jobs:
           keyvault: "bitwarden-ci"
           secrets: "helm-sm-operator-ci-test-access-token"
 
-      - name: Azure Logout
+      - name: Log out from Azure
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
         uses: bitwarden/gh-actions/azure-logout@main
 
