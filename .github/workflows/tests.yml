@@ -49,9 +49,11 @@ jobs:
 
           # Test each chart with the last three stable versions
           echo "$VERSIONS" | jq -r '.[]' | while read -r version; do
-            find charts -mindepth 1 -maxdepth 1 -type d \
-              | xargs -t -n1 -I% /bin/bash -c "helm template % --values %/ci/test-values.yaml --api-versions $version \
-              | kubepug --error-on-deprecated --error-on-deleted --k8s-version $version --input-file /dev/stdin"
+            find charts -mindepth 1 -maxdepth 1 -type d | while read -r chart; do
+              echo "Testing chart: $chart with Kubernetes version: $version"
+              helm template "$chart" --values "$chart/ci/test-values.yaml" --api-versions "$version" \
+                | kubepug --error-on-deprecated --error-on-deleted --k8s-version "$version" --input-file /dev/stdin
+            done
           done
 
   test:
