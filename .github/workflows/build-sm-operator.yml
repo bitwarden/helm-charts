@@ -12,6 +12,10 @@ jobs:
   build-sm-operator:
     name: Build SM Operator
     uses: ./.github/workflows/_build.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     with:
       chart_name: sm-operator
     secrets: inherit
