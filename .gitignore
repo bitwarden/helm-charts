@@ -3,3 +3,6 @@
 .cr-index
 # Create a folder for placing user test files (Useful for the Dev Container)
 values/*
+my-authSecret.yaml
+my-secret.yaml
+my-values.yaml
