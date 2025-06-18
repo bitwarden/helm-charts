@@ -158,7 +158,7 @@ jobs:
           kubectl get deployments
 
           echo "*****PODS*****"
-          pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 2/2)
+          pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 1/1)
           echo $pods
 
           if [[ -z "$pods" ]]; then
