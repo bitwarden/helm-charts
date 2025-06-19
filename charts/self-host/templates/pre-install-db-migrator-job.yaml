@@ -48,7 +48,7 @@ spec:
         image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
         - name: migrator-extract-dir
-          mountPath: /migrator
+          mountPath: "/migrator"
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
