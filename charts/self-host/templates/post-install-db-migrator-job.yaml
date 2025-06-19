@@ -71,8 +71,12 @@ spec:
               name: {{ .Values.secrets.secretName | quote }}
               {{- end }}
               key: globalSettings__sqlServer__connectionString
+        - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
+          value: /migrator
         image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
         volumeMounts:
+        - name: migrator-extract-dir
+          mountPath: /migrator
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -83,6 +87,8 @@ spec:
         {{- end }}
       restartPolicy: Never
       volumes:
+        - name: migrator-extract-dir
+          emptyDir: {}
         {{- if .Values.database.enabled }}
         - name: mssql-data
           persistentVolumeClaim:
