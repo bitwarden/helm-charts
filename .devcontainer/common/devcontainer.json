@@ -26,7 +26,7 @@
 		"ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {
 			"fisher": true
 		},
-		"ghcr.io/devcontainers-contrib/features/kind:1": {}
+		"ghcr.io/devcontainers-extra/features/kind:1": {}
 	},
 	// "initializeCommand": "cd .devcontainer && bash ensure-mount-sources",
 	"mounts": [
