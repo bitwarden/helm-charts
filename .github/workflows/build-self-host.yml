@@ -12,6 +12,10 @@ jobs:
   build-self-host:
     name: Build Self Host
     uses: ./.github/workflows/_build.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     with:
       chart_name: self-host
     secrets: inherit

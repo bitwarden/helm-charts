@@ -10,6 +10,8 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
     outputs:
       operator_version: ${{ steps.operator-update.outputs.version }}
       operator_version_update: ${{ steps.operator-update.outputs.update }}
