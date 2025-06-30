@@ -175,7 +175,6 @@ jobs:
           echo "Admin OK."
 
       - name: Log in to Azure
-        id: azure-login
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
         uses: bitwarden/gh-actions/azure-login@main
         with:
