@@ -17,6 +17,9 @@ jobs:
     name: Build Helm charts
     runs-on: ubuntu-22.04
     environment: Production
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -26,10 +29,12 @@ jobs:
         with:
           version: 'v3.13.1'
 
-      - name: Login to Azure - CI Subscription
-        uses: Azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1.6.1
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
         with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Set up GPG key and passphrase
         run: |
@@ -50,6 +55,9 @@ jobs:
 
           gpg --dearmor private
           gpg --dearmor public
+
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Package Helm chart
         id: helm_package

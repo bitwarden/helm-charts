@@ -60,6 +60,9 @@ jobs:
     name: Test Helm charts
     runs-on: ubuntu-22.04
     environment: Production
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -171,11 +174,13 @@ jobs:
 
           echo "Admin OK."
 
-      - name: Login to Azure - CI Subscription
+      - name: Log in to Azure
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
-        uses: Azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1.6.1
+        uses: bitwarden/gh-actions/azure-login@main
         with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Retrieve secrets
         id: retrieve-secrets
@@ -184,6 +189,10 @@ jobs:
         with:
           keyvault: "bitwarden-ci"
           secrets: "helm-sm-operator-ci-test-access-token"
+
+      - name: Log out from Azure
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Test install (sm-operator)
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
