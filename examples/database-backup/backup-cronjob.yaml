@@ -1,0 +1,55 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "bitwarden-backup"
+  labels:
+    app.kubernetes.io/component: bitwarden-backup
+    app: bitwarden-backup
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10
+      backoffLimit: 1
+      template:
+        metadata:
+          name: "bitwarden-backup"
+          labels:
+            app.kubernetes.io/component: bitwarden-backup
+            app: bitwarden-backup
+        spec:
+          containers:
+          - name: backup-db
+            env:
+            - name: MSSQL_CONN_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-sql-connection-string
+                  key: globalSettings__sqlServer__connectionString
+            image: "mcr.microsoft.com/mssql-tools"
+            volumeMounts:
+              - name: mssql-backups
+                mountPath: /backups
+            command:
+              - "/bin/bash"
+              - "-c"
+            args: [
+                "
+                svr=\"$(echo \"${MSSQL_CONN_STRING}\" | grep -Po \"Data Source=tcp:\\K[^,]*(?=.*)\")\";
+                pass=\"$(echo \"${MSSQL_CONN_STRING}\" | grep -Po \".*Password=\\K[^;]*(?=.*)\")\";
+                now=$(date +%Y%m%d_%H%M%S);
+                echo \"$pass\" |
+                  /opt/mssql-tools/bin/sqlcmd -S $svr -U SA -q
+                  \"BACKUP DATABASE [vault] TO DISK = '/var/opt/mssql/backups/vault_FULL_${now}.BAK' WITH NOFORMAT, INIT, NAME = 'vault full backup for ${now}', NOSKIP\";
+                if [ $? -eq 0 ]; then
+                  ln -sf vault_FULL_${now}.BAK /backups/vault.BAK;
+                  find /backups/ -mindepth 1 -maxdepth 1 -type f -name '*.BAK' -mtime +32 -delete;
+                fi
+                "
+            ]
+          restartPolicy: Never
+          volumes:
+            - name: mssql-backups
+              persistentVolumeClaim:
+                claimName: bitwarden-self-host-mssqlbackups
