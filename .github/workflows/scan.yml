@@ -57,7 +57,7 @@ jobs:
         uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Scan with Checkmarx
-        uses: checkmarx/ast-github-action@ef93013c95adc60160bc22060875e90800d3ecfc # 2.3.19
+        uses: checkmarx/ast-github-action@44adb082541fa1f47bcfca6de1517ff28990d813 # 2.3.22
         env:
           INCREMENTAL: "${{ contains(github.event_name, 'pull_request') && '--sast-incremental' || '' }}"
         with:
@@ -72,7 +72,7 @@ jobs:
             --output-path . ${{ env.INCREMENTAL }}
 
       - name: Upload Checkmarx results to GitHub
-        uses: github/codeql-action/upload-sarif@ce28f5bb42b7a9f2c824e633a3f6ee835bab6858 # v3.29.0
+        uses: github/codeql-action/upload-sarif@51f77329afa6477de8c49fc9c7046c15b9a4e79d # v3.29.5
         with:
           sarif_file: cx_result.sarif
           sha: ${{ contains(github.event_name, 'pull_request') && github.event.pull_request.head.sha || github.sha }}
@@ -112,7 +112,7 @@ jobs:
         uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Scan with SonarCloud
-        uses: sonarsource/sonarqube-scan-action@2500896589ef8f7247069a56136f8dc177c27ccf # v5.2.0
+        uses: sonarsource/sonarqube-scan-action@8c71dc039c2dd71d3821e89a2b58ecc7fee6ced9 # v5.3.0
         env:
           SONAR_TOKEN: ${{ steps.get-kv-secrets.outputs.SONAR-TOKEN }}
         with:
