@@ -416,5 +416,20 @@ database:
 # You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
 # Please see the chart README in GitHub for more information and examples.
 rawManifests:
-  preInstall: []
+  preInstall:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: bitwarden-attachments
+        annotations:
+          helm.sh/resource-policy: keep
+        labels:
+          app.kubernetes.io/name: self-host
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: standard
   postInstall: []
