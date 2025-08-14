@@ -11,17 +11,23 @@
     "github-actions",
     "helm-requirements",
     "helm-values",
-    "helmv3"
+    "helmv3",
+    "custom.regex"
   ],
   "packageRules": [
     {
       "groupName": "gh minor",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "customManagers": [
+        {
+          "customType": "regex",
+          "managerFilePatterns": ["/^charts/self-host/values\\.yaml$/"],
+          "matchStrings": [
+            "image:\\s*\\n\\s*name:\\s*(?<depName>docker\\.io/nginx|bitnami/kubectl)\\s*\\n\\s*tag:\\s*(?<currentValue>[^\\s]+)"
+          ],
+          "datasourceTemplate": "docker"
+        }
       ]
     }
   ]
