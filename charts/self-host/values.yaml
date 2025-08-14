@@ -381,7 +381,7 @@ supportComponents:
   certGenerator:
     image:
       name: docker.io/nginx
-      tag: 1.25.3
+      tag: 1.29.1
   kubectl:
     image:
       name: bitnami/kubectl
