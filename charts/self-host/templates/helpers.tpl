@@ -72,7 +72,6 @@ Generate basic labels
 "helm.sh/hook-weight": "0"
 {{- end -}}
 
-
 {{/*
 Name of Web components
 */}}
@@ -174,7 +173,6 @@ Name of Logs volume
 {{- define "bitwarden.applogs" -}}
 {{ template "bitwarden.fullname" . }}-applogs
 {{- end -}}
-
 
 {{/*
 Name of MSSQL Backups volume
