@@ -386,6 +386,12 @@ supportComponents:
     image:
       name: bitnami/kubectl
       tag: 1.33
+
+# Security contexts for Kubernetes jobs
+jobs:
+  securityContext: {}
+  podSecurityContext: {}
+
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
