@@ -342,6 +342,23 @@ volume:
     size: 1Gi
     labels: {}
 
+#
+# Set security contexts for pre- and post-install hooks
+#
+jobs:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    fsGroup: 65534
 
 #
 # Configure service account for pre- and post-install hooks

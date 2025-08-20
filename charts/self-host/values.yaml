@@ -387,11 +387,6 @@ supportComponents:
       name: bitnami/kubectl
       tag: 1.33
 
-# Security contexts for Kubernetes jobs
-jobs:
-  securityContext: {}
-  podSecurityContext: {}
-
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
@@ -437,6 +432,13 @@ volume:
     enabled: false
     # Load custom Certificates from the following ConfigMap
     configMapName: cacert
+
+#
+# Set security contexts for pre- and post-install hooks
+#
+jobs:
+  securityContext: {}
+  podSecurityContext: {}
 
 #
 # Configure service account for pre- and post-install hooks
