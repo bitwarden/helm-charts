@@ -34,6 +34,10 @@ spec:
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
     {{- end }}
+    {{- if .Values.jobs.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.jobs.podSecurityContext | nindent 8 }}
+    {{- end }}
 
 {{- if not $currentIdentityCert }}
       initContainers:
@@ -48,6 +52,10 @@ spec:
           echo Done;
         ']
         image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -67,6 +75,10 @@ spec:
           echo "Done"
         ']
         image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"

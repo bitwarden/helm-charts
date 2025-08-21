@@ -27,6 +27,10 @@ spec:
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: "{{ .Values.serviceAccount.name }}"
     {{- end }}
+    {{- if .Values.jobs.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.jobs.podSecurityContext | nindent 8 }}
+    {{- end }}
       containers:
       - name: delete-resources
         command: [
@@ -45,4 +49,8 @@ spec:
           echo "Done"
         ']
         image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
       restartPolicy: Never

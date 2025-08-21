@@ -2383,6 +2383,26 @@
                 }
             }
         },
+        "jobs": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "podSecurityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": []
+                },
+                "securityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": []
+                }
+            }
+        },
         "volume": {
             "type": "object",
             "required": [],
