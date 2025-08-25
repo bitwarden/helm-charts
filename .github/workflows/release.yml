@@ -11,6 +11,10 @@ on:
         options:
           - Standard Release
           - Dry Run
+      release_source:
+        description: "Branch or tag to release"
+        default: "main"
+        type: string
 
 jobs:
   release:
@@ -67,7 +71,7 @@ jobs:
       - name: Download Helm chart artifact - Self Host
         uses: bitwarden/gh-actions/download-artifacts@main
         with:
-          branch: main
+          branch: ${{ inputs.release_source }}
           path: .cr-release-packages
           workflow: build-self-host.yml
           workflow_conclusion: success
@@ -75,7 +79,7 @@ jobs:
       - name: Download Helm chart artifact - SM Operator
         uses: bitwarden/gh-actions/download-artifacts@main
         with:
-          branch: main
+          branch: ${{ inputs.release_source }}
           path: .cr-release-packages
           workflow: build-sm-operator.yml
           workflow_conclusion: success
