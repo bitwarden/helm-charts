@@ -15,6 +15,14 @@ on:
         description: "Branch or tag to release"
         default: "main"
         type: string
+      chart_to_release:
+        description: "Chart to release"
+        default: "all"
+        type: choice
+        options:
+          - all
+          - self-host
+          - sm-operator
 
 jobs:
   release:
@@ -69,6 +77,7 @@ jobs:
           version: v3.13.1
 
       - name: Download Helm chart artifact - Self Host
+        if: ${{ inputs.chart_to_release == 'all' || inputs.chart_to_release == 'self-host' }}
         uses: bitwarden/gh-actions/download-artifacts@main
         with:
           branch: ${{ inputs.release_source }}
@@ -77,6 +86,7 @@ jobs:
           workflow_conclusion: success
 
       - name: Download Helm chart artifact - SM Operator
+        if: ${{ inputs.chart_to_release == 'all' || inputs.chart_to_release == 'sm-operator' }}
         uses: bitwarden/gh-actions/download-artifacts@main
         with:
           branch: ${{ inputs.release_source }}
