@@ -17,7 +17,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^charts/self-host/values\\.yaml$"],
+      "managerFilePatterns": [
+        "/^charts/self-host/values\\.yaml$/"
+      ],
       "matchStrings": [
         "image:\\s*\\n\\s*name:\\s*(?<depName>docker\\.io/nginx|bitnami/kubectl)\\s*\\n\\s*tag:\\s*(?<currentValue>[^\\s]+)"
       ],
@@ -27,8 +29,13 @@
   "packageRules": [
     {
       "groupName": "gh minor",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     }
   ]
 }
