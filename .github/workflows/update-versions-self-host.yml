@@ -90,7 +90,7 @@ jobs:
               version=$2
               echo $image
               echo $version
-              skopeo list-tags docker://ghcr.io/bitwarden/$image
+              skopeo list-tags docker://ghcr.io/bitwarden/$image | jq '.Tags[]'
               tag=$(skopeo list-tags docker://ghcr.io/bitwarden/$image | jq '.Tags[]' | grep $version)
               echo "tag is ($tag)"
               if [[ -z "$tag" ]]; then
