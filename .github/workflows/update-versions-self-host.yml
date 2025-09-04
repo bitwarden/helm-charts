@@ -88,7 +88,10 @@ jobs:
           test_image() {
               image=$1
               version=$2
+              echo $image
+              echo $version
               tag=$(skopeo list-tags docker://ghcr.io/bitwarden/$image | jq '.Tags[]' | grep $version)
+              echo $tag
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
@@ -102,6 +105,7 @@ jobs:
 
           for key in "${!coreimages[@]}"
           do
+              echo "reached key do"
               image=${coreimages[$key]}
               test_image $image $COREVERSION
           done
