@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   self-host:
   - apiVersion: v2
+    appVersion: 2025.8.1
+    created: "2025-09-04T21:14:24.867475506Z"
+    description: A Helm chart for deploying a Bitwarden instance on Kubernetes
+    digest: c4e3665d7b1b3bce85e64b5a34745d300aa45fbd323afd71442c1a868736e85d
+    home: https://github.com/bitwarden/helm-charts/tree/main/charts/self-host
+    icon: https://raw.githubusercontent.com/bitwarden/brand/master/icons/icon-square.svg
+    maintainers:
+    - name: bitwarden
+    name: self-host
+    type: application
+    urls:
+    - https://github.com/bitwarden/helm-charts/releases/download/self-host-2025.8.2/self-host-2025.8.2.tgz
+    version: 2025.8.2
+  - apiVersion: v2
     appVersion: 2025.8.0
     created: "2025-08-26T23:47:10.904005045Z"
     description: A Helm chart for deploying a Bitwarden instance on Kubernetes
@@ -1220,4 +1234,4 @@ entries:
     urls:
     - https://github.com/bitwarden/helm-charts/releases/download/sm-operator-0.1.0-Beta/sm-operator-0.1.0-Beta.tgz
     version: 0.1.0-Beta
-generated: "2025-08-27T22:08:15.056171486Z"
+generated: "2025-09-04T21:14:24.987746924Z"
