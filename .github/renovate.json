@@ -21,7 +21,7 @@
         "/^charts/self-host/values\\.yaml$/"
       ],
       "matchStrings": [
-        "image:\\s*\\n\\s*name:\\s*(?<depName>docker\\.io/nginx|bitnami/kubectl)\\s*\\n\\s*tag:\\s*(?<currentValue>[^\\s]+)"
+        "image:\\s*\\n\\s*name:\\s*(?<depName>docker\\.io/nginx|rancher/kubectl)\\s*\\n\\s*tag:\\s*(?<currentValue>[^\\s]+)"
       ],
       "datasourceTemplate": "docker"
     }
