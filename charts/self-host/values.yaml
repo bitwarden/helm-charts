@@ -380,8 +380,8 @@ supportComponents:
       name: ghcr.io/bitwarden/mssqlmigratorutility
   certGenerator:
     image:
-      name: docker.io/nginx
-      tag: 1.29.1
+      name: alpine/openssl
+      tag: 3.5.2
   kubectl:
     image:
       name: bitnami/kubectl
