@@ -3,9 +3,9 @@ name: Version Bump - Self Host
 on:
   workflow_dispatch:
     inputs:
-      version_number_override:
-        description: "New version override (leave blank for automatic calculation, example: '2024.1.0')"
-        required: false
+      version_number:
+        description: "New version (example: '1.0.1')"
+        required: true
         type: string
 
 jobs:
@@ -19,10 +19,11 @@ jobs:
       id-token: write
     steps:
       - name: Validate version input
-        if: ${{ inputs.version_number_override != '' }}
-        uses: bitwarden/gh-actions/version-check@main
-        with:
-          version: ${{ inputs.version_number_override }}
+        run: |
+          if [[ ! "${{ inputs.version_number }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format."
+            exit 1
+          fi
 
       - name: Checkout Branch
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -75,10 +76,10 @@ jobs:
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
       - name: Verify input version
-        if: ${{ inputs.version_number_override != '' }}
+        if: ${{ inputs.version_number != '' }}
         env:
           CURRENT_VERSION: ${{ steps.current-version.outputs.version }}
-          NEW_VERSION: ${{ inputs.version_number_override }}
+          NEW_VERSION: ${{ inputs.version_number }}
         run: |
           # Error if version has not changed.
           if [[ "$NEW_VERSION" == "$CURRENT_VERSION" ]]; then
@@ -95,36 +96,18 @@ jobs:
             exit 1
           fi
 
-      - name: Calculate next release version
-        if: ${{ inputs.version_number_override == '' }}
-        id: calculate-next-version
-        uses: bitwarden/gh-actions/version-next@main
-        with:
-          version: ${{ steps.current-version.outputs.version }}
-
       - name: Bump Chart Version - Version Override
-        if: ${{ inputs.version_number_override != '' }}
         id: bump-version-override
         uses: bitwarden/gh-actions/version-bump@main
         with:
           file_path: "charts/self-host/Chart.yaml"
-          version: ${{ inputs.version_number_override }}
-
-      - name: Bump Chart Version - Automatic Calculation
-        if: ${{ inputs.version_number_override == '' }}
-        id: bump-version-automatic
-        uses: bitwarden/gh-actions/version-bump@main
-        with:
-          file_path: "charts/self-host/Chart.yaml"
-          version: ${{ steps.calculate-next-version.outputs.version }}
+          version: ${{ inputs.version_number }}
 
       - name: Set final version output
         id: set-final-version-output
         run: |
           if [[ "${{ steps.bump-version-override.outcome }}" == "success" ]]; then
-            echo "version=${{ inputs.version_number_override }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ steps.bump-version-automatic.outcome }}" == "success" ]]; then
-            echo "version=${{ steps.calculate-next-version.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "version=${{ inputs.version_number }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Check if version changed
