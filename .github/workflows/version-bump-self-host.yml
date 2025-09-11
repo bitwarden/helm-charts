@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version_number_override:
-        description: "New version override (leave blank for automatic calculation, example: '2024.1.0')"
+        description: "New version override (leave blank for automatic calculation, example: '1.0.1')"
         required: false
         type: string
 
