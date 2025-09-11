@@ -5,7 +5,7 @@ on:
     inputs:
       version_number_override:
         description: "New version override (leave blank for automatic calculation, example: '1.0.1')"
-        required: false
+        required: true
         type: string
 
 jobs:
@@ -19,7 +19,6 @@ jobs:
       id-token: write
     steps:
       - name: Validate version input
-        if: ${{ inputs.version_number_override != '' }}
         uses: bitwarden/gh-actions/version-check@main
         with:
           version: ${{ inputs.version_number_override }}
@@ -95,37 +94,18 @@ jobs:
             exit 1
           fi
 
-      - name: Calculate next release version
-        if: ${{ inputs.version_number_override == '' }}
-        id: calculate-next-version
-        uses: bitwarden/gh-actions/version-next@main
-        with:
-          version: ${{ steps.current-version.outputs.version }}
-
       - name: Bump Chart Version - Version Override
-        if: ${{ inputs.version_number_override != '' }}
         id: bump-version-override
         uses: bitwarden/gh-actions/version-bump@main
         with:
           file_path: "charts/self-host/Chart.yaml"
           version: ${{ inputs.version_number_override }}
 
-      - name: Bump Chart Version - Automatic Calculation
-        if: ${{ inputs.version_number_override == '' }}
-        id: bump-version-automatic
-        uses: bitwarden/gh-actions/version-bump@main
-        with:
-          file_path: "charts/self-host/Chart.yaml"
-          version: ${{ steps.calculate-next-version.outputs.version }}
-
       - name: Set final version output
         id: set-final-version-output
         run: |
           if [[ "${{ steps.bump-version-override.outcome }}" == "success" ]]; then
             echo "version=${{ inputs.version_number_override }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ steps.bump-version-automatic.outcome }}" == "success" ]]; then
-            echo "version=${{ steps.calculate-next-version.outputs.version }}" >> $GITHUB_OUTPUT
-          fi
 
       - name: Check if version changed
         id: version-changed
