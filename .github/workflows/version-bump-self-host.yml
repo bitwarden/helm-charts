@@ -108,6 +108,7 @@ jobs:
         run: |
           if [[ "${{ steps.bump-version-override.outcome }}" == "success" ]]; then
             echo "version=${{ inputs.version_number }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check if version changed
         id: version-changed
