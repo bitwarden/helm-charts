@@ -23,15 +23,11 @@ jobs:
 
       - name: Get Latest Operator Version
         id: get-operator-version
-        run: |
-          image="sm-operator"
-          json=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/")
-          digest=$(echo $json |jq '."results"[] | select(.name=="latest")["digest"]')
-          latestTag=$(echo $json | jq --argjson DIGEST $digest '."results"[] | select(.digest==$DIGEST) | select(.name != "latest")["name"]' | head -n 1)
-
-          echo "Operator Image ($latestTag)..."
-
-          echo "version=$latestTag" >> $GITHUB_OUTPUT
+        uses: bitwarden/gh-actions/get-release-version@main
+        with:
+          repository: bitwarden/sm-kubernetes
+          monorepo: false
+          trim: true
 
       - name: Check if operator needs updating
         id: operator-update
