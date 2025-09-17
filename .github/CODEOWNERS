@@ -12,3 +12,8 @@ charts/ @bitwarden/dept-shot
 
 ## BRE team owns these workflows ##
 .github/workflows/release.yml @bitwarden/dept-bre
+
+# Default shared ownership of Dockerfile
+**/Dockerfile @bitwarden/team-appsec @bitwarden/dept-bre
+**/*.dockerignore @bitwarden/team-appsec @bitwarden/dept-bre
+**/entrypoint.sh @bitwarden/team-appsec @bitwarden/dept-bre
