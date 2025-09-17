@@ -26,7 +26,6 @@ jobs:
         uses: bitwarden/gh-actions/get-release-version@main
         with:
           repository: bitwarden/sm-kubernetes
-          monorepo: false
           trim: true
 
       - name: Check if operator needs updating
