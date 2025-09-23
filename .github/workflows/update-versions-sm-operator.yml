@@ -119,7 +119,7 @@ jobs:
       - name: Create Update Versions PR
         env:
           GITHUB_TOKEN:  ${{ steps.app-token.outputs.token }}
-          BASE_BRANCH: ${{ github.ref_name }}
+          BASE_BRANCH: ${{ env._BRANCH }}
           TITLE: "Update operator version"
         run: |
           gh pr create --title "$TITLE" \
