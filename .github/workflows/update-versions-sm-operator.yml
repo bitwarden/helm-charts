@@ -5,6 +5,8 @@ on:
 
 env:
   _BRANCH: main
+  _BOT_NAME: "bw-ghapp[bot]"
+  _BOT_EMAIL: "178206702+bw-ghapp[bot]@users.noreply.github.com"
 
 jobs:
   setup:
@@ -16,7 +18,7 @@ jobs:
       operator_version: ${{ steps.operator-update.outputs.version }}
       operator_version_update: ${{ steps.operator-update.outputs.update }}
     steps:
-      - name: Checkout Branch
+      - name: Check out repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env._BRANCH }}
@@ -54,10 +56,28 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout Branch
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
+      - name: Get Azure Key Vault secrets
+        id: get-kv-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: gh-org-bitwarden
+          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
+
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
+
+      - name: Check out repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env._BRANCH }}
+          token: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
 
       - name: Create Update Versions Branch
         run: |
@@ -70,6 +90,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env.PR_BRANCH }}
+          token: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
 
       - name: Update Chart appVersion
         env:
@@ -79,8 +100,8 @@ jobs:
 
       - name: Commit updated files
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config user.name "$_BOT_NAME"
+          git config user.email "$_BOT_EMAIL"
           git commit -m "Updated operator version" -a
 
       - name: Push changes
