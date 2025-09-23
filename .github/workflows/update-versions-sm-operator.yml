@@ -42,6 +42,7 @@ jobs:
           if [ "$OPERATOR_VERSION" != "$LATEST_OPERATOR_VERSION" ]; then
             echo "Needs Operator update!"
             echo "update=1" >> $GITHUB_OUTPUT
+            echo "version=$LATEST_OPERATOR_VERSION" >> $GITHUB_OUTPUT
           else
             echo "update=0" >> $GITHUB_OUTPUT
           fi
