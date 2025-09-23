@@ -55,6 +55,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     steps:
       - name: Log in to Azure
         uses: bitwarden/gh-actions/azure-login@main
