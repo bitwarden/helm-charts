@@ -11,7 +11,6 @@ jobs:
   bump_version:
     name: "Bump Version to ${{ inputs.version_number }}"
     runs-on: ubuntu-22.04
-    environment: Production
     permissions:
       contents: write
       pull-requests: write
