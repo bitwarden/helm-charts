@@ -5,6 +5,8 @@ on:
 
 env:
   _BRANCH: main
+  _BOT_NAME: "bw-ghapp[bot]"
+  _BOT_EMAIL: "178206702+bw-ghapp[bot]@users.noreply.github.com"
 
 jobs:
   setup:
@@ -16,22 +18,17 @@ jobs:
       operator_version: ${{ steps.operator-update.outputs.version }}
       operator_version_update: ${{ steps.operator-update.outputs.update }}
     steps:
-      - name: Checkout Branch
+      - name: Check out repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env._BRANCH }}
 
       - name: Get Latest Operator Version
         id: get-operator-version
-        run: |
-          image="sm-operator"
-          json=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/")
-          digest=$(echo $json |jq '."results"[] | select(.name=="latest")["digest"]')
-          latestTag=$(echo $json | jq --argjson DIGEST $digest '."results"[] | select(.digest==$DIGEST) | select(.name != "latest")["name"]' | head -n 1)
-
-          echo "Operator Image ($latestTag)..."
-
-          echo "version=$latestTag" >> $GITHUB_OUTPUT
+        uses: bitwarden/gh-actions/get-release-version@main
+        with:
+          repository: bitwarden/sm-kubernetes
+          trim: true
 
       - name: Check if operator needs updating
         id: operator-update
@@ -45,6 +42,7 @@ jobs:
           if [ "$OPERATOR_VERSION" != "$LATEST_OPERATOR_VERSION" ]; then
             echo "Needs Operator update!"
             echo "update=1" >> $GITHUB_OUTPUT
+            echo "version=$LATEST_OPERATOR_VERSION" >> $GITHUB_OUTPUT
           else
             echo "update=0" >> $GITHUB_OUTPUT
           fi
@@ -56,13 +54,39 @@ jobs:
     runs-on: ubuntu-22.04
     needs: setup
     permissions:
-      contents: write
-      pull-requests: write
+      id-token: write
     steps:
-      - name: Checkout Branch
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
+      - name: Get Azure Key Vault secrets
+        id: get-kv-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: gh-org-bitwarden
+          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
+
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
+
+      - name: Generate GH App token
+        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2.1.1
+        id: app-token
+        with:
+          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
+          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Check out repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env._BRANCH }}
+          token:  ${{ steps.app-token.outputs.token }}
 
       - name: Create Update Versions Branch
         run: |
@@ -75,6 +99,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env.PR_BRANCH }}
+          token:  ${{ steps.app-token.outputs.token }}
 
       - name: Update Chart appVersion
         env:
@@ -84,8 +109,8 @@ jobs:
 
       - name: Commit updated files
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config user.name "$_BOT_NAME"
+          git config user.email "$_BOT_EMAIL"
           git commit -m "Updated operator version" -a
 
       - name: Push changes
@@ -93,7 +118,7 @@ jobs:
 
       - name: Create Update Versions PR
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN:  ${{ steps.app-token.outputs.token }}
           BASE_BRANCH: ${{ github.ref_name }}
           TITLE: "Update operator version"
         run: |
