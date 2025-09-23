@@ -53,8 +53,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: setup
     permissions:
-      contents: write
-      pull-requests: write
       id-token: write
     steps:
       - name: Log in to Azure
@@ -74,11 +72,20 @@ jobs:
       - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
+      - name: Generate GH App token
+        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2.1.1
+        id: app-token
+        with:
+          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
+          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Check out repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env._BRANCH }}
-          token: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
+          token:  ${{ steps.app-token.outputs.token }}
 
       - name: Create Update Versions Branch
         run: |
@@ -91,7 +98,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env.PR_BRANCH }}
-          token: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
+          token:  ${{ steps.app-token.outputs.token }}
 
       - name: Update Chart appVersion
         env:
@@ -110,7 +117,7 @@ jobs:
 
       - name: Create Update Versions PR
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN:  ${{ steps.app-token.outputs.token }}
           BASE_BRANCH: ${{ github.ref_name }}
           TITLE: "Update operator version"
         run: |
