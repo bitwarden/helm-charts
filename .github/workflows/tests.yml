@@ -59,7 +59,6 @@ jobs:
   test:
     name: Test Helm charts
     runs-on: ubuntu-22.04
-    environment: Production
     permissions:
       contents: read
       id-token: write
@@ -187,7 +186,7 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
         uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
-          keyvault: "bitwarden-ci"
+          keyvault: "gh-helm-charts"
           secrets: "helm-sm-operator-ci-test-access-token"
 
       - name: Log out from Azure
