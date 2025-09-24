@@ -67,8 +67,8 @@ jobs:
 
       - name: Setup git
         run: |
-          git config user.name "$_BOT_NAME"
-          git config user.email "$_BOT_EMAIL"
+          git config --local user.name "$_BOT_NAME"
+          git config --local user.email "$_BOT_EMAIL"
 
       - name: Check if version changed
         id: version-changed
