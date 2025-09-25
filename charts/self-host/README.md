@@ -49,6 +49,7 @@ Edit the `my-values.yaml` file and fill out the values. Required values that mus
 - general.emal.smtpPort
 - general.email.smtpSsl
 - sharedStorageClassName
+- databaseProvider ("sqlserver" by default, alternative values require existing external server of that provider)
 - database.enabled (set to disbled if using an external SQL server)
 
 Note that default values for Nginx have been setup for the ingress in the values.yaml file. Some other ingress controller examples are provided later in this document.
@@ -75,10 +76,12 @@ Create a secret to set the following values.
 - globalSettings__hibpApiKey
 - SA_PASSWORD (if using the Bitwarden SQL pod)
 - globalSettings__sqlServer__connectionString (if using your own SQL server)
+- globalSettings__mysql__connectionString (if using an external MySQL/MariaDB server)
+- globalSettings__postgreSql__connectionString (if using an external PostgreSQL server)
 
 Here we document the process of creating the secret using the command line. However, you can also use a CSI secret provider class, which we document an example of under "Installing the Azure Key Vault CSI Driver" later in this README.
 
-Examples of kubectl secret creation are provided below. One is for use with SQL deployed in a pod. The other is for usage with an external SQL server.
+Examples of kubectl secret creation are provided below. One is for use with SQL deployed in a pod. The others are for usage with an external database server.
 
 - With included SQL pod
 
@@ -103,6 +106,34 @@ Examples of kubectl secret creation are provided below. One is for use with SQL 
       --from-literal=globalSettings__mail__smtp__username="REPLACE" \
       --from-literal=globalSettings__mail__smtp__password="REPLACE" \
       --from-literal=globalSettings__sqlServer__connectionString="Data Source=tcp:<SERVERNAME>,1433;Initial Catalog=vault;Persist Security Info=False;User ID=<USER>;Password=<PASSWORD>;Multiple Active Result Sets=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True" \
+      --from-literal=globalSettings__yubico__clientId="REPLACE" \
+      --from-literal=globalSettings__yubico__key="REPLACE" \
+      --from-literal=globalSettings__hibpApiKey="REPLACE" \
+  ```
+
+- With external MySQL/MariaDB server
+
+  ```shell
+  kubectl create secret generic custom-secret -n bitwarden\
+      --from-literal=globalSettings__installation__id="REPLACE" \
+      --from-literal=globalSettings__installation__key="REPLACE" \
+      --from-literal=globalSettings__mail__smtp__username="REPLACE" \
+      --from-literal=globalSettings__mail__smtp__password="REPLACE" \
+      --from-literal=globalSettings__mysql__connectionString="server=<SERVERNAME>;port=3306;database=<DATABASE>;user=<USER>;password=<PASSWORD>" \
+      --from-literal=globalSettings__yubico__clientId="REPLACE" \
+      --from-literal=globalSettings__yubico__key="REPLACE" \
+      --from-literal=globalSettings__hibpApiKey="REPLACE" \
+  ```
+
+- With external PostgreSQL server
+
+  ```shell
+  kubectl create secret generic custom-secret -n bitwarden\
+      --from-literal=globalSettings__installation__id="REPLACE" \
+      --from-literal=globalSettings__installation__key="REPLACE" \
+      --from-literal=globalSettings__mail__smtp__username="REPLACE" \
+      --from-literal=globalSettings__mail__smtp__password="REPLACE" \
+      --from-literal=globalSettings__postgreSql__connectionString="Host=<SERVERNAME>;Port=5432;Database=<DATABASE>;Username=<USER>;Password=<PASSWORD>" \
       --from-literal=globalSettings__yubico__clientId="REPLACE" \
       --from-literal=globalSettings__yubico__key="REPLACE" \
       --from-literal=globalSettings__hibpApiKey="REPLACE" \
