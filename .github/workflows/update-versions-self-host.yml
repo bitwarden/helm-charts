@@ -75,7 +75,7 @@ jobs:
           fi
         working-directory: charts/self-host/templates
 
-      - name: Verify if image versions are on Docker Hub
+      - name: Verify if image versions are on GHCR
         id: verify-versions
         env:
           COREVERSION: ${{ steps.get-core.outputs.version }}

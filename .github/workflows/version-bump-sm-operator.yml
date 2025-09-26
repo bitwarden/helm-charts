@@ -7,18 +7,20 @@ on:
         description: "New Version"
         required: true
 
+env:
+  _BRANCH: main
+  _BOT_NAME: "bw-ghapp[bot]"
+  _BOT_EMAIL: "178206702+bw-ghapp[bot]@users.noreply.github.com"
+
 jobs:
   bump_version:
     name: "Bump Version to ${{ inputs.version_number }}"
     runs-on: ubuntu-22.04
-    environment: Production
     permissions:
       contents: write
       pull-requests: write
       id-token: write
     steps:
-      - name: Checkout Branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Log in to Azure
         uses: bitwarden/gh-actions/azure-login@main
@@ -27,26 +29,35 @@ jobs:
           tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           client_id: ${{ secrets.AZURE_CLIENT_ID }}
 
-      - name: Retrieve secrets
-        id: retrieve-secrets
+      - name: Get Azure Key Vault secrets
+        id: get-kv-secrets
         uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
-          keyvault: "bitwarden-ci"
-          secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
+          keyvault: gh-org-bitwarden
+          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
 
       - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
+      - name: Generate GH App token
+        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2.1.1
+        id: app-token
         with:
-          gpg_private_key: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
-          passphrase: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key-passphrase }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
+          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
+          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Checkout Branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ env._BRANCH }}
+          token:  ${{ steps.app-token.outputs.token }}
 
       - name: "Create version_bump_${{ inputs.version_number }} branch"
-        run: git switch -c version_bump_${{ inputs.version_number }}
+        env:
+          VERSION_NUMBER: ${{ inputs.version_number }}
+        run: git switch -c "version_bump_$VERSION_NUMBER"
 
       - name: Bump Version
         uses: bitwarden/gh-actions/version-bump@main
@@ -56,8 +67,8 @@ jobs:
 
       - name: Setup git
         run: |
-          git config --local user.email "106330231+bitwarden-devops-bot@users.noreply.github.com"
-          git config --local user.name "bitwarden-devops-bot"
+          git config --local user.name "$_BOT_NAME"
+          git config --local user.email "$_BOT_EMAIL"
 
       - name: Check if version changed
         id: version-changed
@@ -71,11 +82,15 @@ jobs:
 
       - name: Commit files
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Bumped version to ${{ inputs.version_number }}" -a
+        env:
+          VERSION_NUMBER: ${{ inputs.version_number }}
+        run: git commit -m "Bumped version to $VERSION_NUMBER" -a
 
       - name: Push changes
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git push -u origin version_bump_${{ inputs.version_number }}
+        env:
+          VERSION_NUMBER: ${{ inputs.version_number }}
+        run: git push -u origin "version_bump_$VERSION_NUMBER"
 
       - name: Create Version PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
@@ -84,6 +99,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           BASE_BRANCH: main
           TITLE: "Bump version to ${{ inputs.version_number }}"
+          VERSION_NUMBER: ${{ inputs.version_number }}
         run: |
           gh pr create --title "$TITLE" \
             --base "$BASE" \
@@ -99,4 +115,4 @@ jobs:
               - [X] Other
 
               ## Objective
-              Automated version bump to ${{ inputs.version_number }}"
+              Automated version bump to $VERSION_NUMBER"
