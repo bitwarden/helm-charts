@@ -384,8 +384,8 @@ supportComponents:
       tag: 3.5.2
   kubectl:
     image:
-      name: bitnami/kubectl
-      tag: 1.33
+      name: ghcr.io/bitwarden/helm-charts/kubectl
+      tag: 1.34
 
 # Data volume sizes for shared PVCs
 volume:
