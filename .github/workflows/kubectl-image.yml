@@ -1,0 +1,47 @@
+name: Build and push kubectl image
+
+on:
+  workflow_dispatch:
+    inputs:
+      kubectl_version:
+        description: "kubectl version"
+        required: false
+        default: "1.34"
+      push:
+        description: "Push image to GitHub Container Registry"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  build-docker:
+    name: Build and push kubectl Docker image
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout Bitnami repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: bitnami/containers
+          ref: main
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push kubectl image
+        id: build-docker
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: ./bitnami/kubectl/${{ inputs.kubectl_version }}/debian-12
+          file: ./bitnami/kubectl/${{ inputs.kubectl_version }}/debian-12/Dockerfile
+          push: 
+          tags: |
+            ghcr.io/helm-charts/kubectl:latest
+            ghcr.io/helm-charts/kubectl:${{ inputs.kubectl_version }}
