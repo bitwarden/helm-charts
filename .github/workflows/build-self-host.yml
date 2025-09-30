@@ -33,11 +33,11 @@ jobs:
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: ./bitnami/kubectl
-          file: ./bitnami/kubectl/{{ env.KUBECTL_VERSION }}/debian-12/Dockerfile
+          file: ./bitnami/kubectl/${{ env.KUBECTL_VERSION }}/debian-12/Dockerfile
           push: false
           tags: |
             ghcr.io/helm-charts/kubectl:latest
-            ghcr.io/helm-charts/kubectl:{{ env.KUBECTL_VERSION }}
+            ghcr.io/helm-charts/kubectl:${{ env.KUBECTL_VERSION }}
 
   build-self-host:
     name: Build Self Host
