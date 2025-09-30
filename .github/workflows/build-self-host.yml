@@ -32,7 +32,7 @@ jobs:
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
-          context: ./bitnami/kubectl
+          context: ./bitnami/kubectl/${{ env.KUBECTL_VERSION }}/debian-12
           file: ./bitnami/kubectl/${{ env.KUBECTL_VERSION }}/debian-12/Dockerfile
           push: false
           tags: |
