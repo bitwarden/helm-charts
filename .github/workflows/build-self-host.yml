@@ -8,7 +8,37 @@ on:
       - ".github/workflows/**"
   workflow_dispatch:
 
+env:
+  KUBECTL_VERSION: "1.34"
+
 jobs:
+  build-kubctl:
+    name: Build kubectl image
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - name: Checkout Bitnami repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: bitnami/containers
+          ref: main
+
+      - name: Build and push Docker image
+        id: build-docker
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        with:
+          context: ./bitnami/kubectl
+          file: ./bitnami/kubectl/{{ env.KUBECTL_VERSION }}/debian-12/Dockerfile
+          push: false
+          tags: |
+            ghcr.io/helm-charts/kubectl:latest
+            ghcr.io/helm-charts/kubectl:{{ env.KUBECTL_VERSION }}
+
   build-self-host:
     name: Build Self Host
     uses: ./.github/workflows/_build.yml
