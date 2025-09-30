@@ -43,5 +43,5 @@ jobs:
           file: ./bitnami/kubectl/${{ inputs.kubectl_version }}/debian-12/Dockerfile
           push: ${{ inputs.push }}
           tags: |
-            ghcr.io/helm-charts/kubectl:latest
-            ghcr.io/helm-charts/kubectl:${{ inputs.kubectl_version }}
+            ghcr.io/bitwarden/helm-charts/kubectl:latest
+            ghcr.io/bitwarden/helm-charts/kubectl:${{ inputs.kubectl_version }}
