@@ -28,6 +28,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
@@ -35,7 +36,7 @@ jobs:
       - name: Install Kubepug
         run: |
           KUBEPUG_VERSION=$(curl -L --silent "https://api.github.com/repos/rikatz/kubepug/releases/latest" | jq -r .tag_name)
-          wget -q https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz
+          wget -q "https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz"
 
           # Extract and setup binary in path
           tar -xf kubepug_linux_amd64.tar.gz
@@ -68,6 +69,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
@@ -86,13 +88,17 @@ jobs:
 
       - name: Run chart-testing (list-changed)
         id: list-changed
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          CHANGED=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          CHANGED=$(ct list-changed --target-branch "${_DEFAULT_BRANCH}")
           if [[ -n "$CHANGED" ]]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "changed-list<<EOF" >> $GITHUB_OUTPUT
-            echo "$CHANGED" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            {
+              echo "changed=true"
+              echo "changed-list<<EOF"
+              echo "$CHANGED"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create kind cluster
@@ -107,7 +113,9 @@ jobs:
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: ct install --target-branch "${_DEFAULT_BRANCH}" --skip-clean-up --namespace bitwarden
 
       - name: Test install (self-host)
         if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'self-host')
@@ -126,7 +134,7 @@ jobs:
 
           echo "*****HOME*****"
           home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo $home | lynx -stdin -dump -width=100
+          echo "$home" | lynx -stdin -dump -width=100
           httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${home}" | grep -Pio 'Bitwarden Web Vault')
           if [[ ${httpCode} -ne 200 ]]; then
@@ -142,7 +150,7 @@ jobs:
 
           echo "*****API/CONFIG*****"
           config=$(curl -Ls https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo $config | lynx -stdin -dump -width=100
+          echo "$config" | lynx -stdin -dump -width=100
           httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
           if [[ ${httpCode} -ne 200 ]]; then
@@ -158,7 +166,7 @@ jobs:
 
           echo "*****ADMIN*****"
           admin=$(curl -Ls https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo $admin | lynx -stdin -dump -width=100
+          echo "$admin" | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${admin}" | grep -Po "We'll email you a secure login link")
@@ -202,7 +210,7 @@ jobs:
 
           echo "*****PODS*****"
           pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 1/1)
-          echo $pods
+          echo "$pods"
 
           if [[ -z "$pods" ]]; then
             echo "::error::No pods found."

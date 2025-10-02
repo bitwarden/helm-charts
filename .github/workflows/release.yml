@@ -28,6 +28,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
+          persist-credentials: false
 
       - name: Log in to Azure
         uses: bitwarden/gh-actions/azure-login@main
