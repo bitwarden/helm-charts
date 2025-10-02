@@ -27,6 +27,7 @@ jobs:
         with:
           repository: bitnami/containers
           ref: main
+          persist-credentials: false
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
@@ -38,10 +39,13 @@ jobs:
       - name: Build and push kubectl image
         id: build-docker
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        env:
+          _KUBECTL_VERSION: ${{ inputs.kubectl_version }}
+          _INPUT_PUSH: ${{ inputs.push }}
         with:
-          context: ./bitnami/kubectl/${{ inputs.kubectl_version }}/debian-12
-          file: ./bitnami/kubectl/${{ inputs.kubectl_version }}/debian-12/Dockerfile
-          push: ${{ inputs.push }}
+          context: ./bitnami/kubectl/${_KUBECTL_VERSION}/debian-12
+          file: ./bitnami/kubectl/${_KUBECTL_VERSION}/debian-12/Dockerfile
+          push: ${_INPUT_PUSH}
           tags: |
             ghcr.io/bitwarden/helm-charts/kubectl:latest
-            ghcr.io/bitwarden/helm-charts/kubectl:${{ inputs.kubectl_version }}
+            ghcr.io/bitwarden/helm-charts/kubectl:${_KUBECTL_VERSION}

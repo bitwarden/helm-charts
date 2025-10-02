@@ -22,6 +22,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env._BRANCH }}
+          persist-credentials: false
 
       - name: Get Latest Operator Version
         id: get-operator-version
@@ -41,10 +42,10 @@ jobs:
           echo "Latest Operator Version: $LATEST_OPERATOR_VERSION"
           if [ "$OPERATOR_VERSION" != "$LATEST_OPERATOR_VERSION" ]; then
             echo "Needs Operator update!"
-            echo "update=1" >> $GITHUB_OUTPUT
-            echo "version=$LATEST_OPERATOR_VERSION" >> $GITHUB_OUTPUT
+            echo "update=1" >> "$GITHUB_OUTPUT"
+            echo "version=$LATEST_OPERATOR_VERSION" >> "$GITHUB_OUTPUT"
           else
-            echo "update=0" >> $GITHUB_OUTPUT
+            echo "update=0" >> "$GITHUB_OUTPUT"
           fi
         working-directory: charts/sm-operator
 
@@ -87,19 +88,21 @@ jobs:
         with:
           ref: ${{ env._BRANCH }}
           token:  ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
 
       - name: Create Update Versions Branch
         run: |
           PR_BRANCH=update-versions-$GITHUB_RUN_ID
-          echo "PR_BRANCH=$PR_BRANCH" >> $GITHUB_ENV
-          git switch -c $PR_BRANCH
-          git push -u origin $PR_BRANCH
+          echo "PR_BRANCH=$PR_BRANCH" >> "$GITHUB_ENV"
+          git switch -c "$PR_BRANCH"
+          git push -u origin "$PR_BRANCH"
 
       - name: Checkout Update Versions Branch
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ env.PR_BRANCH }}
           token:  ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
 
       - name: Update Chart appVersion
         env:
@@ -114,7 +117,7 @@ jobs:
           git commit -m "Updated operator version" -a
 
       - name: Push changes
-        run: git push -u origin $PR_BRANCH
+        run: git push -u origin "$PR_BRANCH"
 
       - name: Create Update Versions PR
         env:

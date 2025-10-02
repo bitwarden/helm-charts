@@ -53,6 +53,7 @@ jobs:
         with:
           ref: ${{ env._BRANCH }}
           token:  ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
 
       - name: "Create version_bump_${{ inputs.version_number }} branch"
         env:
@@ -74,9 +75,9 @@ jobs:
         id: version-changed
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "changes_to_commit=TRUE" >> $GITHUB_OUTPUT
+            echo "changes_to_commit=TRUE" >> "$GITHUB_OUTPUT"
           else
-            echo "changes_to_commit=FALSE" >> $GITHUB_OUTPUT
+            echo "changes_to_commit=FALSE" >> "$GITHUB_OUTPUT"
             echo "No changes to commit!";
           fi
 
