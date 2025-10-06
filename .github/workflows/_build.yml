@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
@@ -61,18 +63,22 @@ jobs:
 
       - name: Package Helm chart
         id: helm_package
+        env:
+          _CHART_NAME: ${{ inputs.chart_name }}
         run: |
           helm package \
             --sign \
             --key "DevOps Team" \
             --keyring private.gpg \
             --passphrase-file .passphrase \
-            charts/${{ inputs.chart_name }}
-          PKG_NAME=$(ls *.tgz)
+            "charts/${_CHART_NAME}"
+          PKG_NAME=$(ls ./*.tgz)
           echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Verify Helm chart
-        run: helm verify ${{ steps.helm_package.outputs.name }} --keyring public.gpg
+        env:
+          _HELM_OUTPUT_NAME: ${{ steps.helm_package.outputs.name }}
+        run: helm verify "${_HELM_OUTPUT_NAME}" --keyring public.gpg
 
       - name: Upload Helm chart artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
