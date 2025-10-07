@@ -544,7 +544,7 @@ jobs:
     podAnnotations: {}
 
 #
-# Configure service account
+# Configure service account for pre- and post-install hooks
 #
 serviceAccount:
   name: service-account
