@@ -1,8 +1,8 @@
 {{- define "bitwarden.coreVersionDefault" -}}
-{{- "2024.4.1" -}}
+{{- "2025.9.2" -}}
 {{- end -}}
 {{- define "bitwarden.webVersionDefault" -}}
-{{- "2024.4.1" -}}
+{{- "2025.9.1" -}}
 {{- end -}}
 
 {{/*

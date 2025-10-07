@@ -1,4 +1,3 @@
----
 name: Tests
 
 on:
@@ -11,108 +10,115 @@ on:
     paths:
       - 'charts/**'
   workflow_dispatch:
+    inputs: {}
+  workflow_call:
+    inputs: {}
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-  test:
-    name: Test Helm charts
-    runs-on: ubuntu-22.04
+  validate:
+    name: Kubernetes API validation
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+
+      - name: Install Kubepug
+        run: |
+          KUBEPUG_VERSION=$(curl -L --silent "https://api.github.com/repos/rikatz/kubepug/releases/latest" | jq -r .tag_name)
+          wget -q "https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz"
+
+          # Extract and setup binary in path
+          tar -xf kubepug_linux_amd64.tar.gz
+          mv kubepug /usr/local/bin
+          chmod +x /usr/local/bin/kubepug
+
+      - name: Kubepug test
+        run: |
+          # Get last three stable versions
+          VERSIONS=$(curl -L --silent "https://api.github.com/repos/kubernetes/kubernetes/releases" | jq -r '[.[] | select(.prerelease == false) | .tag_name] | .[0:3] | @json')
+
+          # Test each chart with the last three stable versions
+          echo "$VERSIONS" | jq -r '.[]' | while read -r version; do
+            find charts -mindepth 1 -maxdepth 1 -type d | while read -r chart; do
+              echo "Testing chart: $chart with Kubernetes version: $version"
+              helm template "$chart" --values "$chart/ci/test-values.yaml" --api-versions "$version" \
+                | kubepug --error-on-deprecated --error-on-deleted --k8s-version "$version" --input-file /dev/stdin
+            done
+          done
+
+  test:
+    name: Test Helm charts
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          version: 'v3.13.1'
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
 
       - name: Set up lynx
         run: sudo apt install lynx
 
       - name: Set up Python
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           check-latest: true
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@e6669bcd63d7cb57cb4380c33043eebe5d111992 # v2.6.1
+        uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b # v2.7.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          CHANGED=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          CHANGED=$(ct list-changed --target-branch "${_DEFAULT_BRANCH}")
           if [[ -n "$CHANGED" ]]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+            {
+              echo "changed=true"
+              echo "changed-list<<EOF"
+              echo "$CHANGED"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
-        uses: helm/kind-action@99576bfa6ddf9a8e612d83b513da5a75875caced # v1.9.0
+        uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
         with:
-          config: .github/workflows/config/cluster.yaml
+          config: scripts/cluster.yaml
 
       - name: Set up cluster
         if: steps.list-changed.outputs.changed == 'true'
-        run: |
-          installation_id=$(uuidgen)
-          echo $installation_id
-          installation_key=$(openssl rand -base64 12)
-          sa_password=$(openssl rand -base64 12)
-          cert_pass=$(openssl rand -base64 12)
-
-          #TLS setup
-          echo "Creating root CA cert"
-          openssl req -x509 -sha256 -days 1 -newkey rsa:2048 -keyout rootCA.key -out rootCA.crt -subj "/CN=Bitwarden Ingress" --passout pass:$cert_pass
-          echo "Generating TLS key"
-          openssl genrsa -out bitwarden.localhost.key 2048
-          echo "Generating TLS cert"
-          openssl req -key bitwarden.localhost.key -new -out bitwarden.localhost.csr --passin pass:$cert_pass -subj "/CN=bitwarden.localhost"
-
-          echo "Signing TLS cert"
-          cat > bitwarden.localhost.ext << EOF
-          authorityKeyIdentifier=keyid,issuer
-          basicConstraints=CA:FALSE
-          subjectAltName = @alt_names
-          [alt_names]
-          DNS.1 = bitwarden.localhost
-          EOF
-
-          openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in bitwarden.localhost.csr -out bitwarden.localhost.crt -days 1 -CAcreateserial -extfile bitwarden.localhost.ext  --passin pass:$cert_pass
-
-          echo "Exporting TLS certs to PEM"
-          openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$cert_pass
-          openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$cert_pass
-
-          #Ingress
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-          kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
-          sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
-
-          #Namespace
-          kubectl create ns bitwarden
-
-          kubectl config set-context --current --namespace=bitwarden
-
-          #Secrets
-          kubectl create secret generic custom-secret \
-            --from-literal=globalSettings__installation__id=$installation_id \
-            --from-literal=globalSettings__installation__key=$installation_key \
-            --from-literal=globalSettings__mail__smtp__username="REPLACE" \
-            --from-literal=globalSettings__mail__smtp__password="REPLACE" \
-            --from-literal=globalSettings__yubico__clientId="REPLACE" \
-            --from-literal=globalSettings__yubico__key="REPLACE" \
-            --from-literal=SA_PASSWORD=$sa_password
-
-          kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
+        run: ./scripts/setup.sh setup-cluster
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --skip-clean-up --namespace bitwarden
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: ct install --target-branch "${_DEFAULT_BRANCH}" --skip-clean-up --namespace bitwarden
 
-      - name: Test install
-        if: steps.list-changed.outputs.changed == 'true'
+      - name: Test install (self-host)
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'self-host')
         run: |
           #For review purposes
           echo "*****DEPLOYMENTS*****"
@@ -128,14 +134,14 @@ jobs:
 
           echo "*****HOME*****"
           home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo $home | lynx -stdin -dump -width=100
+          echo "$home" | lynx -stdin -dump -width=100
           httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
-          bodyCheck=$(echo "${home}" | grep -Po 'Bitwarden Web Vault')
+          bodyCheck=$(echo "${home}" | grep -Pio 'Bitwarden Web Vault')
           if [[ ${httpCode} -ne 200 ]]; then
             echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
             exit 1
           fi
-          if [[ "$bodyCheck" != "Bitwarden Web Vault" ]]; then
+          if [[ "${bodyCheck,,}" != "bitwarden web vault" ]]; then
             echo "::error::ERROR: Home page failed to load.  Please check body output above."
             exit 1
           fi
@@ -144,7 +150,7 @@ jobs:
 
           echo "*****API/CONFIG*****"
           config=$(curl -Ls https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo $config | lynx -stdin -dump -width=100
+          echo "$config" | lynx -stdin -dump -width=100
           httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
           if [[ ${httpCode} -ne 200 ]]; then
@@ -160,7 +166,7 @@ jobs:
 
           echo "*****ADMIN*****"
           admin=$(curl -Ls https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo $admin | lynx -stdin -dump -width=100
+          echo "$admin" | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${admin}" | grep -Po "We'll email you a secure login link")
@@ -174,6 +180,80 @@ jobs:
           fi
 
           echo "Admin OK."
+
+      - name: Log in to Azure
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
+      - name: Retrieve secrets
+        id: retrieve-secrets
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: "gh-helm-charts"
+          secrets: "helm-sm-operator-ci-test-access-token"
+
+      - name: Log out from Azure
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        uses: bitwarden/gh-actions/azure-logout@main
+
+      - name: Test install (sm-operator)
+        if: steps.list-changed.outputs.changed == 'true' && contains(steps.list-changed.outputs.changed-list,'sm-operator')
+        run: |
+          #For review purposes
+          echo "*****DEPLOYMENTS*****"
+          kubectl get deployments
+
+          echo "*****PODS*****"
+          pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 1/1)
+          echo "$pods"
+
+          if [[ -z "$pods" ]]; then
+            echo "::error::No pods found."
+            exit 1
+          fi
+
+          echo "*****CREATING AUTH SECRET*****"
+          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
+          echo "*****CREATING BW SECRET*****"
+          kubectl apply -f .github/config/sample-bw-secret.yaml
+
+          # Sleeping while BitwardenSecret is being created and synced
+          sleep 2s
+
+          echo "*****LOGS*****"
+          logs=$(kubectl logs -l app.kubernetes.io/name=sm-operator -c manager)
+          echo "$logs"
+
+          completed=$(echo "$logs"| grep "Completed sync for bitwarden/bitwardensecret-sample")
+
+          if [[ -z "$completed" ]]; then
+            echo "::error::Secret did not sync."
+            exit 1
+          fi
+
+          # Sleeping to ensure everything completes
+          sleep 2s
+
+
+          echo "*****RESULTING SECRETS*****"
+          secrets=$(kubectl get secrets)
+          echo "$secrets"
+          
+          secretCreated=$(echo "$secrets" | grep -Po "bw-sample-secret\s+Opaque\s+3")
+
+          if [[ -z "$secretCreated" ]]; then
+            echo "::error::Secret not created correctly."
+            exit 1
+          fi
+
+          echo "*****OPERATOR OK*****"
+        env:
+          AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
       - name: Clean-up
         if: steps.list-changed.outputs.changed == 'true'

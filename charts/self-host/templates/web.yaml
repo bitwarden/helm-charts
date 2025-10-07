@@ -38,9 +38,29 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- if or .Values.component.web.nodeSelector .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- if .Values.component.web.nodeSelector }}
+        {{ toYaml .Values.component.web.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.component.web.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.web.tolerations }}
+        {{ toYaml .Values.component.web.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.web.podServiceAccount }}
       serviceAccount: {{ .Values.component.web.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.web.podServiceAccount | quote }}
+    {{- end }}
+    {{- if .Values.component.web.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.web.podSecurityContext | indent 8 }}
     {{- end }}
       containers:
       - name: {{ template "bitwarden.web" . }}

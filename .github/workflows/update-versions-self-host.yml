@@ -1,5 +1,4 @@
----
-name: Update Versions
+name: Update Versions - Self Host
 
 on:
   workflow_dispatch:
@@ -16,11 +15,14 @@ jobs:
       core_version_update: ${{ steps.core-update.outputs.update }}
       web_version: ${{ steps.get-web.outputs.version }}
       web_version_update: ${{ steps.web-update.outputs.update }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: main
+          persist-credentials: false
 
       - name: Get Latest Core Version
         id: get-core
@@ -41,9 +43,9 @@ jobs:
           echo "Latest Core Version: $LATEST_CORE_VERSION"
           if [ "$CORE_VERSION" != "$LATEST_CORE_VERSION" ]; then
             echo "Needs Core update!"
-            echo "update=1" >> $GITHUB_OUTPUT
+            echo "update=1" >> "$GITHUB_OUTPUT"
           else
-            echo "update=0" >> $GITHUB_OUTPUT
+            echo "update=0" >> "$GITHUB_OUTPUT"
           fi
         working-directory: charts/self-host/templates
 
@@ -68,26 +70,26 @@ jobs:
           echo "Latest Web Version: $LATEST_WEB_VERSION"
           if [ "$WEB_VERSION" != "$LATEST_WEB_VERSION" ]; then
             echo "Needs Web update!"
-            echo "update=1" >> $GITHUB_OUTPUT
+            echo "update=1" >> "$GITHUB_OUTPUT"
           else
-            echo "update=0" >> $GITHUB_OUTPUT
+            echo "update=0" >> "$GITHUB_OUTPUT"
           fi
         working-directory: charts/self-host/templates
 
-      - name: Verify if image versions are on Docker Hub
+      - name: Verify if image versions are on GHCR
         id: verify-versions
         env:
           COREVERSION: ${{ steps.get-core.outputs.version }}
           WEBVERSION: ${{ steps.get-web.outputs.version }}
         run: |
           echo "Checking..."
-          
+
           coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
-          
+
           test_image() {
               image=$1
               version=$2
-              tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/bitwarden/$image/tags/"|jq '."results"[]["name"]' | grep $version | cat)
+              tag=$(skopeo list-tags "docker://ghcr.io/bitwarden/$image" | jq '.Tags[]' | grep "$version")
               if [[ -z "$tag" ]]; then
                   echo "$image - $version - NOT FOUND!"
                   echo "Stopping..."
@@ -98,16 +100,16 @@ jobs:
           }
 
           echo "Core Images ($COREVERSION)..."
-          
+
           for key in "${!coreimages[@]}"
           do
               image=${coreimages[$key]}
-              test_image $image $COREVERSION
+              test_image "$image" "$COREVERSION"
           done
 
           echo "Web Image ($WEBVERSION)..."
-          
-          test_image "web" $WEBVERSION
+
+          test_image "web" "$WEBVERSION"
 
   update-versions:
     name: "Update Versions"
@@ -120,11 +122,14 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     steps:
-      - name: Log in to Azure - CI subscription
-        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
         with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Retrieve secrets
         id: retrieve-secrets
@@ -134,14 +139,18 @@ jobs:
           secrets: "github-gpg-private-key,
             github-gpg-private-key-passphrase,
             github-pat-bitwarden-devops-bot-repo-scope"
+
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
       
       - name: Checkout Branch
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: main
+          persist-credentials: true
       
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
         with:
           gpg_private_key: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
           passphrase: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key-passphrase }}
@@ -156,9 +165,9 @@ jobs:
       - name: Create version branch
         id: create-branch
         run: |
-          NAME=version_bump_${{ github.ref_name }}_$(date +"%Y-%m-%d")
-          git switch -c $NAME
-          echo "name=$NAME" >> $GITHUB_OUTPUT
+          NAME=version_bump_${GITHUB_REF_NAME}_$(date +"%Y-%m-%d")
+          git switch -c "$NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Update Core Version
         env:
@@ -182,9 +191,9 @@ jobs:
         id: version-changed
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "changes_to_commit=TRUE" >> $GITHUB_OUTPUT
+            echo "changes_to_commit=TRUE" >> "$GITHUB_OUTPUT"
           else
-            echo "changes_to_commit=FALSE" >> $GITHUB_OUTPUT
+            echo "changes_to_commit=FALSE" >> "$GITHUB_OUTPUT"
             echo "No changes to commit!";
           fi
 
@@ -196,10 +205,11 @@ jobs:
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
           PR_BRANCH: ${{ steps.create-branch.outputs.name }}
-        run: git push -u origin $PR_BRANCH
+        run: git push -u origin "$PR_BRANCH"
 
       - name: Create versions PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+        id: create-pr
         env:
           GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
           PR_BRANCH: ${{ steps.create-branch.outputs.name }}
@@ -220,18 +230,18 @@ jobs:
               ## Objective
               Automated version updates to core and web versions in charts/self-host/templates/helpers.tpl.
               Automated version update to appVersion in charts/self-host/Chart.yaml")
-          echo "pr_number=${PR_URL##*/}" >> $GITHUB_OUTPUT
+          echo "pr_number=${PR_URL##*/}" >> "$GITHUB_OUTPUT"
 
       - name: Approve PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr review $PR_NUMBER --approve
+        run: gh pr review "$PR_NUMBER" --approve
 
       - name: Merge PR
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         env:
           GH_TOKEN: ${{ steps.retrieve-secrets.outputs.github-pat-bitwarden-devops-bot-repo-scope }}
           PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr merge $PR_NUMBER --squash --auto --delete-branch
+        run: gh pr merge "$PR_NUMBER" --squash --auto --delete-branch

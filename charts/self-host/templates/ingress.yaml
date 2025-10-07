@@ -21,7 +21,7 @@ metadata:
   annotations:
 {{- include "bitwarden.annotations" . | indent 4 }}
 spec:
-  ingressClassName: {{.Values.general.ingress.className}}
+  ingressClassName: {{ .Values.general.ingress.className }}
   rules:
     - host: {{ .Values.general.domain }}
       http:

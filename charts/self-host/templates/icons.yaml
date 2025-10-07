@@ -38,9 +38,29 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- if or .Values.component.icons.nodeSelector .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- if .Values.component.icons.nodeSelector }}
+        {{ toYaml .Values.component.icons.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.component.icons.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.icons.tolerations }}
+        {{ toYaml .Values.component.icons.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.icons.podServiceAccount }}
       serviceAccount: {{ .Values.component.icons.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.icons.podServiceAccount | quote }}
+    {{- end }}
+    {{- if .Values.component.icons.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.icons.podSecurityContext | indent 8 }}
     {{- end }}
     {{- if .Values.volume.logs.enabled }}
       initContainers:
@@ -81,7 +101,11 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
-        {{- if .Values.secrets.secretProviderClass}}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          mountPath: /etc/bitwarden/ca-certificates
+        {{- end }}
+        {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
@@ -103,6 +127,11 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.volume.caCertificates.configMapName }}
         {{- end }}
         {{- if .Values.volume.logs.enabled }}
         - name: applogs

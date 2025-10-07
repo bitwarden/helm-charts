@@ -557,7 +557,7 @@ Alternatively, you can create the secrets provider via the `rawManifets.preInsta
 
 Note the spots in the definition that say `"<REPLACE>"`. These will need to be updated for your environment. Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server. Those spots that will need to change have been marked with a comment. Finally, you can name the secrets in Azure Key Vault based on your own naming convention. If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
 
-The following commands would create these secrts in a Key Vault:
+The following commands would create these secrets in a Key Vault:
 
 ```shell
 kvname="kv-aks-bw-helm-cus-01"
@@ -940,7 +940,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/admin
+      name: ghcr.io/bitwarden/admin
     resources:
       requests:
         memory: "64Mi"
@@ -949,6 +949,7 @@ component:
         memory: "128Mi"
         cpu: "100m"
     securityContext:
+    podSecurityContext:
     podServiceAccount: bitwarden-sa
 ```
 
@@ -1242,7 +1243,7 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/admin
+      name: ghcr.io/bitwarden/admin
     resources:
       requests:
         memory: "64Mi"
@@ -1251,6 +1252,7 @@ component:
         memory: "128Mi"
         cpu: "100m"
     securityContext:
+    podSecurityContext:
     podServiceAccount: bitwarden-sa
 ```
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "github>bitwarden/renovate-config:pin-actions",
     ":prConcurrentLimit10",
     ":rebaseStalePrs",
@@ -11,13 +11,31 @@
     "github-actions",
     "helm-requirements",
     "helm-values",
-    "helmv3"
+    "helmv3",
+    "custom.regex"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^charts/self-host/values\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image:\\s*\\n\\s*name:\\s*(?<depName>docker\\.io/nginx|bitnami/kubectl)\\s*\\n\\s*tag:\\s*(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "docker"
+    }
   ],
   "packageRules": [
     {
       "groupName": "gh minor",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     }
   ]
 }

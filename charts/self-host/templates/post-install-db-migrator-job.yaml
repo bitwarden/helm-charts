@@ -33,9 +33,21 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- with .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.general.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       {{- if .Values.serviceAccount.name }}
       serviceAccountName: "{{ .Values.serviceAccount.name }}"
       {{- end }}
+    {{- if .Values.jobs.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.jobs.podSecurityContext | nindent 8 }}
+    {{- end }}
       initContainers:
       - name: wait-for-db
         command:
@@ -63,6 +75,10 @@ spec:
         ']
         {{- end }}
         image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
           {{- if .Values.database.enabled }}
           - name: mssql-data
@@ -80,8 +96,16 @@ spec:
               name: {{ .Values.secrets.secretName | quote }}
               {{- end }}
               key: globalSettings__sqlServer__connectionString
+        - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
+          value: /migrator
         image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
+        - name: migrator-extract-dir
+          mountPath: "/migrator"
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -92,6 +116,8 @@ spec:
         {{- end }}
       restartPolicy: Never
       volumes:
+        - name: migrator-extract-dir
+          emptyDir: {}
         {{- if .Values.database.enabled }}
         - name: mssql-data
           persistentVolumeClaim:

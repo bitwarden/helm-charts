@@ -38,9 +38,29 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- if or .Values.component.admin.nodeSelector .Values.general.nodeSelector }}
+      nodeSelector:
+        {{- if .Values.component.admin.nodeSelector }}
+        {{ toYaml .Values.component.admin.nodeSelector | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- if or .Values.component.admin.tolerations .Values.general.tolerations }}
+      tolerations:
+        {{- if .Values.component.admin.tolerations }}
+        {{ toYaml .Values.component.admin.tolerations | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.tolerations | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.admin.podServiceAccount }}
       serviceAccount: {{ .Values.component.admin.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.admin.podServiceAccount | quote }}
+    {{- end }}
+    {{- if .Values.component.admin.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.component.admin.podSecurityContext | indent 8 }}
     {{- end }}
     {{- if .Values.volume.logs.enabled }}
       initContainers:
@@ -92,6 +112,10 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: admin
         {{- end }}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          mountPath: /etc/bitwarden/ca-certificates
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -110,6 +134,11 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.volume.caCertificates.configMapName }}
         {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline

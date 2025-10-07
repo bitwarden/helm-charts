@@ -214,10 +214,32 @@
                         }
                     }
                 },
+                "sso": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "enforceSsoPolicyForAllUsers": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "labels": {
                     "type": "object",
                     "required": [],
                     "properties": {}
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "default": {}
+                },
+                "tolerations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "default": []
                 },
                 "volumeAccessMode": {
                     "type": "string",
@@ -263,6 +285,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -305,6 +340,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -453,6 +495,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -495,6 +550,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -643,6 +705,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -685,6 +760,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -833,6 +915,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -875,6 +970,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1023,6 +1125,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1065,6 +1180,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1213,6 +1335,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1255,6 +1390,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1403,6 +1545,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1445,6 +1600,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1596,6 +1758,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1638,6 +1813,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1786,6 +1968,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -1828,6 +2023,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -1978,6 +2180,19 @@
                             "required": [],
                             "properties": {}
                         },
+                        "nodeSelector": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "default": {}
+                        },
+                        "tolerations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            },
+                            "default": []
+                        },
                         "image": {
                             "type": "object",
                             "required": [],
@@ -2020,6 +2235,13 @@
                         "deploymentStrategy": {
                             "type": "string",
                             "enum": ["RollingUpdate", "Recreate"]
+                        },
+                        "podSecurityContext": {
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "required": []
                         },
                         "securityContext": {
                             "type": [
@@ -2158,6 +2380,26 @@
                             ]
                         }
                     }
+                }
+            }
+        },
+        "jobs": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "podSecurityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": []
+                },
+                "securityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": []
                 }
             }
         },
@@ -2406,6 +2648,13 @@
                 "updateStrategy": {
                     "type": "string",
                     "enum": ["RollingUpdate", "OnDelete"]
+                },
+                "podSecurityContext": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "required": []
                 },
                 "securityContext": {
                     "type": [

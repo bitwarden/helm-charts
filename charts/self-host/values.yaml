@@ -15,6 +15,10 @@ general:
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/use-regex: "true"
       # nginx.ingress.kubernetes.io/rewrite-target: /$1
+      # nginx.ingress.kubernetes.io/proxy-body-size: 500m
+      # nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      # nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      # nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -72,6 +76,14 @@ general:
     smtpPort: "587"
     # Whether your SMTP server uses an encryption protocol, "true" for SSL, "false" for TLS
     smtpSsl: "false"
+    # Specify true to explicitly trust the certificate presented by the SMTP server (not recommended for production).
+    smtpTrustServer: "false"
+    # Specify true to use SSL (not TLS) on port 25.
+    smtpSslOverride: "false"
+    # Specify true to force STARTTLS (Opportunistic TLS).
+    smtpStartTls: "false"
+  sso:
+    enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
   # Custom annotations to add throughout the installation
@@ -80,6 +92,9 @@ general:
   podLabels: {}
   # Additional default pod annotations
   podAnnotations: {}
+  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  nodeSelector: {}
+  tolerations: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
@@ -150,9 +165,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/admin
+      name: ghcr.io/bitwarden/admin
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -165,6 +184,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   api:
@@ -176,9 +197,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/api
+      name: ghcr.io/bitwarden/api
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -191,6 +216,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   attachments:
@@ -202,9 +229,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/attachments
+      name: ghcr.io/bitwarden/attachments
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -217,6 +248,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   events:
@@ -228,9 +261,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/events
+      name: ghcr.io/bitwarden/events
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -243,6 +280,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   icons:
@@ -254,9 +293,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/icons
+      name: ghcr.io/bitwarden/icons
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -269,6 +312,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   identity:
@@ -280,9 +325,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/identity
+      name: ghcr.io/bitwarden/identity
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -295,6 +344,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   notifications:
@@ -306,9 +357,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/notifications
+      name: ghcr.io/bitwarden/notifications
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -321,6 +376,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   scim:
@@ -334,9 +391,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/scim
+      name: ghcr.io/bitwarden/scim
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -349,6 +410,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   sso:
@@ -360,9 +423,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/sso
+      name: ghcr.io/bitwarden/sso
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -375,6 +442,8 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
   web:
@@ -386,9 +455,13 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    nodeSelector: {}
+    # Optionally add taint tolerations
+    tolerations: []
     # Image name, tag, and pull policy
     image:
-      name: bitwarden/web
+      name: ghcr.io/bitwarden/web
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -401,21 +474,24 @@ component:
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
     securityContext:
+    # This will set the Kubernetes pod security context
+    podSecurityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
     image:
-      name: bitwarden/mssqlmigratorutility
+      name: ghcr.io/bitwarden/mssqlmigratorutility
   certGenerator:
     image:
-      name: docker.io/nginx
-      tag: 1.25.3
+      name: alpine/openssl
+      tag: 3.5.2
   kubectl:
     image:
-      name: bitnami/kubectl
-      tag: 1.21
+      name: ghcr.io/bitwarden/helm-charts/kubectl
+      tag: 1.34
+
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
@@ -456,6 +532,18 @@ volume:
     # storageClass: "shared-storage"
     size: 1Gi
     labels: {}
+  caCertificates:
+    # Extra root certificates are disabled by default
+    enabled: false
+    # Load custom Certificates from the following ConfigMap
+    configMapName: cacert
+
+#
+# Set security contexts for pre- and post-install hooks
+#
+jobs:
+  securityContext: {}
+  podSecurityContext: {}
 
 #
 # Configure service account for pre- and post-install hooks
@@ -480,11 +568,15 @@ database:
   podLabels: {}
   # Additional annotations to the MSSQL pod
   podAnnotations: {}
+  # Optionally place deployment on specifc nodes
+  nodeSelector: {}
+  # Optionally add taint tolerations
+  tolerations: []
   # Image name, tag, and pull policy
   image:
     name: mcr.microsoft.com/mssql/server
     # Tag of the image to use. (Defaults to general.coreVersion)
-    tag: 2022-CU11-ubuntu-22.04
+    tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -528,6 +620,8 @@ database:
   updateStrategy: OnDelete
   # This will set the Kubernetes container security context
   securityContext:
+  # This will set the Kubernetes pod security context (including fsGroup)
+  podSecurityContext:
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount:
 
@@ -535,4 +629,14 @@ database:
 # Please see the chart README in GitHub for more information and examples.
 rawManifests:
   preInstall: []
+  # E.g. add a custom certificate to your bitwarden installation.
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: cacert
+  #   data:
+  #     rootca.crt: |
+  #       -----BEGIN CERTIFICATE-----
+  #       xxxx
+  #       -----END CERTIFICATE-----
   postInstall: []

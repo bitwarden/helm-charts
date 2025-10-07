@@ -1,0 +1,21 @@
+name: Build Self Host
+
+on:
+  push:
+    branches-ignore:
+      - "gh-pages"
+    paths-ignore:
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+jobs:
+  build-self-host:
+    name: Build Self Host
+    uses: ./.github/workflows/_build.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    with:
+      chart_name: self-host
+    secrets: inherit

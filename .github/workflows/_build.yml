@@ -1,37 +1,42 @@
----
-name: Build
+name: _build
 
 on:
-  push:
-    branches-ignore:
-      - "gh-pages"
-    paths-ignore:
-      - ".github/workflows/**"
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      chart_name:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
 
 jobs:
   build:
     name: Build Helm charts
     runs-on: ubuntu-22.04
     environment: Production
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - chart_name: self-host
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
         with:
           version: 'v3.13.1'
 
-      - name: Login to Azure - CI Subscription
-        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
         with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
 
       - name: Set up GPG key and passphrase
         run: |
@@ -53,25 +58,32 @@ jobs:
           gpg --dearmor private
           gpg --dearmor public
 
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
+
       - name: Package Helm chart
         id: helm_package
+        env:
+          _CHART_NAME: ${{ inputs.chart_name }}
         run: |
           helm package \
             --sign \
             --key "DevOps Team" \
             --keyring private.gpg \
             --passphrase-file .passphrase \
-            charts/${{ matrix.chart_name }}
-          PKG_NAME=$(ls *.tgz)
+            "charts/${_CHART_NAME}"
+          PKG_NAME=$(ls ./*.tgz)
           echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Verify Helm chart
-        run: helm verify ${{ steps.helm_package.outputs.name }} --keyring public.gpg
+        env:
+          _HELM_OUTPUT_NAME: ${{ steps.helm_package.outputs.name }}
+        run: helm verify "${_HELM_OUTPUT_NAME}" --keyring public.gpg
 
       - name: Upload Helm chart artifact
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: ${{ matrix.chart_name }}
+          name: ${{ inputs.chart_name }}
           path: |
             ${{ steps.helm_package.outputs.name }}
             ${{ steps.helm_package.outputs.name }}.prov
