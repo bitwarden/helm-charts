@@ -577,7 +577,8 @@ database:
   # Labels to add to the MSSQL deployment
   labels: {}
   # Annotations to add to the MSSQL deployment
-  annotations: {}
+  annotations:
+      argocd.argoproj.io/sync-wave: "-1"
   # Additional labels to the MSSQL pod
   podLabels: {}
   # Additional annotations to the MSSQL pod
