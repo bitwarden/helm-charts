@@ -541,8 +541,7 @@ jobs:
     # Additional job labels
     labels: {}
     # Additional job annotations
-    annotations:
-      argocd.argoproj.io/hook: PostSync
+    annotations: {}
     # Additional pod labels
     podLabels: {}
     # Additional pod annotations
