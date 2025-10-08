@@ -539,7 +539,7 @@ jobs:
     podAnnotations: {}
   cleanup:
     # Enabled by default, disable to retain resources after uninstall
-    enabled: true
+    enabled: false
     # Additional job labels
     labels: {}
     # Additional job annotations
