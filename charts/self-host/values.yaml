@@ -4,7 +4,7 @@ nameOverride: ""
 
 general:
   # Domain name for the service
-  domain: "REPLACE"
+  domain: "test.localhost"
   ingress:
     # Set to false if using a custom ingress
     enabled: true
