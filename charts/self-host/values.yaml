@@ -511,7 +511,8 @@ jobs:
       # Additional job labels
       labels: {}
       # Additional job annotations
-      annotations: {}
+      annotations:
+        argocd.argoproj.io/hook: PreSync
       # Additional pod labels
       podLabels: {}
       # Additional pod annotations
@@ -530,7 +531,8 @@ jobs:
     # Additional job labels
     labels: {}
     # Additional job annotations
-    annotations: {}
+    annotations:
+      argocd.argoproj.io/hook: PreSync
     # Additional pod labels
     podLabels: {}
     # Additional pod annotations
@@ -539,7 +541,8 @@ jobs:
     # Additional job labels
     labels: {}
     # Additional job annotations
-    annotations: {}
+    annotations:
+      argocd.argoproj.io/hook: PostSync
     # Additional pod labels
     podLabels: {}
     # Additional pod annotations
@@ -548,7 +551,8 @@ jobs:
     # Additional job labels
     labels: {}
     # Additional job annotations
-    annotations: {}
+    annotations:
+      argocd.argoproj.io/hook: PreSync
     # Additional pod labels
     podLabels: {}
     # Additional pod annotations
