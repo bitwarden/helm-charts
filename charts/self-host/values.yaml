@@ -98,7 +98,7 @@ general:
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
-  volumeAccessMode: "ReadWriteMany"
+  volumeAccessMode: "ReadWriteOnce"
   # Set to true to allow communication between your server and our cloud system. Doing so enables billing and license sync.  Please see: https://bitwarden.com/help/self-host-an-organization/#step-4-setup-billing-and-license-sync
   enableCloudCommunication: false
   # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
