@@ -6,6 +6,7 @@ metadata:
   name: {{ template "bitwarden.ingress" . }}
   namespace: {{ .Release.Namespace }}
   annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
     {{- if .Values.general.ingress.tls.clusterIssuer }}
     cert-manager.io/cluster-issuer: {{ .Values.general.ingress.tls.clusterIssuer }}
     {{- end }}

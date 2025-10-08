@@ -136,6 +136,11 @@ metadata:
 {{- with .Values.database.volume.log.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.database.volume.log.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   accessModes:
     {{- if .Values.database.volume.log.accessMode }}
@@ -166,6 +171,11 @@ metadata:
 {{- with .Values.database.volume.backups.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.database.volume.backups.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   accessModes:
     {{- if .Values.database.volume.backups.accessMode }}
@@ -194,6 +204,11 @@ metadata:
     app.kubernetes.io/component: mssql-data
 {{ include "bitwarden.labels" . | indent 4 }}
 {{- with .Values.database.volume.data.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.database.volume.data.annotations }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:

@@ -250,6 +250,46 @@ Edit values.yaml and update to suit your configuration.
 
 Minimal required to get a running installation:
 
+#### Argo CD support
+
+To deploy the chart using Argo CD, you must use Argo CD sync phases and hooks to deploy resources in order. You can do this by setting the Argo CD annotations on the jobs and database resources in `my-values.yaml` and disabling the cleanup job.
+
+> Refer to the [Argo CD documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/) for details about sync phases and hooks.
+
+Example configuration:
+
+```yaml
+# Set the Argo CD annotations on the Kubernetes jobs
+jobs:
+  db:
+    preInstallMigrator:
+      annotations:
+        argocd.argoproj.io/hook: Sync
+  setup:
+    annotations:
+      argocd.argoproj.io/hook: PreSync
+  secret:
+    annotations:
+      argocd.argoproj.io/hook: PreSync
+  cleanup:
+    enabled: false
+
+# Set the Argo CD annotations on the database resources
+database:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  volume:
+    backups:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    data:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    log:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+```
+
 ## Example Deployment on AKS
 
 Below is an example of deploying this chart on AKS using various ingress controllers and cert-manager to provision the certificate from LetsEncrypt.
