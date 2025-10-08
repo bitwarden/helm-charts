@@ -511,7 +511,8 @@ jobs:
       # Additional job labels
       labels: {}
       # Additional job annotations
-      annotations: {}
+      annotations:
+        argocd.argoproj.io/hook: Sync
       # Additional pod labels
       podLabels: {}
       # Additional pod annotations
