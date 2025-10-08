@@ -595,6 +595,7 @@ database:
       # storageClass: "shared-storage"
       size: 1Gi
       labels: {}
+      annotations: {}
     data:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
@@ -604,6 +605,7 @@ database:
       # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
+      annotations: {}
     log:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
@@ -613,6 +615,7 @@ database:
       # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
+      annotations: {}
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
   # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.
   updateStrategy: OnDelete
