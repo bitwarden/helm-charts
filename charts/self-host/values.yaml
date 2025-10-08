@@ -507,14 +507,25 @@ jobs:
   podSecurityContext: {}
 
   db:
-    # Additional job labels
-    labels: {}
-    # Additional job annotations
-    annotations: {}
-    # Additional pod labels
-    podLabels: {}
-    # Additional pod annotations
-    podAnnotations: {}
+    preInstallMigrator:
+      # Additional job labels
+      labels: {}
+      # Additional job annotations
+      annotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+    postInstallMigrator:
+      # Additional job labels
+      labels: {}
+      # Additional job annotations
+      annotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+
   setup:
     # Additional job labels
     labels: {}

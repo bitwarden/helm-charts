@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/component: post-install-db-migrator-job
 {{ include "bitwarden.labels" . | indent 4 }}
-{{- with .Values.jobs.db.labels }}
+{{- with .Values.jobs.db.postInstallMigrator.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
   annotations:
@@ -14,7 +14,7 @@ metadata:
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
 {{- include "bitwarden.annotations" . | indent 4 }}
-{{- with .Values.jobs.db.annotations }}
+{{- with .Values.jobs.db.postInstallMigrator.annotations }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
@@ -24,12 +24,12 @@ spec:
       labels:
         app.kubernetes.io/component: post-install-db-migrator-job
 {{ include "bitwarden.podLabels" . | indent 8 }}
-{{- with .Values.jobs.db.podLabels }}
+{{- with .Values.jobs.db.postInstallMigrator.podLabels }}
 {{ toYaml . | indent 8 }}
 {{- end }}
       annotations:
 {{- include "bitwarden.podAnnotations" . | indent 8 }}
-{{- with .Values.jobs.db.podAnnotations }}
+{{- with .Values.jobs.db.postInstallMigrator.podAnnotations }}
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
