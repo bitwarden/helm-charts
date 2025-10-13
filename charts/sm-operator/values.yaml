@@ -17,7 +17,6 @@ settings:
 # Settings specific to the pod containers
 containers:
   manager:
-    terminationGracePeriodSeconds: 10
     image:
       # NOTE:  This should be updated before the final PR
       repository: ghcr.io/bitwarden/sm-operator
@@ -31,6 +30,7 @@ containers:
       requests:
         cpu: 10m
         memory: 64Mi
+    terminationGracePeriodSeconds: 10
 
   # Provide annotations for the service account
   serviceAccount:
