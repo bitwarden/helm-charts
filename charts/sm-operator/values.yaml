@@ -17,6 +17,7 @@ settings:
 # Settings specific to the pod containers
 containers:
   manager:
+    terminationGracePeriodSeconds: 10
     image:
       # NOTE:  This should be updated before the final PR
       repository: ghcr.io/bitwarden/sm-operator
@@ -55,3 +56,17 @@ metricsService:
     protocol: TCP
     targetPort: https
   type: ClusterIP
+
+livenessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
