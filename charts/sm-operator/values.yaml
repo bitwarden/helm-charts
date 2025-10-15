@@ -30,6 +30,7 @@ containers:
       requests:
         cpu: 10m
         memory: 64Mi
+    terminationGracePeriodSeconds: 10
 
   # Provide annotations for the service account
   serviceAccount:
@@ -55,3 +56,17 @@ metricsService:
     protocol: TCP
     targetPort: https
   type: ClusterIP
+
+livenessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3

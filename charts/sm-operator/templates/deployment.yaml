@@ -62,15 +62,21 @@ spec:
           httpGet:
             path: /healthz
             port: 8081
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
         name: manager
         readinessProbe:
           httpGet:
             path: /readyz
             port: 8081
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
         resources: {{- toYaml .Values.containers.manager.resources | nindent 10
           }}
         securityContext:
@@ -85,4 +91,4 @@ spec:
           type: RuntimeDefault
         {{- end }}
       serviceAccountName: {{ include "sm-operator.fullname" . }}-controller-manager
-      terminationGracePeriodSeconds: 10
+      terminationGracePeriodSeconds: {{ .Values.containers.manager.terminationGracePeriodSeconds }}
