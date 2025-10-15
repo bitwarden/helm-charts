@@ -42,6 +42,10 @@
                                 }
                             },
                             "type": "object"
+                        },
+                        "terminationGracePeriodSeconds": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     },
                     "type": "object"
@@ -125,6 +129,56 @@
                 },
                 "replicas": {
                     "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "livenessProbe": {
+            "properties": {
+                "initialDelaySeconds": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "periodSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "timeoutSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "successThreshold": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "failureThreshold": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+          "type": "object"
+        },
+        "readinessProbe": {
+            "properties": {
+                "initialDelaySeconds": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "periodSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "timeoutSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "successThreshold": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "failureThreshold": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             },
             "type": "object"
