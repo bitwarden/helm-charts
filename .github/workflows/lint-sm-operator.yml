@@ -3,12 +3,14 @@ name: Lint sm-operator
 on:
   pull_request:
     paths:
-      - 'charts/sm-operator/**'
+      - "charts/sm-operator/**"
+      - ".github/workflows/lint-sm-operator.yml"
+      - ".github/workflows/_lint_chart.yml"
   push:
     branches:
       - main
     paths:
-      - 'charts/sm-operator/**'
+      - "charts/sm-operator/**"
   workflow_dispatch:
 
 permissions:
