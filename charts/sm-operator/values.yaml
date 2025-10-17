@@ -14,6 +14,13 @@ settings:
   # The number of operator pod replicas to run.  When in doubt, leave at 1
   replicas: 1
 
+# Optional: Custom labels to be applied to all resources created by the operator
+# This can be used to identify the Bitwarden Secrets Manager project or for any other labeling needs
+# Example:
+#   commonLabels:
+#     project-id: "my-project-id"
+commonLabels: {}
+
 # Settings specific to the pod containers
 containers:
   manager:
