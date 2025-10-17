@@ -1,0 +1,22 @@
+name: Lint self-host
+
+on:
+  pull_request:
+    paths:
+      - 'charts/self-host/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/self-host/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-self-host:
+    name: Lint self-host chart
+    uses: ./.github/workflows/_lint_chart.yml
+    with:
+      chart_name: self-host
