@@ -9,8 +9,7 @@ general:
     # Set to false if using a custom ingress
     enabled: true
     # Current supported values for ingress type include: nginx
-    className:
-      "nginx"
+    className: "nginx"
       ## - Annotations to add to the Ingress resource.
     annotations:
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
