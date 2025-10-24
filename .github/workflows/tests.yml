@@ -219,6 +219,32 @@ jobs:
             exit 1
           fi
 
+          echo "*****VERIFYING CUSTOM LABELS*****"
+
+          # Array of resource types to check for custom labels
+          resource_types=("deployment" "service" "serviceaccount" "configmap")
+          failed_resources=()
+
+          # Loop through each resource type and verify custom labels
+          for resource_type in "${resource_types[@]}"; do
+            echo "Checking $resource_type for custom labels..."
+            labels=$(kubectl get "$resource_type" -l app.kubernetes.io/name=sm-operator -o jsonpath='{.items[0].metadata.labels}')
+            echo "$resource_type labels: $labels"
+
+            if ! echo "$labels" | grep -q "test-label"; then
+              echo "::error::Custom label 'test-label' not found on $resource_type."
+              failed_resources+=("$resource_type")
+            fi
+          done
+
+          # Exit if any resources failed the check
+          if [ ${#failed_resources[@]} -gt 0 ]; then
+            echo "::error::Custom labels verification failed for: ${failed_resources[*]}"
+            exit 1
+          fi
+
+          echo "Custom labels verified successfully on all resources!"
+
           echo "*****CREATING AUTH SECRET*****"
           kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
           echo "*****CREATING BW SECRET*****"

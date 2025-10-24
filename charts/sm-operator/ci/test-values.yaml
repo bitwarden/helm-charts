@@ -1,3 +1,8 @@
+# Custom labels to be applied to all resources created by the operator
+# These labels are used in CI testing to verify the custom label feature works correctly
+commonLabels:
+  test-label: test-value
+
 settings:
   # How often the secrets synchronize in seconds.  Minimum value is 180.
   bwSecretsManagerRefreshInterval: 300
