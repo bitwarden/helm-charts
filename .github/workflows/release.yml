@@ -84,7 +84,8 @@ jobs:
       - name: Release Helm chart
         if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
         env:
-          CR_GENERATE_RELEASE_NOTES: true
+          CR_GENERATE_RELEASE_NOTES: false
+          CR_RELEASE_NOTES_FILE: CHANGELOG.md # Relative path to use chart specific CHANGELOG.md from respective chart directory
           CR_MAKE_RELEASE_LATEST: true
           CR_SKIP_EXISTING: true
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
