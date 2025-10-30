@@ -28,6 +28,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
+          fetch-tags: true
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
@@ -78,8 +79,9 @@ jobs:
               COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse -- "charts/${_CHART_NAME}")
             fi
           
+          changelog_file="charts/${_CHART_NAME}/CHANGELOG.md"
           # Create release notes file
-          cat > charts/${_CHART_NAME}/CHANGELOG.md << EOF
+          cat > "$changelog_file" << EOF
           # Release Notes for $_CHART_NAME
           
           ## Changes since $LAST_TAG
@@ -88,7 +90,7 @@ jobs:
           EOF
           
           echo "Release notes generated:"
-          cat CHANGELOG.md
+          cat "$changelog_file"
 
       - name: Package Helm chart
         id: helm_package
