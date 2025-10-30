@@ -12,6 +12,9 @@ permissions:
   id-token: write
   packages: write
 
+env:
+  _CHART_NAME: ${{ inputs.chart_name }}
+
 jobs:
   build:
     name: Build Helm charts
@@ -61,10 +64,34 @@ jobs:
       - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          # Get the last release tag
+            LAST_TAG=$(git describe --tags --abbrev=0 --match="${_CHART_NAME}-*" 2>/dev/null || echo "")
+          
+            if [ -z "$LAST_TAG" ]; then
+              echo "No previous release tag found, generating notes from initial commit"
+              COMMITS=$(git log --pretty=format:"- %s (%h)" --reverse -- "charts/${_CHART_NAME}")
+            else
+              echo "Generating release notes since tag: $LAST_TAG"
+              COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse -- "charts/${_CHART_NAME}")
+            fi
+          
+          # Create release notes file
+          cat > charts/${_CHART_NAME}/CHANGELOG.md << EOF
+          # Release Notes for $_CHART_NAME
+          
+          ## Changes since $LAST_TAG
+          
+          $COMMITS
+          EOF
+          
+          echo "Release notes generated:"
+          cat CHANGELOG.md
+
       - name: Package Helm chart
         id: helm_package
-        env:
-          _CHART_NAME: ${{ inputs.chart_name }}
         run: |
           helm package \
             --sign \
