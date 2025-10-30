@@ -73,6 +73,7 @@ jobs:
             LAST_TAG=$(git describe --tags --abbrev=0 --match="${_CHART_NAME}-*" 2>/dev/null || echo "")
           
             if [ -z "$LAST_TAG" ]; then
+              LAST_TAG="initial commit"
               echo "No previous release tag found, generating notes from initial commit"
               COMMITS=$(git log --pretty=format:"- %s (%h)" --reverse -- "charts/${_CHART_NAME}")
             else
