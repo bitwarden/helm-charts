@@ -19,7 +19,6 @@ jobs:
   build:
     name: Build Helm charts
     runs-on: ubuntu-22.04
-    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || null }}
     permissions:
       contents: read
       id-token: write
