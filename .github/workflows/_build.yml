@@ -68,29 +68,105 @@ jobs:
 
       - name: Generate release notes
         id: release_notes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Get the last release tag
-            LAST_TAG=$(git describe --tags --abbrev=0 --match="${_CHART_NAME}-*" 2>/dev/null || echo "")
-          
-            if [ -z "$LAST_TAG" ]; then
-              LAST_TAG="initial commit"
-              echo "No previous release tag found, generating notes from initial commit"
-              COMMITS=$(git log --pretty=format:"- %s (%h)" --reverse -- "charts/${_CHART_NAME}")
-            else
-              echo "Generating release notes since tag: $LAST_TAG"
-              COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse -- "charts/${_CHART_NAME}")
-            fi
-          
+          last_tag=$(gh release list --exclude-pre-releases --exclude-drafts --json "tagName" --limit 100 | jq -r --arg prefix "$_CHART_NAME" '.[] | select(.tagName | startswith($prefix)) | .tagName' | head -1)
+
+          if [ -z "$last_tag" ]; then
+            echo "No previous release tag found, generating notes from initial commit"
+            commit_range="$(git rev-list --max-parents=0 HEAD)..HEAD"
+          else
+            echo "Generating release notes since tag: $last_tag"
+            commit_range="${last_tag}..HEAD"
+          fi
+
           changelog_file="charts/${_CHART_NAME}/CHANGELOG.md"
-          # Create release notes file
-          cat > "$changelog_file" << EOF
-          # Release Notes for $_CHART_NAME
-          
-          ## Changes since $LAST_TAG
-          
-          $COMMITS
-          EOF
-          
+          chart_description=$(helm show chart "charts/${_CHART_NAME}" | yq -e '.description')
+          chart_version=$(helm show chart "charts/${_CHART_NAME}" | yq -e '.version')
+
+          # Initialize arrays for tracking
+          declare -A prs_found
+          declare -A contributors
+          declare -A new_contributors
+          whats_changed=""
+
+          # Get all commits for this chart
+          while IFS= read -r commit_hash; do
+            commit_msg=$(git log -1 --pretty=format:"%s" "$commit_hash")
+            commit_author=$(git log -1 --pretty=format:"%an" "$commit_hash")
+            commit_email=$(git log -1 --pretty=format:"%ae" "$commit_hash")
+
+            # Try to extract PR number from commit message (e.g., "message (#123)" or "Merge pull request #123")
+            pr_num=""
+            if [[ $commit_msg =~ \(#([0-9]+)\) ]]; then
+              pr_num="${BASH_REMATCH[1]}"
+            elif [[ $commit_msg =~ Merge\ pull\ request\ #([0-9]+) ]]; then
+              pr_num="${BASH_REMATCH[1]}"
+            elif [[ $commit_msg =~ \#([0-9]+) ]]; then
+              pr_num="${BASH_REMATCH[1]}"
+            fi
+
+            # If we found a PR number and haven't processed it yet
+            if [[ -n "$pr_num" ]] && [[ -z "${prs_found[$pr_num]}" ]]; then
+              prs_found[$pr_num]=1
+
+              # Try to get PR details from GitHub API
+              if pr_data=$(gh pr view "$pr_num" --json title,author,number,url 2>/dev/null); then
+                pr_title=$(echo "$pr_data" | jq -r '.title')
+                pr_author=$(echo "$pr_data" | jq -r '.author.login')
+                pr_url=$(echo "$pr_data" | jq -r '.url')
+
+                # Add to what's changed
+                whats_changed+="- ${pr_title} by [@${pr_author}](https://github.com/${pr_author}) in [#${pr_num}](${pr_url})"$'\n'
+
+                # Track contributor
+                contributors[$pr_author]=1
+
+                # Check if this is a new contributor (first PR)
+                pr_count=$(gh pr list --author "$pr_author" --state merged --limit 100 --json number | jq '. | length')
+                if [[ "$pr_count" -eq 1 ]]; then
+                  new_contributors[$pr_author]="[#${pr_num}](${pr_url})"
+                fi
+              else
+                # Fallback if API call fails - use commit info
+                whats_changed+="- ${commit_msg} (${commit_hash:0:7})"$'\n'
+              fi
+            elif [[ -z "$pr_num" ]]; then
+              # No PR found, add commit directly
+              whats_changed+="- ${commit_msg} (${commit_hash:0:7})"$'\n'
+            fi
+          done < <(git log "$commit_range" --pretty=format:"%H" --reverse -- "charts/${_CHART_NAME}")
+
+          # Build the changelog content
+          {
+            echo "$chart_description"
+            echo ""
+            echo "## What's Changed"
+            if [[ -n "$whats_changed" ]]; then
+              echo "$whats_changed"
+            else
+              echo "No changes found for this chart."
+            fi
+
+            # Add new contributors section if any
+            if [[ ${#new_contributors[@]} -gt 0 ]]; then
+              echo ""
+              echo "## New Contributors"
+              for contributor in "${!new_contributors[@]}"; do
+                pr_link="${new_contributors[$contributor]}"
+                echo "- [@${contributor}](https://github.com/${contributor}) made their first contribution in ${pr_link}"
+              done
+            fi
+
+            # Add full changelog link
+            if [[ -n "$last_tag" ]]; then
+              echo ""
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${last_tag}...${_CHART_NAME}-${chart_version}"
+            fi
+          } > "$changelog_file"
+
           echo "Release notes generated:"
           cat "$changelog_file"
 
