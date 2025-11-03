@@ -1,3 +1,8 @@
+# Custom labels to be applied to all resources created by the operator
+# These labels are used in CI testing to verify the custom label feature works correctly
+commonLabels:
+  test-label: test-value
+
 settings:
   # How often the secrets synchronize in seconds.  Minimum value is 180.
   bwSecretsManagerRefreshInterval: 300
@@ -28,18 +33,7 @@ containers:
       requests:
         cpu: 10m
         memory: 64Mi
-  kubeRbacProxy:
-    image:
-      repository: gcr.io/kubebuilder/kube-rbac-proxy
-      tag: v0.14.1
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      limits:
-        cpu: 500m
-        memory: 128Mi
-      requests:
-        cpu: 5m
-        memory: 64Mi
+
   # Provide annotations for the service account
   serviceAccount:
     annotations: {}

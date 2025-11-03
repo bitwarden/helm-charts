@@ -14,6 +14,13 @@ settings:
   # The number of operator pod replicas to run.  When in doubt, leave at 1
   replicas: 1
 
+# Optional: Custom labels to be applied to all resources created by the operator
+# This can be used to identify the Bitwarden Secrets Manager project or for any other labeling needs
+# Example:
+#   commonLabels:
+#     custom-label: custom-label-value
+commonLabels: {}
+
 # Settings specific to the pod containers
 containers:
   manager:
@@ -30,18 +37,8 @@ containers:
       requests:
         cpu: 10m
         memory: 64Mi
-  kubeRbacProxy:
-    image:
-      repository: gcr.io/kubebuilder/kube-rbac-proxy
-      tag: v0.14.1
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      limits:
-        cpu: 500m
-        memory: 128Mi
-      requests:
-        cpu: 5m
-        memory: 64Mi
+    terminationGracePeriodSeconds: 10
+
   # Provide annotations for the service account
   serviceAccount:
     annotations: {}
@@ -66,3 +63,17 @@ metricsService:
     protocol: TCP
     targetPort: https
   type: ClusterIP
+
+livenessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3

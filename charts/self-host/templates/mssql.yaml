@@ -12,6 +12,11 @@ metadata:
 {{- with .Values.database.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.database.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   serviceName: {{ template "bitwarden.mssql" . }}
   replicas: 1
@@ -27,6 +32,17 @@ spec:
         app.kubernetes.io/component: mssql
 {{ include "bitwarden.labels" . | indent 8 }}
 {{- with .Values.database.labels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.database.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{ include "bitwarden.annotations" . | indent 8 }}
+{{- with .Values.database.annotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.database.podAnnotations }}
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:

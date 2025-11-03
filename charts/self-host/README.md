@@ -250,6 +250,46 @@ Edit values.yaml and update to suit your configuration.
 
 Minimal required to get a running installation:
 
+#### Argo CD support
+
+To deploy the chart using Argo CD, you must use Argo CD sync phases and hooks to deploy resources in order. You can do this by setting the Argo CD annotations on the jobs and database resources in `my-values.yaml` and disabling the cleanup job.
+
+> Refer to the [Argo CD documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/) for details about sync phases and hooks.
+
+Example configuration:
+
+```yaml
+# Set the Argo CD annotations on the Kubernetes jobs
+jobs:
+  db:
+    preInstallMigrator:
+      annotations:
+        argocd.argoproj.io/hook: Sync
+  setup:
+    annotations:
+      argocd.argoproj.io/hook: PreSync
+  secret:
+    annotations:
+      argocd.argoproj.io/hook: PreSync
+  cleanup:
+    enabled: false
+
+# Set the Argo CD annotations on the database resources
+database:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  volume:
+    backups:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    data:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    log:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+```
+
 ## Example Deployment on AKS
 
 Below is an example of deploying this chart on AKS using various ingress controllers and cert-manager to provision the certificate from LetsEncrypt.
@@ -557,7 +597,7 @@ Alternatively, you can create the secrets provider via the `rawManifets.preInsta
 
 Note the spots in the definition that say `"<REPLACE>"`. These will need to be updated for your environment. Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server. Those spots that will need to change have been marked with a comment. Finally, you can name the secrets in Azure Key Vault based on your own naming convention. If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
 
-The following commands would create these secrts in a Key Vault:
+The following commands would create these secrets in a Key Vault:
 
 ```shell
 kvname="kv-aks-bw-helm-cus-01"
