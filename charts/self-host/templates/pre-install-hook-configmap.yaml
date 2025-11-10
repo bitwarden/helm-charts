@@ -41,9 +41,11 @@ data:
   globalSettings__logDirectory: "/dev/null"
 {{- end }}
 {{- if not (.Values.general.refreshTokens.enabled) }}
-  globalSettings__IdentityServer__ApplyAbsoluteRefreshTokenOnRefreshToken="true"
-  globalSettings__IdentityServer__AbsoluteRefreshTokenLifetimeSeconds={{ .Values.general.refreshTokens.absoluteRefreshTokenLifetimeSeconds | default "0" }}
-  globalSettings__IdentityServer__SlidingRefreshTokenLifetimeSeconds={{ .Values.general.refreshTokens.slidingRefreshTokenLifetimeSeconds | default "1" }}
+  globalSettings__IdentityServer__ApplyAbsoluteRefreshTokenOnRefreshToken: "true"
+  globalSettings__IdentityServer__AbsoluteRefreshTokenLifetimeSeconds: {{
+  .Values.general.refreshTokens.absoluteRefreshTokenLifetimeSeconds | default "0" | quote }}
+  globalSettings__IdentityServer__SlidingRefreshTokenLifetimeSeconds: {{
+  .Values.general.refreshTokens.slidingRefreshTokenLifetimeSeconds | default "1" | quote }}
 {{- end }}
   globalSettings__logRollBySizeLimit: ""
   globalSettings__syslog__destination: ""
@@ -51,7 +53,7 @@ data:
   globalSettings__licenseDirectory: "/etc/bitwarden/core/licenses"
   globalSettings__disableUserRegistration: {{ .Values.general.disableUserRegistration | quote }}
   globalSettings__enableCloudCommunication: {{ .Values.general.enableCloudCommunication | quote }}
-  globalSettings__baseServiceUri__cloudRegion: {{ .Values.general.cloudRegion }}
+  globalSettings__baseServiceUri__cloudRegion: {{ .Values.general.cloudRegion | quote }}
 {{- if eq .Values.general.cloudRegion "EU" }}
   globalSettings__installation__identityUri: "https://identity.bitwarden.eu"
   globalSettings__installation__apiUri: "https://api.bitwarden.eu"
