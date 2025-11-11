@@ -121,6 +121,7 @@ spec:
 #################
 # MSSQL Volumes #
 #################
+{{- if eq "sqlserver" (default "sqlserver" .Values.databaseProvider) }}
 {{- if .Values.database.enabled }}
 
 {{- if not .Values.database.volume.log.existingClaim }}
@@ -228,4 +229,5 @@ spec:
       storage: {{ .Values.database.volume.data.size }}
 {{- end }}
 
+{{- end }}
 {{- end }}
