@@ -1,4 +1,3 @@
-{{- $isCalVer := regexMatch "^[0-9]{4}\\." .Chart.Version }}
 {{- $chartVersion := .Chart.Version }}
 
 =====================================================
@@ -6,21 +5,5 @@ Bitwarden Self-Host Helm Chart {{ $chartVersion }}
 =====================================================
 
 Bitwarden been successfully deployed!
-
-{{- if $isCalVer }}
-
-IMPORTANT MIGRATION NOTICE
-
-CalVer Deprecation: November 13, 2025
-The CalVer versioning scheme ({{ $chartVersion }}) will be deprecated on November 13, 2025.
-After this date, only SemVer versions will be supported and released.
-
-Start Using SemVer (Optional)
-
-To start using SemVer 1.0.0 now:
-   helm upgrade {{ .Release.Name }} bitwarden/self-host --version <semver-version> -n {{ .Release.Namespace }}
-
-Note: For SemVer installations until November 13, 2025, you must always specify --version <semver-version> during upgrades
-to avoid reverting back to CalVer. We recommend upgrading to SemVer after November 13, 2025 for the smoothest experience.
 
 {{- end }}
