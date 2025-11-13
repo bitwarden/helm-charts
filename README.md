@@ -7,6 +7,6 @@ This is a collection of Bitwarden maintained charts for https://github.com/bitwa
 
 The charts can be added using following command:
 
-```shell
+```bash
 helm repo add bitwarden https://charts.bitwarden.com/
 ```
