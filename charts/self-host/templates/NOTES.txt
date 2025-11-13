@@ -5,5 +5,3 @@ Bitwarden Self-Host Helm Chart {{ $chartVersion }}
 =====================================================
 
 Bitwarden been successfully deployed!
-
-{{- end }}
