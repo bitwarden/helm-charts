@@ -22,6 +22,7 @@ jobs:
         uses: bitwarden/gh-actions/version-check@main
         with:
           version: ${{ inputs.version_number }}
+          validation_type: semver
 
       - name: Log in to Azure
         uses: bitwarden/gh-actions/azure-login@main
