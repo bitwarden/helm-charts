@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         control-plane: controller-manager
-      {{- include "sm-operator.selectorLabels" . | nindent 8 }}
+      {{- include "sm-operator.fullLabels" . | nindent 8 }}
       annotations:
         kubectl.kubernetes.io/default-container: manager
     spec:
