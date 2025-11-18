@@ -108,7 +108,8 @@ general:
   refreshTokens:
     # Set to true to enable refresh tokens.  Recommended for production environments.
     enabled: false
-    absoluteRefreshTokenLifetimeSeconds: ""
+    applyAbsoluteRefreshTokenOnRefreshToken: "true"
+    absoluteRefreshTokenLifetimeSeconds: "30"
     slidingRefreshTokenLifetimeSeconds: ""
 
 # Specify the name of the shared storage class
