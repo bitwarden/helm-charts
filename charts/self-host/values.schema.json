@@ -2118,6 +2118,40 @@
           "title": "podLabels",
           "type": "object"
         },
+        "refreshTokens": {
+          "additionalProperties": false,
+          "description": "Refresh token variables https://bitwarden.com/help/environment-variables/#refresh-token-variables",
+          "properties": {
+            "absoluteRefreshTokenLifetimeSeconds": {
+              "default": "30",
+              "required": [],
+              "title": "absoluteRefreshTokenLifetimeSeconds",
+              "type": "string"
+            },
+            "applyAbsoluteRefreshTokenOnRefreshToken": {
+              "default": "true",
+              "required": [],
+              "title": "applyAbsoluteRefreshTokenOnRefreshToken",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Set to true to enable refresh tokens.  Recommended for production environments.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "slidingRefreshTokenLifetimeSeconds": {
+              "default": "",
+              "required": [],
+              "title": "slidingRefreshTokenLifetimeSeconds",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "refreshTokens",
+          "type": "object"
+        },
         "sso": {
           "additionalProperties": false,
           "properties": {
