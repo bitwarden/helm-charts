@@ -6,7 +6,7 @@ Our [Contributing Guidelines](https://contributing.bitwarden.com/contributing/) 
 
 Helm chart schemas are generated from `values.yaml` files. The CI validates that schemas are up-to-date using the Helm plugin: [helm-schema](https://github.com/dadav/helm-schema).
 
-To update schemas after making changes changes to a values file:
+To update schemas after making changes to a values file:
 
 ```bash
 helm plugin install https://github.com/dadav/helm-schema
