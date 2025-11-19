@@ -5,6 +5,7 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "REPLACE"
+  test: "just a quick test"
   ingress:
     # Set to false if using a custom ingress
     enabled: true
