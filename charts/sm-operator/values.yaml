@@ -6,8 +6,8 @@ settings:
   # https://bitwarden.com/help/server-geographies/
   cloudRegion: US
   # Set only if self-hosted.  These are the URLs for the Bitwarden API and Identity services
-  bwApiUrlOverride:
-  bwIdentityUrlOverride:
+  bwApiUrlOverride: ""
+  bwIdentityUrlOverride: ""
   # This is the internal Kubernetes DNS zone.  You will likely not need to change this
   # unless you have specifically changed the internal DNS name.
   kubernetesClusterDomain: cluster.local
@@ -19,6 +19,9 @@ settings:
 # Example:
 #   commonLabels:
 #     custom-label: custom-label-value
+# @schema
+# additionalProperties: true
+# @schema
 commonLabels: {}
 
 # Settings specific to the pod containers
@@ -28,7 +31,7 @@ containers:
       # NOTE:  This should be updated before the final PR
       repository: ghcr.io/bitwarden/sm-operator
       # Will default to the Chart's AppVersion, but you can override here.
-      tag:
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       limits:
@@ -49,8 +52,8 @@ containers:
   # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
   enableSeccompProfileRuntimeDefault: true
   # Optional value if you have privatized the image and need to pull with credentials
-  imagePullSecrets:
-  # Optionally place deployment on specifc nodes
+  imagePullSecrets: ""
+  # Optionally place deployment on specific nodes
   nodeSelector: {}
   # Optionally add taint tolerations
   tolerations: []
