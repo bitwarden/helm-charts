@@ -6,7 +6,7 @@ The purpose of this chart is to enable the deployment of [Bitwarden](https://bit
 ## Requirements
 
 - Kubectl
-- Helm 3
+- Helm 4
 - SSL cert and key or certificate provider
 - SMTP server/account
 - Storage Class that supports ReadWriteMany

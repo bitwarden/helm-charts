@@ -63,7 +63,7 @@ jobs:
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
         with:
-          version: v3.13.1
+          version: v4.0.0
 
       - name: Download Helm chart artifact - Self Host
         uses: bitwarden/gh-actions/download-artifacts@main

@@ -5,7 +5,7 @@ This chart is for the deployment of the Kubernetes Operator for Secrets Manager 
 ## Requirements
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
-- [Helm 3](https://v3.helm.sh/docs/intro/install/)
+- [Helm 4](https://helm.sh/docs/intro/install)
 - A [Bitwarden Organization with Secrets Manager](https://bitwarden.com/help/sign-up-for-secrets-manager/).  You will need the organization ID GUID for your organization.
 - One or more [access tokens](https://bitwarden.com/help/access-tokens/) for a Secrets Manager machine account tied to the projects you want to pull.
 
