@@ -28,7 +28,6 @@ commonLabels: {}
 containers:
   manager:
     image:
-      # NOTE:  This should be updated before the final PR
       repository: ghcr.io/bitwarden/sm-operator
       # Will default to the Chart's AppVersion, but you can override here.
       tag: ""
