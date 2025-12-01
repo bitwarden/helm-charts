@@ -14,3 +14,14 @@ helm plugin install https://github.com/dadav/helm-schema
 # From a chart directory
 helm schema --skip-auto-generation required
 ```
+
+## Helm Testing
+
+Helm charts are tested using [Helm Unittest](https://github.com/helm-unittest/helm-unittest). Tests are ran automatically in CI from the chart `tests` directory, but can also be ran locally:
+
+```bash
+helm plugin install https://github.com/helm-unittest/helm-unittest
+
+# From a chart directory
+helm unittest .
+```

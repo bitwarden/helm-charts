@@ -1,4 +1,4 @@
-name: Lint Chart (Common)
+name: _lint
 
 on:
   workflow_call:
@@ -40,11 +40,11 @@ jobs:
 
       - name: Validate schema
         run: |
-          helm schema --chart-search-root ${{ env._CHART_PATH }} --output-file generated.values.schema.json --skip-auto-generation required
-          GENERATED_SCHEMA="$(cat ${{ env._CHART_PATH }}/generated.values.schema.json)"
-          CURRENT_SCHEMA="$(cat ${{ env._CHART_PATH }}/values.schema.json)"
+          helm schema --chart-search-root ${_CHART_PATH} --output-file generated.values.schema.json --skip-auto-generation required
+          GENERATED_SCHEMA="$(cat ${_CHART_PATH}/generated.values.schema.json)"
+          CURRENT_SCHEMA="$(cat ${_CHART_PATH}/values.schema.json)"
           if [ "$CURRENT_SCHEMA" != "$GENERATED_SCHEMA" ]; then
-            echo "Values schema is out of date. Please update ${{ env._CHART_PATH }}/values.schema.json"
+            echo "Values schema is out of date. Please update ${_CHART_PATH}/values.schema.json"
             echo "See: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md"
             exit 1
           fi

@@ -1,0 +1,193 @@
+name: SM Operator
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/sm-operator/**"
+  pull_request:
+    paths:
+      - "charts/sm-operator/**"
+      - ".github/workflows/sm-operator.yml"
+      - ".github/workflows/_lint_chart.yml"
+      - ".github/workflows/_test_chart.yml"
+      - ".github/workflows/_build.yml"
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-sm-operator:
+    name: Lint sm-operator chart
+    uses: ./.github/workflows/_lint_chart.yml
+    permissions:
+      contents: read
+    with: 
+      chart_name: sm-operator
+
+  test-sm-operator:
+    name: Test sm-operator chart
+    uses: ./.github/workflows/_test_chart.yml
+    permissions:
+      contents: read
+    with:
+      chart_name: sm-operator
+
+  test-sm-operator-kind:
+    name: Test sm-operator chart with Kind
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+
+      - name: Set up lynx
+        run: sudo apt install lynx
+
+      - name: Set up Python
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: "3.14"
+          check-latest: true
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
+        with:
+          yamale_version: "6.0.0"
+
+      - name: Create kind cluster
+        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
+        with:
+          config: scripts/cluster.yaml
+
+      - name: Set up cluster
+        run: ./scripts/setup.sh setup-cluster
+
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
+      - name: Retrieve secrets
+        id: retrieve-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: "gh-helm-charts"
+          secrets: "helm-sm-operator-ci-test-access-token"
+
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
+
+      - name: Run chart-testing (install)
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: ct install --target-branch "${_DEFAULT_BRANCH}" --skip-clean-up --namespace bitwarden --charts charts/sm-operator
+
+      - name: Test install (sm-operator)
+        run: |
+          #For review purposes
+          echo "*****DEPLOYMENTS*****"
+          kubectl get deployments
+
+          echo "*****PODS*****"
+          pods=$(kubectl get pods -l app.kubernetes.io/name=sm-operator | grep 1/1)
+          echo "$pods"
+
+          if [[ -z "$pods" ]]; then
+            echo "::error::No pods found."
+            exit 1
+          fi
+
+          echo "*****VERIFYING CUSTOM LABELS*****"
+
+          # Array of resource types to check for custom labels
+          resource_types=("deployment" "service" "serviceaccount" "configmap")
+          failed_resources=()
+
+          # Loop through each resource type and verify custom labels
+          for resource_type in "${resource_types[@]}"; do
+            echo "Checking $resource_type for custom labels..."
+            labels=$(kubectl get "$resource_type" -l app.kubernetes.io/name=sm-operator -o jsonpath='{.items[0].metadata.labels}')
+            echo "$resource_type labels: $labels"
+
+            if ! echo "$labels" | grep -q "test-label"; then
+              echo "::error::Custom label 'test-label' not found on $resource_type."
+              failed_resources+=("$resource_type")
+            fi
+          done
+
+          # Exit if any resources failed the check
+          if [ ${#failed_resources[@]} -gt 0 ]; then
+            echo "::error::Custom labels verification failed for: ${failed_resources[*]}"
+            exit 1
+          fi
+
+          echo "Custom labels verified successfully on all resources!"
+
+          echo "*****CREATING AUTH SECRET*****"
+          kubectl create secret generic bw-auth-token -n bitwarden --from-literal=token="$AUTH_TOKEN"
+          echo "*****CREATING BW SECRET*****"
+          kubectl apply -f .github/config/sample-bw-secret.yaml
+
+          # Sleeping while BitwardenSecret is being created and synced
+          sleep 2s
+
+          echo "*****LOGS*****"
+          logs=$(kubectl logs -l app.kubernetes.io/name=sm-operator -c manager)
+          echo "$logs"
+
+          completed=$(echo "$logs"| grep "Completed sync for bitwarden/bitwardensecret-sample")
+
+          if [[ -z "$completed" ]]; then
+            echo "::error::Secret did not sync."
+            exit 1
+          fi
+
+          # Sleeping to ensure everything completes
+          sleep 2s
+
+
+          echo "*****RESULTING SECRETS*****"
+          secrets=$(kubectl get secrets)
+          echo "$secrets"
+
+          secretCreated=$(echo "$secrets" | grep -Po "bw-sample-secret\s+Opaque\s+3")
+
+          if [[ -z "$secretCreated" ]]; then
+            echo "::error::Secret not created correctly."
+            exit 1
+          fi
+
+          echo "*****OPERATOR OK*****"
+        env:
+          AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
+
+
+  build-sm-operator:
+    name: Build sm-operator chart
+    uses: ./.github/workflows/_build.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    with:
+      chart_name: sm-operator
+    needs:
+      - lint-sm-operator
+      - test-sm-operator
+      - test-sm-operator-kind
+    secrets: inherit

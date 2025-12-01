@@ -1,0 +1,67 @@
+suite: test volumes and database conditionals
+templates:
+  - templates/*.tpl
+  - templates/volumes.yaml
+tests:
+  - it: should create default PVCs (dataprotection, licenses, attachments)
+    template: templates/volumes.yaml
+    set:
+      sharedStorageClassName: "standard"
+      volume.dataprotection.size: 1Gi
+      volume.attachments.size: 1Gi
+      volume.licenses.size: 1Gi
+    asserts:
+      # Dataprotection PVC
+      - isKind:
+          of: PersistentVolumeClaim
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-dataprotection
+      - equal:
+          path: spec.storageClassName
+          value: standard
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-dataprotection
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-dataprotection
+      # Attachments PVC
+      - isKind:
+          of: PersistentVolumeClaim
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-attachments
+      - equal:
+          path: spec.storageClassName
+          value: standard
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-attachments
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-attachments
+      # Licenses PVC
+      - isKind:
+          of: PersistentVolumeClaim
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-licenses
+      - equal:
+          path: spec.storageClassName
+          value: standard
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-licenses
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+        documentSelector:
+          path: metadata.name
+          value: RELEASE-NAME-self-host-licenses

@@ -34,7 +34,6 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/sm-operator",
-                  "description": "NOTE:  This should be updated before the final PR",
                   "required": [],
                   "title": "repository",
                   "type": "string"

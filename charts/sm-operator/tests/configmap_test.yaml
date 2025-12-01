@@ -1,0 +1,42 @@
+suite: test configmap url selection
+templates:
+  - configMap.yaml
+tests:
+  - it: should use US URLs by default
+    set:
+      settings.cloudRegion: "US"
+      settings.bwApiUrlOverride: ""
+      settings.bwIdentityUrlOverride: ""
+    asserts:
+      - equal:
+          path: data.BW_API_URL
+          value: https://api.bitwarden.com
+      - equal:
+          path: data.BW_IDENTITY_API_URL
+          value: https://identity.bitwarden.com
+
+  - it: should use EU URLs when cloudRegion is EU
+    set:
+      settings.cloudRegion: "EU"
+      settings.bwApiUrlOverride: ""
+      settings.bwIdentityUrlOverride: ""
+    asserts:
+      - equal:
+          path: data.BW_API_URL
+          value: https://api.bitwarden.eu
+      - equal:
+          path: data.BW_IDENTITY_API_URL
+          value: https://identity.bitwarden.eu
+
+  - it: should use custom URLs when overrides are set
+    set:
+      settings.cloudRegion: "US"
+      settings.bwApiUrlOverride: "https://custom.example.com"
+      settings.bwIdentityUrlOverride: "https://identity.example.com"
+    asserts:
+      - equal:
+          path: data.BW_API_URL
+          value: https://custom.example.com
+      - equal:
+          path: data.BW_IDENTITY_API_URL
+          value: https://identity.example.com

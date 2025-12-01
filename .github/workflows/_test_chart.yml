@@ -1,0 +1,76 @@
+name: _test
+
+on:
+  workflow_call:
+    inputs:
+      chart_name:
+        description: 'Name of the chart to test'
+        required: true
+        type: string
+        
+permissions:
+  contents: read
+
+env:
+  _CHART_PATH: charts/${{ inputs.chart_name }}
+
+jobs:
+  kubernetes-api-validation:
+    name: Kubernetes API validation
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+
+      - name: Install Kubepug
+        run: |
+          KUBEPUG_VERSION=$(curl -L --silent "https://api.github.com/repos/rikatz/kubepug/releases/latest" | jq -r .tag_name)
+          wget -q "https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz"
+
+          # Extract and setup binary in path
+          tar -xf kubepug_linux_amd64.tar.gz
+          mv kubepug /usr/local/bin
+          chmod +x /usr/local/bin/kubepug
+
+      - name: Kubepug test
+        run: |
+          # Get last three stable versions
+          VERSIONS=$(curl -L --silent "https://api.github.com/repos/kubernetes/kubernetes/releases" | jq -r '[.[] | select(.prerelease == false) | .tag_name] | .[0:3] | @json')
+
+          # Test each chart with the last three stable versions
+          echo "$VERSIONS" | jq -r '.[]' | while read -r version; do
+            echo "Testing chart: $chart with Kubernetes version: $version"
+            helm template "${_CHART_PATH}" --values "${_CHART_PATH}/ci/test-values.yaml" --api-versions "$version" \
+              | kubepug --error-on-deprecated --error-on-deleted --k8s-version "$version" --input-file /dev/stdin
+          done
+
+  helm-unit-test:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        with:
+          version: 'v4.0.0'
+      
+      - name: Install Helm plugins
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
+
+      - name: Run Helm unit tests
+        run: helm unittest "${_CHART_PATH}"
