@@ -1,0 +1,157 @@
+name: Self Host
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/self-host/**"
+  pull_request:
+    paths:
+      - "charts/self-host/**"
+      - ".github/workflows/self-host.yml"
+      - ".github/workflows/_lint_chart.yml"
+      - ".github/workflows/_test_chart.yml"
+      - ".github/workflows/_build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-self-host:
+    name: Lint self-host chart
+    uses: ./.github/workflows/_lint_chart.yml
+    permissions:
+      contents: read
+    with:
+      chart_name: self-host
+
+  test-self-host:
+    name: Test self-host chart
+    uses: ./.github/workflows/_test_chart.yml
+    permissions:
+      contents: read
+    with:
+      chart_name: self-host
+  
+  test-self-host-kind:
+    name: Test self-host chart with Kind
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+
+      - name: Set up lynx
+        run: sudo apt install lynx
+
+      - name: Set up Python
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: "3.14"
+          check-latest: true
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
+        with:
+          yamale_version: "6.0.0"
+
+      - name: Create kind cluster
+        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
+        with:
+          config: scripts/cluster.yaml
+
+      - name: Set up cluster
+        run: ./scripts/setup.sh setup-cluster
+
+      - name: Run chart-testing (install)
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: ct install --target-branch "${_DEFAULT_BRANCH}" --skip-clean-up --namespace bitwarden
+
+      - name: Test install (self-host)
+        run: |
+          #For review purposes
+          echo "*****DEPLOYMENTS*****"
+          kubectl get deployments
+          echo "*****PODS*****"
+          kubectl get pods
+          echo "*****SERVICES*****"
+          kubectl get svc
+          echo "*****JOBS*****"
+          kubectl get jobs
+          echo "*****INGRESS*****"
+          kubectl describe ingress
+
+          echo "*****HOME*****"
+          home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
+          echo "$home" | lynx -stdin -dump -width=100
+          httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${home}" | grep -Pio 'Bitwarden Web Vault')
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "${bodyCheck,,}" != "bitwarden web vault" ]]; then
+            echo "::error::ERROR: Home page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "Home OK."
+
+          echo "*****API/CONFIG*****"
+          config=$(curl -Ls https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
+          echo "$config" | lynx -stdin -dump -width=100
+          httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != '"vault":"https://bitwarden.localhost"' ]]; then
+            echo "::error::ERROR: API/Config page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "API/Config OK."
+
+          echo "*****ADMIN*****"
+          admin=$(curl -Ls https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
+          echo "$admin" | lynx -stdin -dump -width=100
+
+          httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
+          bodyCheck=$(echo "${admin}" | grep -Po "We'll email you a secure login link")
+          if [[ ${httpCode} -ne 200 ]]; then
+            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
+            exit 1
+          fi
+          if [[ "$bodyCheck" != "We'll email you a secure login link" ]]; then
+            echo "::error::ERROR: Admin page failed to load.  Please check body output above."
+            exit 1
+          fi
+
+          echo "Admin OK."
+
+  build-self-host:
+    name: Build self-host chart
+    uses: ./.github/workflows/_build.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    with:
+      chart_name: self-host
+    needs:
+      - lint-self-host
+      - test-self-host
+      - test-self-host-kind
+    secrets: inherit

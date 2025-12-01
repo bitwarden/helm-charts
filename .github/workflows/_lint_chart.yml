@@ -1,4 +1,4 @@
-name: Lint Chart (Common)
+name: _lint
 
 on:
   workflow_call:
