@@ -74,5 +74,3 @@ jobs:
 
       - name: Run Helm unit tests
         run: helm unittest "${_CHART_PATH}"
-        env:
-          _CHART_PATH: ${{ env._CHART_PATH }}
