@@ -51,8 +51,6 @@ jobs:
             helm template "${_CHART_PATH}" --values "${_CHART_PATH}/ci/test-values.yaml" --api-versions "$version" \
               | kubepug --error-on-deprecated --error-on-deleted --k8s-version "$version" --input-file /dev/stdin
           done
-        env:
-          _CHART_PATH: ${{ env._CHART_PATH }}
 
   helm-unit-test:
     name: Unit tests
