@@ -14,6 +14,7 @@ on:
       - ".github/workflows/_test_chart.yml"
       - ".github/workflows/_build.yml"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
