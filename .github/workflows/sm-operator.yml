@@ -177,6 +177,8 @@ jobs:
     uses: ./.github/workflows/_build.yml
     permissions:
       contents: read
+      id-token: write
+      packages: write
     needs:
       - lint-sm-operator
       - test-sm-operator
