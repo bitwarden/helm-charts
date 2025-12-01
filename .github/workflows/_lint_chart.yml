@@ -48,8 +48,6 @@ jobs:
             echo "See: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md"
             exit 1
           fi
-        env:
-          _CHART_PATH: ${{ env._CHART_PATH }}
 
       - name: Run chart-testing (lint)
         env:
