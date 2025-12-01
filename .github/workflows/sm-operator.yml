@@ -92,6 +92,11 @@ jobs:
       - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
+      - name: Run chart-testing (install)
+        env:
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: ct install --target-branch "${_DEFAULT_BRANCH}" --skip-clean-up --namespace bitwarden --charts charts/sm-operator
+
       - name: Test install (sm-operator)
         run: |
           #For review purposes
