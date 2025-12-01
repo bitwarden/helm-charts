@@ -14,7 +14,6 @@ on:
       - 'charts/**'
       - '!*.md'
       - '!*.txt'
-      - '.github/workflows/tests.yml'
 
 defaults:
   run:
@@ -27,12 +26,22 @@ jobs:
     name: Check PR run
     uses: bitwarden/gh-actions/.github/workflows/check-run.yml@main
 
-  run-workflow:
+  run-self-host-workflow:
     permissions:
       contents: read
       id-token: write
-    name: Test Helm Charts
+    name: Self Host
     needs: check-run
     if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
-    uses: ./.github/workflows/tests.yml
+    uses: ./.github/workflows/self-host.yml
+    secrets: inherit
+
+  run-sm-operator-workflow:
+    permissions:
+      contents: read
+      id-token: write
+    name: SM Operator
+    needs: check-run
+    if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+    uses: ./.github/workflows/sm-operator.yml
     secrets: inherit
