@@ -184,9 +184,10 @@ jobs:
       contents: read
       id-token: write
       packages: write
+    with:
+      chart_name: sm-operator
     needs:
       - lint-sm-operator
       - test-sm-operator
       - test-sm-operator-kind
-    with:
-      chart_name: sm-operator
+    secrets: inherit
