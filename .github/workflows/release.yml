@@ -70,7 +70,7 @@ jobs:
         with:
           branch: main
           path: .cr-release-packages
-          workflow: build-self-host.yml
+          workflow: self-host.yml
           workflow_conclusion: success
 
       - name: Download Helm chart artifact - SM Operator
@@ -78,7 +78,7 @@ jobs:
         with:
           branch: main
           path: .cr-release-packages
-          workflow: build-sm-operator.yml
+          workflow: sm-operator.yml
           workflow_conclusion: success
 
       - name: Release Helm chart
