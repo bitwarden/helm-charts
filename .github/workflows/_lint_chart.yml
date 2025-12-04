@@ -40,7 +40,7 @@ jobs:
 
       - name: Validate schema
         run: |
-          helm schema --chart-search-root ${_CHART_PATH} --output-file generated.values.schema.json --skip-auto-generation required
+          helm schema --chart-search-root ${_CHART_PATH} --output-file generated.values.schema.json -k additionalProperties --skip-auto-generation required
           GENERATED_SCHEMA="$(cat ${_CHART_PATH}/generated.values.schema.json)"
           CURRENT_SCHEMA="$(cat ${_CHART_PATH}/values.schema.json)"
           if [ "$CURRENT_SCHEMA" != "$GENERATED_SCHEMA" ]; then
