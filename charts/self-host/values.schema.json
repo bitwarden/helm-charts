@@ -1399,10 +1399,10 @@
           "type": "object"
         },
         "podSecurityContext": {
-          "additionalProperties": true,
           "description": "This will set the Kubernetes pod security context (including fsGroup)",
           "required": [],
-          "title": "podSecurityContext"
+          "title": "podSecurityContext",
+          "type": "object"
         },
         "podServiceAccount": {
           "default": "",
@@ -1680,10 +1680,10 @@
         "ingress": {
           "properties": {
             "annotations": {
-              "additionalProperties": true,
               "description": "# - Annotations to add to the Ingress resource.",
               "required": [],
-              "title": "annotations"
+              "title": "annotations",
+              "type": "object"
             },
             "className": {
               "default": "nginx",
@@ -2142,9 +2142,9 @@
           "type": "object"
         },
         "podSecurityContext": {
-          "additionalProperties": true,
           "required": [],
-          "title": "podSecurityContext"
+          "title": "podSecurityContext",
+          "type": "object"
         },
         "secret": {
           "properties": {
@@ -2178,10 +2178,10 @@
           "type": "object"
         },
         "securityContext": {
-          "additionalProperties": true,
           "description": "\nSet security contexts for pre- and post-install hooks\n",
           "required": [],
-          "title": "securityContext"
+          "title": "securityContext",
+          "type": "object"
         },
         "setup": {
           "properties": {
