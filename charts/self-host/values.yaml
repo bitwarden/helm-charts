@@ -126,6 +126,8 @@ secrets:
 component:
   # The Admin component
   admin:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -158,6 +160,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   api:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -190,6 +194,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   attachments:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -222,6 +228,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   events:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -254,6 +262,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   icons:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -286,6 +296,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   identity:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -318,6 +330,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   notifications:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -350,6 +364,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   scim:
+    # Number of replicas
+    replicas: 1
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
     # Additional deployment labels
@@ -384,6 +400,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   sso:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -416,6 +434,8 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
   web:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
