@@ -19,9 +19,6 @@ settings:
 # Example:
 #   commonLabels:
 #     custom-label: custom-label-value
-# @schema
-# additionalProperties: true
-# @schema
 commonLabels: {}
 
 # Settings specific to the pod containers

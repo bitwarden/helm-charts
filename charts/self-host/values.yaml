@@ -11,9 +11,6 @@ general:
     # Current supported values for ingress type include: nginx
     className: "nginx"
      ## - Annotations to add to the Ingress resource.
-    # @schema
-    # additionalProperties: true
-    # @schema
     annotations: {}
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/use-regex: "true"
@@ -514,13 +511,8 @@ jobs:
   #
   # Set security contexts for pre- and post-install hooks
   #
-  # @schema
-  # additionalProperties: true
-  # @schema
   securityContext: {}
-  # @schema
-  # additionalProperties: true
-  # @schema
+
   podSecurityContext: {}
 
   db:
@@ -652,9 +644,6 @@ database:
   # This will set the Kubernetes container security context
   securityContext: {}
   # This will set the Kubernetes pod security context (including fsGroup)
-  # @schema
-  # additionalProperties: true
-  # @schema
   podSecurityContext: {}
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount: ""

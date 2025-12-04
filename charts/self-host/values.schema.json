@@ -1,17 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
   "properties": {
     "component": {
-      "additionalProperties": false,
       "description": "Settings for individual service containers",
       "properties": {
         "admin": {
-          "additionalProperties": false,
           "description": "The Admin component",
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -25,7 +21,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -40,35 +35,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -82,11 +72,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -106,7 +94,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -131,7 +118,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -152,10 +138,8 @@
           "type": "object"
         },
         "api": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -169,7 +153,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -184,35 +167,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -226,11 +204,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "200m",
@@ -250,7 +226,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -275,7 +250,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -296,10 +270,8 @@
           "type": "object"
         },
         "attachments": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -313,7 +285,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -328,35 +299,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -370,11 +336,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -394,7 +358,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -419,7 +382,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -440,10 +402,8 @@
           "type": "object"
         },
         "events": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -457,7 +417,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -472,35 +431,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -514,11 +468,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -538,7 +490,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -563,7 +514,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -584,10 +534,8 @@
           "type": "object"
         },
         "icons": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -601,7 +549,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -616,35 +563,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -658,11 +600,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -682,7 +622,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -707,7 +646,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -728,10 +666,8 @@
           "type": "object"
         },
         "identity": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -745,7 +681,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -760,35 +695,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -802,11 +732,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "200m",
@@ -826,7 +754,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -851,7 +778,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -872,10 +798,8 @@
           "type": "object"
         },
         "notifications": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -889,7 +813,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -904,35 +827,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -946,11 +864,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -970,7 +886,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -995,7 +910,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -1016,10 +930,8 @@
           "type": "object"
         },
         "scim": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -1040,7 +952,6 @@
               "type": "boolean"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -1055,35 +966,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -1097,11 +1003,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -1121,7 +1025,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -1146,7 +1049,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -1167,10 +1069,8 @@
           "type": "object"
         },
         "sso": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -1184,7 +1084,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -1199,35 +1098,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -1241,11 +1135,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -1265,7 +1157,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -1290,7 +1181,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -1311,10 +1201,8 @@
           "type": "object"
         },
         "web": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional deployment annotations",
               "required": [],
               "title": "annotations",
@@ -1328,7 +1216,6 @@
               "type": "string"
             },
             "image": {
-              "additionalProperties": false,
               "description": "Image name, tag, and pull policy",
               "properties": {
                 "name": {
@@ -1343,35 +1230,30 @@
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "nodeSelector": {
-              "additionalProperties": false,
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
               "title": "nodeSelector",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
               "type": "object"
             },
             "podSecurityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes pod security context",
               "required": [],
               "title": "podSecurityContext",
@@ -1385,11 +1267,9 @@
               "type": "string"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "100m",
@@ -1409,7 +1289,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "50m",
@@ -1434,7 +1313,6 @@
               "type": "object"
             },
             "securityContext": {
-              "additionalProperties": false,
               "description": "This will set the Kubernetes container security context",
               "required": [],
               "title": "securityContext",
@@ -1460,11 +1338,9 @@
       "type": "object"
     },
     "database": {
-      "additionalProperties": false,
       "description": "\nConfigure database\n",
       "properties": {
         "annotations": {
-          "additionalProperties": false,
           "description": "Annotations to add to the MSSQL deployment",
           "required": [],
           "title": "annotations",
@@ -1478,7 +1354,6 @@
           "type": "boolean"
         },
         "image": {
-          "additionalProperties": false,
           "description": "Image name, tag, and pull policy",
           "properties": {
             "name": {
@@ -1500,38 +1375,34 @@
           "type": "object"
         },
         "labels": {
-          "additionalProperties": false,
           "description": "Labels to add to the MSSQL deployment",
           "required": [],
           "title": "labels",
           "type": "object"
         },
         "nodeSelector": {
-          "additionalProperties": false,
           "description": "Optionally place deployment on specifc nodes",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "podAnnotations": {
-          "additionalProperties": false,
           "description": "Additional annotations to the MSSQL pod",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
-          "additionalProperties": false,
           "description": "Additional labels to the MSSQL pod",
           "required": [],
           "title": "podLabels",
           "type": "object"
         },
         "podSecurityContext": {
-          "additionalProperties": true,
           "description": "This will set the Kubernetes pod security context (including fsGroup)",
           "required": [],
-          "title": "podSecurityContext"
+          "title": "podSecurityContext",
+          "type": "object"
         },
         "podServiceAccount": {
           "default": "",
@@ -1541,11 +1412,9 @@
           "type": "string"
         },
         "resources": {
-          "additionalProperties": false,
           "description": "The container is limited to the resources below.  Adjust for your environment.",
           "properties": {
             "limits": {
-              "additionalProperties": false,
               "properties": {
                 "cpu": {
                   "default": "500m",
@@ -1565,7 +1434,6 @@
               "type": "object"
             },
             "requests": {
-              "additionalProperties": false,
               "properties": {
                 "cpu": {
                   "default": "100m",
@@ -1590,7 +1458,6 @@
           "type": "object"
         },
         "securityContext": {
-          "additionalProperties": false,
           "description": "This will set the Kubernetes container security context",
           "required": [],
           "title": "securityContext",
@@ -1613,20 +1480,16 @@
           "type": "string"
         },
         "volume": {
-          "additionalProperties": false,
           "description": "The MSSQL volumes for the PVCs",
           "properties": {
             "backups": {
-              "additionalProperties": false,
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
                   "required": [],
                   "title": "annotations",
                   "type": "object"
                 },
                 "labels": {
-                  "additionalProperties": false,
                   "required": [],
                   "title": "labels",
                   "type": "object"
@@ -1644,16 +1507,13 @@
               "type": "object"
             },
             "data": {
-              "additionalProperties": false,
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
                   "required": [],
                   "title": "annotations",
                   "type": "object"
                 },
                 "labels": {
-                  "additionalProperties": false,
                   "required": [],
                   "title": "labels",
                   "type": "object"
@@ -1671,16 +1531,13 @@
               "type": "object"
             },
             "log": {
-              "additionalProperties": false,
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
                   "required": [],
                   "title": "annotations",
                   "type": "object"
                 },
                 "labels": {
-                  "additionalProperties": false,
                   "required": [],
                   "title": "labels",
                   "type": "object"
@@ -1715,7 +1572,6 @@
       "type": "string"
     },
     "general": {
-      "additionalProperties": false,
       "properties": {
         "admins": {
           "default": "false",
@@ -1725,7 +1581,6 @@
           "type": "string"
         },
         "annotations": {
-          "additionalProperties": false,
           "description": "Custom annotations to add throughout the installation",
           "required": [],
           "title": "annotations",
@@ -1760,7 +1615,6 @@
           "type": "string"
         },
         "email": {
-          "additionalProperties": false,
           "properties": {
             "replyToEmail": {
               "default": "no-reply@bitwarden.localhost",
@@ -1824,13 +1678,12 @@
           "type": "boolean"
         },
         "ingress": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": true,
               "description": "# - Annotations to add to the Ingress resource.",
               "required": [],
-              "title": "annotations"
+              "title": "annotations",
+              "type": "object"
             },
             "className": {
               "default": "nginx",
@@ -1847,18 +1700,15 @@
               "type": "boolean"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "nginx.ingress.kubernetes.io/force-ssl-redirect: \"true\"\nnginx.ingress.kubernetes.io/use-regex: \"true\"\nnginx.ingress.kubernetes.io/rewrite-target: /$1\nnginx.ingress.kubernetes.io/proxy-body-size: 500m\nnginx.ingress.kubernetes.io/proxy-read-timeout: \"600\"\nnginx.ingress.kubernetes.io/proxy-send-timeout: \"600\"\nnginx.ingress.kubernetes.io/proxy-connect-timeout: \"600\"\n# - Labels to add to the Ingress resource",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "paths": {
-              "additionalProperties": false,
               "description": "Ingress path configuration - The samples provided are for Nginx. Examples with other Ingress providers are in the chart Readme on GitHub",
               "properties": {
                 "admin": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/(admin/?.*)",
@@ -1878,7 +1728,6 @@
                   "type": "object"
                 },
                 "api": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/api/(.*)",
@@ -1898,7 +1747,6 @@
                   "type": "object"
                 },
                 "attachments": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/attachments/(.*)",
@@ -1918,7 +1766,6 @@
                   "type": "object"
                 },
                 "events": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/events/(.*)",
@@ -1938,7 +1785,6 @@
                   "type": "object"
                 },
                 "icons": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/icons/(.*)",
@@ -1958,7 +1804,6 @@
                   "type": "object"
                 },
                 "identity": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/(identity/.*)",
@@ -1978,7 +1823,6 @@
                   "type": "object"
                 },
                 "notifications": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/notifications/(.*)",
@@ -1998,7 +1842,6 @@
                   "type": "object"
                 },
                 "scim": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/scim/(.*)",
@@ -2018,7 +1861,6 @@
                   "type": "object"
                 },
                 "sso": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/(sso/.*)",
@@ -2038,7 +1880,6 @@
                   "type": "object"
                 },
                 "web": {
-                  "additionalProperties": false,
                   "properties": {
                     "path": {
                       "default": "/(.*)",
@@ -2063,7 +1904,6 @@
               "type": "object"
             },
             "tls": {
-              "additionalProperties": false,
               "description": "Certificate options",
               "properties": {
                 "clusterIssuer": {
@@ -2091,35 +1931,30 @@
           "type": "object"
         },
         "labels": {
-          "additionalProperties": false,
           "description": "Custom labels to add throughout the installation",
           "required": [],
           "title": "labels",
           "type": "object"
         },
         "nodeSelector": {
-          "additionalProperties": false,
           "description": "nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "podAnnotations": {
-          "additionalProperties": false,
           "description": "Additional default pod annotations",
           "required": [],
           "title": "podAnnotations",
           "type": "object"
         },
         "podLabels": {
-          "additionalProperties": false,
           "description": "Additional default pod labels",
           "required": [],
           "title": "podLabels",
           "type": "object"
         },
         "refreshTokens": {
-          "additionalProperties": false,
           "description": "Refresh token variables https://bitwarden.com/help/environment-variables/#refresh-token-variables",
           "properties": {
             "absoluteRefreshTokenLifetimeSeconds": {
@@ -2153,7 +1988,6 @@
           "type": "object"
         },
         "sso": {
-          "additionalProperties": false,
           "properties": {
             "enforceSsoPolicyForAllUsers": {
               "default": false,
@@ -2199,13 +2033,10 @@
       "type": "object"
     },
     "jobs": {
-      "additionalProperties": false,
       "properties": {
         "cleanup": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional job annotations",
               "required": [],
               "title": "annotations",
@@ -2219,21 +2050,18 @@
               "type": "boolean"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional job labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
@@ -2245,34 +2073,28 @@
           "type": "object"
         },
         "db": {
-          "additionalProperties": false,
           "properties": {
             "postInstallMigrator": {
-              "additionalProperties": false,
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
                   "description": "Additional job annotations",
                   "required": [],
                   "title": "annotations",
                   "type": "object"
                 },
                 "labels": {
-                  "additionalProperties": false,
                   "description": "Additional job labels",
                   "required": [],
                   "title": "labels",
                   "type": "object"
                 },
                 "podAnnotations": {
-                  "additionalProperties": false,
                   "description": "Additional pod annotations",
                   "required": [],
                   "title": "podAnnotations",
                   "type": "object"
                 },
                 "podLabels": {
-                  "additionalProperties": false,
                   "description": "Additional pod labels",
                   "required": [],
                   "title": "podLabels",
@@ -2284,31 +2106,26 @@
               "type": "object"
             },
             "preInstallMigrator": {
-              "additionalProperties": false,
               "properties": {
                 "annotations": {
-                  "additionalProperties": false,
                   "description": "Additional job annotations",
                   "required": [],
                   "title": "annotations",
                   "type": "object"
                 },
                 "labels": {
-                  "additionalProperties": false,
                   "description": "Additional job labels",
                   "required": [],
                   "title": "labels",
                   "type": "object"
                 },
                 "podAnnotations": {
-                  "additionalProperties": false,
                   "description": "Additional pod annotations",
                   "required": [],
                   "title": "podAnnotations",
                   "type": "object"
                 },
                 "podLabels": {
-                  "additionalProperties": false,
                   "description": "Additional pod labels",
                   "required": [],
                   "title": "podLabels",
@@ -2325,36 +2142,31 @@
           "type": "object"
         },
         "podSecurityContext": {
-          "additionalProperties": true,
           "required": [],
-          "title": "podSecurityContext"
+          "title": "podSecurityContext",
+          "type": "object"
         },
         "secret": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional job annotations",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional job labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
@@ -2366,37 +2178,32 @@
           "type": "object"
         },
         "securityContext": {
-          "additionalProperties": true,
           "description": "\nSet security contexts for pre- and post-install hooks\n",
           "required": [],
-          "title": "securityContext"
+          "title": "securityContext",
+          "type": "object"
         },
         "setup": {
-          "additionalProperties": false,
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "description": "Additional job annotations",
               "required": [],
               "title": "annotations",
               "type": "object"
             },
             "labels": {
-              "additionalProperties": false,
               "description": "Additional job labels",
               "required": [],
               "title": "labels",
               "type": "object"
             },
             "podAnnotations": {
-              "additionalProperties": false,
               "description": "Additional pod annotations",
               "required": [],
               "title": "podAnnotations",
               "type": "object"
             },
             "podLabels": {
-              "additionalProperties": false,
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
@@ -2419,7 +2226,6 @@
       "type": "string"
     },
     "rawManifests": {
-      "additionalProperties": false,
       "description": "You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.\nPlease see the chart README in GitHub for more information and examples.",
       "properties": {
         "postInstall": {
@@ -2445,7 +2251,6 @@
       "type": "object"
     },
     "secrets": {
-      "additionalProperties": false,
       "description": "Secrets are required.  Review the chart README on GitHub for details on creating these secrets",
       "properties": {
         "secretName": {
@@ -2467,7 +2272,6 @@
       "type": "object"
     },
     "serviceAccount": {
-      "additionalProperties": false,
       "description": "\nConfigure service account for pre- and post-install hooks\n",
       "properties": {
         "deployRolesOnly": {
@@ -2496,14 +2300,11 @@
       "type": "string"
     },
     "supportComponents": {
-      "additionalProperties": false,
       "description": "Images used for jobs and init containers",
       "properties": {
         "certGenerator": {
-          "additionalProperties": false,
           "properties": {
             "image": {
-              "additionalProperties": false,
               "properties": {
                 "name": {
                   "default": "alpine/openssl",
@@ -2528,10 +2329,8 @@
           "type": "object"
         },
         "dbMigrator": {
-          "additionalProperties": false,
           "properties": {
             "image": {
-              "additionalProperties": false,
               "properties": {
                 "name": {
                   "default": "ghcr.io/bitwarden/mssqlmigratorutility",
@@ -2550,10 +2349,8 @@
           "type": "object"
         },
         "kubectl": {
-          "additionalProperties": false,
           "properties": {
             "image": {
-              "additionalProperties": false,
               "properties": {
                 "name": {
                   "default": "ghcr.io/bitwarden/helm-charts/kubectl",
@@ -2583,14 +2380,11 @@
       "type": "object"
     },
     "volume": {
-      "additionalProperties": false,
       "description": "Data volume sizes for shared PVCs",
       "properties": {
         "attachments": {
-          "additionalProperties": false,
           "properties": {
             "labels": {
-              "additionalProperties": false,
               "required": [],
               "title": "labels",
               "type": "object"
@@ -2608,7 +2402,6 @@
           "type": "object"
         },
         "caCertificates": {
-          "additionalProperties": false,
           "properties": {
             "configMapName": {
               "default": "cacert",
@@ -2630,10 +2423,8 @@
           "type": "object"
         },
         "dataprotection": {
-          "additionalProperties": false,
           "properties": {
             "labels": {
-              "additionalProperties": false,
               "required": [],
               "title": "labels",
               "type": "object"
@@ -2651,10 +2442,8 @@
           "type": "object"
         },
         "licenses": {
-          "additionalProperties": false,
           "properties": {
             "labels": {
-              "additionalProperties": false,
               "required": [],
               "title": "labels",
               "type": "object"
@@ -2672,7 +2461,6 @@
           "type": "object"
         },
         "logs": {
-          "additionalProperties": false,
           "properties": {
             "enabled": {
               "default": false,
@@ -2682,7 +2470,6 @@
               "type": "boolean"
             },
             "labels": {
-              "additionalProperties": false,
               "required": [],
               "title": "labels",
               "type": "object"

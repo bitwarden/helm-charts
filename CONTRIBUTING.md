@@ -12,7 +12,7 @@ To update schemas after making changes to a values file:
 helm plugin install https://github.com/dadav/helm-schema
 
 # From a chart directory
-helm schema --skip-auto-generation required
+helm schema -k additionalProperties --skip-auto-generation required
 ```
 
 ## Helm Testing

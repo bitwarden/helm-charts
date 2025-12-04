@@ -1,15 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
   "properties": {
     "commonLabels": {
-      "additionalProperties": true,
       "description": "Optional: Custom labels to be applied to all resources created by the operator\nThis can be used to identify the Bitwarden Secrets Manager project or for any other labeling needs\nExample:\n  commonLabels:\n    custom-label: custom-label-value",
       "required": [],
-      "title": "commonLabels"
+      "title": "commonLabels",
+      "type": "object"
     },
     "containers": {
-      "additionalProperties": false,
       "description": "Settings specific to the pod containers",
       "properties": {
         "enableSeccompProfileRuntimeDefault": {
@@ -27,10 +25,8 @@
           "type": "string"
         },
         "manager": {
-          "additionalProperties": false,
           "properties": {
             "image": {
-              "additionalProperties": false,
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/sm-operator",
@@ -51,11 +47,9 @@
               "type": "object"
             },
             "resources": {
-              "additionalProperties": false,
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "500m",
@@ -75,7 +69,6 @@
                   "type": "object"
                 },
                 "requests": {
-                  "additionalProperties": false,
                   "properties": {
                     "cpu": {
                       "default": "10m",
@@ -111,18 +104,15 @@
           "type": "object"
         },
         "nodeSelector": {
-          "additionalProperties": false,
           "description": "Optionally place deployment on specific nodes",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
         },
         "serviceAccount": {
-          "additionalProperties": false,
           "description": "Provide annotations for the service account",
           "properties": {
             "annotations": {
-              "additionalProperties": false,
               "required": [],
               "title": "annotations",
               "type": "object"
@@ -153,7 +143,6 @@
       "type": "object"
     },
     "livenessProbe": {
-      "additionalProperties": false,
       "properties": {
         "failureThreshold": {
           "default": 3,
@@ -191,14 +180,12 @@
       "type": "object"
     },
     "metricsService": {
-      "additionalProperties": false,
       "description": "Service endpoint configuration for the metrics service.",
       "properties": {
         "ports": {
           "items": {
             "anyOf": [
               {
-                "additionalProperties": false,
                 "properties": {
                   "name": {
                     "default": "https",
@@ -247,7 +234,6 @@
       "type": "object"
     },
     "readinessProbe": {
-      "additionalProperties": false,
       "properties": {
         "failureThreshold": {
           "default": 3,
@@ -285,7 +271,6 @@
       "type": "object"
     },
     "settings": {
-      "additionalProperties": false,
       "properties": {
         "bwApiUrlOverride": {
           "default": "",
