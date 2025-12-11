@@ -2264,7 +2264,7 @@
           "description": "Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here",
           "required": [],
           "title": "secretProviderClass",
-          "type": "null"
+          "type": "string"
         }
       },
       "required": [],
