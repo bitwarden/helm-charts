@@ -1,0 +1,169 @@
+suite: test component image configuration
+templates:
+  - templates/helpers.tpl
+  - templates/admin.yaml
+  - templates/api.yaml
+  - templates/web.yaml
+  - templates/mssql.yaml
+  - templates/pre-install-job.yaml
+  - templates/post-install-db-migrator-job.yaml
+
+tests:
+  - it: should use global coreVersionOverride when component tag is empty
+    template: templates/api.yaml
+    set:
+      component.api.image.tag: ""
+      general.coreVersionOverride: "2025.12.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/api:2025.12.0"
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should use component-specific tag when set (overrides global)
+    template: templates/api.yaml
+    set:
+      component.api.image.tag: "2025.12.0"
+      general.coreVersionOverride: "2025.12.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/api:2025.12.0"
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should use webVersionOverride for web component
+    template: templates/web.yaml
+    set:
+      general.webVersionOverride: "2025.12.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/web:2025.12.0"
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should use component-specific tag for web when set (overrides webVersionOverride)
+    template: templates/web.yaml
+    set:
+      component.web.image.tag: "2025.11.0"
+      general.webVersionOverride: "2025.12.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/web:2025.11.0"
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should use custom repository when set
+    template: templates/api.yaml
+    set:
+      general.coreVersionOverride: "2025.12.0"
+      component.api.image.repository: "custom.com/bitwarden/api"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "custom.com/bitwarden/api:2025.12.0"
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should use database tag defaults
+    template: templates/mssql.yaml
+    set:
+      database.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04"
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should use certGenerator repository and tag
+    template: templates/pre-install-job.yaml
+    set:
+      supportComponents.certGenerator.image.repository: "alpine/openssl"
+      supportComponents.certGenerator.image.tag: 3.5.2
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: "alpine/openssl:3.5.2"
+
+  - it: should use kubectl repository and tag
+    template: templates/pre-install-job.yaml
+    set:
+      supportComponents.kubectl.image.repository: "ghcr.io/bitwarden/helm-charts/kubectl"
+      supportComponents.kubectl.image.tag: 1.34
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/helm-charts/kubectl:1.34"
+
+  - it: should use dbMigrator with coreVersionOverride when tag is empty
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      supportComponents.dbMigrator.image.tag: ""
+      general.coreVersionOverride: 2025.12.0
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/mssqlmigratorutility:2025.12.0"
+
+
+# Test backward compatibility
+
+  - it: should handle empty string tag as unset
+    template: templates/api.yaml
+    set:
+      component.api.image.tag:
+      general.coreVersionOverride: ""
+    asserts:
+      - notMatchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: ":$"
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should use deprecated name field when repository is not set
+    template: templates/pre-install-job.yaml
+    set:
+      supportComponents.kubectl.image.name: "ghcr.io/bitwarden/helm-charts/kubectl"
+      supportComponents.kubectl.image.repository:
+      supportComponents.kubectl.image.tag: 1.34
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/helm-charts/kubectl:1.34"
+
+  - it: should prefer repository over deprecated name field
+    template: templates/pre-install-job.yaml
+    set:
+      supportComponents.kubectl.image.name: "old/kubectl"
+      supportComponents.kubectl.image.repository: "ghcr.io/bitwarden/helm-charts/kubectl"
+      supportComponents.kubectl.image.tag: 1.34
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/helm-charts/kubectl:1.34"
+
+  - it: should use deprecated name field for database
+    template: templates/mssql.yaml
+    set:
+      database.enabled: true
+      database.image.name: "mcr.microsoft.com/mssql/server"
+      database.image.repository:
+      database.image.tag: "2022-CU12-ubuntu-22.04"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04"
+        documentSelector:
+          path: kind
+          value: StatefulSet

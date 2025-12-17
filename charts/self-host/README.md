@@ -116,6 +116,29 @@ Set `secrets.secretName` to the name of the secret created above.
 
 Replace any optional values in `my-values.yaml` to best fit your cluster. This includes changing of resource limits and requests.
 
+#### Image Configuration
+
+__Overriding all core component versions:__
+
+```yaml
+general:
+  coreVersionOverride: "2025.12.0"
+  webVersionOverride: "2025.12.0"
+```
+
+When `coreVersionOverride` is set, all core components (api, admin, identity, etc.) will use this version. The `webVersionOverride` applies specifically to the Web component. If these are empty, the chart's default versions are used from appVersion in Chart.yaml.
+
+__Using a custom registry:__
+
+```yaml
+component:
+  api:
+    image:
+      repository: custom-registry.io/bitwarden/api
+```
+
+You can override the image repository for any component.
+
 #### Raw Manifests Files
 
 This chart allows you to include other Kubernetes manifest files either pre- or post-install. To do this, update the `rawManifests` section of the chart
@@ -978,9 +1001,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     resources:
       requests:
         memory: "64Mi"
@@ -1281,9 +1305,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     resources:
       requests:
         memory: "64Mi"

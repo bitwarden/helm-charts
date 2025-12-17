@@ -68,7 +68,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        image: "{{ .Values.supportComponents.certGenerator.image.repository | default .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
@@ -91,7 +91,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository | default .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
