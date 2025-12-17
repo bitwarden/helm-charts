@@ -40,6 +40,39 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -70,6 +103,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -172,6 +250,57 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 5,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 120,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 120,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 180,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -202,6 +331,57 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 5,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 120,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 120,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 180,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -304,6 +484,39 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -334,6 +547,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -436,6 +694,39 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -466,6 +757,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -568,6 +904,39 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -598,6 +967,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -700,6 +1114,57 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 120,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 60,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -730,6 +1195,57 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 60,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 120,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 60,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -832,6 +1348,39 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -862,6 +1411,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -1103,6 +1697,57 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 5,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 90,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 60,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 60,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -1133,6 +1778,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -1235,6 +1925,39 @@
               "title": "labels",
               "type": "object"
             },
+            "livenessProbe": {
+              "description": "Liveness probe configuration",
+              "properties": {
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 30,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -1265,6 +1988,51 @@
               "required": [],
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "readinessProbe": {
+              "description": "Readiness probe configuration",
+              "properties": {
+                "failureThreshold": {
+                  "default": 3,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "initialDelaySeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "initialDelaySeconds",
+                  "type": "integer"
+                },
+                "periodSeconds": {
+                  "default": 5,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
