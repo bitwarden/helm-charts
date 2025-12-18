@@ -1,4 +1,5 @@
 name: Version Bump - SM Operator
+run-name: Version Bump to ${{ inputs.version_number }} - SM Operator
 
 on:
   workflow_dispatch:
