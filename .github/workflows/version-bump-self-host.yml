@@ -1,4 +1,5 @@
 name: Version Bump - Self Host
+run-name: Version Bump to ${{ inputs.version_number }} - Self Host
 
 on:
   workflow_dispatch:
@@ -12,7 +13,6 @@ jobs:
   bump_version:
     name: Bump Version
     runs-on: ubuntu-24.04
-    environment: Production
     permissions:
       contents: write
       pull-requests: write
