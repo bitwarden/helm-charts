@@ -131,6 +131,19 @@ tests:
           path: kind
           value: Deployment
 
+  - it: should use deprecated name field for api component when repository isn't provided
+    template: templates/api.yaml
+    set:
+      component.api.image.name: "ghcr.io/bitwarden/api2"
+      component.api.image.tag: "2025.12.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/api2:2025.12.0"
+        documentSelector:
+          path: kind
+          value: Deployment
+
   - it: should use deprecated name field when repository is not set
     template: templates/pre-install-job.yaml
     set:
@@ -142,23 +155,22 @@ tests:
           path: spec.template.spec.containers[0].image
           value: "ghcr.io/bitwarden/helm-charts/kubectl:1.34"
 
-  - it: should prefer repository over deprecated name field
+  - it: should prefer deprecated name field for backward compatibility when both are set
     template: templates/pre-install-job.yaml
     set:
-      supportComponents.kubectl.image.name: "old/kubectl"
+      supportComponents.kubectl.image.name: "custom.registry.com/kubectl"
       supportComponents.kubectl.image.repository: "ghcr.io/bitwarden/helm-charts/kubectl"
       supportComponents.kubectl.image.tag: 1.34
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "ghcr.io/bitwarden/helm-charts/kubectl:1.34"
+          value: "custom.registry.com/kubectl:1.34"
 
   - it: should use deprecated name field for database
     template: templates/mssql.yaml
     set:
       database.enabled: true
       database.image.name: "mcr.microsoft.com/mssql/server"
-      database.image.repository:
       database.image.tag: "2022-CU12-ubuntu-22.04"
     asserts:
       - equal:

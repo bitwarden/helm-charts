@@ -71,14 +71,14 @@ spec:
         args: ['
           mkdir -p /logs/events
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.repository | default .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.events" . }}
-        image: "{{ .Values.component.events.image.repository }}:{{ .Values.component.events.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.events.image.name | default .Values.component.events.image.repository }}:{{ .Values.component.events.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

@@ -64,7 +64,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.attachments" . }}
-        image: "{{ .Values.component.attachments.image.repository }}:{{ .Values.component.attachments.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.attachments.image.name | default .Values.component.attachments.image.repository }}:{{ .Values.component.attachments.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

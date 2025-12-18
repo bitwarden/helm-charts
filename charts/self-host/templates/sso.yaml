@@ -71,14 +71,14 @@ spec:
         args: ['
           mkdir -p /logs/sso
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.repository | default .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.sso" . }}
-        image: "{{ .Values.component.sso.image.repository }}:{{ .Values.component.sso.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.sso.image.name | default .Values.component.sso.image.repository }}:{{ .Values.component.sso.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

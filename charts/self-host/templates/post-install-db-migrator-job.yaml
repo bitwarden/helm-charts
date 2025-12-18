@@ -74,7 +74,7 @@ spec:
           echo "Admin Ready!"
         ']
         {{- end }}
-        image: "{{ .Values.supportComponents.kubectl.image.repository | default .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
@@ -98,7 +98,7 @@ spec:
               key: globalSettings__sqlServer__connectionString
         - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
           value: /migrator
-        image: "{{ .Values.supportComponents.dbMigrator.image.repository | default .Values.supportComponents.dbMigrator.image.name }}:{{ .Values.supportComponents.dbMigrator.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.supportComponents.dbMigrator.image.name | default .Values.supportComponents.dbMigrator.image.repository }}:{{ .Values.supportComponents.dbMigrator.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
