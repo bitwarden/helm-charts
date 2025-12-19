@@ -64,7 +64,7 @@ spec:
     {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
-          image: "{{ .Values.database.image.name }}:{{ .Values.database.image.tag }}"
+          image: "{{ .Values.database.image.name | default .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
           imagePullPolicy: Always
           {{- if .Values.database.resources }}
           resources:
