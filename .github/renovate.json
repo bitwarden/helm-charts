@@ -12,8 +12,7 @@
     "helm-requirements",
     "helm-values",
     "helmv3",
-    "custom.regex",
-    "docker"
+    "dockerfile"
   ],
   "packageRules": [
     {
