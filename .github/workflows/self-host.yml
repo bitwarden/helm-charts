@@ -39,7 +39,7 @@ jobs:
   test-self-host-kind:
     name: Test self-host chart with Kind
     # Skip flaky tests, enable in PR407
-    if: ${{ false }}
+    if: false
     runs-on: ubuntu-24.04
     permissions:
       contents: read
