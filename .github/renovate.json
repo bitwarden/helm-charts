@@ -12,19 +12,7 @@
     "helm-requirements",
     "helm-values",
     "helmv3",
-    "custom.regex"
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^charts/self-host/values\\.yaml$/"
-      ],
-      "matchStrings": [
-        "image:\\s*\\n\\s*name:\\s*(?<depName>docker\\.io/nginx|bitnami/kubectl)\\s*\\n\\s*tag:\\s*(?<currentValue>[^\\s]+)"
-      ],
-      "datasourceTemplate": "docker"
-    }
+    "dockerfile"
   ],
   "packageRules": [
     {

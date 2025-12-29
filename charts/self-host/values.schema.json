@@ -21,12 +21,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/admin",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -231,12 +237,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/api",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -465,12 +477,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/attachments",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -675,12 +693,19 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/events",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "description": "Leave tag empty to use general.coreVersionOverride or chart default. Set a specific tag to override.",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -885,12 +910,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/icons",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -1095,12 +1126,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/identity",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -1329,12 +1366,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/notifications",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -1546,12 +1589,18 @@
               "type": "boolean"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/scim",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -1678,12 +1727,18 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/sso",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -1906,12 +1961,19 @@
               "type": "string"
             },
             "image": {
-              "description": "Image name, tag, and pull policy",
+              "description": "Image repository, tag, and pull policy",
               "properties": {
-                "name": {
+                "repository": {
                   "default": "ghcr.io/bitwarden/web",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "description": "Leave tag empty to use general.webVersionOverride or chart default. Set a specific tag to override.",
+                  "required": [],
+                  "title": "tag",
                   "type": "string"
                 }
               },
@@ -2122,17 +2184,22 @@
           "type": "boolean"
         },
         "image": {
-          "description": "Image name, tag, and pull policy",
+          "description": "Image repository, tag, and pull policy",
           "properties": {
             "name": {
+              "default": "",
+              "deprecated": true,
+              "required": [],
+              "title": "name"
+            },
+            "repository": {
               "default": "mcr.microsoft.com/mssql/server",
               "required": [],
-              "title": "name",
+              "title": "repository",
               "type": "string"
             },
             "tag": {
               "default": "2022-CU12-ubuntu-22.04",
-              "description": "Tag of the image to use. (Defaults to general.coreVersion)",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -2363,7 +2430,7 @@
         },
         "coreVersionOverride": {
           "default": "",
-          "description": "Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.",
+          "description": "Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.\nIf both are empty, the chart's default version is used",
           "required": [],
           "title": "coreVersionOverride",
           "type": "string"
@@ -3075,16 +3142,25 @@
             "image": {
               "properties": {
                 "name": {
+                  "default": "",
+                  "deprecated": true,
+                  "required": [],
+                  "title": "name"
+                },
+                "repository": {
                   "default": "alpine/openssl",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "3.5.2",
                   "required": [],
                   "title": "tag",
-                  "type": "string"
+                  "type": [
+                    "string",
+                    "number"
+                  ]
                 }
               },
               "required": [],
@@ -3101,10 +3177,25 @@
             "image": {
               "properties": {
                 "name": {
+                  "default": "",
+                  "deprecated": true,
+                  "required": [],
+                  "title": "name"
+                },
+                "repository": {
                   "default": "ghcr.io/bitwarden/mssqlmigratorutility",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
                   "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "required": [],
+                  "title": "tag",
+                  "type": [
+                    "string",
+                    "number"
+                  ]
                 }
               },
               "required": [],
@@ -3121,16 +3212,25 @@
             "image": {
               "properties": {
                 "name": {
+                  "default": "",
+                  "deprecated": true,
+                  "required": [],
+                  "title": "name"
+                },
+                "repository": {
                   "default": "ghcr.io/bitwarden/helm-charts/kubectl",
                   "required": [],
-                  "title": "name",
+                  "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": 1.34,
                   "required": [],
                   "title": "tag",
-                  "type": "number"
+                  "type": [
+                    "string",
+                    "number"
+                  ]
                 }
               },
               "required": [],

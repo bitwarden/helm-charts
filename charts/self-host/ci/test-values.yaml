@@ -111,7 +111,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -129,7 +130,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/api
+      repository: ghcr.io/bitwarden/api
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -147,7 +149,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/attachments
+      repository: ghcr.io/bitwarden/attachments
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -165,7 +168,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/events
+      repository: ghcr.io/bitwarden/events
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -183,7 +187,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/icons
+      repository: ghcr.io/bitwarden/icons
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -201,7 +206,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/identity
+      repository: ghcr.io/bitwarden/identity
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -219,7 +225,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/notifications
+      repository: ghcr.io/bitwarden/notifications
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -237,7 +244,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/scim
+      repository: ghcr.io/bitwarden/scim
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -255,7 +263,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/sso
+      repository: ghcr.io/bitwarden/sso
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -273,7 +282,8 @@ component:
     labels: {}
     # Image name, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/web
+      repository: ghcr.io/bitwarden/web
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -290,14 +300,15 @@ component:
 supportComponents:
   dbMigrator:
     image:
-      name: ghcr.io/bitwarden/mssqlmigratorutility
+      repository: ghcr.io/bitwarden/mssqlmigratorutility
+      tag: ""
   certGenerator:
     image:
-      name: alpine/openssl
+      repository: alpine/openssl
       tag: 3.5.2
   kubectl:
     image:
-      name: ghcr.io/bitwarden/helm-charts/kubectl
+      repository: ghcr.io/bitwarden/helm-charts/kubectl
       tag: 1.34
 # Data volume sizes for shared PVCs
 volume:
@@ -377,7 +388,8 @@ database:
   labels: {}
   # Image name, tag, and pull policy
   image:
-    name: mcr.microsoft.com/mssql/server
+    repository: mcr.microsoft.com/mssql/server
+    tag: 2022-CU12-ubuntu-22.04
     # Tag of the image to use. (Defaults to general.coreVersion)
     # tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.

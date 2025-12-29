@@ -60,7 +60,8 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 
-  # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
+  # Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.
+  # If both are empty, the chart's default version is used
   coreVersionOverride: ""
   webVersionOverride: ""
   # Disable account registration on web vault
@@ -138,9 +139,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -184,9 +186,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/api
+      repository: ghcr.io/bitwarden/api
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -234,9 +237,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/attachments
+      repository: ghcr.io/bitwarden/attachments
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -280,9 +284,11 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/events
+      repository: ghcr.io/bitwarden/events
+      # Leave tag empty to use general.coreVersionOverride or chart default. Set a specific tag to override.
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -326,9 +332,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/icons
+      repository: ghcr.io/bitwarden/icons
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -372,9 +379,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/identity
+      repository: ghcr.io/bitwarden/identity
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -422,9 +430,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/notifications
+      repository: ghcr.io/bitwarden/notifications
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -470,9 +479,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/scim
+      repository: ghcr.io/bitwarden/scim
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -502,9 +512,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/sso
+      repository: ghcr.io/bitwarden/sso
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -551,9 +562,11 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/web
+      repository: ghcr.io/bitwarden/web
+      # Leave tag empty to use general.webVersionOverride or chart default. Set a specific tag to override.
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -588,14 +601,36 @@ component:
 supportComponents:
   dbMigrator:
     image:
-      name: ghcr.io/bitwarden/mssqlmigratorutility
+      # @schema
+      # deprecated: true
+      # @schema
+      name: ""
+      repository: ghcr.io/bitwarden/mssqlmigratorutility
+      # @schema
+      # type: [string, number]
+      # @schema
+      tag: ""
   certGenerator:
     image:
-      name: alpine/openssl
+      # @schema
+      # deprecated: true
+      # @schema
+      name: ""
+      repository: alpine/openssl
+      # @schema
+      # type: [string, number]
+      # @schema
       tag: 3.5.2
   kubectl:
     image:
-      name: ghcr.io/bitwarden/helm-charts/kubectl
+      # @schema
+      # deprecated: true
+      # @schema
+      name: ""
+      repository: ghcr.io/bitwarden/helm-charts/kubectl
+      # @schema
+      # type: [string, number]
+      # @schema
       tag: 1.34
 
 # Data volume sizes for shared PVCs
@@ -729,10 +764,13 @@ database:
   nodeSelector: {}
   # Optionally add taint tolerations
   tolerations: []
-  # Image name, tag, and pull policy
+  # Image repository, tag, and pull policy
   image:
-    name: mcr.microsoft.com/mssql/server
-    # Tag of the image to use. (Defaults to general.coreVersion)
+    # @schema
+    # deprecated: true
+    # @schema
+    name: ""
+    repository: mcr.microsoft.com/mssql/server
     tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
