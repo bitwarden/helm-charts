@@ -483,7 +483,7 @@ supportComponents:
       # @schema
       # type: [string, number]
       # @schema
-      tag: 3.5.2
+      tag: 3.5.4
   kubectl:
     image:
       # @schema
