@@ -38,8 +38,6 @@ jobs:
   
   test-self-host-kind:
     name: Test self-host chart with Kind
-    # Skip flaky tests by default, enable in PR407
-    if: github.ref == 'refs/heads/add-probes'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -156,4 +154,5 @@ jobs:
     needs:
       - lint-self-host
       - test-self-host
+      - test-self-host-kind
     secrets: inherit

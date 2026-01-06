@@ -79,11 +79,14 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.web.livenessProbe }}
         livenessProbe:
-          httpGet:
-            path: /
-            port: 5000
-          initialDelaySeconds: 180
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        {{- with .Values.component.web.readinessProbe }}
+        readinessProbe:
+{{ toYaml . | indent 10 }}
+        {{- end }}
         ports:
         - containerPort: 5000
         resources:
