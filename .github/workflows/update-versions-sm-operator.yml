@@ -134,7 +134,7 @@ jobs:
               - [ ] Bug fix
               - [ ] New feature development
               - [ ] Tech debt (refactoring, code cleanup, dependency upgrades, etc)
-              - [ ] Build/deploy pipeline (DevOps)
+              - [ ] Build/deploy pipeline
               - [X] Other
 
               ## Objective
