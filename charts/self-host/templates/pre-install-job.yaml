@@ -1,3 +1,4 @@
+{{- if .Values.secrets.identityCertificate.generate }}
 {{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
 {{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
 {{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
@@ -104,3 +105,4 @@ spec:
         - name: temp
           emptyDir:
             medium: Memory
+{{- end }}

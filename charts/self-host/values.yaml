@@ -123,6 +123,21 @@ secrets:
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass: ""
 
+  # Encryption keys configuration
+  # By default, the chart generates encryption keys (internalIdentityKey, oidcIdentityClientKey, duo__aKey).
+  # Set generate to false if you want to provide these keys in the secretName provided above.
+  secretKeys:
+    generate: true
+
+  # Identity certificate configuration
+  # By default, the chart generates an identity certificate and password.
+  # Set generate to false if you want to provide your own certificate.
+  identityCertificate:
+    generate: true
+    # The name of the secret that contains BOTH the identity.pfx certificate file
+    # AND the certificate password (globalSettings__identityServer__certificatePassword).
+    secretName: ""
+
 # Settings for individual service containers
 component:
   # The Admin component
