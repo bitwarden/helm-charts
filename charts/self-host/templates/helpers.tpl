@@ -262,7 +262,7 @@ Name of the keys secret
 {{- end -}}
 
 {{/*
-Name of the keys secret (auto-generated or user-provided)
+Name of the keys secret (generated or provided by the user)
 */}}
 {{- define "bitwarden.keyssecretName" -}}
 {{- if .Values.secrets.secretKeys.generate -}}
