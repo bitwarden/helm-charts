@@ -1,3 +1,9 @@
+{{ if eq .Values.database.databaseProvider "postgres" }}
+
+# Simply don't deploy anything if postgres is enabled.
+# This is because the Admin service will perform the necessary database migrations on startup.
+
+{{- else }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -131,3 +137,4 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
+{{- end }}

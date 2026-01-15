@@ -750,6 +750,8 @@ serviceAccount:
 # Configure database
 #
 database:
+  # Set the database provider to "postgres" to utilize a provided postgres database.
+  databaseProvider: "postgres"
   # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
   enabled: true
   # Labels to add to the MSSQL deployment
