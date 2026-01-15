@@ -146,17 +146,17 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
-        cpu: "50m"
+        memory: "256Mi"
+        cpu: "125m"
       limits:
-        memory: "128Mi"
-        cpu: "100m"
+        memory: "384Mi"
+        cpu: "250m"
     # Liveness probe configuration
     livenessProbe:
       httpGet:
         path: /alive
         port: 5000
-      initialDelaySeconds: 30
+      initialDelaySeconds: 300
     # Readiness probe configuration
     readinessProbe:
       httpGet:
@@ -753,7 +753,7 @@ database:
   # Set the database provider to "postgres" to utilize a provided postgres database.
   databaseProvider: "postgres"
   # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
-  enabled: true
+  enabled: false
   # Labels to add to the MSSQL deployment
   labels: {}
   # Annotations to add to the MSSQL deployment
