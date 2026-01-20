@@ -24,6 +24,12 @@
         },
         "manager": {
           "properties": {
+            "enableLeaderElection": {
+              "default": true,
+              "description": "Enables leader election for the controller manager, should be enabled if there is more than one replica.",
+              "title": "enableLeaderElection",
+              "type": "boolean"
+            },
             "image": {
               "properties": {
                 "repository": {

@@ -24,6 +24,8 @@ commonLabels: {}
 # Settings specific to the pod containers
 containers:
   manager:
+    # Enables leader election for the controller manager, should be enabled if there is more than one replica.
+    enableLeaderElection: true
     image:
       repository: ghcr.io/bitwarden/sm-operator
       # Will default to the Chart's AppVersion, but you can override here.
