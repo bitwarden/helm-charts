@@ -1994,7 +1994,7 @@
       "type": "object"
     },
     "database": {
-      "description": "\nConfigure database\n",
+      "description": "\nConfigure MSSQL Database Deployment\nThis section is only used when general.databaseProvider is \"mssql\"\nFor PostgreSQL deployments, users must bring their own\nPostgreSQL database and provide the connection string via secrets.secretName or one of the other configuration providers.\n",
       "properties": {
         "annotations": {
           "description": "Annotations to add to the MSSQL deployment",
@@ -2002,15 +2002,9 @@
           "title": "annotations",
           "type": "object"
         },
-        "databaseProvider": {
-          "default": "postgres",
-          "description": "Set the database provider to \"postgres\" to utilize a provided postgres database.",
-          "title": "databaseProvider",
-          "type": "string"
-        },
         "enabled": {
-          "default": false,
-          "description": "deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.",
+          "default": true,
+          "description": "deploy the MSSQL database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.",
           "title": "enabled",
           "type": "boolean"
         },
@@ -2248,6 +2242,12 @@
           "default": "",
           "description": "Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.\nIf both are empty, the chart's default version is used",
           "title": "coreVersionOverride",
+          "type": "string"
+        },
+        "databaseProvider": {
+          "default": "mssql",
+          "description": "Database provider type, mssql is the default.\nUse \"postgres\" when providing your own PostgreSQL database.\n - Requires globalSettings__postgreSql__connectionString to exist in the configured secret.",
+          "title": "databaseProvider",
           "type": "string"
         },
         "disableUserRegistration": {

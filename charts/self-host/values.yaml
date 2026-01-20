@@ -5,6 +5,10 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "REPLACE"
+  # Database provider type, mssql is the default.
+  # Use "postgres" when providing your own PostgreSQL database.
+  #  - Requires globalSettings__postgreSql__connectionString to exist in the configured secret.
+  databaseProvider: "mssql"
   ingress:
     # Set to false if using a custom ingress
     enabled: true
@@ -747,13 +751,14 @@ serviceAccount:
   deployRolesOnly: false
 
 #
-# Configure database
+# Configure MSSQL Database Deployment
+# This section is only used when general.databaseProvider is "mssql"
+# For PostgreSQL deployments, users must bring their own
+# PostgreSQL database and provide the connection string via secrets.secretName or one of the other configuration providers.
 #
 database:
-  # Set the database provider to "postgres" to utilize a provided postgres database.
-  databaseProvider: "postgres"
-  # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
-  enabled: false
+  # deploy the MSSQL database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
+  enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
   # Annotations to add to the MSSQL deployment

@@ -1,8 +1,5 @@
-{{ if eq .Values.database.databaseProvider "postgres" }}
-
-# Simply don't deploy anything if postgres is enabled.
-# This is because the Admin service will perform the necessary database migrations on startup.
-
+{{ if eq .Values.general.databaseProvider "postgres" }}
+# Migrations are handled by the Admin service for Postgres deployments.
 {{- else }}
 ---
 apiVersion: batch/v1
