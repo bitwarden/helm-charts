@@ -136,7 +136,7 @@ Generate three random 64-character hex strings for the encryption keys:
    openssl rand -hex 64 # Repeat three times
    ```
 
-1. Generate a `identity.pfx` certificate for the identity service. You can use OpenSSL or using a tool to generate a self-signed certificate.
+1. Generate a `identity.pfx` certificate for the identity service. You can use OpenSSL or any other certificate tool to generate a self-signed certificate.
 
     Example using OpenSSL:
 
