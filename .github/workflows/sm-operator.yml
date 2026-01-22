@@ -33,6 +33,7 @@ jobs:
     uses: ./.github/workflows/_test_chart.yml
     permissions:
       contents: read
+      pull-requests: write
     with:
       chart_name: sm-operator
 
