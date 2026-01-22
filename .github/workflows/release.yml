@@ -47,14 +47,6 @@ jobs:
       - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
-        with:
-          gpg_private_key: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
-          passphrase: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key-passphrase }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-
       - name: Generate GH App token
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         id: app-token
@@ -70,6 +62,14 @@ jobs:
           persist-credentials: false
           ref: main
           token:  ${{ steps.app-token.outputs.token }}
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
+        with:
+          gpg_private_key: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key }}
+          passphrase: ${{ steps.retrieve-secrets.outputs.github-gpg-private-key-passphrase }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
 
       - name: Log in to Azure
         uses: bitwarden/gh-actions/azure-login@main
