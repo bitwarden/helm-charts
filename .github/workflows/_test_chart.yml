@@ -57,6 +57,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
+      pull-requests: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -73,4 +74,13 @@ jobs:
         run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
 
       - name: Run Helm unit tests
-        run: helm unittest "${_CHART_PATH}"
+        run: helm unittest "${_CHART_PATH}" --output-type JUnit --output-file test-results.xml
+
+      - name: Report test results
+        uses: dorny/test-reporter@fe45e9537387dac839af0d33ba56eed8e24189e8 # v2.3.0
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !cancelled() }}
+        with:
+          name: Test Results
+          path: "**/test-results.xml"
+          reporter: java-junit
+          fail-on-error: true
