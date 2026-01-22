@@ -36,7 +36,7 @@ jobs:
         with:
           keyvault: gh-org-bitwarden
           secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
-	  
+
       - name: Retrieve secrets
         id: retrieve-secrets
         uses: bitwarden/gh-actions/get-keyvault-secrets@main
@@ -46,7 +46,7 @@ jobs:
 
       - name: Log out from Azure
         uses: bitwarden/gh-actions/azure-logout@main
-	
+
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
         with:
@@ -82,7 +82,7 @@ jobs:
         run: |
           #git config --local user.name "bw-ghapp[bot]"
           #git config --local user.email "178206702+bw-ghapp[bot]@users.noreply.github.com"
-	  
+
           git config --local user.email "106330231+bitwarden-devops-bot@users.noreply.github.com"
           git config --local user.name "bitwarden-devops-bot"
 
