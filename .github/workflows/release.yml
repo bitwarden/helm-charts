@@ -96,7 +96,7 @@ jobs:
           CR_RELEASE_NOTES_FILE: CHANGELOG.md # Relative path to use chart specific CHANGELOG.md from respective chart directory
           CR_MAKE_RELEASE_LATEST: true
           CR_SKIP_EXISTING: true
-          CR_TOKEN: ${{ steps.app-token.outputs.token }}
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
         with:
           skip_packaging: true
