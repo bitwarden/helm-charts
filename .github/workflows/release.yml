@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
           ref: main
           token:  ${{ steps.app-token.outputs.token }}
 
@@ -96,7 +96,7 @@ jobs:
           CR_RELEASE_NOTES_FILE: CHANGELOG.md # Relative path to use chart specific CHANGELOG.md from respective chart directory
           CR_MAKE_RELEASE_LATEST: true
           CR_SKIP_EXISTING: true
-          CR_TOKEN: ${{ steps.app-token.outputs.token }}
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
         with:
           skip_packaging: true
