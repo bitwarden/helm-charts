@@ -33,7 +33,7 @@ jobs:
           version: 'v4.0.0'
 
       - name: Install Helm plugins
-        run: helm plugin install https://github.com/dadav/helm-schema --verify=false # see: https://github.com/dadav/helm-schema/issues/156
+        run: helm plugin install https://github.com/dadav/helm-schema/releases/download/0.20.0-1/helm-schema_0.20.0-1_Linux_x86_64.tar.gz --verify=false # see: https://github.com/dadav/helm-schema/issues/156
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
