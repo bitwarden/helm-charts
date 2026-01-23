@@ -33,7 +33,9 @@ jobs:
           version: 'v4.0.0'
 
       - name: Install Helm plugins
-        run: helm plugin install https://github.com/dadav/helm-schema --version 0.18.1 --verify=false # see: https://github.com/dadav/helm-schema/issues/156
+        env:
+          HELM_SCHEMA_VERSION: 0.18.1 # If this causes the linter to fail, the schema may need to be regenerated: See <insert doc here>
+        run: helm plugin install https://github.com/dadav/helm-schema --version "${HELM_SCHEMA_VERSION}" --verify=false # see: https://github.com/dadav/helm-schema/issues/156
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
