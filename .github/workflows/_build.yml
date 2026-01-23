@@ -10,7 +10,6 @@ on:
 permissions:
   contents: read
   id-token: write
-  packages: write
 
 env:
   _CHART_NAME: ${{ inputs.chart_name }}
