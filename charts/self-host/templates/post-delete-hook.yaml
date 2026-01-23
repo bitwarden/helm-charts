@@ -63,7 +63,7 @@ spec:
           kubectl delete secret {{ .Release.Name }}-identity-cert -n {{ .Release.Namespace }};
           kubectl delete secret {{ .Release.Name }}-identity-cert-password  -n {{ .Release.Namespace }};
           kubectl delete job {{ .Release.Name }}-setup;
-          kubectl delete job {{ .Release.Name }}-migrator;
+          kubectl delete job {{ .Release.Name }}-migrator; 
           echo "Done"
         ']
         image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
