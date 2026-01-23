@@ -16,7 +16,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -25,13 +24,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/admin",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -53,13 +50,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -70,7 +65,6 @@
                 },
                 "initialDelaySeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 }
@@ -106,7 +100,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -115,7 +108,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -123,13 +115,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -140,13 +130,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -162,13 +150,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -181,13 +167,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -212,7 +196,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -232,7 +215,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -241,13 +223,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/api",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -267,7 +247,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 5,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -275,13 +254,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -292,19 +269,16 @@
                 },
                 "initialDelaySeconds": {
                   "default": 120,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 120,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
                   "default": 180,
-                  "required": [],
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
@@ -340,7 +314,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -349,7 +322,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 5,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -357,13 +329,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -374,19 +344,16 @@
                 },
                 "initialDelaySeconds": {
                   "default": 120,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 120,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
                   "default": 180,
-                  "required": [],
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
@@ -402,13 +369,11 @@
                   "properties": {
                     "cpu": {
                       "default": "200m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "256Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -421,13 +386,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -452,7 +415,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -472,7 +434,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -481,13 +442,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/attachments",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -509,13 +468,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -526,7 +483,6 @@
                 },
                 "initialDelaySeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 }
@@ -562,7 +518,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -571,7 +526,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -579,13 +533,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -596,13 +548,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -618,13 +568,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -637,13 +585,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -668,7 +614,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -688,7 +633,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -697,14 +641,12 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/events",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
                   "description": "Leave tag empty to use general.coreVersionOverride or chart default. Set a specific tag to override.",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -726,13 +668,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -743,7 +683,6 @@
                 },
                 "initialDelaySeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 }
@@ -779,7 +718,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -788,7 +726,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -796,13 +733,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -813,13 +748,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -835,13 +768,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -854,13 +785,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -885,7 +814,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -905,7 +833,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -914,13 +841,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/icons",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -942,13 +867,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -959,7 +882,6 @@
                 },
                 "initialDelaySeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 }
@@ -995,7 +917,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -1004,7 +925,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1012,13 +932,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1029,13 +947,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -1051,13 +967,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1070,13 +984,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1101,7 +1013,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -1121,7 +1032,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -1130,13 +1040,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/identity",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -1156,7 +1064,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1164,13 +1071,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1181,19 +1086,16 @@
                 },
                 "initialDelaySeconds": {
                   "default": 120,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 60,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
@@ -1229,7 +1131,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -1238,7 +1139,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1246,13 +1146,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1263,19 +1161,16 @@
                 },
                 "initialDelaySeconds": {
                   "default": 60,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 120,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
                   "default": 60,
-                  "required": [],
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
@@ -1291,13 +1186,11 @@
                   "properties": {
                     "cpu": {
                       "default": "200m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "256Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1310,13 +1203,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1341,7 +1232,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -1361,7 +1251,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -1370,13 +1259,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/notifications",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -1398,13 +1285,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1415,7 +1300,6 @@
                 },
                 "initialDelaySeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 }
@@ -1451,7 +1335,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -1460,7 +1343,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1468,13 +1350,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1485,13 +1365,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -1507,13 +1385,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1526,13 +1402,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1557,7 +1431,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -1577,14 +1450,12 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
             "enabled": {
               "default": false,
               "description": "SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path",
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             },
@@ -1593,13 +1464,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/scim",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -1641,7 +1510,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -1652,13 +1520,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1671,13 +1537,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1702,7 +1566,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -1722,7 +1585,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -1731,13 +1593,11 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/sso",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -1757,7 +1617,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 5,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1765,13 +1624,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1782,19 +1639,16 @@
                 },
                 "initialDelaySeconds": {
                   "default": 90,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 60,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
                   "default": 60,
-                  "required": [],
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
@@ -1830,7 +1684,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -1839,7 +1692,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1847,13 +1699,11 @@
                   "properties": {
                     "path": {
                       "default": "/alive",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -1864,13 +1714,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -1886,13 +1734,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1905,13 +1751,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -1936,7 +1780,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -1956,7 +1799,6 @@
             "deploymentStrategy": {
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
-              "required": [],
               "title": "deploymentStrategy",
               "type": "string"
             },
@@ -1965,14 +1807,12 @@
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/web",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
                   "description": "Leave tag empty to use general.webVersionOverride or chart default. Set a specific tag to override.",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -1994,13 +1834,11 @@
                   "properties": {
                     "path": {
                       "default": "/",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -2011,7 +1849,6 @@
                 },
                 "initialDelaySeconds": {
                   "default": 30,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 }
@@ -2047,7 +1884,6 @@
             "podServiceAccount": {
               "default": "",
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-              "required": [],
               "title": "podServiceAccount",
               "type": "string"
             },
@@ -2056,7 +1892,6 @@
               "properties": {
                 "failureThreshold": {
                   "default": 3,
-                  "required": [],
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -2064,13 +1899,11 @@
                   "properties": {
                     "path": {
                       "default": "/",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "port": {
                       "default": 5000,
-                      "required": [],
                       "title": "port",
                       "type": "integer"
                     }
@@ -2081,13 +1914,11 @@
                 },
                 "initialDelaySeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
                   "default": 5,
-                  "required": [],
                   "title": "periodSeconds",
                   "type": "integer"
                 }
@@ -2103,13 +1934,11 @@
                   "properties": {
                     "cpu": {
                       "default": "100m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -2122,13 +1951,11 @@
                   "properties": {
                     "cpu": {
                       "default": "50m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -2153,7 +1980,6 @@
               "items": {
                 "required": []
               },
-              "required": [],
               "title": "tolerations",
               "type": "array"
             }
@@ -2179,7 +2005,6 @@
         "enabled": {
           "default": true,
           "description": "deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.",
-          "required": [],
           "title": "enabled",
           "type": "boolean"
         },
@@ -2194,13 +2019,11 @@
             },
             "repository": {
               "default": "mcr.microsoft.com/mssql/server",
-              "required": [],
               "title": "repository",
               "type": "string"
             },
             "tag": {
               "default": "2022-CU12-ubuntu-22.04",
-              "required": [],
               "title": "tag",
               "type": "string"
             }
@@ -2242,7 +2065,6 @@
         "podServiceAccount": {
           "default": "",
           "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
-          "required": [],
           "title": "podServiceAccount",
           "type": "string"
         },
@@ -2253,13 +2075,11 @@
               "properties": {
                 "cpu": {
                   "default": "500m",
-                  "required": [],
                   "title": "cpu",
                   "type": "string"
                 },
                 "memory": {
                   "default": "2G",
-                  "required": [],
                   "title": "memory",
                   "type": "string"
                 }
@@ -2272,13 +2092,11 @@
               "properties": {
                 "cpu": {
                   "default": "100m",
-                  "required": [],
                   "title": "cpu",
                   "type": "string"
                 },
                 "memory": {
                   "default": "2G",
-                  "required": [],
                   "title": "memory",
                   "type": "string"
                 }
@@ -2303,14 +2121,12 @@
           "items": {
             "required": []
           },
-          "required": [],
           "title": "tolerations",
           "type": "array"
         },
         "updateStrategy": {
           "default": "OnDelete",
           "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"OnDelete\" or \"RollingUpdate\". \"OnDelete\" is the default value.\nWhen set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.",
-          "required": [],
           "title": "updateStrategy",
           "type": "string"
         },
@@ -2332,7 +2148,6 @@
                 "size": {
                   "default": "1Gi",
                   "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-                  "required": [],
                   "title": "size",
                   "type": "string"
                 }
@@ -2356,7 +2171,6 @@
                 "size": {
                   "default": "10Gi",
                   "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-                  "required": [],
                   "title": "size",
                   "type": "string"
                 }
@@ -2380,7 +2194,6 @@
                 "size": {
                   "default": "10Gi",
                   "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-                  "required": [],
                   "title": "size",
                   "type": "string"
                 }
@@ -2402,7 +2215,6 @@
     "fullnameOverride": {
       "default": "",
       "description": "Optional - Override the chart name if desired",
-      "required": [],
       "title": "fullnameOverride",
       "type": "string"
     },
@@ -2411,7 +2223,6 @@
         "admins": {
           "default": "false",
           "description": "Comma-separated list of email addresses for Admin users",
-          "required": [],
           "title": "admins",
           "type": "string"
         },
@@ -2424,28 +2235,24 @@
         "cloudRegion": {
           "default": "US",
           "description": "Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication",
-          "required": [],
           "title": "cloudRegion",
           "type": "string"
         },
         "coreVersionOverride": {
           "default": "",
           "description": "Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.\nIf both are empty, the chart's default version is used",
-          "required": [],
           "title": "coreVersionOverride",
           "type": "string"
         },
         "disableUserRegistration": {
           "default": "false",
           "description": "Disable account registration on web vault",
-          "required": [],
           "title": "disableUserRegistration",
           "type": "string"
         },
         "domain": {
           "default": "REPLACE",
           "description": "Domain name for the service",
-          "required": [],
           "title": "domain",
           "type": "string"
         },
@@ -2454,49 +2261,42 @@
             "replyToEmail": {
               "default": "no-reply@bitwarden.localhost",
               "description": "Email address used for invitations, typically no-reply",
-              "required": [],
               "title": "replyToEmail",
               "type": "string"
             },
             "smtpHost": {
               "default": "smtp.gmail.com",
               "description": "Your SMTP server hostname (recommended) or IP address",
-              "required": [],
               "title": "smtpHost",
               "type": "string"
             },
             "smtpPort": {
               "default": "587",
               "description": "The SMTP port used by the SMTP server",
-              "required": [],
               "title": "smtpPort",
               "type": "string"
             },
             "smtpSsl": {
               "default": "false",
               "description": "Whether your SMTP server uses an encryption protocol, \"true\" for SSL, \"false\" for TLS",
-              "required": [],
               "title": "smtpSsl",
               "type": "string"
             },
             "smtpSslOverride": {
               "default": "false",
               "description": "Specify true to use SSL (not TLS) on port 25.",
-              "required": [],
               "title": "smtpSslOverride",
               "type": "string"
             },
             "smtpStartTls": {
               "default": "false",
               "description": "Specify true to force STARTTLS (Opportunistic TLS).",
-              "required": [],
               "title": "smtpStartTls",
               "type": "string"
             },
             "smtpTrustServer": {
               "default": "false",
               "description": "Specify true to explicitly trust the certificate presented by the SMTP server (not recommended for production).",
-              "required": [],
               "title": "smtpTrustServer",
               "type": "string"
             }
@@ -2508,7 +2308,6 @@
         "enableCloudCommunication": {
           "default": false,
           "description": "Set to true to allow communication between your server and our cloud system. Doing so enables billing and license sync.  Please see: https://bitwarden.com/help/self-host-an-organization/#step-4-setup-billing-and-license-sync",
-          "required": [],
           "title": "enableCloudCommunication",
           "type": "boolean"
         },
@@ -2523,14 +2322,12 @@
             "className": {
               "default": "nginx",
               "description": "Current supported values for ingress type include: nginx",
-              "required": [],
               "title": "className",
               "type": "string"
             },
             "enabled": {
               "default": true,
               "description": "Set to false if using a custom ingress",
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             },
@@ -2547,13 +2344,11 @@
                   "properties": {
                     "path": {
                       "default": "/(admin/?.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2566,13 +2361,11 @@
                   "properties": {
                     "path": {
                       "default": "/api/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2585,13 +2378,11 @@
                   "properties": {
                     "path": {
                       "default": "/attachments/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2604,13 +2395,11 @@
                   "properties": {
                     "path": {
                       "default": "/events/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2623,13 +2412,11 @@
                   "properties": {
                     "path": {
                       "default": "/icons/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2642,13 +2429,11 @@
                   "properties": {
                     "path": {
                       "default": "/(identity/.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2661,13 +2446,11 @@
                   "properties": {
                     "path": {
                       "default": "/notifications/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2680,13 +2463,11 @@
                   "properties": {
                     "path": {
                       "default": "/scim/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2699,13 +2480,11 @@
                   "properties": {
                     "path": {
                       "default": "/(sso/.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2718,13 +2497,11 @@
                   "properties": {
                     "path": {
                       "default": "/(.*)",
-                      "required": [],
                       "title": "path",
                       "type": "string"
                     },
                     "pathType": {
                       "default": "ImplementationSpecific",
-                      "required": [],
                       "title": "pathType",
                       "type": "string"
                     }
@@ -2744,14 +2521,12 @@
                 "clusterIssuer": {
                   "default": "",
                   "description": "Cluster cert issuer (ex. Let's Encrypt) name if one exists",
-                  "required": [],
                   "title": "clusterIssuer",
                   "type": "string"
                 },
                 "name": {
                   "default": "",
                   "description": "TLS certificate secret name",
-                  "required": [],
                   "title": "name",
                   "type": "string"
                 }
@@ -2794,26 +2569,22 @@
           "properties": {
             "absoluteRefreshTokenLifetimeSeconds": {
               "default": "30",
-              "required": [],
               "title": "absoluteRefreshTokenLifetimeSeconds",
               "type": "string"
             },
             "applyAbsoluteRefreshTokenOnRefreshToken": {
               "default": "true",
-              "required": [],
               "title": "applyAbsoluteRefreshTokenOnRefreshToken",
               "type": "string"
             },
             "enabled": {
               "default": false,
               "description": "Set to true to enable refresh tokens.  Recommended for production environments.",
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             },
             "slidingRefreshTokenLifetimeSeconds": {
               "default": "",
-              "required": [],
               "title": "slidingRefreshTokenLifetimeSeconds",
               "type": "string"
             }
@@ -2826,7 +2597,6 @@
           "properties": {
             "enforceSsoPolicyForAllUsers": {
               "default": false,
-              "required": [],
               "title": "enforceSsoPolicyForAllUsers",
               "type": "boolean"
             }
@@ -2839,20 +2609,17 @@
           "items": {
             "required": []
           },
-          "required": [],
           "title": "tolerations",
           "type": "array"
         },
         "volumeAccessMode": {
           "default": "ReadWriteMany",
           "description": "Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable\nvalues are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes\nto better understand these options before changing this value.",
-          "required": [],
           "title": "volumeAccessMode",
           "type": "string"
         },
         "webVersionOverride": {
           "default": "",
-          "required": [],
           "title": "webVersionOverride",
           "type": "string"
         }
@@ -2880,7 +2647,6 @@
             "enabled": {
               "default": true,
               "description": "Enabled by default, disable to retain resources after uninstall",
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             },
@@ -3056,7 +2822,6 @@
     },
     "nameOverride": {
       "default": "",
-      "required": [],
       "title": "nameOverride",
       "type": "string"
     },
@@ -3068,7 +2833,6 @@
           "items": {
             "required": []
           },
-          "required": [],
           "title": "postInstall",
           "type": "array"
         },
@@ -3076,7 +2840,6 @@
           "items": {
             "required": []
           },
-          "required": [],
           "title": "preInstall",
           "type": "array"
         }
@@ -3090,14 +2853,12 @@
       "properties": {
         "secretName": {
           "default": "custom-secret",
-          "required": [],
           "title": "secretName",
           "type": "string"
         },
         "secretProviderClass": {
           "default": "",
           "description": "Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here",
-          "required": [],
           "title": "secretProviderClass",
           "type": "string"
         }
@@ -3112,13 +2873,11 @@
         "deployRolesOnly": {
           "default": false,
           "description": "Certain instances will require the creation of a pre-deployed service account. For instance, AWS IAM enabled service accounts need to be created outside\nof the chart to allow for setting of permissions on other AWS services like Secrets Manager",
-          "required": [],
           "title": "deployRolesOnly",
           "type": "boolean"
         },
         "name": {
           "default": "service-account",
-          "required": [],
           "title": "name",
           "type": "string"
         }
@@ -3130,7 +2889,6 @@
     "sharedStorageClassName": {
       "default": "shared-storage",
       "description": "Specify the name of the shared storage class\nThis storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.",
-      "required": [],
       "title": "sharedStorageClassName",
       "type": "string"
     },
@@ -3149,7 +2907,6 @@
                 },
                 "repository": {
                   "default": "alpine/openssl",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
@@ -3184,7 +2941,6 @@
                 },
                 "repository": {
                   "default": "ghcr.io/bitwarden/mssqlmigratorutility",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
@@ -3219,7 +2975,6 @@
                 },
                 "repository": {
                   "default": "ghcr.io/bitwarden/helm-charts/kubectl",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
@@ -3260,7 +3015,6 @@
             "size": {
               "default": "1Gi",
               "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-              "required": [],
               "title": "size",
               "type": "string"
             }
@@ -3274,14 +3028,12 @@
             "configMapName": {
               "default": "cacert",
               "description": "Load custom Certificates from the following ConfigMap",
-              "required": [],
               "title": "configMapName",
               "type": "string"
             },
             "enabled": {
               "default": false,
               "description": "Extra root certificates are disabled by default",
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             }
@@ -3300,7 +3052,6 @@
             "size": {
               "default": "1Gi",
               "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-              "required": [],
               "title": "size",
               "type": "string"
             }
@@ -3319,7 +3070,6 @@
             "size": {
               "default": "1Gi",
               "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-              "required": [],
               "title": "size",
               "type": "string"
             }
@@ -3333,7 +3083,6 @@
             "enabled": {
               "default": false,
               "description": "Logs are disabled by default",
-              "required": [],
               "title": "enabled",
               "type": "boolean"
             },
@@ -3345,7 +3094,6 @@
             "size": {
               "default": "1Gi",
               "description": "Use an existing PVC by specifying the name.\nexistingClaim: claimName\nOverride the accessMode specified in general.volumeAccessMode\naccessMode: ReadWriteOnce\nOverride the storageClass specified in sharedStorageClassName\nstorageClass: \"shared-storage\"",
-              "required": [],
               "title": "size",
               "type": "string"
             }
