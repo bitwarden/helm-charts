@@ -53,7 +53,7 @@ Update `containers.manager.image.tag` to use a different operator image version 
 
 ## Creating BitwardenSecrets
 
-Below is an example of creating a BitwardenSecret object to synchronsize secrets stored in Bitwarden Secrets Manager into Kubernetes secrets.
+Below is an example of creating a BitwardenSecret object to synchronize secrets stored in Bitwarden Secrets Manager into Kubernetes secrets.
 
 ### Create an authorization token secret
 

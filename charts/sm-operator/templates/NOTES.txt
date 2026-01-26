@@ -1,0 +1,10 @@
+
+====================================================================
+Bitwarden Secrets Manager Operator Helm Chart {{ .Chart.Version }}
+====================================================================
+
+Bitwarden Secrets Manager operator has been successfully deployed!
+
+{{- if and (gt (int .Values.settings.replicas) 1) (not .Values.containers.manager.enableLeaderElection) }}
+{{ include "sm-operator.text-warning" "`settings.replicas` has been set to more than one but `.manager.enableLeaderElection` is false. The deployment will likely not work as expected." }}
+{{- end }}
