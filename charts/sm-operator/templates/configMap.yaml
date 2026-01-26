@@ -10,4 +10,4 @@ data:
   BW_API_URL: {{ default (eq .Values.settings.cloudRegion "EU" | ternary "https://api.bitwarden.eu" "https://api.bitwarden.com") .Values.settings.bwApiUrlOverride | quote }}
   BW_IDENTITY_API_URL:  {{ default (eq .Values.settings.cloudRegion "EU" | ternary "https://identity.bitwarden.eu" "https://identity.bitwarden.com") .Values.settings.bwIdentityUrlOverride | quote }}
   BW_SECRETS_MANAGER_REFRESH_INTERVAL: {{ .Values.settings.bwSecretsManagerRefreshInterval | quote }}
-  KUBERNETES_CLUSTER_DOMAIN: {{ .Values.settings.kubernetesClusterDomain }}
+  KUBERNETES_CLUSTER_DOMAIN: {{ .Values.settings.kubernetesClusterDomain | quote }}

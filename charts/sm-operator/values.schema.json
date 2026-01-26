@@ -24,6 +24,12 @@
         },
         "manager": {
           "properties": {
+            "enableLeaderElection": {
+              "default": true,
+              "description": "Enables leader election for the controller manager, should be enabled if there is more than one replica.",
+              "title": "enableLeaderElection",
+              "type": "boolean"
+            },
             "image": {
               "properties": {
                 "repository": {
@@ -43,7 +49,7 @@
               "type": "object"
             },
             "resources": {
-              "description": "The pod resource requirements.  You can adjust these up and down for your environment",
+              "description": "The pod resource requirements. You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
                   "properties": {
@@ -248,7 +254,7 @@
       "properties": {
         "bwApiUrlOverride": {
           "default": "",
-          "description": "Set only if self-hosted.  These are the URLs for the Bitwarden API and Identity services",
+          "description": "Set only if self-hosted. These are the URLs for the Bitwarden API and Identity services",
           "title": "bwApiUrlOverride",
           "type": "string"
         },
@@ -259,25 +265,25 @@
         },
         "bwSecretsManagerRefreshInterval": {
           "default": 300,
-          "description": "How often the secrets synchronize in seconds.  Minimum value is 180.",
+          "description": "How often the secrets synchronize in seconds. Minimum value is 180.",
           "title": "bwSecretsManagerRefreshInterval",
           "type": "integer"
         },
         "cloudRegion": {
           "default": "US",
-          "description": "Define Cloud-region to supply the server-URL if using a Bitwarden Cloud vault.  Set to either 'US' or 'EU'\nIf self-hosted, leave blank and set bwApiUrlOverride instead\nhttps://bitwarden.com/help/server-geographies/",
+          "description": "Define Cloud-region to supply the server-URL if using a Bitwarden Cloud vault. Set to either 'US' or 'EU'\nIf self-hosted, leave blank and set bwApiUrlOverride instead\nhttps://bitwarden.com/help/server-geographies/",
           "title": "cloudRegion",
           "type": "string"
         },
         "kubernetesClusterDomain": {
           "default": "cluster.local",
-          "description": "This is the internal Kubernetes DNS zone.  You will likely not need to change this\nunless you have specifically changed the internal DNS name.",
+          "description": "This is the internal Kubernetes DNS zone. You will likely not need to change this\nunless you have specifically changed the internal DNS name.",
           "title": "kubernetesClusterDomain",
           "type": "string"
         },
         "replicas": {
           "default": 1,
-          "description": "The number of operator pod replicas to run.  When in doubt, leave at 1",
+          "description": "The number of operator pod replicas to run. When in doubt, leave at 1",
           "title": "replicas",
           "type": "integer"
         }
