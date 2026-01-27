@@ -10,3 +10,7 @@ The charts can be added using following command:
 ```bash
 helm repo add bitwarden https://charts.bitwarden.com/
 ```
+
+Full documentation for deploying with Helm can be found in our help center.
+- [Self-Host](https://bitwarden.com/help/self-host-with-helm/)
+- [Secrets Manager Operator](https://bitwarden.com/help/secrets-manager-kubernetes-operator/)
