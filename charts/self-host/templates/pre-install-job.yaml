@@ -12,16 +12,33 @@ metadata:
   name: "{{ .Release.Name }}-setup"
   labels:
     app.kubernetes.io/component: pre-install-hook
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.jobs.setup.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.jobs.setup.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-setup"
       labels:
         app.kubernetes.io/component: pre-install-hook
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.jobs.setup.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.jobs.setup.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
@@ -33,6 +50,10 @@ spec:
     {{- end }}
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+    {{- end }}
+    {{- if .Values.jobs.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.jobs.podSecurityContext | nindent 8 }}
     {{- end }}
 
 {{- if not $currentIdentityCert }}
@@ -47,7 +68,11 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "{{ .Values.supportComponents.certGenerator.image.name }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        image: "{{ .Values.supportComponents.certGenerator.image.name | default .Values.supportComponents.certGenerator.image.repository }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -66,7 +91,11 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"

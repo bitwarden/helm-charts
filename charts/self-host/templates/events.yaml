@@ -11,6 +11,11 @@ metadata:
 {{- with .Values.component.events.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.component.events.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   replicas: 1
   strategy:
@@ -23,7 +28,15 @@ spec:
       labels:
         app: {{ template "bitwarden.events" . }}
         app.kubernetes.io/component: events
-{{ include "bitwarden.labels" . | indent 8 }}
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.component.events.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.component.events.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
       {{- if or .Values.component.events.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
@@ -58,14 +71,14 @@ spec:
         args: ['
           mkdir -p /logs/events
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.events" . }}
-        image: "{{ .Values.component.events.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ .Values.component.events.image.name | default .Values.component.events.image.repository }}:{{ .Values.component.events.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
@@ -80,11 +93,14 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.events.livenessProbe }}
         livenessProbe:
-          httpGet:
-            path: /alive
-            port: 5000
-          initialDelaySeconds: 180
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        {{- with .Values.component.events.readinessProbe }}
+        readinessProbe:
+{{ toYaml . | indent 10 }}
+        {{- end }}
         ports:
         - containerPort: 5000
         resources:

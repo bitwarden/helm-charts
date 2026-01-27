@@ -6,7 +6,7 @@ The purpose of this chart is to enable the deployment of [Bitwarden](https://bit
 ## Requirements
 
 - Kubectl
-- Helm 3
+- Helm 4
 - SSL cert and key or certificate provider
 - SMTP server/account
 - Storage Class that supports ReadWriteMany
@@ -116,6 +116,29 @@ Set `secrets.secretName` to the name of the secret created above.
 
 Replace any optional values in `my-values.yaml` to best fit your cluster. This includes changing of resource limits and requests.
 
+#### Image Configuration
+
+__Overriding all core component versions:__
+
+```yaml
+general:
+  coreVersionOverride: "2025.12.0"
+  webVersionOverride: "2025.12.0"
+```
+
+When `coreVersionOverride` is set, all core components (api, admin, identity, etc.) will use this version. The `webVersionOverride` applies specifically to the Web component. If these are empty, the chart's default versions are used from appVersion in Chart.yaml.
+
+__Using a custom registry:__
+
+```yaml
+component:
+  api:
+    image:
+      repository: custom-registry.io/bitwarden/api
+```
+
+You can override the image repository for any component.
+
 #### Raw Manifests Files
 
 This chart allows you to include other Kubernetes manifest files either pre- or post-install. To do this, update the `rawManifests` section of the chart
@@ -132,7 +155,7 @@ The example below shows how you can use the raw manifests to install Traefik's I
 rawManifests:
   preInstall: []
   postInstall:
-  - apiVersion: traefik.containo.us/v1alpha1
+  - apiVersion: traefik.io/v1alpha1
     kind: Middleware
     metadata:
       name: "bitwarden-self-host-middleware-stripprefix"
@@ -140,13 +163,13 @@ rawManifests:
       stripPrefix:
         prefixes:
           - /api
-          - /attachements
+          - /attachments
           - /icons
           - /notifications
           - /events
           - /scim
           ##### NOTE:  Admin, Identity, and SSO will not function correctly with path strip middleware
-  - apiVersion: traefik.containo.us/v1alpha1
+  - apiVersion: traefik.io/v1alpha1
     kind: IngressRoute
     metadata:
       name: "bitwarden-self-host-ingress"
@@ -249,6 +272,46 @@ Note that the certResolver is deployed with the Traefik ingress configuration.
 Edit values.yaml and update to suit your configuration.
 
 Minimal required to get a running installation:
+
+#### Argo CD support
+
+To deploy the chart using Argo CD, you must use Argo CD sync phases and hooks to deploy resources in order. You can do this by setting the Argo CD annotations on the jobs and database resources in `my-values.yaml` and disabling the cleanup job.
+
+> Refer to the [Argo CD documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/) for details about sync phases and hooks.
+
+Example configuration:
+
+```yaml
+# Set the Argo CD annotations on the Kubernetes jobs
+jobs:
+  db:
+    preInstallMigrator:
+      annotations:
+        argocd.argoproj.io/hook: Sync
+  setup:
+    annotations:
+      argocd.argoproj.io/hook: PreSync
+  secret:
+    annotations:
+      argocd.argoproj.io/hook: PreSync
+  cleanup:
+    enabled: false
+
+# Set the Argo CD annotations on the database resources
+database:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  volume:
+    backups:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    data:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    log:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+```
 
 ## Example Deployment on AKS
 
@@ -557,7 +620,7 @@ Alternatively, you can create the secrets provider via the `rawManifets.preInsta
 
 Note the spots in the definition that say `"<REPLACE>"`. These will need to be updated for your environment. Also note that you will again have the choice between using the SQL Server Pod and an external SQL Server. Those spots that will need to change have been marked with a comment. Finally, you can name the secrets in Azure Key Vault based on your own naming convention. If you do so, you must make certain that to update the objectName properties under `spec.parameters.objects.array` to match the secrets created in Key Vault.
 
-The following commands would create these secrts in a Key Vault:
+The following commands would create these secrets in a Key Vault:
 
 ```shell
 kvname="kv-aks-bw-helm-cus-01"
@@ -938,9 +1001,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     resources:
       requests:
         memory: "64Mi"
@@ -1241,9 +1305,10 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     resources:
       requests:
         memory: "64Mi"

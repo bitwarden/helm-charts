@@ -11,7 +11,9 @@
     "github-actions",
     "helm-requirements",
     "helm-values",
-    "helmv3"
+    "helmv3",
+    "dockerfile",
+    "regex"
   ],
   "packageRules": [
     {
@@ -23,6 +25,16 @@
         "minor",
         "patch"
       ]
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^\\.github/workflows/_lint_chart\\.yml$"],
+      "matchStrings": [
+        "HELM_SCHEMA_VERSION: (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "dadav/helm-schema"
     }
   ]
 }

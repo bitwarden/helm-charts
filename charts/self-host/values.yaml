@@ -11,7 +11,7 @@ general:
     # Current supported values for ingress type include: nginx
     className: "nginx"
      ## - Annotations to add to the Ingress resource.
-    annotations:
+    annotations: {}
       # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       # nginx.ingress.kubernetes.io/use-regex: "true"
       # nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -24,9 +24,9 @@ general:
     # Certificate options
     tls:
       # TLS certificate secret name
-      name:
+      name: ""
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists
-      clusterIssuer:
+      clusterIssuer: ""
     # Ingress path configuration - The samples provided are for Nginx. Examples with other Ingress providers are in the chart Readme on GitHub
     paths:
       web:
@@ -60,7 +60,8 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 
-  # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
+  # Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.
+  # If both are empty, the chart's default version is used
   coreVersionOverride: ""
   webVersionOverride: ""
   # Disable account registration on web vault
@@ -86,6 +87,12 @@ general:
     enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
+  # Custom annotations to add throughout the installation
+  annotations: {}
+  # Additional default pod labels
+  podLabels: {}
+  # Additional default pod annotations
+  podAnnotations: {}
   # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
   nodeSelector: {}
   tolerations: []
@@ -101,6 +108,14 @@ general:
   # pushRelayBaseUri: " "
 
 
+  # Refresh token variables https://bitwarden.com/help/environment-variables/#refresh-token-variables
+  refreshTokens:
+    # Set to true to enable refresh tokens.  Recommended for production environments.
+    enabled: false
+    applyAbsoluteRefreshTokenOnRefreshToken: "true"
+    absoluteRefreshTokenLifetimeSeconds: "30"
+    slidingRefreshTokenLifetimeSeconds: ""
+
 # Specify the name of the shared storage class
 # This storage class requires ReadWriteMany.  You will need to provide your own storage class.  Storage classes with automatic volume previsioners are recommended.
 sharedStorageClassName: "shared-storage"
@@ -109,7 +124,7 @@ sharedStorageClassName: "shared-storage"
 secrets:
   secretName: custom-secret
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
-  secretProviderClass:
+  secretProviderClass: ""
 
 # Settings for individual service containers
 component:
@@ -117,13 +132,20 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/admin
+      repository: ghcr.io/bitwarden/admin
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -132,24 +154,45 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   api:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/api
+      repository: ghcr.io/bitwarden/api
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -158,24 +201,49 @@ component:
       limits:
         memory: "256Mi"
         cpu: "200m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 120
+      periodSeconds: 120
+      failureThreshold: 5
+      timeoutSeconds: 180
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 120
+      periodSeconds: 120
+      failureThreshold: 5
+      timeoutSeconds: 180
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   attachments:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/attachments
+      repository: ghcr.io/bitwarden/attachments
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -184,24 +252,46 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   events:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/events
+      repository: ghcr.io/bitwarden/events
+      # Leave tag empty to use general.coreVersionOverride or chart default. Set a specific tag to override.
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -210,24 +300,45 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   icons:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/icons
+      repository: ghcr.io/bitwarden/icons
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -236,24 +347,45 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   identity:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/identity
+      repository: ghcr.io/bitwarden/identity
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -262,24 +394,49 @@ component:
       limits:
         memory: "256Mi"
         cpu: "200m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 120
+      periodSeconds: 60
+      failureThreshold: 3
+      timeoutSeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 60
+      periodSeconds: 120
+      failureThreshold: 3
+      timeoutSeconds: 60
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   notifications:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/notifications
+      repository: ghcr.io/bitwarden/notifications
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -288,26 +445,47 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   scim:
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/scim
+      repository: ghcr.io/bitwarden/scim
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -319,21 +497,28 @@ component:
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   sso:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/sso
+      repository: ghcr.io/bitwarden/sso
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -342,24 +527,49 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 90
+      periodSeconds: 60
+      failureThreshold: 5
+      timeoutSeconds: 60
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
   web:
     # Additional deployment labels
     labels: {}
+    # Additional deployment annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
-      name: ghcr.io/bitwarden/web
+      repository: ghcr.io/bitwarden/web
+      # Leave tag empty to use general.webVersionOverride or chart default. Set a specific tag to override.
+      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -368,27 +578,64 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Liveness probe configuration
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 5000
+      initialDelaySeconds: 30
+    # Readiness probe configuration
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 3
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
-    securityContext:
+    securityContext: {}
     # This will set the Kubernetes pod security context
-    podSecurityContext:
+    podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-    podServiceAccount:
+    podServiceAccount: ""
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
     image:
-      name: ghcr.io/bitwarden/mssqlmigratorutility
+      # @schema
+      # deprecated: true
+      # @schema
+      name: ""
+      repository: ghcr.io/bitwarden/mssqlmigratorutility
+      # @schema
+      # type: [string, number]
+      # @schema
+      tag: ""
   certGenerator:
     image:
-      name: docker.io/nginx
-      tag: 1.25.3
+      # @schema
+      # deprecated: true
+      # @schema
+      name: ""
+      repository: alpine/openssl
+      # @schema
+      # type: [string, number]
+      # @schema
+      tag: 3.5.2
   kubectl:
     image:
-      name: bitnami/kubectl
-      tag: 1.21
+      # @schema
+      # deprecated: true
+      # @schema
+      name: ""
+      repository: ghcr.io/bitwarden/helm-charts/kubectl
+      # @schema
+      # type: [string, number]
+      # @schema
+      tag: 1.34
+
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
@@ -435,12 +682,70 @@ volume:
     # Load custom Certificates from the following ConfigMap
     configMapName: cacert
 
+jobs:
+  #
+  # Set security contexts for pre- and post-install hooks
+  #
+  securityContext: {}
+
+  podSecurityContext: {}
+
+  db:
+    preInstallMigrator:
+      # Additional job labels
+      labels: {}
+      # Additional job annotations
+      annotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+    postInstallMigrator:
+      # Additional job labels
+      labels: {}
+      # Additional job annotations
+      annotations: {}
+      # Additional pod labels
+      podLabels: {}
+      # Additional pod annotations
+      podAnnotations: {}
+
+  setup:
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+  cleanup:
+    # Enabled by default, disable to retain resources after uninstall
+    enabled: true
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+  secret:
+    # Additional job labels
+    labels: {}
+    # Additional job annotations
+    annotations: {}
+    # Additional pod labels
+    podLabels: {}
+    # Additional pod annotations
+    podAnnotations: {}
+
 #
 # Configure service account for pre- and post-install hooks
 #
 serviceAccount:
   name: service-account
-  # Certain instances will prequire the creation of a pre-deployed service account.  For instance, AWS IAM enabled service accounts need to be created outside
+  # Certain instances will require the creation of a pre-deployed service account. For instance, AWS IAM enabled service accounts need to be created outside
   # of the chart to allow for setting of permissions on other AWS services like Secrets Manager
   deployRolesOnly: false
 
@@ -452,14 +757,23 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
+  # Annotations to add to the MSSQL deployment
+  annotations: {}
+  # Additional labels to the MSSQL pod
+  podLabels: {}
+  # Additional annotations to the MSSQL pod
+  podAnnotations: {}
   # Optionally place deployment on specifc nodes
   nodeSelector: {}
   # Optionally add taint tolerations
   tolerations: []
-  # Image name, tag, and pull policy
+  # Image repository, tag, and pull policy
   image:
-    name: mcr.microsoft.com/mssql/server
-    # Tag of the image to use. (Defaults to general.coreVersion)
+    # @schema
+    # deprecated: true
+    # @schema
+    name: ""
+    repository: mcr.microsoft.com/mssql/server
     tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
@@ -481,6 +795,7 @@ database:
       # storageClass: "shared-storage"
       size: 1Gi
       labels: {}
+      annotations: {}
     data:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
@@ -490,6 +805,7 @@ database:
       # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
+      annotations: {}
     log:
       # Use an existing PVC by specifying the name.
       # existingClaim: claimName
@@ -499,15 +815,16 @@ database:
       # storageClass: "shared-storage"
       size: 10Gi
       labels: {}
+      annotations: {}
   # Specifies the strategy used to replace old Pods by new ones. The value can be "OnDelete" or "RollingUpdate". "OnDelete" is the default value.
   # When set to OnDelete, the SQL pod will not be recreated automatically on update.  It must be manually deleted to update.
   updateStrategy: OnDelete
   # This will set the Kubernetes container security context
-  securityContext:
+  securityContext: {}
   # This will set the Kubernetes pod security context (including fsGroup)
-  podSecurityContext:
+  podSecurityContext: {}
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
-  podServiceAccount:
+  podServiceAccount: ""
 
 # You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
 # Please see the chart README in GitHub for more information and examples.

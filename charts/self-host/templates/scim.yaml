@@ -12,6 +12,11 @@ metadata:
 {{- with .Values.component.scim.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.component.scim.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   replicas: 1
   strategy:
@@ -24,7 +29,15 @@ spec:
       labels:
         app: {{ template "bitwarden.scim" . }}
         app.kubernetes.io/component: scim
-{{ include "bitwarden.labels" . | indent 8 }}
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.component.scim.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.component.scim.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
       {{- if or .Values.component.scim.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
@@ -59,14 +72,14 @@ spec:
         args: ['
           mkdir -p /logs/scim
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.scim" . }}
-        image: "{{ .Values.component.scim.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ .Values.component.scim.image.name | default .Values.component.scim.image.repository }}:{{ .Values.component.scim.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

@@ -5,20 +5,37 @@ metadata:
   name: "{{ .Release.Name }}-db-pre-upgrade"
   labels:
     app.kubernetes.io/component: pre-install-db-migrator-job
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.jobs.db.preInstallMigrator.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
-    {{- if .Values.database.enabled }}
+{{- if .Values.database.enabled }}
     "helm.sh/hook": pre-upgrade
-    {{- else }}
+{{- else }}
     "helm.sh/hook": pre-install,pre-upgrade
-    {{- end }}
+{{- end }}
     "helm.sh/hook-weight": "4"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.jobs.db.preInstallMigrator.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-db-pre-upgrade"
       labels:
         app.kubernetes.io/component: pre-install-db-migrator-job
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.jobs.db.preInstallMigrator.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.jobs.db.preInstallMigrator.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
@@ -31,6 +48,10 @@ spec:
       {{- if .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
       {{- end }}
+    {{- if .Values.jobs.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.jobs.podSecurityContext | nindent 8 }}
+    {{- end }}
       containers:
       - name: migrate-db
         env:
@@ -43,8 +64,16 @@ spec:
               name: {{ .Values.secrets.secretName | quote }}
               {{- end }}
               key: globalSettings__sqlServer__connectionString
-        image: "{{ .Values.supportComponents.dbMigrator.image.name }}:{{default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
+          value: /migrator
+        image: "{{ .Values.supportComponents.dbMigrator.image.name | default .Values.supportComponents.dbMigrator.image.repository }}:{{ .Values.supportComponents.dbMigrator.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
         volumeMounts:
+        - name: migrator-extract-dir
+          mountPath: "/migrator"
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -52,6 +81,8 @@ spec:
         {{- end }}
       restartPolicy: Never
       volumes:
+        - name: migrator-extract-dir
+          emptyDir: {}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:

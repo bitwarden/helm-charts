@@ -2,13 +2,10 @@
 
 This chart is for the deployment of the Kubernetes Operator for Secrets Manager to different Kubernetes environments.  The operator installs into your cluster and allows you to create a custom resource called a BitwardenSecret to synchronize secrets stored in Secrets Manager into your cluster as Kubernetes secrets.
 
-> [!NOTE]  
-> This is a beta release and might be missing some functionality.
-
 ## Requirements
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
-- [Helm 3](https://v3.helm.sh/docs/intro/install/)
+- [Helm 4](https://helm.sh/docs/intro/install)
 - A [Bitwarden Organization with Secrets Manager](https://bitwarden.com/help/sign-up-for-secrets-manager/).  You will need the organization ID GUID for your organization.
 - One or more [access tokens](https://bitwarden.com/help/access-tokens/) for a Secrets Manager machine account tied to the projects you want to pull.
 
@@ -54,12 +51,9 @@ Update `containers.manager.image.tag` to use a different operator image version 
     - You can see help information for the `helm install` command by running `helm install --help`.
     - You can see help information for the `helm upgrade` command by running `helm upgrade --help`.
 
-> [!NOTE]
-> While the chart is in beta, you will need to add the `--devel` flag to the `helm upgrade` command above.
-
 ## Creating BitwardenSecrets
 
-Below is an example of creating a BitwardenSecret object to synchronsize secrets stored in Bitwarden Secrets Manager into Kubernetes secrets.
+Below is an example of creating a BitwardenSecret object to synchronize secrets stored in Bitwarden Secrets Manager into Kubernetes secrets.
 
 ### Create an authorization token secret
 

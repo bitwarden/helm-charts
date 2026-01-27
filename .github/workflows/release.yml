@@ -21,17 +21,21 @@ jobs:
       actions: read
       contents: write
       packages: write
+      id-token: write
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
         with:
-          fetch-depth: 0
-          ref: main
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
 
-      - name: Login to Azure - CI Subscription
-        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
+      - name: Get Azure Key Vault secrets
+        id: get-kv-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
-          creds: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+          keyvault: gh-org-bitwarden
+          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
 
       - name: Retrieve secrets
         id: retrieve-secrets
@@ -39,6 +43,25 @@ jobs:
         with:
           keyvault: "bitwarden-ci"
           secrets: "github-gpg-private-key, github-gpg-private-key-passphrase"
+
+      - name: Log out from Azure
+        uses: bitwarden/gh-actions/azure-logout@main
+
+      - name: Generate GH App token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        id: app-token
+        with:
+          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
+          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
+          permission-contents: write
+
+      - name: Checkout repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: main
+          token:  ${{ steps.app-token.outputs.token }}
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
@@ -48,22 +71,32 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
       - name: Setup git
         run: |
+          #git config --local user.name "bw-ghapp[bot]"
+          #git config --local user.email "178206702+bw-ghapp[bot]@users.noreply.github.com"
+
           git config --local user.email "106330231+bitwarden-devops-bot@users.noreply.github.com"
           git config --local user.name "bitwarden-devops-bot"
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
         with:
-          version: v3.13.1
+          version: v4.0.0
 
       - name: Download Helm chart artifact - Self Host
         uses: bitwarden/gh-actions/download-artifacts@main
         with:
           branch: main
           path: .cr-release-packages
-          workflow: build-self-host.yml
+          workflow: self-host.yml
           workflow_conclusion: success
 
       - name: Download Helm chart artifact - SM Operator
@@ -71,13 +104,14 @@ jobs:
         with:
           branch: main
           path: .cr-release-packages
-          workflow: build-sm-operator.yml
+          workflow: sm-operator.yml
           workflow_conclusion: success
 
       - name: Release Helm chart
         if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
         env:
-          CR_GENERATE_RELEASE_NOTES: true
+          CR_GENERATE_RELEASE_NOTES: false
+          CR_RELEASE_NOTES_FILE: CHANGELOG.md # Relative path to use chart specific CHANGELOG.md from respective chart directory
           CR_MAKE_RELEASE_LATEST: true
           CR_SKIP_EXISTING: true
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

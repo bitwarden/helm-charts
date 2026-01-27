@@ -1,177 +1,298 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "properties": {
-        "containers": {
-            "properties": {
-                "kubeRbacProxy": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "resources": {
-                            "properties": {
-                                "limits": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "requests": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "manager": {
-                    "properties": {
-                        "image": {
-                            "properties": {
-                                "repository": {
-                                    "type": "string"
-                                },
-                                "tag": {
-                                    "type": ["null", "string"]
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "resources": {
-                            "properties": {
-                                "limits": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "requests": {
-                                    "properties": {
-                                        "cpu": {
-                                            "type": "string"
-                                        },
-                                        "memory": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "serviceAccount": {
-                    "properties": {
-                        "annotations": {
-                            "properties": {},
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "enableSeccompProfileRuntimeDefault": {
-                    "type": "boolean"
-                },
-                "imagePullSecrets": {
-                    "type": [ "null", "string"]
-                },
-                "nodeSelector": {
-                    "type": "object",
-                    "additionalProperties": true,
-                    "default": {}
-                },
-                "tolerations": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": true
-                    },
-                    "default": []
-                }
-            },
-            "type": "object"
-        },
-        "metricsService": {
-            "properties": {
-                "ports": {
-                    "items": {
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "port": {
-                                "type": "integer"
-                            },
-                            "protocol": {
-                                "type": "string"
-                            },
-                            "targetPort": {
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
-                },
-                "type": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "settings": {
-            "properties": {
-                "bwApiUrlOverride": {
-                    "type": ["null", "string"]
-                },
-                "bwIdentityUrlOverride": {
-                    "type": ["null", "string"]
-                },
-                "bwSecretsManagerRefreshInterval": {
-                    "type": "integer",
-                    "minimum": 180
-                },
-                "cloudRegion": {
-                    "type": "string"
-                },
-                "kubernetesClusterDomain": {
-                    "type": "string"
-                },
-                "replicas": {
-                    "type": "integer"
-                }
-            },
-            "type": "object"
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "commonLabels": {
+      "description": "Optional: Custom labels to be applied to all resources created by the operator\nThis can be used to identify the Bitwarden Secrets Manager project or for any other labeling needs\nExample:\n  commonLabels:\n    custom-label: custom-label-value",
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
     },
-    "type": "object"
+    "containers": {
+      "description": "Settings specific to the pod containers",
+      "properties": {
+        "enableSeccompProfileRuntimeDefault": {
+          "default": true,
+          "description": "Set to false to work on older Kubernetes versions (\u003c 1.19) or on vendors versions\nwhich do NOT support this field by default (i.e. OpenShift \u003c 4.11 ).\nThis setting is recommended for most common cases that do not require escalating privileges\nto make containers restrictive.\nMore info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "title": "enableSeccompProfileRuntimeDefault",
+          "type": "boolean"
+        },
+        "imagePullSecrets": {
+          "default": "",
+          "description": "Optional value if you have privatized the image and need to pull with credentials",
+          "title": "imagePullSecrets",
+          "type": "string"
+        },
+        "manager": {
+          "properties": {
+            "enableLeaderElection": {
+              "default": true,
+              "description": "Enables leader election for the controller manager, should be enabled if there is more than one replica.",
+              "title": "enableLeaderElection",
+              "type": "boolean"
+            },
+            "image": {
+              "properties": {
+                "repository": {
+                  "default": "ghcr.io/bitwarden/sm-operator",
+                  "title": "repository",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "",
+                  "description": "Will default to the Chart's AppVersion, but you can override here.",
+                  "title": "tag",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "image",
+              "type": "object"
+            },
+            "resources": {
+              "description": "The pod resource requirements. You can adjust these up and down for your environment",
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "128Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "10m",
+                      "title": "cpu",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "64Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            },
+            "terminationGracePeriodSeconds": {
+              "default": 10,
+              "title": "terminationGracePeriodSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "manager",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "description": "Optionally place deployment on specific nodes",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "serviceAccount": {
+          "description": "Provide annotations for the service account",
+          "properties": {
+            "annotations": {
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "serviceAccount",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "Optionally add taint tolerations",
+          "items": {
+            "required": []
+          },
+          "title": "tolerations",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "containers",
+      "type": "object"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "livenessProbe": {
+      "properties": {
+        "failureThreshold": {
+          "default": 3,
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "initialDelaySeconds": {
+          "default": 15,
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 20,
+          "title": "periodSeconds",
+          "type": "integer"
+        },
+        "successThreshold": {
+          "default": 1,
+          "title": "successThreshold",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "default": 1,
+          "title": "timeoutSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "livenessProbe",
+      "type": "object"
+    },
+    "metricsService": {
+      "description": "Service endpoint configuration for the metrics service.",
+      "properties": {
+        "ports": {
+          "items": {
+            "anyOf": [
+              {
+                "properties": {
+                  "name": {
+                    "default": "https",
+                    "title": "name",
+                    "type": "string"
+                  },
+                  "port": {
+                    "default": 8443,
+                    "title": "port",
+                    "type": "integer"
+                  },
+                  "protocol": {
+                    "default": "TCP",
+                    "title": "protocol",
+                    "type": "string"
+                  },
+                  "targetPort": {
+                    "default": "https",
+                    "title": "targetPort",
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "title": "ports",
+          "type": "array"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "metricsService",
+      "type": "object"
+    },
+    "readinessProbe": {
+      "properties": {
+        "failureThreshold": {
+          "default": 3,
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "initialDelaySeconds": {
+          "default": 5,
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 10,
+          "title": "periodSeconds",
+          "type": "integer"
+        },
+        "successThreshold": {
+          "default": 1,
+          "title": "successThreshold",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "default": 1,
+          "title": "timeoutSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "readinessProbe",
+      "type": "object"
+    },
+    "settings": {
+      "properties": {
+        "bwApiUrlOverride": {
+          "default": "",
+          "description": "Set only if self-hosted. These are the URLs for the Bitwarden API and Identity services",
+          "title": "bwApiUrlOverride",
+          "type": "string"
+        },
+        "bwIdentityUrlOverride": {
+          "default": "",
+          "title": "bwIdentityUrlOverride",
+          "type": "string"
+        },
+        "bwSecretsManagerRefreshInterval": {
+          "default": 300,
+          "description": "How often the secrets synchronize in seconds. Minimum value is 180.",
+          "title": "bwSecretsManagerRefreshInterval",
+          "type": "integer"
+        },
+        "cloudRegion": {
+          "default": "US",
+          "description": "Define Cloud-region to supply the server-URL if using a Bitwarden Cloud vault. Set to either 'US' or 'EU'\nIf self-hosted, leave blank and set bwApiUrlOverride instead\nhttps://bitwarden.com/help/server-geographies/",
+          "title": "cloudRegion",
+          "type": "string"
+        },
+        "kubernetesClusterDomain": {
+          "default": "cluster.local",
+          "description": "This is the internal Kubernetes DNS zone. You will likely not need to change this\nunless you have specifically changed the internal DNS name.",
+          "title": "kubernetesClusterDomain",
+          "type": "string"
+        },
+        "replicas": {
+          "default": 1,
+          "description": "The number of operator pod replicas to run. When in doubt, leave at 1",
+          "title": "replicas",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "settings",
+      "type": "object"
+    }
+  },
+  "required": [],
+  "type": "object"
 }

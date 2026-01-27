@@ -1,8 +1,8 @@
 {{- define "bitwarden.coreVersionDefault" -}}
-{{- "2025.6.1" -}}
+{{- "2026.1.0" -}}
 {{- end -}}
 {{- define "bitwarden.webVersionDefault" -}}
-{{- "2025.6.0" -}}
+{{- "2026.1.0" -}}
 {{- end -}}
 
 {{/*
@@ -53,6 +53,35 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 helm.sh/chart: {{ template "bitwarden.chart" . }}
 {{- if .Values.general.labels }}
 {{ toYaml .Values.general.labels }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate common pod labels
+*/}}
+{{- define "bitwarden.podLabels" -}}
+{{ include "bitwarden.labels" . }}
+{{- if .Values.general.podLabels }}
+{{ toYaml .Values.general.podLabels }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate basic annotations
+*/}}
+{{- define "bitwarden.annotations" -}}
+{{- if .Values.general.annotations }}
+{{ toYaml .Values.general.annotations }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate common pod annotations
+*/}}
+{{- define "bitwarden.podAnnotations" -}}
+{{ include "bitwarden.annotations" . }}
+{{- if .Values.general.podAnnotations }}
+{{ toYaml .Values.general.podAnnotations }}
 {{- end -}}
 {{- end -}}
 

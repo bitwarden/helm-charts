@@ -1,3 +1,4 @@
+{{- if .Values.jobs.cleanup.enabled }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -5,16 +6,33 @@ metadata:
   name: "{{ .Release.Name }}-cleanup"
   labels:
     app.kubernetes.io/component: post-delete-hook
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.jobs.cleanup.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
   annotations:
     "helm.sh/hook": post-delete
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.jobs.cleanup.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   template:
     metadata:
       name: "{{ .Release.Name }}-cleanup"
       labels:
         app.kubernetes.io/component: post-delete-hook
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.jobs.cleanup.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.jobs.cleanup.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
@@ -26,6 +44,10 @@ spec:
     {{- end }}
     {{- if .Values.serviceAccount.name }}
       serviceAccountName: "{{ .Values.serviceAccount.name }}"
+    {{- end }}
+    {{- if .Values.jobs.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.jobs.podSecurityContext | nindent 8 }}
     {{- end }}
       containers:
       - name: delete-resources
@@ -44,5 +66,10 @@ spec:
           kubectl delete job {{ .Release.Name }}-migrator;
           echo "Done"
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        {{- if .Values.jobs.securityContext }}
+        securityContext:
+          {{- toYaml .Values.jobs.securityContext | nindent 10 }}
+        {{- end }}
       restartPolicy: Never
+{{- end }}

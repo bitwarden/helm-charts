@@ -1,0 +1,51 @@
+name: Build and push kubectl image
+
+on:
+  workflow_dispatch:
+    inputs:
+      kubectl_version:
+        description: "kubectl version"
+        required: false
+        default: "1.34"
+      push:
+        description: "Push image to GitHub Container Registry"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  build-docker:
+    name: Build and push kubectl Docker image
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout Bitnami repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: bitnami/containers
+          ref: main
+          persist-credentials: false
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push kubectl image
+        id: build-docker
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        env:
+          _KUBECTL_VERSION: ${{ inputs.kubectl_version }}
+          _INPUT_PUSH: ${{ inputs.push }}
+        with:
+          context: ./bitnami/kubectl/${_KUBECTL_VERSION}/debian-12
+          file: ./bitnami/kubectl/${_KUBECTL_VERSION}/debian-12/Dockerfile
+          push: ${_INPUT_PUSH}
+          tags: |
+            ghcr.io/bitwarden/helm-charts/kubectl:latest
+            ghcr.io/bitwarden/helm-charts/kubectl:${_KUBECTL_VERSION}

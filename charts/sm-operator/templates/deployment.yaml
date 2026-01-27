@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         control-plane: controller-manager
-      {{- include "sm-operator.selectorLabels" . | nindent 8 }}
+      {{- include "sm-operator.fullLabels" . | nindent 8 }}
       annotations:
         kubectl.kubernetes.io/default-container: manager
     spec:
@@ -47,32 +47,13 @@ spec:
       imagePullSecrets:
       - name: {{ .Values.containers.imagePullSecrets }}
       {{- end }}
-      containers:
-      - args:
-          - --secure-listen-address=0.0.0.0:8443
-          - --upstream=http://127.0.0.1:8080/
-          - --logtostderr=true
-          - --v=0
-        envFrom:
-        - configMapRef:
-            name: {{ include "sm-operator.configmap" . }}
-        image: {{ .Values.containers.kubeRbacProxy.image.repository }}:{{ .Values.containers.kubeRbacProxy.image.tag }}
-        name: kube-rbac-proxy
-        ports:
-        - containerPort: 8443
-          name: https
-          protocol: TCP
-        resources: {{- toYaml .Values.containers.kubeRbacProxy.resources | nindent
-          10 }}
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
+      containers:      
       - args:
           - --health-probe-bind-address=:8081
           - --metrics-bind-address=127.0.0.1:8080
+        {{- if .Values.containers.manager.enableLeaderElection }}
           - --leader-elect
+        {{- end }}
         command:
         - /manager
         envFrom:
@@ -83,15 +64,21 @@ spec:
           httpGet:
             path: /healthz
             port: 8081
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
         name: manager
         readinessProbe:
           httpGet:
             path: /readyz
             port: 8081
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
         resources: {{- toYaml .Values.containers.manager.resources | nindent 10
           }}
         securityContext:
@@ -106,4 +93,4 @@ spec:
           type: RuntimeDefault
         {{- end }}
       serviceAccountName: {{ include "sm-operator.fullname" . }}-controller-manager
-      terminationGracePeriodSeconds: 10
+      terminationGracePeriodSeconds: {{ .Values.containers.manager.terminationGracePeriodSeconds }}

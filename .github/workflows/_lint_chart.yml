@@ -1,0 +1,58 @@
+name: _lint
+
+on:
+  workflow_call:
+    inputs:
+      chart_name:
+        description: 'Name of the chart to lint'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  _CHART_PATH: charts/${{ inputs.chart_name }}
+
+jobs:
+  lint:
+    name: Lint Helm chart
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        with:
+          version: 'v4.0.0'
+
+      - name: Install Helm plugins
+        env:
+          HELM_SCHEMA_VERSION: 0.20.0-1 # To regenerate the schema if the linter fails on version update, see: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md#helm-schema
+        run: helm plugin install https://github.com/dadav/helm-schema --version "${HELM_SCHEMA_VERSION}" --verify=false # see: https://github.com/dadav/helm-schema/issues/156
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
+
+      - name: Validate schema
+        run: |
+          helm schema --chart-search-root ${_CHART_PATH} --output-file generated.values.schema.json -k additionalProperties --skip-auto-generation required
+          GENERATED_SCHEMA="$(cat ${_CHART_PATH}/generated.values.schema.json)"
+          CURRENT_SCHEMA="$(cat ${_CHART_PATH}/values.schema.json)"
+          if [ "$CURRENT_SCHEMA" != "$GENERATED_SCHEMA" ]; then
+            echo "Values schema is out of date. Please update ${_CHART_PATH}/values.schema.json"
+            echo "See: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md"
+            exit 1
+          fi
+
+      - name: Run chart-testing (lint)
+        env:
+          CT_CHECK_VERSION_INCREMENT: false
+          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: ct lint --charts "$_CHART_PATH"

@@ -40,6 +40,9 @@ helm.sh/chart: {{ include "sm-operator.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- with .Values.commonLabels }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -77,3 +80,17 @@ Name of the keys secret
 {{- define "sm-operator.configmap" -}}
 {{ template "sm-operator.fullname" . }}-config-map
 {{- end -}}
+
+{{/*
+Coloring text, use with
+{{ include "sm-operator.text-warning" "The scrodurgle configuration option has been deprecated." }}
+*/}}
+{{- define "sm-operator.text-warning" }}
+{{- printf "\033[1;33mWARNING: %s\033[0m" . -}}
+{{- end }}
+{{- define "sm-operator.text-error" }}
+{{- printf "\033[1;31mERROR: %s\033[0m" . -}}
+{{- end }}
+{{- define "sm-operator.text-green" }}
+{{- printf "\033[1;32m%s\033[0m" . -}}
+{{- end }}

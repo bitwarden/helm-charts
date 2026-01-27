@@ -11,6 +11,11 @@ metadata:
 {{- with .Values.component.attachments.labels }}
 {{ toYaml . | indent 4 }}
 {{- end }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.component.attachments.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   replicas: 1
   strategy:
@@ -23,7 +28,15 @@ spec:
       labels:
         app: {{ template "bitwarden.attachments" . }}
         app.kubernetes.io/component: attachments
-{{ include "bitwarden.labels" . | indent 8 }}
+{{ include "bitwarden.podLabels" . | indent 8 }}
+{{- with .Values.component.attachments.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+      annotations:
+{{- include "bitwarden.podAnnotations" . | indent 8 }}
+{{- with .Values.component.attachments.podAnnotations }}
+{{ toYaml . | indent 8 }}
+{{- end }}
     spec:
       {{- if or .Values.component.attachments.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
@@ -51,7 +64,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.attachments" . }}
-        image: "{{ .Values.component.attachments.image.name }}:{{ default ( include "bitwarden.coreVersionDefault" nil ) .Values.general.coreVersionOverride }}"
+        image: "{{ .Values.component.attachments.image.name | default .Values.component.attachments.image.repository }}:{{ .Values.component.attachments.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
@@ -66,11 +79,14 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.attachments.livenessProbe }}
         livenessProbe:
-          httpGet:
-            path: /alive
-            port: 5000
-          initialDelaySeconds: 180
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        {{- with .Values.component.attachments.readinessProbe }}
+        readinessProbe:
+{{ toYaml . | indent 10 }}
+        {{- end }}
         ports:
         - containerPort: 5000
         resources:
