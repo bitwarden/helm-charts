@@ -1,3 +1,4 @@
+{{- if eq "sqlserver" (default "sqlserver" .Values.databaseProvider) }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -91,3 +92,4 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
+{{- end }}

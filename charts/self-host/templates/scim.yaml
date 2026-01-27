@@ -87,9 +87,11 @@ spec:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
               name: {{ template "bitwarden.keyssecret" . }}
+          {{- if eq "sqlserver" (default "sqlserver" .Values.databaseProvider) }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
+          {{- end }}
           {{- end }}
         env:
           - name: ASPNETCORE_URLS
