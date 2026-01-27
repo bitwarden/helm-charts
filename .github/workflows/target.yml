@@ -30,6 +30,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      pull-requests: write
     name: Self Host
     needs: check-run
     if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
@@ -40,6 +41,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      pull-requests: write
     name: SM Operator
     needs: check-run
     if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
