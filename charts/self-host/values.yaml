@@ -5,6 +5,10 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "REPLACE"
+  # Database provider type, mssql is the default.
+  # Use "postgres" when providing your own PostgreSQL database.
+  #  - Requires globalSettings__postgreSql__connectionString to exist in the configured secret.
+  databaseProvider: "mssql"
   ingress:
     # Set to false if using a custom ingress
     enabled: true
@@ -146,17 +150,17 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
-        cpu: "50m"
+        memory: "256Mi"
+        cpu: "125m"
       limits:
-        memory: "128Mi"
-        cpu: "100m"
+        memory: "384Mi"
+        cpu: "250m"
     # Liveness probe configuration
     livenessProbe:
       httpGet:
         path: /alive
         port: 5000
-      initialDelaySeconds: 30
+      initialDelaySeconds: 300
     # Readiness probe configuration
     readinessProbe:
       httpGet:
@@ -747,10 +751,13 @@ serviceAccount:
   deployRolesOnly: false
 
 #
-# Configure database
+# Configure MSSQL Database Deployment
+# This section is only used when general.databaseProvider is "mssql"
+# For PostgreSQL deployments, users must bring their own
+# PostgreSQL database and provide the connection string via secrets.secretName or one of the other configuration providers.
 #
 database:
-  # deploy the database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
+  # deploy the MSSQL database pod?  if false, a connection string to a SQL Server will need to be provided through one of the configuration providers.
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}

@@ -1,3 +1,6 @@
+{{ if eq .Values.general.databaseProvider "postgres" }}
+# Migrations are handled by the Admin service for Postgres deployments.
+{{- else }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -91,3 +94,4 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
         {{- end }}
+{{- end }}

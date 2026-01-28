@@ -37,6 +37,9 @@ data:
   globalSettings__mail__smtp__sslOverride: "{{ .Values.general.email.smtpSslOverride }}"
   globalSettings__mail__smtp__startTls: "{{ .Values.general.email.smtpStartTls }}"
   globalSettings__sso__enforceSsoPolicyForAllUsers: {{ .Values.general.sso.enforceSsoPolicyForAllUsers | quote }}
+{{- if eq .Values.general.databaseProvider "postgres" }}
+  globalSettings__databaseProvider: "postgres"
+{{- end }}
 {{- if not (and .Values.volume.logs .Values.volume.logs.enabled) }}
   globalSettings__logDirectory: "/dev/null"
 {{- end }}
