@@ -5,7 +5,7 @@
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 ## Self-host Orchestration and Tooling owns charts ##
-charts/ @bitwarden/dept-shot
+* @bitwarden/dept-shot
 
 ## These specific files are shared and are used in releases ##
 **/Chart.yaml
