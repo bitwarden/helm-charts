@@ -13,31 +13,33 @@
         "enableSeccompProfileRuntimeDefault": {
           "default": true,
           "description": "Set to false to work on older Kubernetes versions (\u003c 1.19) or on vendors versions\nwhich do NOT support this field by default (i.e. OpenShift \u003c 4.11 ).\nThis setting is recommended for most common cases that do not require escalating privileges\nto make containers restrictive.\nMore info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-          "required": [],
           "title": "enableSeccompProfileRuntimeDefault",
           "type": "boolean"
         },
         "imagePullSecrets": {
           "default": "",
           "description": "Optional value if you have privatized the image and need to pull with credentials",
-          "required": [],
           "title": "imagePullSecrets",
           "type": "string"
         },
         "manager": {
           "properties": {
+            "enableLeaderElection": {
+              "default": true,
+              "description": "Enables leader election for the controller manager, should be enabled if there is more than one replica.",
+              "title": "enableLeaderElection",
+              "type": "boolean"
+            },
             "image": {
               "properties": {
                 "repository": {
                   "default": "ghcr.io/bitwarden/sm-operator",
-                  "required": [],
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
                   "default": "",
                   "description": "Will default to the Chart's AppVersion, but you can override here.",
-                  "required": [],
                   "title": "tag",
                   "type": "string"
                 }
@@ -47,19 +49,17 @@
               "type": "object"
             },
             "resources": {
-              "description": "The pod resource requirements.  You can adjust these up and down for your environment",
+              "description": "The pod resource requirements. You can adjust these up and down for your environment",
               "properties": {
                 "limits": {
                   "properties": {
                     "cpu": {
                       "default": "500m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "128Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -72,13 +72,11 @@
                   "properties": {
                     "cpu": {
                       "default": "10m",
-                      "required": [],
                       "title": "cpu",
                       "type": "string"
                     },
                     "memory": {
                       "default": "64Mi",
-                      "required": [],
                       "title": "memory",
                       "type": "string"
                     }
@@ -94,7 +92,6 @@
             },
             "terminationGracePeriodSeconds": {
               "default": 10,
-              "required": [],
               "title": "terminationGracePeriodSeconds",
               "type": "integer"
             }
@@ -127,7 +124,6 @@
           "items": {
             "required": []
           },
-          "required": [],
           "title": "tolerations",
           "type": "array"
         }
@@ -146,31 +142,26 @@
       "properties": {
         "failureThreshold": {
           "default": 3,
-          "required": [],
           "title": "failureThreshold",
           "type": "integer"
         },
         "initialDelaySeconds": {
           "default": 15,
-          "required": [],
           "title": "initialDelaySeconds",
           "type": "integer"
         },
         "periodSeconds": {
           "default": 20,
-          "required": [],
           "title": "periodSeconds",
           "type": "integer"
         },
         "successThreshold": {
           "default": 1,
-          "required": [],
           "title": "successThreshold",
           "type": "integer"
         },
         "timeoutSeconds": {
           "default": 1,
-          "required": [],
           "title": "timeoutSeconds",
           "type": "integer"
         }
@@ -189,25 +180,21 @@
                 "properties": {
                   "name": {
                     "default": "https",
-                    "required": [],
                     "title": "name",
                     "type": "string"
                   },
                   "port": {
                     "default": 8443,
-                    "required": [],
                     "title": "port",
                     "type": "integer"
                   },
                   "protocol": {
                     "default": "TCP",
-                    "required": [],
                     "title": "protocol",
                     "type": "string"
                   },
                   "targetPort": {
                     "default": "https",
-                    "required": [],
                     "title": "targetPort",
                     "type": "string"
                   }
@@ -218,13 +205,11 @@
             ],
             "required": []
           },
-          "required": [],
           "title": "ports",
           "type": "array"
         },
         "type": {
           "default": "ClusterIP",
-          "required": [],
           "title": "type",
           "type": "string"
         }
@@ -237,31 +222,26 @@
       "properties": {
         "failureThreshold": {
           "default": 3,
-          "required": [],
           "title": "failureThreshold",
           "type": "integer"
         },
         "initialDelaySeconds": {
           "default": 5,
-          "required": [],
           "title": "initialDelaySeconds",
           "type": "integer"
         },
         "periodSeconds": {
           "default": 10,
-          "required": [],
           "title": "periodSeconds",
           "type": "integer"
         },
         "successThreshold": {
           "default": 1,
-          "required": [],
           "title": "successThreshold",
           "type": "integer"
         },
         "timeoutSeconds": {
           "default": 1,
-          "required": [],
           "title": "timeoutSeconds",
           "type": "integer"
         }
@@ -274,42 +254,36 @@
       "properties": {
         "bwApiUrlOverride": {
           "default": "",
-          "description": "Set only if self-hosted.  These are the URLs for the Bitwarden API and Identity services",
-          "required": [],
+          "description": "Set only if self-hosted. These are the URLs for the Bitwarden API and Identity services",
           "title": "bwApiUrlOverride",
           "type": "string"
         },
         "bwIdentityUrlOverride": {
           "default": "",
-          "required": [],
           "title": "bwIdentityUrlOverride",
           "type": "string"
         },
         "bwSecretsManagerRefreshInterval": {
           "default": 300,
-          "description": "How often the secrets synchronize in seconds.  Minimum value is 180.",
-          "required": [],
+          "description": "How often the secrets synchronize in seconds. Minimum value is 180.",
           "title": "bwSecretsManagerRefreshInterval",
           "type": "integer"
         },
         "cloudRegion": {
           "default": "US",
-          "description": "Define Cloud-region to supply the server-URL if using a Bitwarden Cloud vault.  Set to either 'US' or 'EU'\nIf self-hosted, leave blank and set bwApiUrlOverride instead\nhttps://bitwarden.com/help/server-geographies/",
-          "required": [],
+          "description": "Define Cloud-region to supply the server-URL if using a Bitwarden Cloud vault. Set to either 'US' or 'EU'\nIf self-hosted, leave blank and set bwApiUrlOverride instead\nhttps://bitwarden.com/help/server-geographies/",
           "title": "cloudRegion",
           "type": "string"
         },
         "kubernetesClusterDomain": {
           "default": "cluster.local",
-          "description": "This is the internal Kubernetes DNS zone.  You will likely not need to change this\nunless you have specifically changed the internal DNS name.",
-          "required": [],
+          "description": "This is the internal Kubernetes DNS zone. You will likely not need to change this\nunless you have specifically changed the internal DNS name.",
           "title": "kubernetesClusterDomain",
           "type": "string"
         },
         "replicas": {
           "default": 1,
-          "description": "The number of operator pod replicas to run.  When in doubt, leave at 1",
-          "required": [],
+          "description": "The number of operator pod replicas to run. When in doubt, leave at 1",
           "title": "replicas",
           "type": "integer"
         }

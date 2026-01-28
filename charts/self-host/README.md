@@ -49,7 +49,8 @@ Edit the `my-values.yaml` file and fill out the values. Required values that mus
 - general.emal.smtpPort
 - general.email.smtpSsl
 - sharedStorageClassName
-- database.enabled (set to disbled if using an external SQL server)
+- general.databaseProvider (set to "postgres" if using PostgreSQL, defaults to "mssql")
+- database.enabled (set to "false" if using an external SQL server or PostgreSQL)
 
 Note that default values for Nginx have been setup for the ingress in the values.yaml file. Some other ingress controller examples are provided later in this document.
 
@@ -75,6 +76,7 @@ Create a secret to set the following values.
 - globalSettings__hibpApiKey
 - SA_PASSWORD (if using the Bitwarden SQL pod)
 - globalSettings__sqlServer__connectionString (if using your own SQL server)
+- globalSettings__postgreSql__connectionString (if using PostgreSQL database)
 
 Here we document the process of creating the secret using the command line. However, you can also use a CSI secret provider class, which we document an example of under "Installing the Azure Key Vault CSI Driver" later in this README.
 
@@ -106,6 +108,20 @@ Examples of kubectl secret creation are provided below. One is for use with SQL 
       --from-literal=globalSettings__yubico__clientId="REPLACE" \
       --from-literal=globalSettings__yubico__key="REPLACE" \
       --from-literal=globalSettings__hibpApiKey="REPLACE" \
+  ```
+
+- With external PostgreSQL database
+
+  ```shell
+  kubectl create secret generic custom-secret -n bitwarden\
+      --from-literal=globalSettings__installation__id="REPLACE" \
+      --from-literal=globalSettings__installation__key="REPLACE" \
+      --from-literal=globalSettings__mail__smtp__username="REPLACE" \
+      --from-literal=globalSettings__mail__smtp__password="REPLACE" \
+      --from-literal=globalSettings__postgreSql__connectionString="Host=<HOSTNAME>;Port=5432;Database=<DATABASE>;Username=<USER>;Password=<PASSWORD>" \
+      --from-literal=globalSettings__yubico__clientId="REPLACE" \
+      --from-literal=globalSettings__yubico__key="REPLACE" \
+      --from-literal=globalSettings__hibpApiKey="REPLACE"
   ```
 
 __*NOTE: These commands are recorded in your shell history. To avoid this, consider setting up a CSI secret provider class.*__
