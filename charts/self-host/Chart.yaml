@@ -7,4 +7,4 @@ maintainers:
 - name: bitwarden
 name: self-host
 type: application
-version: 1.1.4
+version: 1.1.5
