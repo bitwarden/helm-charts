@@ -85,16 +85,27 @@ spec:
           - secretRef:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
-          - secretRef:
-              name: {{ .Release.Name }}-identity-cert-password
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+          {{- if .Values.secrets.identityCertificate.generate }}
+          - name: globalSettings__identityServer__certificatePassword
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-identity-cert-password
+                key: globalSettings__identityServer__certificatePassword
+          {{- else }}
+          - name: globalSettings__identityServer__certificatePassword
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "bitwarden.identityCertSecretName" . }}
+                key: globalSettings__identityServer__certificatePassword
+          {{- end }}
         {{- with .Values.component.identity.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -133,7 +144,12 @@ spec:
       volumes:
         - name: identity
           secret:
-            secretName: {{ .Release.Name }}-identity-cert
+            secretName: {{ template "bitwarden.identityCertSecretName" . }}
+            {{- if not .Values.secrets.identityCertificate.generate }}
+            items:
+              - key: identity.pfx
+                path: identity.pfx
+            {{- end }}
         - name: dataprotection
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.dataprotection" . ) .Values.volume.dataprotection.existingClaim }}

@@ -128,6 +128,74 @@ __*NOTE: These commands are recorded in your shell history. To avoid this, consi
 
 Set `secrets.secretName` to the name of the secret created above.
 
+#### Custom Encryption Keys and Certificate
+
+By default, the chart generates encryption keys and an identity certificate. You may also provide your own if desired.
+
+__Generated (default):__
+
+- Encryption keys: `globalSettings__internalIdentityKey`, `globalSettings__oidcIdentityClientKey`, `globalSettings__duo__aKey`
+- Identity certificate: Self-signed certificate for the identity server
+
+__Providing your own encryption keys and certificate:__
+
+To provide your own encryption keys and identity certificate, you'll create __two Kubernetes secrets__:
+
+1. Main configuration secret as shown in the previous section.
+2. Certificate secret which contains the .pfx certificate along with the certificate password.
+
+Steps to create the secrets:
+
+Generate three random 64-character hex strings for the encryption keys:
+
+   ```shell
+   openssl rand -hex 64 # Repeat three times
+   ```
+
+1. Generate a `identity.pfx` certificate for the identity service. You can use OpenSSL or any other certificate tool to generate a self-signed certificate.
+
+    Example using OpenSSL:
+
+    ```shell
+      openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout identity.key -out identity.crt -subj "/CN=Bitwarden IdentityServer" -days 10950
+
+      openssl pkcs12 -export -out ./identity/identity.pfx -inkey identity.key -in identity.crt -passout pass:<your-pfx-password>
+    ```
+
+    Replace `<your-pfx-password>` with a strong password for the .pfx file.
+
+2. Create the main configuration secret with the encryption keys and secrets from the previous section:
+
+   ```shell
+   kubectl create secret generic custom-secret -n bitwarden \
+       --from-literal=globalSettings__internalIdentityKey="<64-char-hex-key-1>" \
+       --from-literal=globalSettings__oidcIdentityClientKey="<64-char-hex-key-2>" \
+       --from-literal=globalSettings__duo__aKey="<64-char-hex-key-3>" \
+       ... (other required fields from the Secrets section above)
+   ```
+
+3. Create the certificate secret with the .pfx file and password:
+
+   ```shell
+   kubectl create secret generic custom-certificate-secret -n bitwarden \
+       --from-literal=globalSettings__identityServer__certificatePassword="<your-pfx-password>" \
+       --from-file=identity.pfx=./path/to/your/identity.pfx
+   ```
+
+4. Configure `my-values.yaml` to use your custom secrets:
+
+   ```yaml
+   secrets:
+     secretName: "custom-secret"
+     secretKeys:
+       generate: false
+     identityCertificate:
+       generate: false
+       secretName: "custom-certificate-secret"
+   ```
+
+__*NOTE: In this example, generic Kubernetes secrets were used. You can also choose to provide these secrets with a SecretProviderClass for integration with external secret management systems. See [Installing the Azure Key Vault CSI Driver](#installing-the-azure-key-vault-csi-driver) or [Setting secrets using AWS Secrets Manager](#setting-secrets-using-aws-secrets-manager) for examples of other CSI secret provider classes.
+
 ### Optional Values
 
 Replace any optional values in `my-values.yaml` to best fit your cluster. This includes changing of resource limits and requests.

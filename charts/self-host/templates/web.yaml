@@ -71,7 +71,7 @@ spec:
           - secretRef:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
