@@ -77,7 +77,7 @@ jobs:
         run: helm unittest "${_CHART_PATH}" --output-type JUnit --output-file test-results.xml
 
       - name: Report test results
-        uses: dorny/test-reporter@fe45e9537387dac839af0d33ba56eed8e24189e8 # v2.3.0
+        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2.5.0
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository && !cancelled() }}
         with:
           name: Test Results
