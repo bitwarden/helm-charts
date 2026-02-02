@@ -96,6 +96,10 @@ spec:
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
         {{- end }}
+        {{- if .Values.jobs.setup.resources }}
+        resources:
+          {{- toYaml .Values.jobs.setup.resources | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
