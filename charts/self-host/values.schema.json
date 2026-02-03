@@ -2680,7 +2680,7 @@
                 "limits": {
                   "properties": {
                     "memory": {
-                      "default": "128Mi",
+                      "default": "64Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2692,7 +2692,7 @@
                 "requests": {
                   "properties": {
                     "memory": {
-                      "default": "64Mi",
+                      "default": "32Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2745,7 +2745,7 @@
                     "limits": {
                       "properties": {
                         "memory": {
-                          "default": "128Mi",
+                          "default": "64Mi",
                           "title": "memory",
                           "type": "string"
                         }
@@ -2757,7 +2757,7 @@
                     "requests": {
                       "properties": {
                         "memory": {
-                          "default": "64Mi",
+                          "default": "32Mi",
                           "title": "memory",
                           "type": "string"
                         }
@@ -2808,7 +2808,7 @@
                     "limits": {
                       "properties": {
                         "memory": {
-                          "default": "128Mi",
+                          "default": "64Mi",
                           "title": "memory",
                           "type": "string"
                         }
@@ -2820,7 +2820,7 @@
                     "requests": {
                       "properties": {
                         "memory": {
-                          "default": "64Mi",
+                          "default": "32Mi",
                           "title": "memory",
                           "type": "string"
                         }
@@ -2881,7 +2881,7 @@
                 "limits": {
                   "properties": {
                     "memory": {
-                      "default": "128Mi",
+                      "default": "64Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2893,7 +2893,7 @@
                 "requests": {
                   "properties": {
                     "memory": {
-                      "default": "64Mi",
+                      "default": "32Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2950,7 +2950,7 @@
                 "limits": {
                   "properties": {
                     "memory": {
-                      "default": "128Mi",
+                      "default": "64Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2962,7 +2962,7 @@
                 "requests": {
                   "properties": {
                     "memory": {
-                      "default": "64Mi",
+                      "default": "32Mi",
                       "title": "memory",
                       "type": "string"
                     }
