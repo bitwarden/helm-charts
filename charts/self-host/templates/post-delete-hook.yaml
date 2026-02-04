@@ -71,5 +71,9 @@ spec:
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
         {{- end }}
+        {{- if .Values.jobs.cleanup.resources }}
+        resources:
+          {{- toYaml .Values.jobs.cleanup.resources | nindent 10 }}
+        {{- end }}
       restartPolicy: Never
 {{- end }}

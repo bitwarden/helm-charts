@@ -2673,6 +2673,38 @@
               "required": [],
               "title": "podLabels",
               "type": "object"
+            },
+            "resources": {
+              "description": "Resource limits for the kubectl container",
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "memory": {
+                      "default": "64Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "memory": {
+                      "default": "32Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
             }
           },
           "required": [],
@@ -2706,6 +2738,38 @@
                   "required": [],
                   "title": "podLabels",
                   "type": "object"
+                },
+                "resources": {
+                  "description": "Resource limits for the db migrator container",
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "memory": {
+                          "default": "64Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "memory": {
+                          "default": "32Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "resources",
+                  "type": "object"
                 }
               },
               "required": [],
@@ -2736,6 +2800,38 @@
                   "description": "Additional pod labels",
                   "required": [],
                   "title": "podLabels",
+                  "type": "object"
+                },
+                "resources": {
+                  "description": "Resource limits for the db migrator container",
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "memory": {
+                          "default": "64Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "limits",
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "memory": {
+                          "default": "32Mi",
+                          "title": "memory",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "requests",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "resources",
                   "type": "object"
                 }
               },
@@ -2778,6 +2874,38 @@
               "required": [],
               "title": "podLabels",
               "type": "object"
+            },
+            "resources": {
+              "description": "Resource limits for the kubectl container",
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "memory": {
+                      "default": "64Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "memory": {
+                      "default": "32Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
+              "type": "object"
             }
           },
           "required": [],
@@ -2814,6 +2942,38 @@
               "description": "Additional pod labels",
               "required": [],
               "title": "podLabels",
+              "type": "object"
+            },
+            "resources": {
+              "description": "Resource limits for the kubectl container",
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "memory": {
+                      "default": "64Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "limits",
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "memory": {
+                      "default": "32Mi",
+                      "title": "memory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "requests",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "resources",
               "type": "object"
             }
           },
