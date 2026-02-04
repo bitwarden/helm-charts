@@ -1,0 +1,95 @@
+suite: test post-install db migrator job
+templates:
+  - templates/helpers.tpl
+  - templates/post-install-db-migrator-job.yaml
+tests:
+  - it: should include vault.mdf check and mssql-data volume when database enabled and no accessMode override
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+    asserts:
+      - isKind:
+          of: Job
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "vault\\.mdf"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "SQL Ready"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "Admin Ready"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "DB Ready"
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: mssql-data
+            mountPath: /db
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: mssql-data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-self-host-mssqldata
+
+  - it: should skip vault.mdf check and mssql-data volume when accessMode is set on data volume
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+      database.volume.data.accessMode: ReadWriteOnce
+    asserts:
+      - isKind:
+          of: Job
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "SQL Ready"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "Admin Ready"
+      - notMatchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "vault\\.mdf"
+      - notMatchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "DB Ready"
+      - isEmpty:
+          path: spec.template.spec.initContainers[0].volumeMounts
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: mssql-data
+          any: true
+
+  - it: should skip SQL and vault.mdf checks when database is disabled
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: false
+    asserts:
+      - isKind:
+          of: Job
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "Admin Ready"
+      - notMatchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "SQL Ready"
+      - notMatchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "vault\\.mdf"
+      - isEmpty:
+          path: spec.template.spec.initContainers[0].volumeMounts
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: mssql-data
+          any: true
+
+  - it: should not render job when databaseProvider is postgres
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      general.databaseProvider: postgres
+    asserts:
+      - hasDocuments:
+          count: 0
