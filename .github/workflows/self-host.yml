@@ -102,7 +102,7 @@ jobs:
           kubectl describe ingress
 
           echo "*****HOME*****"
-          home=$(curl -Ls https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
+          home=$(curl -Ls --proto '=https' --proto-redir '=https' https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
           echo "$home" | lynx -stdin -dump -width=100
           httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${home}" | grep -Pio 'Bitwarden Web Vault')
@@ -118,7 +118,7 @@ jobs:
           echo "Home OK."
 
           echo "*****API/CONFIG*****"
-          config=$(curl -Ls https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
+          config=$(curl -Ls --proto '=https' --proto-redir '=https' https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
           echo "$config" | lynx -stdin -dump -width=100
           httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
           bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
@@ -134,7 +134,7 @@ jobs:
           echo "API/Config OK."
 
           echo "*****ADMIN*****"
-          admin=$(curl -Ls https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
+          admin=$(curl -Ls --proto '=https' --proto-redir '=https' https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
           echo "$admin" | lynx -stdin -dump -width=100
 
           httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')

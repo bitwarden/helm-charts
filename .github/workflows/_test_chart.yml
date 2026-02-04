@@ -32,7 +32,7 @@ jobs:
 
       - name: Install Kubepug
         run: |
-          KUBEPUG_VERSION=$(curl -L --silent "https://api.github.com/repos/rikatz/kubepug/releases/latest" | jq -r .tag_name)
+          KUBEPUG_VERSION=$(curl -L --silent --proto '=https' --proto-redir '=https' "https://api.github.com/repos/rikatz/kubepug/releases/latest" | jq -r .tag_name)
           wget -q "https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz"
 
           # Extract and setup binary in path
@@ -43,7 +43,7 @@ jobs:
       - name: Kubepug test
         run: |
           # Get last three stable versions
-          VERSIONS=$(curl -L --silent "https://api.github.com/repos/kubernetes/kubernetes/releases" | jq -r '[.[] | select(.prerelease == false) | .tag_name] | .[0:3] | @json')
+          VERSIONS=$(curl -L --silent --proto '=https' --proto-redir '=https' "https://api.github.com/repos/kubernetes/kubernetes/releases" | jq -r '[.[] | select(.prerelease == false) | .tag_name] | .[0:3] | @json')
 
           # Test each chart with the last three stable versions
           echo "$VERSIONS" | jq -r '.[]' | while read -r version; do
