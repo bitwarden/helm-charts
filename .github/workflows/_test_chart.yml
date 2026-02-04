@@ -33,7 +33,7 @@ jobs:
       - name: Install Kubepug
         run: |
           KUBEPUG_VERSION=$(curl -L --silent --proto '=https' --proto-redir '=https' "https://api.github.com/repos/rikatz/kubepug/releases/latest" | jq -r .tag_name)
-          wget -q --https-only --max-redirect=0 "https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz"
+          wget -q --https-only --max-redirect=2 "https://github.com/rikatz/kubepug/releases/download/$KUBEPUG_VERSION/kubepug_linux_amd64.tar.gz"
 
           # Extract and setup binary in path
           tar -xf kubepug_linux_amd64.tar.gz
