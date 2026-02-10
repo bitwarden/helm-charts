@@ -3017,6 +3017,38 @@
     "secrets": {
       "description": "Secrets are required.  Review the chart README on GitHub for details on creating these secrets",
       "properties": {
+        "identityCertificate": {
+          "description": "Identity certificate configuration\nBy default, the chart generates an identity certificate and password.\nSet generate to false if you want to provide your own certificate.",
+          "properties": {
+            "generate": {
+              "default": true,
+              "title": "generate",
+              "type": "boolean"
+            },
+            "secretName": {
+              "default": "",
+              "description": "The name of the secret that contains BOTH the identity.pfx certificate file\nAND the certificate password (globalSettings__identityServer__certificatePassword).",
+              "title": "secretName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "identityCertificate",
+          "type": "object"
+        },
+        "secretKeys": {
+          "description": "Encryption keys configuration\nBy default, the chart generates encryption keys (internalIdentityKey, oidcIdentityClientKey, duo__aKey).\nSet generate to false if you want to provide these keys in the secretName provided above.",
+          "properties": {
+            "generate": {
+              "default": true,
+              "title": "generate",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "secretKeys",
+          "type": "object"
+        },
         "secretName": {
           "default": "custom-secret",
           "title": "secretName",

@@ -260,3 +260,25 @@ Name of the keys secret
 {{- define "bitwarden.keyssecret" -}}
 {{ template "bitwarden.fullname" . }}-secretkeys
 {{- end -}}
+
+{{/*
+Name of the keys secret (generated or provided by the user)
+*/}}
+{{- define "bitwarden.keyssecretName" -}}
+{{- if .Values.secrets.secretKeys.generate -}}
+{{ template "bitwarden.keyssecret" . }}
+{{- else -}}
+{{ .Values.secrets.secretName }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Name of the identity cert secret (for volume mount and password)
+*/}}
+{{- define "bitwarden.identityCertSecretName" -}}
+{{- if .Values.secrets.identityCertificate.generate -}}
+{{ .Release.Name }}-identity-cert
+{{- else -}}
+{{ required "secrets.identityCertificate.secretName is required when generate is false. This secret should contain both identity.pfx and the certificate password." .Values.secrets.identityCertificate.secretName }}
+{{- end -}}
+{{- end -}}
