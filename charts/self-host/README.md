@@ -697,8 +697,10 @@ We will need to finish the rewrite set on the Application Gateway we created ear
      - Server variable: uri_path
      - Case-sensitive: No
      - Operator: equal (=)
-     - Pattern to match: `^(\/(?!admin)(?!identity)(?!sso)[^\/]*)\/(.*)`
+     - Pattern to match: `^/(api|attachments|icons|notifications|events)/(.*)$`
      - Click OK
+
+     > **Note**: This pattern matches paths for services that need the first path segment removed before routing to the backend. It explicitly targets `/api/*`, `/attachments/*`, `/icons/*`, `/notifications/*`, and `/events/*` paths, which are rewritten to remove the first segment (e.g., `/api/accounts` → `/accounts`). Admin, Identity, and SSO paths are not matched and will pass through unchanged.
   7. Add an action and set the following values:
      - Rewrite type: URL
      - Action type: Set
