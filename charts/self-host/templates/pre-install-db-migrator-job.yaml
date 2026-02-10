@@ -74,6 +74,10 @@ spec:
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
         {{- end }}
+        {{- if .Values.jobs.db.preInstallMigrator.resources }}
+        resources:
+          {{- toYaml .Values.jobs.db.preInstallMigrator.resources | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: migrator-extract-dir
           mountPath: "/migrator"

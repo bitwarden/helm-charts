@@ -716,6 +716,12 @@ jobs:
       podLabels: {}
       # Additional pod annotations
       podAnnotations: {}
+      # Resource limits for the db migrator container
+      resources:
+        requests:
+          memory: "32Mi"
+        limits:
+          memory: "64Mi"
     postInstallMigrator:
       # Additional job labels
       labels: {}
@@ -725,6 +731,12 @@ jobs:
       podLabels: {}
       # Additional pod annotations
       podAnnotations: {}
+      # Resource limits for the db migrator container
+      resources:
+        requests:
+          memory: "32Mi"
+        limits:
+          memory: "64Mi"
 
   setup:
     # Additional job labels
@@ -735,6 +747,12 @@ jobs:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Resource limits for the kubectl container
+    resources:
+      requests:
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
   cleanup:
     # Enabled by default, disable to retain resources after uninstall
     enabled: true
@@ -746,6 +764,12 @@ jobs:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Resource limits for the kubectl container
+    resources:
+      requests:
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
   secret:
     # Additional job labels
     labels: {}
@@ -755,6 +779,12 @@ jobs:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Resource limits for the kubectl container
+    resources:
+      requests:
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
 
 #
 # Configure service account for pre- and post-install hooks

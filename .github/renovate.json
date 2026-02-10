@@ -13,7 +13,7 @@
     "helm-values",
     "helmv3",
     "dockerfile",
-    "regex"
+    "custom.regex"
   ],
   "packageRules": [
     {
@@ -27,9 +27,12 @@
       ]
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["^\\.github/workflows/_lint_chart\\.yml$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/_lint_chart\\.yml$/"
+      ],
       "matchStrings": [
         "HELM_SCHEMA_VERSION: (?<currentValue>\\S+)"
       ],
