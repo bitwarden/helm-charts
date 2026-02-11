@@ -108,6 +108,9 @@ general:
   enableCloudCommunication: false
   # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
   cloudRegion: US
+  # Uncomment but leave as an empty string if deploying offline or in an air-gap environment
+  # pushRelayBaseUri: " "
+
 
   # Refresh token variables https://bitwarden.com/help/environment-variables/#refresh-token-variables
   refreshTokens:
