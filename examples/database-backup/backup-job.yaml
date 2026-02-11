@@ -33,10 +33,16 @@ spec:
           - "-c"
         args: [
             "
-            [ ! -f /backups/vault.bak ] || mv /backups/vault.bak \"/backups/vault.bak.$(date -r /backups/vault.bak -u +'%Y-%m-%dT%H:%M:%SZ')\";
             svr=\"$(echo \"${MSSQL_CONN_STRING}\" | grep -Po \"Data Source=tcp:\\K[^,]*(?=.*)\")\";
             pass=\"$(echo \"${MSSQL_CONN_STRING}\" | grep -Po \".*Password=\\K[^;]*(?=.*)\")\";
-            echo \"$pass\" | /opt/mssql-tools/bin/sqlcmd -S $svr -U SA -q \"BACKUP DATABASE [vault] TO DISK = '/var/opt/mssql/backups/vault.bak' WITH FORMAT, INIT\"
+            now=$(date +%Y%m%d_%H%M%S);
+            echo \"$pass\" |
+              /opt/mssql-tools/bin/sqlcmd -S $svr -U SA -q
+              \"BACKUP DATABASE [vault] TO DISK = '/var/opt/mssql/backups/vault_FULL_${now}.BAK' WITH NOFORMAT, INIT, NAME = 'vault full backup for ${now}', NOSKIP\";
+            if [ $? -eq 0 ]; then
+              ln -sf vault_FULL_${now}.BAK /backups/vault.BAK;
+              find /backups/ -mindepth 1 -maxdepth 1 -type f -name '*.BAK' -mtime +32 -delete;
+            fi
             "
         ]
       restartPolicy: Never
