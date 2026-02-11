@@ -2135,12 +2135,6 @@
           "properties": {
             "backups": {
               "properties": {
-                "accessMode": {
-                  "description": "Override the accessMode specified in general.volumeAccessMode.",
-                  "enum": ["ReadWriteOnce", "ReadWriteMany", "ReadOnlyMany", "ReadWriteOncePod"],
-                  "title": "accessMode",
-                  "type": "string"
-                },
                 "annotations": {
                   "required": [],
                   "title": "annotations",
@@ -2164,12 +2158,6 @@
             },
             "data": {
               "properties": {
-                "accessMode": {
-                  "description": "Override the accessMode specified in general.volumeAccessMode. When set on the data volume, the post-install migrator job will skip the vault.mdf file check and volume mount.",
-                  "enum": ["ReadWriteOnce", "ReadWriteMany", "ReadOnlyMany", "ReadWriteOncePod"],
-                  "title": "accessMode",
-                  "type": "string"
-                },
                 "annotations": {
                   "required": [],
                   "title": "annotations",
@@ -2193,12 +2181,6 @@
             },
             "log": {
               "properties": {
-                "accessMode": {
-                  "description": "Override the accessMode specified in general.volumeAccessMode.",
-                  "enum": ["ReadWriteOnce", "ReadWriteMany", "ReadOnlyMany", "ReadWriteOncePod"],
-                  "title": "accessMode",
-                  "type": "string"
-                },
                 "annotations": {
                   "required": [],
                   "title": "annotations",
