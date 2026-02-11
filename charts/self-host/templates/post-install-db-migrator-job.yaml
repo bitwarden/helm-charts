@@ -66,9 +66,12 @@ spec:
 
           echo "Admin Ready!"
 
+          {{- if (not (hasKey .Values.database.volume.data "accessMode")) }}
+
           while [ ! -f /db/vault.mdf ]; do sleep 1; done
 
           echo "DB Ready!"
+          {{- end }}
         ']
         {{- else }}
         args: ['
@@ -83,7 +86,7 @@ spec:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
         {{- end }}
         volumeMounts:
-          {{- if .Values.database.enabled }}
+          {{- if and .Values.database.enabled (not (hasKey .Values.database.volume.data "accessMode")) }}
           - name: mssql-data
             mountPath: /db
           {{- end }}
@@ -125,7 +128,7 @@ spec:
       volumes:
         - name: migrator-extract-dir
           emptyDir: {}
-        {{- if .Values.database.enabled }}
+        {{- if and .Values.database.enabled (not (hasKey .Values.database.volume.data "accessMode")) }}
         - name: mssql-data
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
