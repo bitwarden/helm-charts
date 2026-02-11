@@ -127,6 +127,21 @@ secrets:
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass: ""
 
+  # Encryption keys configuration
+  # By default, the chart generates encryption keys (internalIdentityKey, oidcIdentityClientKey, duo__aKey).
+  # Set generate to false if you want to provide these keys in the secretName provided above.
+  secretKeys:
+    generate: true
+
+  # Identity certificate configuration
+  # By default, the chart generates an identity certificate and password.
+  # Set generate to false if you want to provide your own certificate.
+  identityCertificate:
+    generate: true
+    # The name of the secret that contains BOTH the identity.pfx certificate file
+    # AND the certificate password (globalSettings__identityServer__certificatePassword).
+    secretName: ""
+
 # Settings for individual service containers
 component:
   # The Admin component
@@ -701,6 +716,12 @@ jobs:
       podLabels: {}
       # Additional pod annotations
       podAnnotations: {}
+      # Resource limits for the db migrator container
+      resources:
+        requests:
+          memory: "32Mi"
+        limits:
+          memory: "64Mi"
     postInstallMigrator:
       # Additional job labels
       labels: {}
@@ -710,6 +731,12 @@ jobs:
       podLabels: {}
       # Additional pod annotations
       podAnnotations: {}
+      # Resource limits for the db migrator container
+      resources:
+        requests:
+          memory: "32Mi"
+        limits:
+          memory: "64Mi"
 
   setup:
     # Additional job labels
@@ -720,6 +747,12 @@ jobs:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Resource limits for the kubectl container
+    resources:
+      requests:
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
   cleanup:
     # Enabled by default, disable to retain resources after uninstall
     enabled: true
@@ -731,6 +764,12 @@ jobs:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Resource limits for the kubectl container
+    resources:
+      requests:
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
   secret:
     # Additional job labels
     labels: {}
@@ -740,6 +779,12 @@ jobs:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Resource limits for the kubectl container
+    resources:
+      requests:
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
 
 #
 # Configure service account for pre- and post-install hooks
