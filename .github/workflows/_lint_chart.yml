@@ -34,7 +34,7 @@ jobs:
 
       - name: Install Helm plugins
         env:
-          HELM_SCHEMA_VERSION: 0.20.0-1 # To regenerate the schema if the linter fails on version update, see: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md#helm-schema
+          HELM_SCHEMA_VERSION: 0.21.2 # To regenerate the schema if the linter fails on version update, see: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md#helm-schema
         run: helm plugin install https://github.com/dadav/helm-schema --version "${HELM_SCHEMA_VERSION}" --verify=false # see: https://github.com/dadav/helm-schema/issues/156
 
       - name: Set up chart-testing
