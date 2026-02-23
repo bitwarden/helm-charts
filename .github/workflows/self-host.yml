@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev-oci-test
     paths:
       - "charts/self-host/**"
   pull_request:
@@ -152,6 +153,7 @@ jobs:
 
   build-self-host:
     name: Build self-host chart
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/_build.yml
     permissions:
       contents: read
@@ -166,3 +168,42 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+
+  push-dev-to-ghcr:
+    name: Push self-host-dev to GHCR
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/dev-oci-test'
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - lint-self-host
+      - test-self-host
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        with:
+          version: 'v4.0.0'
+
+      - name: Rename chart to self-host-dev
+        run: |
+          sed -i 's/^name: self-host$/name: self-host-dev/' charts/self-host/Chart.yaml
+
+      - name: Package Helm chart
+        id: helm_package
+        run: |
+          helm package charts/self-host
+          echo "name=$(ls ./self-host-dev-*.tgz)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io \
+            -u ${{ github.actor }} --password-stdin
+
+      - name: Push to GHCR
+        run: helm push ${{ steps.helm_package.outputs.name }} oci://ghcr.io/${{ github.repository_owner }}/helm-charts
