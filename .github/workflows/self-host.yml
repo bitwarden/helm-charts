@@ -200,10 +200,12 @@ jobs:
           helm package charts/self-host
           echo "name=$(ls ./self-host-dev-*.tgz)" >> "$GITHUB_OUTPUT"
 
-      - name: Log in to GHCR
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io \
-            -u ${{ github.actor }} --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push to GHCR
         run: helm push ${{ steps.helm_package.outputs.name }} oci://ghcr.io/${{ github.repository_owner }}/helm-charts
