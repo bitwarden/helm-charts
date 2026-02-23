@@ -93,6 +93,9 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.notifications.extraEnvVars }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.notifications.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -120,6 +123,9 @@ spec:
         - name: ca-certificates
           mountPath: /etc/bitwarden/ca-certificates
         {{- end }}
+        {{- with .Values.component.notifications.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.notifications.securityContext | indent 10 }}
       volumes:
@@ -140,6 +146,9 @@ spec:
         - name: ca-certificates
           configMap:
             name: {{ .Values.volume.caCertificates.configMapName }}
+        {{- end }}
+        {{- with .Values.component.notifications.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

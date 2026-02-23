@@ -93,6 +93,9 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.icons.extraEnvVars }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.icons.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -120,6 +123,9 @@ spec:
         {{- end }}
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
+        {{- with .Values.component.icons.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.icons.securityContext | indent 10 }}
       volumes:
@@ -140,6 +146,9 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- with .Values.component.icons.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

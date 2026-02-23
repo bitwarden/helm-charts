@@ -195,6 +195,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   api:
     # Additional deployment labels
     labels: {}
@@ -246,6 +252,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   attachments:
     # Additional deployment labels
     labels: {}
@@ -293,6 +305,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   events:
     # Additional deployment labels
     labels: {}
@@ -341,6 +359,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   icons:
     # Additional deployment labels
     labels: {}
@@ -388,6 +412,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   identity:
     # Additional deployment labels
     labels: {}
@@ -439,6 +469,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   notifications:
     # Additional deployment labels
     labels: {}
@@ -486,6 +522,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   scim:
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
@@ -521,6 +563,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   sso:
     # Additional deployment labels
     labels: {}
@@ -571,6 +619,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   web:
     # Additional deployment labels
     labels: {}
@@ -619,6 +673,12 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnvVars: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:

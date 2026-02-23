@@ -1,0 +1,170 @@
+suite: test component extraEnvVars, extraVolumeMounts, and extraVolumes
+templates:
+  - templates/helpers.tpl
+  - templates/api.yaml
+  - templates/identity.yaml
+  - templates/notifications.yaml
+  - templates/events.yaml
+
+tests:
+  - it: should render extra env vars in the api container
+    template: templates/api.yaml
+    set:
+      component.api.extraEnvVars[0].name: MY_VAR
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MY_VAR
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should not render extra env vars when extraEnvVars is empty
+    template: templates/api.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: ASPNETCORE_URLS
+              value: http://+:5000
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render extra volume mounts in the api container
+    template: templates/api.yaml
+    set:
+      component.api.extraVolumeMounts[0].mountPath: /etc/bitwarden/core/flags.json
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/bitwarden/core/flags.json
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should not render extra volume mounts when extraVolumeMounts is empty
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: my-vol
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render extra volumes in the api pod
+    template: templates/api.yaml
+    set:
+      component.api.extraVolumes[0].configMap.name: my-config-map
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: my-config-map
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should not render extra volumes when extraVolumes is empty
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: my-vol
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render all three extras together on api
+    template: templates/api.yaml
+    set:
+      component.api.extraVolumes[0].configMap.name: my-config-map
+      component.api.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.api.extraEnvVars[0].name: MY_CUSTOM_VAR
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: my-config-map
+        documentSelector:
+          path: kind
+          value: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentSelector:
+          path: kind
+          value: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MY_CUSTOM_VAR
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render extras on identity component
+    template: templates/identity.yaml
+    set:
+      component.identity.extraEnvVars[0].name: MY_VAR
+      component.identity.extraVolumeMounts[0].mountPath: /etc/test
+      component.identity.extraVolumes[0].configMap.name: my-config-map
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MY_VAR
+        documentSelector:
+          path: kind
+          value: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/test
+        documentSelector:
+          path: kind
+          value: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: my-config-map
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render extra volumes on notifications
+    template: templates/notifications.yaml
+    set:
+      component.notifications.extraVolumes[0].configMap.name: my-config-map
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: my-config-map
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render extra volumes on events
+    template: templates/events.yaml
+    set:
+      component.events.extraVolumes[0].configMap.name: my-config-map
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: my-config-map
+        documentSelector:
+          path: kind
+          value: Deployment

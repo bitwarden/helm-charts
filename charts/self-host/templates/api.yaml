@@ -93,6 +93,9 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.api.extraEnvVars }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.api.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -126,6 +129,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.component.api.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.api.securityContext | indent 10 }}
       volumes:
@@ -155,6 +161,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.component.api.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

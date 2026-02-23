@@ -93,6 +93,9 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.events.extraEnvVars }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.events.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -120,6 +123,9 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: events
         {{- end }}
+        {{- with .Values.component.events.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.events.securityContext | indent 10 }}
       volumes:
@@ -140,6 +146,9 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- with .Values.component.events.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---
