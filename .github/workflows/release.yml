@@ -110,7 +110,11 @@ jobs:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CR_OWNER: ${{ github.repository_owner }}
           CR_GIT_REPO: ${{ github.event.repository.name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mkdir -p .cr-index
+          gh api "repos/$CR_OWNER/$CR_GIT_REPO/contents/index.yaml?ref=gh-pages" \
+            --jq '.content' | base64 -d > .cr-index/index.yaml || true
           cr index
           cp .cr-index/index.yaml index.yaml
 
