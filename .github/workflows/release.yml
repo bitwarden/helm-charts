@@ -110,11 +110,9 @@ jobs:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CR_OWNER: ${{ github.repository_owner }}
           CR_GIT_REPO: ${{ github.event.repository.name }}
-        run: cr index
-
-      - name: Prepare Helm repo index for gh-pages
-        if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
-        run: cp .cr-index/index.yaml index.yaml
+        run: |
+          cr index
+          cp .cr-index/index.yaml index.yaml
 
       - name: Push index update to gh-pages
         if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
