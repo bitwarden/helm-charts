@@ -21,7 +21,6 @@ jobs:
       actions: read
       contents: write
       packages: write
-      pull-requests: write
       id-token: write
     steps:
       - name: Log in to Azure
@@ -48,13 +47,12 @@ jobs:
           app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
           private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
           permission-contents: write
-          permission-pull-requests: write
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
           ref: main
           token:  ${{ steps.app-token.outputs.token }}
 
@@ -64,11 +62,6 @@ jobs:
           subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           client_id: ${{ secrets.AZURE_CLIENT_ID }}
-
-      - name: Setup git
-        run: |
-          git config --local user.name "bw-ghapp[bot]"
-          git config --local user.email "178206702+bw-ghapp[bot]@users.noreply.github.com"
 
       - name: Set up Helm
         uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
@@ -119,29 +112,15 @@ jobs:
           CR_GIT_REPO: ${{ github.event.repository.name }}
         run: cr index
 
-      - name: Push index update to gh-pages via PR
+      - name: Prepare Helm repo index for gh-pages
         if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          GH_APPROVE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          BRANCH="update-helm-index-${{ github.run_id }}"
+        run: cp .cr-index/index.yaml index.yaml
 
-          git fetch origin gh-pages
-          git checkout -b "$BRANCH" origin/gh-pages
-          cp .cr-index/index.yaml index.yaml
-          git add index.yaml
-          git commit -m "Update Helm chart index"
-          git push origin "$BRANCH"
-
-          gh pr create \
-            --title "Update Helm chart index" \
-            --body "Automated Helm repo index update from release workflow run ${{ github.run_id }}." \
-            --base gh-pages \
-            --head "$BRANCH"
-
-          GH_TOKEN="$GH_APPROVE_TOKEN" gh pr review "$BRANCH" --approve
-
-          gh pr merge "$BRANCH" \
-            --squash \
-            --delete-branch
+      - name: Push index update to gh-pages
+        if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
+        uses: bitwarden/gh-actions/api-commit@main
+        with:
+          files: index.yaml
+          message: "Update Helm chart index"
+          branch: gh-pages
+          token: ${{ steps.app-token.outputs.token }}
