@@ -109,7 +109,7 @@ spec:
               command:
                 - '/bin/sh'
                 - '-c'
-                - '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SA_PASSWORD} -Q "SELECT 1" || exit 1'
+                - 'if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "${SA_PASSWORD}" -Q "SELECT 1" || exit 1; else /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${SA_PASSWORD}" -Q "SELECT 1" || exit 1; fi'
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 3
