@@ -80,7 +80,7 @@ tests:
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04"
+          value: "mcr.microsoft.com/mssql/server:2022-CU22-ubuntu-22.04"
         documentSelector:
           path: kind
           value: StatefulSet
