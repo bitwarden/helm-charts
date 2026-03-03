@@ -56,6 +56,10 @@ containers:
   # Optionally add taint tolerations
   tolerations: []
 
+# Amount of old ReplicaSets to retain.
+# More info: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy
+revisionHistoryLimit: ""
+
 # Service endpoint configuration for the metrics service.
 metricsService:
   ports:

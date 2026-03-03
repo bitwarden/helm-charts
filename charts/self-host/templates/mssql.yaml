@@ -74,9 +74,13 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config-map
             - secretRef:
-                name: {{ .Values.secrets.secretName | quote }}
-            - secretRef:
                 name: {{ .Release.Name }}-sql-connection-string
+          env:
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.secretName | quote }}
+                  key: SA_PASSWORD
           ports:
             - name: mssql
               containerPort: 1433

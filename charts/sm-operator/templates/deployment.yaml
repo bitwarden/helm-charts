@@ -13,6 +13,9 @@ spec:
     matchLabels:
       control-plane: controller-manager
     {{- include "sm-operator.selectorLabels" . | nindent 6 }}
+  {{- with .Values.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ int . | quote }}
+  {{- end }}
   template:
     metadata:
       labels:

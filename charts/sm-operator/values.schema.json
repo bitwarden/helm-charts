@@ -250,6 +250,12 @@
       "title": "readinessProbe",
       "type": "object"
     },
+    "revisionHistoryLimit": {
+      "default": "",
+      "description": "Amount of old ReplicaSets to retain.\nMore info: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy",
+      "title": "revisionHistoryLimit",
+      "type": "string"
+    },
     "settings": {
       "properties": {
         "bwApiUrlOverride": {

@@ -1,3 +1,4 @@
+{{- if .Values.secrets.identityCertificate.generate }}
 {{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
 {{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
 {{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
@@ -96,6 +97,10 @@ spec:
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
         {{- end }}
+        {{- if .Values.jobs.setup.resources }}
+        resources:
+          {{- toYaml .Values.jobs.setup.resources | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
@@ -104,3 +109,4 @@ spec:
         - name: temp
           emptyDir:
             medium: Memory
+{{- end }}
