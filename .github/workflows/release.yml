@@ -125,7 +125,6 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Validate Helm charts are available
-        if: ${{ github.event.inputs.release_mode != 'Dry Run' }}
         run: |
           helm repo add bitwarden https://charts.bitwarden.com/
 
