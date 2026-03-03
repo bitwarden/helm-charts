@@ -15,7 +15,7 @@ on:
 jobs:
   release:
     name: Release Helm chart
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Production
     permissions:
       actions: read
@@ -123,3 +123,29 @@ jobs:
           message: "Update Helm chart index"
           branch: gh-pages
           token: ${{ steps.app-token.outputs.token }}
+
+      - name: Validate Helm charts are available
+        run: |
+          helm repo add bitwarden https://charts.bitwarden.com/
+
+          for package in .cr-release-packages/*.tgz; do
+            chart_info=$(helm show chart "$package")
+            chart=$(yq '.name' <<< "$chart_info")
+            version=$(yq '.version' <<< "$chart_info")
+            echo "Validating $chart $version..."
+
+            # Retry for up to 2 minutes to allow for GitHub Pages propagation, which is not immediate.
+            for i in $(seq 12 -1 0); do
+              if [ "$i" -eq 0 ]; then
+                echo "Error: $chart $version not available after retries"
+                exit 1
+              fi
+              helm repo update bitwarden
+              if helm search repo "bitwarden/$chart" --version "$version" --output json | jq -e 'length > 0' > /dev/null; then
+                echo "$chart $version is available"
+                break
+              fi
+              echo "Attempt $i: chart $chart $version not yet available, retrying in 10s..."
+              sleep 10
+            done
+          done
