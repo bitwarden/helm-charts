@@ -1,0 +1,70 @@
+suite: test rawManifests pre- and post-install
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-raw-manifests.yaml
+  - templates/post-install-raw-manifests.yaml
+
+tests:
+  - it: should render a single preInstall manifest
+    template: templates/pre-install-raw-manifests.yaml
+    set:
+      rawManifests.preInstall[0].apiVersion: v1
+      rawManifests.preInstall[0].kind: ConfigMap
+      rawManifests.preInstall[0].metadata.name: test-configmap
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+        documentIndex: 0
+
+  - it: should render multiple preInstall manifests as separate documents
+    template: templates/pre-install-raw-manifests.yaml
+    set:
+      rawManifests.preInstall[0].apiVersion: v1
+      rawManifests.preInstall[0].kind: ConfigMap
+      rawManifests.preInstall[0].metadata.name: test-configmap
+      rawManifests.preInstall[1].apiVersion: v1
+      rawManifests.preInstall[1].kind: Secret
+      rawManifests.preInstall[1].metadata.name: test-secret
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: ConfigMap
+        documentIndex: 0
+      - isKind:
+          of: Secret
+        documentIndex: 1
+
+  - it: should render a single postInstall manifest
+    template: templates/post-install-raw-manifests.yaml
+    set:
+      rawManifests.postInstall[0].apiVersion: v1
+      rawManifests.postInstall[0].kind: ConfigMap
+      rawManifests.postInstall[0].metadata.name: test-configmap
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+        documentIndex: 0
+
+  - it: should render multiple postInstall manifests as separate documents
+    template: templates/post-install-raw-manifests.yaml
+    set:
+      rawManifests.postInstall[0].apiVersion: v1
+      rawManifests.postInstall[0].kind: ConfigMap
+      rawManifests.postInstall[0].metadata.name: test-configmap
+      rawManifests.postInstall[1].apiVersion: v1
+      rawManifests.postInstall[1].kind: Secret
+      rawManifests.postInstall[1].metadata.name: test-secret
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: ConfigMap
+        documentIndex: 0
+      - isKind:
+          of: Secret
+        documentIndex: 1
