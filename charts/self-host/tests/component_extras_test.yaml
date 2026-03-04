@@ -1,4 +1,4 @@
-suite: test component extraEnvVars, extraVolumeMounts, and extraVolumes
+suite: test component extraEnv, extraEnvFrom, extraVolumeMounts, and extraVolumes
 templates:
   - templates/helpers.tpl
   - templates/api.yaml
@@ -10,7 +10,7 @@ tests:
   - it: should render extra env vars in the api container
     template: templates/api.yaml
     set:
-      component.api.extraEnvVars[0].name: MY_VAR
+      component.api.extraEnv[0].name: MY_VAR
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
@@ -20,7 +20,7 @@ tests:
           path: kind
           value: Deployment
 
-  - it: should not render extra env vars when extraEnvVars is empty
+  - it: should not render extra env vars when extraEnv is empty
     template: templates/api.yaml
     asserts:
       - equal:
@@ -28,6 +28,32 @@ tests:
           value:
             - name: ASPNETCORE_URLS
               value: http://+:5000
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render extraEnvFrom in the api envFrom
+    template: templates/api.yaml
+    set:
+      component.api.extraEnvFrom[0].secretRef.name: my-extra-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-extra-secret
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should not render extraEnvFrom entries when extraEnvFrom is empty
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-extra-secret
         documentSelector:
           path: kind
           value: Deployment
@@ -81,12 +107,13 @@ tests:
           path: kind
           value: Deployment
 
-  - it: should render all three extras together on api
+  - it: should render all four extras together on api
     template: templates/api.yaml
     set:
       component.api.extraVolumes[0].configMap.name: my-config-map
       component.api.extraVolumeMounts[0].mountPath: /etc/custom/config
-      component.api.extraEnvVars[0].name: MY_CUSTOM_VAR
+      component.api.extraEnv[0].name: MY_CUSTOM_VAR
+      component.api.extraEnvFrom[0].configMapRef.name: my-extra-config
     asserts:
       - contains:
           path: spec.template.spec.volumes
@@ -110,11 +137,20 @@ tests:
         documentSelector:
           path: kind
           value: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: my-extra-config
+        documentSelector:
+          path: kind
+          value: Deployment
 
   - it: should render extras on identity component
     template: templates/identity.yaml
     set:
-      component.identity.extraEnvVars[0].name: MY_VAR
+      component.identity.extraEnv[0].name: MY_VAR
+      component.identity.extraEnvFrom[0].secretRef.name: my-secret
       component.identity.extraVolumeMounts[0].mountPath: /etc/test
       component.identity.extraVolumes[0].configMap.name: my-config-map
     asserts:
@@ -122,6 +158,14 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: MY_VAR
+        documentSelector:
+          path: kind
+          value: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
         documentSelector:
           path: kind
           value: Deployment

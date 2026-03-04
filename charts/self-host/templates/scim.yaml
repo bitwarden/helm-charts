@@ -91,10 +91,13 @@ spec:
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.scim.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
-        {{- with .Values.component.scim.extraEnvVars }}
+        {{- with .Values.component.scim.extraEnv }}
 {{ toYaml . | indent 10 }}
         {{- end }}
         livenessProbe:

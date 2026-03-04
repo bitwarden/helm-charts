@@ -196,7 +196,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -253,7 +255,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -306,7 +310,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -360,7 +366,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -413,7 +421,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -470,7 +480,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -523,7 +535,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -564,7 +578,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -620,7 +636,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod
@@ -674,7 +692,9 @@ component:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
     # Extra environment variables to add to the container
-    extraEnvVars: []
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
     # Extra volume mounts to add to the container
     extraVolumeMounts: []
     # Extra volumes to add to the pod

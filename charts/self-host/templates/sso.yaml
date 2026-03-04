@@ -90,10 +90,13 @@ spec:
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.sso.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
-        {{- with .Values.component.sso.extraEnvVars }}
+        {{- with .Values.component.sso.extraEnv }}
 {{ toYaml . | indent 10 }}
         {{- end }}
           {{- if .Values.secrets.identityCertificate.generate }}

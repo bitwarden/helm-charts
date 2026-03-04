@@ -19,12 +19,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -242,12 +250,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -485,12 +501,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -708,12 +732,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -932,12 +964,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -1155,12 +1195,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -1398,12 +1446,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -1627,12 +1683,20 @@
               "title": "enabled",
               "type": "boolean"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -1780,12 +1844,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
@@ -2018,12 +2090,20 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
-            "extraEnvVars": {
+            "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
                 "required": []
               },
-              "title": "extraEnvVars",
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
               "type": "array"
             },
             "extraVolumeMounts": {
