@@ -4,4 +4,4 @@
 {{- $manifest := include "bitwarden.rawPreInstallAnnotations" $ | fromYaml | dict "annotations" | dict "metadata" | mergeOverwrite $manifest }}
 {{- toYaml $manifest }}
 ---
-{{- end }}
+{{ end }}
