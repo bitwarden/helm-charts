@@ -1,0 +1,168 @@
+suite: test rawManifests pre- and post-install
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-raw-manifests.yaml
+  - templates/post-install-raw-manifests.yaml
+
+tests:
+  - it: should render a single preInstall manifest
+    template: templates/pre-install-raw-manifests.yaml
+    set:
+      rawManifests:
+        preInstall:
+          - apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: test-configmap
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: "pre-install,pre-upgrade"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "0"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+
+  - it: should render multiple preInstall manifests as separate documents
+    template: templates/pre-install-raw-manifests.yaml
+    set:
+      rawManifests:
+        preInstall:
+          - apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: test-configmap
+          - apiVersion: v1
+            kind: Secret
+            metadata:
+              name: test-secret
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: ConfigMap
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - isKind:
+          of: Secret
+        documentSelector:
+          path: metadata.name
+          value: test-secret
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: "pre-install,pre-upgrade"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "0"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: "pre-install,pre-upgrade"
+        documentSelector:
+          path: metadata.name
+          value: test-secret
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "0"
+        documentSelector:
+          path: metadata.name
+          value: test-secret
+
+  - it: should render a single postInstall manifest
+    template: templates/post-install-raw-manifests.yaml
+    set:
+      rawManifests:
+        postInstall:
+          - apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: test-configmap
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: "post-install,post-upgrade"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "9"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+
+  - it: should render multiple postInstall manifests as separate documents
+    template: templates/post-install-raw-manifests.yaml
+    set:
+      rawManifests:
+        postInstall:
+          - apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: test-configmap
+          - apiVersion: v1
+            kind: Secret
+            metadata:
+              name: test-secret
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: ConfigMap
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - isKind:
+          of: Secret
+        documentSelector:
+          path: metadata.name
+          value: test-secret
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: "post-install,post-upgrade"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "9"
+        documentSelector:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: "post-install,post-upgrade"
+        documentSelector:
+          path: metadata.name
+          value: test-secret
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "9"
+        documentSelector:
+          path: metadata.name
+          value: test-secret
