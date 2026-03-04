@@ -491,9 +491,6 @@ rawManifests:
         name: extra-secret
       stringData:
         SECRET_VAR: "secret-value"
-        name: test-extra-configmap
-      data:
-        TEST_KEY: test-value
   postInstall:
     - apiVersion: v1
       kind: ConfigMap
