@@ -146,8 +146,8 @@ component:
     podServiceAccount:
     # Extra environment variables to add to the container
     extraEnv:
-      - name: MY_CUSTOM_VAR
-        value: "my-value"
+      - name: CUSTOM_VAR
+        value: "value"
     # Extra environment variables from secrets or configmaps to add to the container
     extraEnvFrom:
       - secretRef:
@@ -484,11 +484,11 @@ rawManifests:
       metadata:
         name: extra-configmap
       data:
-        MY_CONFIG_VAR: "config-value"
+        CONFIG_VAR: "config-value"
     - apiVersion: v1
       kind: Secret
       metadata:
         name: extra-secret
       stringData:
-        MY_SECRET_VAR: "secret-value"
+        SECRET_VAR: "secret-value"
   postInstall: []

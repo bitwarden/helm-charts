@@ -124,11 +124,11 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: icons
         {{- end }}
-        resources:
-{{ toYaml .Values.component.icons.resources | indent 10 }}
         {{- with .Values.component.icons.extraVolumeMounts }}
 {{ toYaml . | indent 8 }}
         {{- end }}
+        resources:
+{{ toYaml .Values.component.icons.resources | indent 10 }}
         securityContext:
 {{ toYaml .Values.component.icons.securityContext | indent 10 }}
       volumes:
