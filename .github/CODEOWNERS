@@ -1,20 +1,34 @@
 # Please sort into logical groups with comment headers. Sort groups in order of specificity.
+
 # For example, default owners should always be the first group.
+
 # Sort lines alphabetically within these groups to avoid accidentally adding duplicates.
+
 #
+
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-## Self-host Orchestration and Tooling owns charts ##
-* @bitwarden/dept-shot
+## Self-host Orchestration and Tooling owns charts
 
-## These specific files are shared and are used in releases ##
-**/Chart.yaml
+- @bitwarden/dept-shot
 
-## BRE team owns these workflows ##
+## These specific files are shared and are used in releases
+
+\*\*/Chart.yaml
+
+## BRE team owns these workflows
+
 .github/workflows/release.yml @bitwarden/dept-bre
 
 # Docker-related files
+
 **/Dockerfile @bitwarden/team-appsec @bitwarden/dept-bre @bitwarden/dept-shot
-**/*.dockerignore @bitwarden/team-appsec @bitwarden/dept-bre @bitwarden/dept-shot
+**/\*.dockerignore @bitwarden/team-appsec @bitwarden/dept-bre @bitwarden/dept-shot
 **/entrypoint.sh @bitwarden/team-appsec @bitwarden/dept-bre @bitwarden/dept-shot
 **/docker-compose.yml @bitwarden/team-appsec @bitwarden/dept-bre @bitwarden/dept-shot
+
+# Claude related files
+
+.claude/ @bitwarden/team-ai-sme
+.github/workflows/respond.yml @bitwarden/team-ai-sme
+.github/workflows/review-code.yml @bitwarden/team-ai-sme
