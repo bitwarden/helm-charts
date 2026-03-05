@@ -487,10 +487,13 @@ rawManifests:
         CONFIG_VAR: "config-value"
     - apiVersion: v1
       kind: Secret
-      metadata:
-        name: extra-secret
-      stringData:
         SECRET_VAR: "secret-value"
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: test-extra-configmap
+      data:
+        TEST_KEY: test-value
         name: test-extra-configmap
       data:
         TEST_KEY: test-value
