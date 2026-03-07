@@ -144,6 +144,26 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
+    # Extra environment variables to add to the container
+    extraEnv:
+      - name: CUSTOM_VAR
+        value: "value"
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom:
+      - secretRef:
+          name: extra-secret
+      - configMapRef:
+          name: extra-configmap
+    # Extra volume mounts to add to the container
+    extraVolumeMounts:
+      - name: extra-volume
+        mountPath: /etc/custom/config
+        readOnly: true
+    # Extra volumes to add to the pod
+    extraVolumes:
+      - name: extra-volume
+        configMap:
+          name: extra-configmap
   attachments:
     # Additional deployment labels
     labels: {}
@@ -459,6 +479,18 @@ rawManifests:
           requests:
             storage: 1Gi
         storageClassName: standard
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: extra-configmap
+      data:
+        CONFIG_VAR: "config-value"
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: extra-secret
+      stringData:
+        SECRET_VAR: "secret-value"
     - apiVersion: v1
       kind: ConfigMap
       metadata:

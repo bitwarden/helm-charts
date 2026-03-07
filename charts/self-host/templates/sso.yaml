@@ -90,9 +90,15 @@ spec:
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.sso.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.sso.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
           {{- if .Values.secrets.identityCertificate.generate }}
           - name: globalSettings__identityServer__certificatePassword
             valueFrom:
@@ -139,6 +145,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.component.sso.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.sso.securityContext | indent 10 }}
       volumes:
@@ -173,6 +182,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.component.sso.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

@@ -19,6 +19,38 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "image": {
               "description": "Image repository, tag, and pull policy",
               "properties": {
@@ -217,6 +249,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -437,6 +501,38 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "image": {
               "description": "Image repository, tag, and pull policy",
               "properties": {
@@ -635,6 +731,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -836,6 +964,38 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "image": {
               "description": "Image repository, tag, and pull policy",
               "properties": {
@@ -1034,6 +1194,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1254,6 +1446,38 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "image": {
               "description": "Image repository, tag, and pull policy",
               "properties": {
@@ -1459,6 +1683,38 @@
               "title": "enabled",
               "type": "boolean"
             },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "image": {
               "description": "Image repository, tag, and pull policy",
               "properties": {
@@ -1587,6 +1843,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1801,6 +2089,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",

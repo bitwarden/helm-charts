@@ -91,9 +91,15 @@ spec:
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.scim.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.scim.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /alive
@@ -124,6 +130,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.component.scim.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.scim.securityContext | indent 10 }}
       volumes:
@@ -153,6 +162,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.component.scim.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

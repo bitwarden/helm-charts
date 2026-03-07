@@ -90,9 +90,15 @@ spec:
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.icons.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.icons.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.icons.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -118,6 +124,9 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: icons
         {{- end }}
+        {{- with .Values.component.icons.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
         securityContext:
@@ -140,6 +149,9 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- with .Values.component.icons.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---
