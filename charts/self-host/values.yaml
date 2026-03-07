@@ -149,6 +149,8 @@ secrets:
 component:
   # The Admin component
   admin:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -204,6 +206,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   api:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -263,6 +267,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   attachments:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -318,6 +324,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   events:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -374,6 +382,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   icons:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -429,6 +439,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   identity:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -488,6 +500,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   notifications:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -543,6 +557,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   scim:
+    # Number of replicas
+    replicas: 1
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
     # Additional deployment labels
@@ -586,6 +602,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   sso:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
@@ -644,6 +662,8 @@ component:
     # Extra volumes to add to the pod
     extraVolumes: []
   web:
+    # Number of replicas
+    replicas: 1
     # Additional deployment labels
     labels: {}
     # Additional deployment annotations
