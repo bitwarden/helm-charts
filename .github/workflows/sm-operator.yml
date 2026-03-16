@@ -13,6 +13,7 @@ on:
       - ".github/workflows/_lint_chart.yml"
       - ".github/workflows/_test_chart.yml"
       - ".github/workflows/_build.yml"
+      - ".github/config/sample-bw-secret.yaml" # SM test secret
   workflow_dispatch:
   workflow_call:
     secrets:
