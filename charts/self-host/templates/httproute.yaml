@@ -18,7 +18,7 @@ metadata:
 {{- end }}
 spec:
   parentRefs:
-  {{- if gt (len .Values.general.gateway.parentRefs) 0 }}
+  {{- if .Values.general.gateway.parentRefs }}
   {{- range .Values.general.gateway.parentRefs }}
     - name: {{ .name }}
       {{- if .namespace }}
