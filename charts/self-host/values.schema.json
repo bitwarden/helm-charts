@@ -2637,6 +2637,168 @@
           "title": "enableCloudCommunication",
           "type": "boolean"
         },
+        "gateway": {
+          "description": "Gateway API HTTPRoute configuration\nUse this as an alternative to general.ingress when using Gateway API (gateway.networking.k8s.io/v1)\nTLS is handled at the Gateway resource level, not on the HTTPRoute",
+          "properties": {
+            "annotations": {
+              "description": "Annotations to add to the HTTPRoute resource",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Set to true to create an HTTPRoute resource",
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "description": "Labels to add to the HTTPRoute resource",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "Gateway reference(s) that this HTTPRoute attaches to.\nSet parentRefs to attach to an externally managed Gateway.",
+              "items": {
+                "required": []
+              },
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "paths": {
+              "description": "Path configuration for each service (PathPrefix matching)",
+              "properties": {
+                "admin": {
+                  "properties": {
+                    "path": {
+                      "default": "/admin",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "admin",
+                  "type": "object"
+                },
+                "api": {
+                  "properties": {
+                    "path": {
+                      "default": "/api",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "api",
+                  "type": "object"
+                },
+                "attachments": {
+                  "properties": {
+                    "path": {
+                      "default": "/attachments",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "attachments",
+                  "type": "object"
+                },
+                "events": {
+                  "properties": {
+                    "path": {
+                      "default": "/events",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "events",
+                  "type": "object"
+                },
+                "icons": {
+                  "properties": {
+                    "path": {
+                      "default": "/icons",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "icons",
+                  "type": "object"
+                },
+                "identity": {
+                  "properties": {
+                    "path": {
+                      "default": "/identity",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "identity",
+                  "type": "object"
+                },
+                "notifications": {
+                  "properties": {
+                    "path": {
+                      "default": "/notifications",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "notifications",
+                  "type": "object"
+                },
+                "scim": {
+                  "properties": {
+                    "path": {
+                      "default": "/scim",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "scim",
+                  "type": "object"
+                },
+                "sso": {
+                  "properties": {
+                    "path": {
+                      "default": "/sso",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "sso",
+                  "type": "object"
+                },
+                "web": {
+                  "properties": {
+                    "path": {
+                      "default": "/",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "web",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "paths",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "gateway",
+          "type": "object"
+        },
         "ingress": {
           "properties": {
             "annotations": {

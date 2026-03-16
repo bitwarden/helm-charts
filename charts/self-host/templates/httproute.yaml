@@ -1,0 +1,107 @@
+{{- if .Values.general.gateway.enabled }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ template "bitwarden.httproute" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+{{- include "bitwarden.annotations" . | indent 4 }}
+{{- with .Values.general.gateway.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/component: httproute
+{{ include "bitwarden.labels" . | indent 4 }}
+{{- with .Values.general.gateway.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  parentRefs:
+  {{- if gt (len .Values.general.gateway.parentRefs) 0 }}
+  {{- range .Values.general.gateway.parentRefs }}
+    - name: {{ .name }}
+      {{- if .namespace }}
+      namespace: {{ .namespace }}
+      {{- end }}
+      {{- if .sectionName }}
+      sectionName: {{ .sectionName }}
+      {{- end }}
+  {{- end }}
+  {{- end }}
+  hostnames:
+    - {{ .Values.general.domain }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.attachments.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.attachments" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.api.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.api" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.icons.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.icons" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.notifications.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.notifications" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.events.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.events" . }}
+          port: 5000
+    {{- if .Values.component.scim.enabled }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.scim.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.scim" . }}
+          port: 5000
+    {{- end }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.sso.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.sso" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.identity.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.identity" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.admin.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.admin" . }}
+          port: 5000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.general.gateway.paths.web.path }}
+      backendRefs:
+        - name: {{ template "bitwarden.web" . }}
+          port: 5000
+{{- end }}

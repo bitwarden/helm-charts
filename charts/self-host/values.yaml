@@ -64,6 +64,42 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 
+  # Gateway API HTTPRoute configuration
+  # Use this as an alternative to general.ingress when using Gateway API (gateway.networking.k8s.io/v1)
+  # TLS is handled at the Gateway resource level, not on the HTTPRoute
+  gateway:
+    # Set to true to create an HTTPRoute resource
+    enabled: false
+    # Gateway reference(s) that this HTTPRoute attaches to.
+    # Set parentRefs to attach to an externally managed Gateway.
+    parentRefs: []
+    # Annotations to add to the HTTPRoute resource
+    annotations: {}
+    # Labels to add to the HTTPRoute resource
+    labels: {}
+    # Path configuration for each service (PathPrefix matching)
+    paths:
+      web:
+        path: /
+      attachments:
+        path: /attachments
+      api:
+        path: /api
+      icons:
+        path: /icons
+      notifications:
+        path: /notifications
+      events:
+        path: /events
+      scim:
+        path: /scim
+      sso:
+        path: /sso
+      identity:
+        path: /identity
+      admin:
+        path: /admin
+
   # Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.
   # If both are empty, the chart's default version is used
   coreVersionOverride: ""
