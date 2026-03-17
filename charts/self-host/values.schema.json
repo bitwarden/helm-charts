@@ -2343,7 +2343,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "2022-CU12-ubuntu-22.04",
+              "default": "2022-CU22-ubuntu-22.04",
               "title": "tag",
               "type": "string"
             }

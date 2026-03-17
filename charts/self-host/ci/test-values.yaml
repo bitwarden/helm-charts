@@ -409,7 +409,7 @@ database:
   # Image name, tag, and pull policy
   image:
     repository: mcr.microsoft.com/mssql/server
-    tag: 2022-CU12-ubuntu-22.04
+    tag: 2022-CU22-ubuntu-22.04
     # Tag of the image to use. (Defaults to general.coreVersion)
     # tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
