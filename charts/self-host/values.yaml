@@ -12,7 +12,7 @@ general:
   ingress:
     # DEPRECATED: This Ingress resource is deprecated and will be removed in a future release.
     # Please migrate to Gateway API. 
-    enabled: false
+    enabled: true
     # Current supported values for ingress type include: nginx
     className: "nginx"
      ## - Annotations to add to the Ingress resource.
