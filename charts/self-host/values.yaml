@@ -11,7 +11,7 @@ general:
   databaseProvider: "mssql"
   ingress:
     # DEPRECATED: This Ingress resource is deprecated and will be removed in a future release.
-    # Please migrate to Gateway API. 
+    # Please migrate to Gateway API.
     enabled: true
     # Current supported values for ingress type include: nginx
     className: "nginx"
