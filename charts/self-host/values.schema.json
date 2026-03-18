@@ -2814,7 +2814,7 @@
               "type": "string"
             },
             "enabled": {
-              "default": false,
+              "default": true,
               "description": "DEPRECATED: This Ingress resource is deprecated and will be removed in a future release.\nPlease migrate to Gateway API. ",
               "title": "enabled",
               "type": "boolean"
