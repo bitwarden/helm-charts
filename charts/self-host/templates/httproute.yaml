@@ -28,6 +28,8 @@ spec:
       sectionName: {{ .sectionName }}
       {{- end }}
   {{- end }}
+  {{- else }}
+  {{- fail "general.gateway.parentRefs must contain at least one entry when gateway is enabled" }}
   {{- end }}
   hostnames:
     - {{ .Values.general.domain }}
