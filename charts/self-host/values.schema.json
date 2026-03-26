@@ -3429,7 +3429,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "3.5.2",
+                  "default": "3.5.5",
                   "required": [],
                   "title": "tag",
                   "type": [
