@@ -241,6 +241,13 @@ Name of Ingress components
 {{- end -}}
 
 {{/*
+Name of HTTPRoute components
+*/}}
+{{- define "bitwarden.httproute" -}}
+{{ template "bitwarden.fullname" . }}-httproute
+{{- end -}}
+
+{{/*
 Name of Feature Flag configMap
 */}}
 {{- define "bitwarden.featureflags" -}}
