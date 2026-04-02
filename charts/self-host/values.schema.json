@@ -437,7 +437,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "256Mi",
+                      "default": "384Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -454,7 +454,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -668,7 +668,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -685,7 +685,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -900,7 +900,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -917,7 +917,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1131,7 +1131,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1148,7 +1148,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1382,7 +1382,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "256Mi",
+                      "default": "384Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1399,7 +1399,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1613,7 +1613,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1630,7 +1630,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2026,7 +2026,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2043,7 +2043,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2258,7 +2258,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2275,7 +2275,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "96Mi",
                       "title": "memory",
                       "type": "string"
                     }
