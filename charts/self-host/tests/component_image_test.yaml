@@ -95,15 +95,15 @@ tests:
           path: spec.template.spec.initContainers[0].image
           value: "alpine/openssl:3.5.2"
 
-  - it: should use kubectl repository and tag
+  - it: should use alpine/kubectl repository and tag
     template: templates/pre-install-job.yaml
     set:
-      supportComponents.kubectl.image.repository: "ghcr.io/bitwarden/helm-charts/kubectl"
-      supportComponents.kubectl.image.tag: 1.34
+      supportComponents.kubectl.image.repository: "alpine/kubectl"
+      supportComponents.kubectl.image.tag: 1.35.3
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "ghcr.io/bitwarden/helm-charts/kubectl:1.34"
+          value: "alpine/kubectl:1.35.3"
 
   - it: should use dbMigrator with coreVersionOverride when tag is empty
     template: templates/post-install-db-migrator-job.yaml
