@@ -38,6 +38,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.attachments.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ template "bitwarden.attachments" . }}
           port: 5000
@@ -45,6 +51,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.api.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ template "bitwarden.api" . }}
           port: 5000
@@ -52,6 +64,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.icons.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ template "bitwarden.icons" . }}
           port: 5000
@@ -59,6 +77,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.notifications.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ template "bitwarden.notifications" . }}
           port: 5000
@@ -66,6 +90,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.events.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ template "bitwarden.events" . }}
           port: 5000
@@ -74,6 +104,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.scim.path }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
       backendRefs:
         - name: {{ template "bitwarden.scim" . }}
           port: 5000
