@@ -124,6 +124,78 @@ tests:
           path: metadata.labels.custom-label
           value: custom-value
 
+  - it: should apply URLRewrite filter to api rule to strip path prefix
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[1].filters[0].type
+          value: URLRewrite
+      - equal:
+          path: spec.rules[1].filters[0].urlRewrite.path.type
+          value: ReplacePrefixMatch
+      - equal:
+          path: spec.rules[1].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+
+  - it: should apply URLRewrite filter to attachments, icons, notifications, and events rules
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[0].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+      - equal:
+          path: spec.rules[2].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+      - equal:
+          path: spec.rules[3].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+      - equal:
+          path: spec.rules[4].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+
+  - it: should not apply filters to sso, identity, admin, or web rules
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - notExists:
+          path: spec.rules[5].filters
+      - notExists:
+          path: spec.rules[6].filters
+      - notExists:
+          path: spec.rules[7].filters
+      - notExists:
+          path: spec.rules[8].filters
+
+  - it: should apply URLRewrite filter to scim rule when SCIM is enabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      component.scim.enabled: true
+    asserts:
+      - equal:
+          path: spec.rules[5].filters[0].type
+          value: URLRewrite
+      - equal:
+          path: spec.rules[5].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+
   - it: should respect custom paths
     template: templates/httproute.yaml
     set:
