@@ -758,6 +758,7 @@ supportComponents:
       repository: alpine/openssl
       # @schema
       # type: [string, number]
+      # default: ""
       # @schema
       tag: 3.5.5
   kubectl:
@@ -769,6 +770,7 @@ supportComponents:
       repository: alpine/kubectl
       # @schema
       # type: [string, number]
+      # default: ""
       # @schema
       tag: 1.35.3
 

@@ -3591,7 +3591,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "3.5.5",
+                  "default": "",
                   "required": [],
                   "title": "tag",
                   "type": [
@@ -3659,7 +3659,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.35.3",
+                  "default": "",
                   "required": [],
                   "title": "tag",
                   "type": [
