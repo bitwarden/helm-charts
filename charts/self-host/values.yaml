@@ -260,10 +260,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
       limits:
-        memory: "256Mi"
+        memory: "384Mi"
         cpu: "200m"
     # Liveness probe configuration
     livenessProbe:
@@ -319,10 +319,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -375,10 +375,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -430,10 +430,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -485,10 +485,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
       limits:
-        memory: "256Mi"
+        memory: "384Mi"
         cpu: "200m"
     # Liveness probe configuration
     livenessProbe:
@@ -544,10 +544,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -642,10 +642,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -701,10 +701,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "96Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
