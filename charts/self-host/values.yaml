@@ -772,7 +772,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 1.35.3
+      tag: 1.35.4
 
 # Data volume sizes for shared PVCs
 volume:
