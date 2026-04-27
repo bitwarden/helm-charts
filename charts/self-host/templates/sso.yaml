@@ -112,6 +112,13 @@ spec:
                 name: {{ template "bitwarden.identityCertSecretName" . }}
                 key: globalSettings__identityServer__certificatePassword
           {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         {{- with .Values.component.sso.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}

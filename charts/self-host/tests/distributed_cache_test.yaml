@@ -1,0 +1,196 @@
+suite: Distributed cache (Redis) connection string injection
+templates:
+  - templates/helpers.tpl
+  - templates/api.yaml
+  - templates/identity.yaml
+  - templates/admin.yaml
+  - templates/sso.yaml
+  - templates/notifications.yaml
+  - templates/events.yaml
+  - templates/scim.yaml
+tests:
+  - it: should not inject Redis env var when distributed cache is disabled (api)
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should not inject Redis env var when distributed cache is disabled (identity)
+    template: templates/identity.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var from default secret name on api when enabled
+    template: templates/api.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var on identity when enabled
+    template: templates/identity.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var on admin when enabled
+    template: templates/admin.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var on sso when enabled
+    template: templates/sso.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var on notifications when enabled
+    template: templates/notifications.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var on events when enabled
+    template: templates/events.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should inject Redis env var on scim when enabled
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: true
+      general.distributedCache.redis.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should source Redis env var from override secretName when set
+    template: templates/api.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+      general.distributedCache.redis.secretName: "my-redis-secret"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: my-redis-secret
+                key: globalSettings__distributedCache__redis__connectionString
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should source Redis env var using override secretKey when set
+    template: templates/api.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+      general.distributedCache.redis.secretKey: "redis-conn-string"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: custom-secret
+                key: redis-conn-string
+        documentSelector:
+          path: kind
+          value: Deployment

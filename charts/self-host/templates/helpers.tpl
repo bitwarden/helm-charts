@@ -280,6 +280,14 @@ Name of the keys secret (generated or provided by the user)
 {{- end -}}
 
 {{/*
+Name of the secret holding the Redis distributed cache connection string.
+Defaults to secrets.secretName when general.distributedCache.redis.secretName is empty.
+*/}}
+{{- define "bitwarden.distributedCacheSecretName" -}}
+{{- default .Values.secrets.secretName .Values.general.distributedCache.redis.secretName -}}
+{{- end -}}
+
+{{/*
 Name of the identity cert secret (for volume mount and password)
 */}}
 {{- define "bitwarden.identityCertSecretName" -}}

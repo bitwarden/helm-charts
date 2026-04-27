@@ -77,6 +77,7 @@ Create a secret to set the following values.
 - SA_PASSWORD (if using the Bitwarden SQL pod)
 - globalSettings__sqlServer__connectionString (if using your own SQL server)
 - globalSettings__postgreSql__connectionString (if using PostgreSQL database)
+- globalSettings__distributedCache__redis__connectionString (if `general.distributedCache.redis.enabled` is true; required when running multiple replicas of the backend services)
 
 Here we document the process of creating the secret using the command line. However, you can also use a CSI secret provider class, which we document an example of under "Installing the Azure Key Vault CSI Driver" later in this README.
 
@@ -127,6 +128,32 @@ Examples of kubectl secret creation are provided below. One is for use with SQL 
 __*NOTE: These commands are recorded in your shell history. To avoid this, consider setting up a CSI secret provider class.*__
 
 Set `secrets.secretName` to the name of the secret created above.
+
+#### Distributed Cache (Redis)
+
+When running multiple replicas of the backend services (API, Identity, Admin, SSO, Notifications, Events, SCIM), an external Redis is required for distributed caching, rate-limit coordination, and the SignalR backplane. The chart does not deploy Redis — bring your own (e.g. AWS ElastiCache, Azure Cache for Redis, Google Memorystore, or a self-managed Redis).
+
+To enable, set the following in `values.yaml`:
+
+```yaml
+general:
+  distributedCache:
+    redis:
+      enabled: true
+      # Optional: override which Kubernetes Secret holds the connection string.
+      # Defaults to secrets.secretName when empty.
+      secretName: ""
+```
+
+Then add the connection string key to the referenced Secret:
+
+```shell
+kubectl create secret generic custom-secret -n bitwarden\
+    --from-literal=globalSettings__distributedCache__redis__connectionString="<redis-host>:6379,password=<password>,ssl=True,abortConnect=False" \
+    ...other keys as above
+```
+
+The same key can also be supplied via your CSI secret provider class.
 
 #### Custom Encryption Keys and Certificate
 

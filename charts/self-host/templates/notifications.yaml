@@ -99,6 +99,13 @@ spec:
         {{- with .Values.component.notifications.extraEnv }}
 {{ toYaml . | indent 10 }}
         {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         {{- with .Values.component.notifications.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}

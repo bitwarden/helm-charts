@@ -100,6 +100,13 @@ spec:
         {{- with .Values.component.scim.extraEnv }}
 {{ toYaml . | indent 10 }}
         {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /alive
