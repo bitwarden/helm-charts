@@ -155,6 +155,35 @@ kubectl create secret generic custom-secret -n bitwarden\
 
 The same key can also be supplied via your CSI secret provider class.
 
+#### Scaling backend services
+
+Once the distributed cache is enabled, the following backend deployments support horizontal scaling via a per-component `replicas` field:
+
+- `component.api.replicas`
+- `component.identity.replicas`
+- `component.admin.replicas`
+- `component.sso.replicas`
+- `component.events.replicas`
+- `component.scim.replicas`
+
+Each defaults to `1`. Example:
+
+```yaml
+general:
+  distributedCache:
+    redis:
+      enabled: true
+component:
+  api:
+    replicas: 3
+  identity:
+    replicas: 3
+```
+
+The chart will fail render with a clear error if any of these is set above `1` while `general.distributedCache.redis.enabled` is `false`, since coordinated session, token, and rate-limit state would otherwise diverge across pods.
+
+`notifications` is not yet covered by this scaling support — its SignalR backplane requires a separate Redis env var that will be wired in a follow-up. Other components (`web`, `icons`, `attachments`, `mssql`) remain single-replica via this chart.
+
 #### Custom Encryption Keys and Certificate
 
 By default, the chart generates encryption keys and an identity certificate. You may also provide your own if desired.

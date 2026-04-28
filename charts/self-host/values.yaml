@@ -240,6 +240,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -299,6 +302,9 @@ component:
       periodSeconds: 120
       failureThreshold: 5
       timeoutSeconds: 180
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -410,6 +416,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -524,6 +533,9 @@ component:
       periodSeconds: 120
       failureThreshold: 3
       timeoutSeconds: 60
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -622,6 +634,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -680,6 +695,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context

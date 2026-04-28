@@ -175,6 +175,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -425,6 +431,12 @@
               "required": [],
               "title": "readinessProbe",
               "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -888,6 +900,12 @@
               "required": [],
               "title": "readinessProbe",
               "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -1371,6 +1389,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -1769,6 +1793,12 @@
               "title": "podServiceAccount",
               "type": "string"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -2014,6 +2044,12 @@
               "required": [],
               "title": "readinessProbe",
               "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",

@@ -1,5 +1,6 @@
 {{- if .Values.component.scim.enabled }}
 ---
+{{- include "bitwarden.requireRedisForReplicas" (dict "name" "scim" "replicas" .Values.component.scim.replicas "redisEnabled" .Values.general.distributedCache.redis.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,7 +19,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.component.scim.replicas }}
   strategy:
     type: {{ .Values.component.scim.deploymentStrategy | quote }}
   selector:
