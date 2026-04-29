@@ -25,3 +25,7 @@ helm plugin install https://github.com/helm-unittest/helm-unittest
 # From a chart directory
 helm unittest .
 ```
+
+## Claude Code Tooling
+
+When you've identified a Claude convention worth codifying, refer to [Contributing Claude Context to This Repo](.claude/CONTRIBUTING.md) for guidance on where it belongs and how to contribute it.
