@@ -72,6 +72,9 @@ data:
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
   {{- end }}
 {{- end }}
+{{- if .Values.general.knownNetworks }}
+  globalSettings__knownNetworks: {{ .Values.general.knownNetworks | quote }}
+{{- end }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"

@@ -1,0 +1,25 @@
+suite: test configmap conditional settings
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-hook-configmap.yaml
+
+tests:
+  - it: should include globalSettings__knownNetworks when knownNetworks is set
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.knownNetworks: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+    asserts:
+      - equal:
+          path: data.globalSettings__knownNetworks
+          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+        documentIndex: 0
+
+  - it: should not include globalSettings__knownNetworks when knownNetworks is empty
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+    asserts:
+      - isNull:
+          path: data.globalSettings__knownNetworks
+        documentIndex: 0

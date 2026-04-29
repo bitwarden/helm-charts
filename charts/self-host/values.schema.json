@@ -449,7 +449,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "256Mi",
+                      "default": "384Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -466,7 +466,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -680,7 +680,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -697,7 +697,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -918,7 +918,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -935,7 +935,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1149,7 +1149,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1166,7 +1166,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1406,7 +1406,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "256Mi",
+                      "default": "384Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1423,7 +1423,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1637,7 +1637,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1654,7 +1654,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2062,7 +2062,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2079,7 +2079,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2294,7 +2294,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -2311,7 +2311,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "96Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -3097,6 +3097,12 @@
           "title": "ingress",
           "type": "object"
         },
+        "knownNetworks": {
+          "default": "",
+          "description": "Optional: Comma-separated list of CIDR ranges for trusted proxy networks.\nConfigures ASP.NET's forwarded headers middleware (X-Forwarded-For trust).\nExample: \"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16\"",
+          "title": "knownNetworks",
+          "type": "string"
+        },
         "labels": {
           "description": "Custom labels to add throughout the installation",
           "required": [],
@@ -3660,7 +3666,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "3.5.5",
+                  "default": "",
                   "required": [],
                   "title": "tag",
                   "type": [
@@ -3728,7 +3734,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "1.35.3",
+                  "default": "",
                   "required": [],
                   "title": "tag",
                   "type": [

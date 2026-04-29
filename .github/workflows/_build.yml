@@ -180,7 +180,7 @@ jobs:
         run: |
           helm package \
             --sign \
-            --key "DevOps Team" \
+            --key "BRE Team" \
             --keyring private.gpg \
             --passphrase-file .passphrase \
             "charts/${_CHART_NAME}"

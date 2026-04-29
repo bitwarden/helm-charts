@@ -164,6 +164,10 @@ general:
       # Key inside the secret. Override only if your secret uses a different key name.
       secretKey: "globalSettings__distributedCache__redis__connectionString"
 
+  # Optional: Comma-separated list of CIDR ranges for trusted proxy networks.
+  # Configures ASP.NET's forwarded headers middleware (X-Forwarded-For trust).
+  # Example: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  knownNetworks: ""
 
   # Refresh token variables https://bitwarden.com/help/environment-variables/#refresh-token-variables
   refreshTokens:
@@ -279,10 +283,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
       limits:
-        memory: "256Mi"
+        memory: "384Mi"
         cpu: "200m"
     # Liveness probe configuration
     livenessProbe:
@@ -341,10 +345,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -397,10 +401,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -455,10 +459,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -510,10 +514,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
       limits:
-        memory: "256Mi"
+        memory: "384Mi"
         cpu: "200m"
     # Liveness probe configuration
     livenessProbe:
@@ -572,10 +576,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -673,10 +677,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -735,10 +739,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "96Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -792,8 +796,9 @@ supportComponents:
       repository: alpine/openssl
       # @schema
       # type: [string, number]
+      # default: ""
       # @schema
-      tag: 3.5.5
+      tag: 3.5.6
   kubectl:
     image:
       # @schema
@@ -803,8 +808,9 @@ supportComponents:
       repository: alpine/kubectl
       # @schema
       # type: [string, number]
+      # default: ""
       # @schema
-      tag: 1.35.3
+      tag: 1.35.4
 
 # Data volume sizes for shared PVCs
 volume:
