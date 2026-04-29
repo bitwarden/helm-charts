@@ -810,7 +810,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 1.35.4
+      tag: 1.36.0
 
 # Data volume sizes for shared PVCs
 volume:
