@@ -175,6 +175,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -425,6 +431,12 @@
               "required": [],
               "title": "readinessProbe",
               "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -888,6 +900,12 @@
               "required": [],
               "title": "readinessProbe",
               "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -1371,6 +1389,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -1769,6 +1793,12 @@
               "title": "podServiceAccount",
               "type": "string"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -2014,6 +2044,12 @@
               "required": [],
               "title": "readinessProbe",
               "type": "object"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -2575,6 +2611,39 @@
           "description": "Disable account registration on web vault",
           "title": "disableUserRegistration",
           "type": "string"
+        },
+        "distributedCache": {
+          "description": "Distributed cache configuration.\nWhen enabled, Bitwarden services will use Redis for distributed caching.\nRequired when running multiple replicas of API, Identity, SSO, etc. for\nsession/token coordination and rate-limit state.\nThe chart does NOT deploy Redis -- provide your own (e.g. ElastiCache, Azure Cache for Redis, Memorystore).",
+          "properties": {
+            "redis": {
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Set to true to inject globalSettings__distributedCache__redis__connectionString\ninto all backend service deployments.",
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "secretKey": {
+                  "default": "globalSettings__distributedCache__redis__connectionString",
+                  "description": "Key inside the secret. Override only if your secret uses a different key name.",
+                  "title": "secretKey",
+                  "type": "string"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "Name of the Kubernetes Secret containing the connection string key.\nDefaults to secrets.secretName when empty.",
+                  "title": "secretName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "redis",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "distributedCache",
+          "type": "object"
         },
         "domain": {
           "default": "REPLACE",

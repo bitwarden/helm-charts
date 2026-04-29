@@ -148,6 +148,22 @@ general:
   # Uncomment but leave as an empty string if deploying offline or in an air-gap environment
   # pushRelayBaseUri: " "
 
+  # Distributed cache configuration.
+  # When enabled, Bitwarden services will use Redis for distributed caching.
+  # Required when running multiple replicas of API, Identity, SSO, etc. for
+  # session/token coordination and rate-limit state.
+  # The chart does NOT deploy Redis -- provide your own (e.g. ElastiCache, Azure Cache for Redis, Memorystore).
+  distributedCache:
+    redis:
+      # Set to true to inject globalSettings__distributedCache__redis__connectionString
+      # into all backend service deployments.
+      enabled: false
+      # Name of the Kubernetes Secret containing the connection string key.
+      # Defaults to secrets.secretName when empty.
+      secretName: ""
+      # Key inside the secret. Override only if your secret uses a different key name.
+      secretKey: "globalSettings__distributedCache__redis__connectionString"
+
   # Optional: Comma-separated list of CIDR ranges for trusted proxy networks.
   # Configures ASP.NET's forwarded headers middleware (X-Forwarded-For trust).
   # Example: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
@@ -228,6 +244,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -287,6 +306,9 @@ component:
       periodSeconds: 120
       failureThreshold: 5
       timeoutSeconds: 180
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -398,6 +420,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -512,6 +537,9 @@ component:
       periodSeconds: 120
       failureThreshold: 3
       timeoutSeconds: 60
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -610,6 +638,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -668,6 +699,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context

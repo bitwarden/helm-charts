@@ -1,4 +1,5 @@
 ---
+{{- include "bitwarden.requireRedisForReplicas" (dict "name" "identity" "replicas" .Values.component.identity.replicas "redisEnabled" .Values.general.distributedCache.redis.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +18,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.component.identity.replicas }}
   strategy:
     type: {{ .Values.component.identity.deploymentStrategy | quote }}
   selector:
@@ -112,6 +113,13 @@ spec:
                 name: {{ template "bitwarden.identityCertSecretName" . }}
                 key: globalSettings__identityServer__certificatePassword
           {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         {{- with .Values.component.identity.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}

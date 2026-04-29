@@ -280,6 +280,28 @@ Name of the keys secret (generated or provided by the user)
 {{- end -}}
 
 {{/*
+Name of the secret holding the Redis distributed cache connection string.
+Defaults to secrets.secretName when general.distributedCache.redis.secretName is empty.
+*/}}
+{{- define "bitwarden.distributedCacheSecretName" -}}
+{{- default .Values.secrets.secretName .Values.general.distributedCache.redis.secretName -}}
+{{- end -}}
+
+{{/*
+Fail render when a backend component is configured with replicas > 1
+while general.distributedCache.redis.enabled is false. Multiple replicas
+of api/identity/admin/sso/events/scim require Redis for session, token,
+and rate-limit coordination.
+
+Args (dict): name, replicas, redisEnabled
+*/}}
+{{- define "bitwarden.requireRedisForReplicas" -}}
+{{- if and (gt (int .replicas) 1) (not .redisEnabled) -}}
+{{- fail (printf "component.%s.replicas is %v but general.distributedCache.redis.enabled is false. Running more than one replica of api/identity/admin/sso/events/scim requires Redis distributed cache for session, token, and rate-limit coordination. Set general.distributedCache.redis.enabled=true and provide a connection string secret." .name .replicas) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Name of the identity cert secret (for volume mount and password)
 */}}
 {{- define "bitwarden.identityCertSecretName" -}}
