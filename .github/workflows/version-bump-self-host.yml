@@ -16,7 +16,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      id-token: write
     steps:
       - name: Validate version input
         uses: bitwarden/gh-actions/version-check@main
@@ -24,42 +23,17 @@ jobs:
           version: ${{ inputs.version_number }}
           validation_type: semver
 
-      - name: Log in to Azure
-        uses: bitwarden/gh-actions/azure-login@main
-        with:
-          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          client_id: ${{ secrets.AZURE_CLIENT_ID }}
-
-      - name: Retrieve secrets
-        id: retrieve-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@main
-        with:
-          keyvault: "gh-org-bitwarden"
-          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
-
-      - name: Log out from Azure
-        uses: bitwarden/gh-actions/azure-logout@main
-
-      - name: Generate GH App token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        id: app-token
-        with:
-          app-id: ${{ steps.retrieve-secrets.outputs.BW-GHAPP-ID }}
-          private-key: ${{ steps.retrieve-secrets.outputs.BW-GHAPP-KEY }}
-
       - name: Checkout Branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: true
           ref: main
-          token: ${{ steps.app-token.outputs.token }}
         
       - name: Set up Git client
         id: create-branch
         run: |
-          git config --global user.name 'bw-ghapp[bot]'
-          git config --global user.email '178206702+bw-ghapp[bot]@users.noreply.github.com'
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           NAME=version_bump_${GITHUB_REF_NAME}_$(date +"%Y-%m-%d")
           git switch -c "$NAME"
@@ -122,7 +96,7 @@ jobs:
         if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
         id: create-pr
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
           PR_BRANCH: ${{ steps.create-branch.outputs.name }}
           TITLE: "Bump version to ${{ inputs.version_number }}"
           VERSION: ${{ inputs.version_number }}
@@ -143,17 +117,3 @@ jobs:
               ## Objective
               Automated version bump to ${VERSION}")
           echo "pr_number=${PR_URL##*/}" >> "$GITHUB_OUTPUT"
-
-      - name: Approve PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr review "$PR_NUMBER" --approve
-
-      - name: Merge PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
