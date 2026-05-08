@@ -778,10 +778,6 @@ component:
 supportComponents:
   dbMigrator:
     image:
-      # @schema
-      # deprecated: true
-      # @schema
-      name: ""
       repository: ghcr.io/bitwarden/mssqlmigratorutility
       # @schema
       # type: [string, number]
@@ -789,10 +785,6 @@ supportComponents:
       tag: ""
   certGenerator:
     image:
-      # @schema
-      # deprecated: true
-      # @schema
-      name: ""
       repository: alpine/openssl
       # @schema
       # type: [string, number]
@@ -801,10 +793,6 @@ supportComponents:
       tag: 3.5.6
   kubectl:
     image:
-      # @schema
-      # deprecated: true
-      # @schema
-      name: ""
       repository: alpine/kubectl
       # @schema
       # type: [string, number]
@@ -978,10 +966,6 @@ database:
   tolerations: []
   # Image repository, tag, and pull policy
   image:
-    # @schema
-    # deprecated: true
-    # @schema
-    name: ""
     repository: mcr.microsoft.com/mssql/server
     tag: 2022-CU22-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
