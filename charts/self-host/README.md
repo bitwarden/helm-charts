@@ -463,7 +463,7 @@ database:
 
 ## Gateway API
 
-Gateway API (`gateway.networking.k8s.io/v1`) is the recommended replacement for the deprecated Kubernetes Ingress resource. The chart renders an `HTTPRoute` when `general.gateway.enabled` is set to `true`. The `Gateway` resource itself is **not** managed by this chart — you (or your platform team) create and own it, and the chart's `HTTPRoute` attaches to it via `parentRefs`. TLS terminates on the Gateway, not on the HTTPRoute.
+Gateway API (`gateway.networking.k8s.io/v1`) is recommended to use, opposed to the Ingress API. This chart renders an `HTTPRoute` when `general.gateway.enabled` is set to `true`. The `Gateway` resource itself is **not** managed by this chart — you (or your platform team) create and own it, and the chart's `HTTPRoute` attaches to it via `parentRefs`. TLS terminates on the Gateway, not on the HTTPRoute.
 
 ### Prerequisites
 
