@@ -2367,12 +2367,6 @@
         "image": {
           "description": "Image repository, tag, and pull policy",
           "properties": {
-            "name": {
-              "default": "",
-              "deprecated": true,
-              "required": [],
-              "title": "name"
-            },
             "repository": {
               "default": "mcr.microsoft.com/mssql/server",
               "title": "repository",
@@ -3654,12 +3648,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "alpine/openssl",
                   "title": "repository",
@@ -3688,12 +3676,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "ghcr.io/bitwarden/mssqlmigratorutility",
                   "title": "repository",
@@ -3722,12 +3704,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "alpine/kubectl",
                   "title": "repository",

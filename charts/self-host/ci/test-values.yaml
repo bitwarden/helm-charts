@@ -109,7 +109,7 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/admin
       tag: ""
@@ -128,7 +128,7 @@ component:
   api:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/api
       tag: ""
@@ -167,7 +167,7 @@ component:
   attachments:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/attachments
       tag: ""
@@ -186,7 +186,7 @@ component:
   events:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/events
       tag: ""
@@ -205,7 +205,7 @@ component:
   icons:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/icons
       tag: ""
@@ -224,7 +224,7 @@ component:
   identity:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/identity
       tag: ""
@@ -243,7 +243,7 @@ component:
   notifications:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/notifications
       tag: ""
@@ -262,7 +262,7 @@ component:
   scim:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/scim
       tag: ""
@@ -281,7 +281,7 @@ component:
   sso:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/sso
       tag: ""
@@ -300,7 +300,7 @@ component:
   web:
     # Additional deployment labels
     labels: {}
-    # Image name, tag, and pull policy
+    # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/web
       tag: ""
@@ -406,7 +406,7 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
-  # Image name, tag, and pull policy
+  # Image repository, tag, and pull policy
   image:
     repository: mcr.microsoft.com/mssql/server
     tag: 2022-CU22-ubuntu-22.04
