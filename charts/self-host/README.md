@@ -3,6 +3,8 @@
 
 The purpose of this chart is to enable the deployment of [Bitwarden](https://bitwarden.com/) to different Kubernetes environments. This chart is built for usage across multiple Kubernetes hosting scenarios.
 
+> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource is deprecated and will be removed in a future major release. New deployments should use **Gateway API** instead — see the [Gateway API](#gateway-api) section. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; existing users upgrading from 1.x must explicitly set it to `true` in their values to keep using Ingress. The Ingress examples in this README are preserved as a reference for users mid-migration.
+
 ## Requirements
 
 - Kubectl
@@ -39,11 +41,6 @@ helm show values bitwarden/self-host > my-values.yaml
 Edit the `my-values.yaml` file and fill out the values. Required values that must be set:
 
 - general.domain
-- general.ingress.enabled (set to disbled if you are creating your own ingress)
-- general.ingress.className (nginx example provided)
-- general.ingress.annotations (nginx example provided)
-- general.ingress.paths (nginx example provided)
-- general.ingress.cert.tls.name
 - general.email.replyToEmail
 - general.email.smtpHost
 - general.emal.smtpPort
@@ -52,7 +49,14 @@ Edit the `my-values.yaml` file and fill out the values. Required values that mus
 - general.databaseProvider (set to "postgres" if using PostgreSQL, defaults to "mssql")
 - database.enabled (set to "false" if using an external SQL server or PostgreSQL)
 
-Note that default values for Nginx have been setup for the ingress in the values.yaml file. Some other ingress controller examples are provided later in this document.
+For routing, choose **one** of the following:
+
+- **Gateway API (recommended):** Set `general.gateway.enabled: true` and configure `general.gateway.parentRefs`. See the [Gateway API](#gateway-api) section below.
+- **Ingress (deprecated):** Set `general.ingress.enabled: true` and configure `general.ingress.className`, `general.ingress.annotations`, `general.ingress.paths`, and `general.ingress.tls.name`. See the deprecation note below.
+
+> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource is deprecated and will be removed in a future major release. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
+
+Default Nginx values for the (deprecated) Ingress are still present in `values.yaml`. Some other ingress controller examples are provided later in this document and remain as reference material for users mid-migration.
 
 #### SCIM
 
@@ -289,6 +293,8 @@ rawManifests:
   postInstall: []
 ```
 
+> **DEPRECATED (chart 2.0.0):** The example below predates Gateway API support and is preserved as reference material. The Kubernetes `Ingress` resource is deprecated; for new deployments prefer the [Gateway API](#gateway-api) section. Note that as of chart 2.0.0, `general.ingress.enabled` defaults to `false`, so the `enabled: false` step the example refers to is now the default.
+
 The example below shows how you can use the raw manifests to install Traefik's IngressRoute instead of using the Kubernetes Ingress controller. Note that you will want to disable the ingress controller under `general.ingress.enabled` to use this.
 
 ```yaml
@@ -415,6 +421,8 @@ Minimal required to get a running installation:
 
 #### Argo CD support
 
+> **Upgrading from chart 1.x to 2.0.0 with Argo CD:** Chart 2.0.0 flips the default of `general.ingress.enabled` from `true` to `false`. On the next sync after the upgrade, Argo CD will see the Ingress resource as `OutOfSync` and — if auto-prune is enabled — delete it, leaving Bitwarden unreachable. Either set `general.ingress.enabled: true` explicitly in your values before bumping the chart version, or complete the migration to Gateway API first (see the [Gateway API](#gateway-api) section). The same risk applies to Flux `HelmRelease` reconciles.
+
 To deploy the chart using Argo CD, you must use Argo CD sync phases and hooks to deploy resources in order. You can do this by setting the Argo CD annotations on the jobs and database resources in `my-values.yaml` and disabling the cleanup job.
 
 > Refer to the [Argo CD documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/) for details about sync phases and hooks.
@@ -453,6 +461,43 @@ database:
         argocd.argoproj.io/sync-wave: "-1"
 ```
 
+## Gateway API
+
+Gateway API (`gateway.networking.k8s.io/v1`) is the recommended replacement for the deprecated Kubernetes Ingress resource. The chart renders an `HTTPRoute` when `general.gateway.enabled` is set to `true`. The `Gateway` resource itself is **not** managed by this chart — you (or your platform team) create and own it, and the chart's `HTTPRoute` attaches to it via `parentRefs`. TLS terminates on the Gateway, not on the HTTPRoute.
+
+### Prerequisites
+
+- A Gateway API controller installed in the cluster (e.g. Istio, Envoy Gateway, Contour, NGINX Gateway Fabric).
+- A `Gateway` resource you manage that listens for traffic on your Bitwarden domain.
+
+### Minimal values
+
+```yaml
+general:
+  domain: "vault.example.com"
+  ingress:
+    # Ingress is deprecated; explicitly off (this is also the default as of chart 2.0.0)
+    enabled: false
+  gateway:
+    enabled: true
+    parentRefs:
+      - name: my-gateway
+        namespace: gateway-system
+        sectionName: https
+```
+
+See `general.gateway.*` in `values.yaml` for the full configuration surface, including per-service path overrides, annotations, and labels.
+
+### Migration from Ingress
+
+1. Stand up a `Gateway` resource and verify it accepts traffic for your Bitwarden domain.
+2. Add `general.gateway.enabled: true` and `general.gateway.parentRefs` to your `my-values.yaml`. Leave `general.ingress.enabled: true` for now so traffic is not interrupted.
+3. Run `helm upgrade`. The chart will render both an `Ingress` and an `HTTPRoute` in parallel during cutover.
+4. Repoint DNS (or your external load balancer) from the Ingress address to the Gateway address.
+5. Once traffic is flowing through the Gateway, set `general.ingress.enabled: false` (or remove the override entirely) and run `helm upgrade` again. The Ingress resource will be removed.
+
+---
+
 ## Example Deployment on AKS
 
 Below is an example of deploying this chart on AKS using various ingress controllers and cert-manager to provision the certificate from LetsEncrypt.
@@ -466,6 +511,8 @@ kubectl create ns bitwarden
 ### Deploy the ingress controller
 
 #### Nginx
+
+> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource shown in this section is deprecated and will be removed in a future major release. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 This is the simplest ingress to setup and has been provided as the default. You will need the ingress controller installed if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
 
@@ -490,6 +537,8 @@ general:
 These annotations can be used as-is.
 
 #### Azure Application Gateway
+
+> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource shown in this section is deprecated and will be removed in a future major release. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 Azure customers might want to use an Azure Application Gateway as the ingress controller for their AKS cluster. You will want to [enable the Application Gateway ingress controller for your cluster](https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing) before making these configuration changes.
 
@@ -864,11 +913,13 @@ oc project bitwarden
 
 ### Setup ingress
 
+> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource is deprecated and will be removed in a future major release. This OpenShift example uses Routes (not Ingress), so it is unaffected functionally; the explicit `general.ingress.enabled: false` step below is now the default as of chart 2.0.0. For an alternative based on Gateway API, see the [Gateway API](#gateway-api) section.
+
 We will use OpenShift Routes for our ingress in this example. Alternatively, ingress operators could be used.
 
 #### Disable default ingress
 
-In your `my-values.yaml`, disable the default ingress.
+In your `my-values.yaml`, disable the default ingress. As of chart 2.0.0 this is the default, but the explicit setting is shown for clarity.
 
 ```yaml
 general:
@@ -1213,6 +1264,8 @@ helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
 ```
 
 #### Update the ingress section in my-values.yaml
+
+> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource shown in this section is deprecated and will be removed in a future major release. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 The following settings will create an Nginx ingress. These settings are specific to the Nginx ingress controller annotations we detailed earlier.
 
