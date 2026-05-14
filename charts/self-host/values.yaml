@@ -173,7 +173,7 @@ general:
   refreshTokens:
     # Set to true to enable refresh tokens.  Recommended for production environments.
     enabled: false
-    applyAbsoluteRefreshTokenOnRefreshToken: "true"
+    applyAbsoluteExpirationOnRefreshToken: "true"
     absoluteRefreshTokenLifetimeSeconds: "30"
     slidingRefreshTokenLifetimeSeconds: ""
 

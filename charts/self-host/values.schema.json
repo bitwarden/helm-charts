@@ -3129,9 +3129,9 @@
               "title": "absoluteRefreshTokenLifetimeSeconds",
               "type": "string"
             },
-            "applyAbsoluteRefreshTokenOnRefreshToken": {
+            "applyAbsoluteExpirationOnRefreshToken": {
               "default": "true",
-              "title": "applyAbsoluteRefreshTokenOnRefreshToken",
+              "title": "applyAbsoluteExpirationOnRefreshToken",
               "type": "string"
             },
             "enabled": {
