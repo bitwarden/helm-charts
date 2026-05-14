@@ -5,3 +5,17 @@ Bitwarden Self-Host Helm Chart {{ $chartVersion }}
 =====================================================
 
 Bitwarden been successfully deployed!
+
+{{- if .Values.general.ingress.enabled }}
+
+================================ DEPRECATION WARNING ================================
+You have `general.ingress.enabled: true` set.
+
+The Kubernetes Ingress resource is DEPRECATED as of chart 2.0.0 and will be removed from this chart
+in a future major release.
+Action: migrate to Gateway API by setting `general.gateway.enabled: true` and
+configuring `general.gateway.parentRefs`. See the chart README for migration
+guidance:
+https://github.com/bitwarden/helm-charts/tree/main/charts/self-host#gateway-api
+=====================================================================================
+{{- end }}

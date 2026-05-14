@@ -2877,8 +2877,9 @@
               "type": "string"
             },
             "enabled": {
-              "default": true,
-              "description": "DEPRECATED: This Ingress resource is deprecated and will be removed in a future release.\nPlease migrate to Gateway API.",
+              "default": false,
+              "deprecated": true,
+              "description": "DEPRECATED (since chart 2.0.0): The Kubernetes Ingress resource is deprecated and will be\nremoved in a future major release. Migrate to Gateway API by setting\n`general.gateway.enabled: true` below. See the chart README (\"Gateway API\" section)\nfor migration guidance.",
               "title": "enabled",
               "type": "boolean"
             },
