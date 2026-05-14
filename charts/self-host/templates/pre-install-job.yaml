@@ -1,10 +1,15 @@
 {{- if .Values.secrets.identityCertificate.generate }}
-{{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
-{{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
-{{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
+{{- $identityCertSecretName := printf "%s-identity-cert" .Release.Name }}
+{{- $identityCertPasswordSecretName := printf "%s-identity-cert-password" .Release.Name }}
+{{- $identityCertPasswordKey := "globalSettings__identityServer__certificatePassword" }}
 
-{{- if $currentIdentityCert }}
-{{- $identityCertPasswordTxtValue := index $currentIdentityCert.data "globalSettings__identityServer__certificatePassword" | b64dec }}
+{{- $identityCertPasswordTxtValue := randAlphaNum 32 }}
+
+{{- $currentIdentityCert := lookup "v1" "Secret" .Release.Namespace $identityCertSecretName }}
+{{- $existingPasswordSecret := lookup "v1" "Secret" .Release.Namespace $identityCertPasswordSecretName }}
+
+{{- if and $currentIdentityCert $existingPasswordSecret $existingPasswordSecret.data (hasKey $existingPasswordSecret.data $identityCertPasswordKey) }}
+{{-   $identityCertPasswordTxtValue = index $existingPasswordSecret.data $identityCertPasswordKey | b64dec }}
 {{- end }}
 ---
 apiVersion: batch/v1
