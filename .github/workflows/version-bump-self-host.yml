@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: "Dry run — creates PR but does not merge it"
+        description: "Dry run — skips committing to main"
         required: false
         default: false
         type: boolean
