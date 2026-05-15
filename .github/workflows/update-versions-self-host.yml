@@ -2,246 +2,26 @@ name: Update Versions - Self Host
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run — creates PR but does not merge it"
+        required: false
+        default: false
+        type: boolean
 
-env:
-  _BRANCH: main
+permissions: {}
 
 jobs:
-  setup:
-    name: Setup
-    runs-on: ubuntu-22.04
-    outputs:
-      core_version: ${{ steps.get-core.outputs.version }}
-      core_version_update: ${{ steps.core-update.outputs.update }}
-      web_version: ${{ steps.get-web.outputs.version }}
-      web_version_update: ${{ steps.web-update.outputs.update }}
+  trigger:
+    name: Trigger update versions
+    runs-on: ubuntu-24.04
     permissions:
-      contents: read
-    steps:
-      - name: Checkout Branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: main
-          persist-credentials: false
-
-      - name: Get Latest Core Version
-        id: get-core
-        uses: bitwarden/gh-actions/get-release-version@main
-        with:
-          repository: bitwarden/server
-          trim: true
-
-      - name: Check if Core Version needs updating
-        id: core-update
-        env:
-          LATEST_CORE_VERSION: ${{ steps.get-core.outputs.version }}
-        run: |
-          CORE_VERSION=$(sed -r -n '/define "bitwarden.coreVersionDefault"/!b;n;'\
-          's/\{\{- "([0-9]+\.[0-9]+\.[0-9]+)" -\}\}/\1/p' helpers.tpl)
-
-          echo "Core Version: $CORE_VERSION"
-          echo "Latest Core Version: $LATEST_CORE_VERSION"
-          if [ "$CORE_VERSION" != "$LATEST_CORE_VERSION" ]; then
-            echo "Needs Core update!"
-            echo "update=1" >> "$GITHUB_OUTPUT"
-          else
-            echo "update=0" >> "$GITHUB_OUTPUT"
-          fi
-        working-directory: charts/self-host/templates
-
-      - name: Get Latest Web Version
-        id: get-web
-        uses: bitwarden/gh-actions/get-release-version@main
-        with:
-          repository: bitwarden/clients
-          monorepo: true
-          monorepo-project: web
-          trim: true
-
-      - name: Check if Web Version needs updating
-        id: web-update
-        env:
-          LATEST_WEB_VERSION: ${{ steps.get-web.outputs.version }}
-        run: |
-          WEB_VERSION=$(sed -r -n '/define "bitwarden.webVersionDefault"/!b;n;'\
-          's/\{\{- "([0-9]+\.[0-9]+\.[0-9]+)" -\}\}/\1/p' helpers.tpl)
-
-          echo "Web Version: $WEB_VERSION"
-          echo "Latest Web Version: $LATEST_WEB_VERSION"
-          if [ "$WEB_VERSION" != "$LATEST_WEB_VERSION" ]; then
-            echo "Needs Web update!"
-            echo "update=1" >> "$GITHUB_OUTPUT"
-          else
-            echo "update=0" >> "$GITHUB_OUTPUT"
-          fi
-        working-directory: charts/self-host/templates
-
-      - name: Verify if image versions are on GHCR
-        id: verify-versions
-        env:
-          COREVERSION: ${{ steps.get-core.outputs.version }}
-          WEBVERSION: ${{ steps.get-web.outputs.version }}
-        run: |
-          echo "Checking..."
-
-          coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
-
-          test_image() {
-              image=$1
-              version=$2
-              tag=$(skopeo list-tags "docker://ghcr.io/bitwarden/$image" | jq '.Tags[]' | grep "$version")
-              if [[ -z "$tag" ]]; then
-                  echo "$image - $version - NOT FOUND!"
-                  echo "Stopping..."
-                  exit 1
-              else
-                  echo "$image - $tag - FOUND"
-              fi
-          }
-
-          echo "Core Images ($COREVERSION)..."
-
-          for key in "${!coreimages[@]}"
-          do
-              image=${coreimages[$key]}
-              test_image "$image" "$COREVERSION"
-          done
-
-          echo "Web Image ($WEBVERSION)..."
-
-          test_image "web" "$WEBVERSION"
-
-  update-versions:
-    name: "Update Versions"
-    if: |
-      needs.setup.outputs.core_version_update == 1 ||
-      needs.setup.outputs.web_version_update == 1
-    runs-on: ubuntu-22.04
-    needs: setup
-    environment: Production
-    permissions:
-      contents: write
-      pull-requests: write
       id-token: write
     steps:
-      - name: Log in to Azure
-        uses: bitwarden/gh-actions/azure-login@main
+      - name: Trigger update versions
+        uses: bitwarden/gh-actions/trigger-actions@main
         with:
-          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          client_id: ${{ secrets.AZURE_CLIENT_ID }}
-
-      - name: Get Azure Key Vault secrets
-        id: get-kv-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@main
-        with:
-          keyvault: gh-org-bitwarden
-          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
-
-      - name: Log out from Azure
-        uses: bitwarden/gh-actions/azure-logout@main
-
-      - name: Generate GH App token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        id: app-token
-        with:
-          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
-          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-      
-      - name: Checkout Branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: true
-          ref: main
-          token:  ${{ steps.app-token.outputs.token }}
-    
-      - name: Setup git
-        run: |
-          git config --local user.name "bw-ghapp[bot]"
-          git config --local user.email "178206702+bw-ghapp[bot]@users.noreply.github.com"
-
-      - name: Create version branch
-        id: create-branch
-        run: |
-          NAME=version_bump_${GITHUB_REF_NAME}_$(date +"%Y-%m-%d")
-          git switch -c "$NAME"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
-
-      - name: Update Core Version
-        env:
-          VERSION: ${{ needs.setup.outputs.core_version }}
-        run: sed -i '/define "bitwarden.coreVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
-        working-directory: charts/self-host/templates
-
-      - name: Update Web Version
-        env:
-          VERSION: ${{ needs.setup.outputs.web_version }}
-        run: sed -i '/define "bitwarden.webVersionDefault"/!b;n;c{{- "'$VERSION'" -}}' helpers.tpl
-        working-directory: charts/self-host/templates
-
-      - name: Update Chart appVersion
-        env:
-          VERSION: ${{ needs.setup.outputs.core_version }}
-        run: "sed -i -e 's/appVersion:.*/appVersion: '$VERSION'/' Chart.yaml"
-        working-directory: charts/self-host
-
-      - name: Check if version changed
-        id: version-changed
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changes_to_commit=TRUE" >> "$GITHUB_OUTPUT"
-          else
-            echo "changes_to_commit=FALSE" >> "$GITHUB_OUTPUT"
-            echo "No changes to commit!";
-          fi
-
-      - name: Commit files
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        run: git commit -m "Updated core and web versions" -a
-
-      - name: Push changes
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          PR_BRANCH: ${{ steps.create-branch.outputs.name }}
-        run: git push -u origin "$PR_BRANCH"
-
-      - name: Create versions PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        id: create-pr
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_BRANCH: ${{ steps.create-branch.outputs.name }}
-          TITLE: "Update core and web versions"
-        run: |
-          PR_URL=$(gh pr create --title "$TITLE" \
-            --base "$BASE_BRANCH" \
-            --head "$PR_BRANCH" \
-            --label "automated pr" \
-            --body "
-              ## Type of change
-              - [ ] Bug fix
-              - [ ] New feature development
-              - [ ] Tech debt (refactoring, code cleanup, dependency upgrades, etc)
-              - [ ] Build/deploy pipeline
-              - [X] Other
-
-              ## Objective
-              Automated version updates to core and web versions in charts/self-host/templates/helpers.tpl.
-              Automated version update to appVersion in charts/self-host/Chart.yaml")
-          echo "pr_number=${PR_URL##*/}" >> "$GITHUB_OUTPUT"
-
-      - name: Approve PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr review "$PR_NUMBER" --approve
-
-      - name: Merge PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ steps.create-pr.outputs.pr_number }}
-        run: gh pr merge "$PR_NUMBER" --squash --auto --delete-branch
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: helm-charts-update-versions
