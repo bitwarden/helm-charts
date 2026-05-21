@@ -105,6 +105,12 @@
               "title": "livenessProbe",
               "type": "object"
             },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -357,6 +363,12 @@
               "title": "livenessProbe",
               "type": "object"
             },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -599,6 +611,12 @@
               "title": "livenessProbe",
               "type": "object"
             },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -829,6 +847,12 @@
               },
               "required": [],
               "title": "livenessProbe",
+              "type": "object"
+            },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
               "type": "object"
             },
             "nodeSelector": {
@@ -1066,6 +1090,12 @@
               },
               "required": [],
               "title": "livenessProbe",
+              "type": "object"
+            },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
               "type": "object"
             },
             "nodeSelector": {
@@ -1314,6 +1344,12 @@
               "title": "livenessProbe",
               "type": "object"
             },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -1556,6 +1592,12 @@
               "title": "livenessProbe",
               "type": "object"
             },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -1761,6 +1803,12 @@
               "description": "Additional deployment labels",
               "required": [],
               "title": "labels",
+              "type": "object"
+            },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
               "type": "object"
             },
             "nodeSelector": {
@@ -1973,6 +2021,12 @@
               },
               "required": [],
               "title": "livenessProbe",
+              "type": "object"
+            },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
               "type": "object"
             },
             "nodeSelector": {
@@ -2213,6 +2267,12 @@
               "title": "livenessProbe",
               "type": "object"
             },
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "nodeSelector": {
               "description": "Optionally place deployment on specifc nodes",
               "required": [],
@@ -2386,6 +2446,12 @@
           "description": "Labels to add to the MSSQL deployment",
           "required": [],
           "title": "labels",
+          "type": "object"
+        },
+        "affinity": {
+          "description": "Optionally place deployment on specifc nodes",
+          "required": [],
+          "title": "affinity",
           "type": "object"
         },
         "nodeSelector": {
@@ -3104,8 +3170,14 @@
           "title": "labels",
           "type": "object"
         },
+        "affinity": {
+          "description": "affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "nodeSelector": {
-          "description": "nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
+          "description": "affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
