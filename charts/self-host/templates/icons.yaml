@@ -38,12 +38,12 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
-      {{- if or .Values.component.icons.nodeSelector .Values.general.nodeSelector }}
-      nodeSelector:
-        {{- if .Values.component.icons.nodeSelector }}
-        {{ toYaml .Values.component.icons.nodeSelector | nindent 8 }}
+      {{- if or .Values.component.icons.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.icons.affinity }}
+        {{ toYaml .Values.component.icons.affinity | nindent 8 }}
         {{- else }}
-        {{ toYaml .Values.general.nodeSelector | nindent 8 }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
         {{- end }}
       {{- end }}
       {{- if or .Values.component.icons.tolerations .Values.general.tolerations }}
