@@ -1,10 +1,10 @@
-suite: test Ingress (deprecated)
+suite: test Ingress
 templates:
   - templates/helpers.tpl
   - templates/ingress.yaml
 
 tests:
-  - it: should not create Ingress by default (deprecated, opt-in only)
+  - it: should not create Ingress by default (opt-in only)
     template: templates/ingress.yaml
     asserts:
       - hasDocuments:

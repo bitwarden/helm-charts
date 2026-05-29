@@ -1,5 +1,5 @@
 # CI test values exercising the recommended Gateway API path.
-# Mirrors ci/test-values.yaml but routes via HTTPRoute instead of the deprecated Ingress.
+# Mirrors ci/test-values.yaml but routes via HTTPRoute instead of the non-default Ingress.
 # Optional - Override the chart name if desired
 fullnameOverride: ""
 nameOverride: ""
@@ -8,7 +8,7 @@ general:
   # Domain name for the service
   domain: "bitwarden.localhost"
   ingress:
-    # Deprecated Ingress is explicitly disabled for this CI path.
+    # Non-default Ingress is explicitly disabled for this CI path.
     enabled: false
   gateway:
     enabled: true
