@@ -10,12 +10,15 @@ general:
   #  - Requires globalSettings__postgreSql__connectionString to exist in the configured secret.
   databaseProvider: "mssql"
   ingress:
-    # DEPRECATED (since chart 2.0.0): The Kubernetes Ingress resource is deprecated and will be
-    # removed in a future major release. Migrate to Gateway API by setting
-    # `general.gateway.enabled: true` below. See the chart README ("Gateway API" section)
-    # for migration guidance.
+    # Ingress is supported but is no longer the recommended default for this chart.
+    # Gateway API is the preferred option for new deployments — set
+    # `general.gateway.enabled: true` below. See the chart README ("Gateway API" section).
+    #
+    # NOTE: This chart's default ingress controller is ingress-nginx (className: "nginx"),
+    # which the upstream Kubernetes project retired in March 2026 (no further releases,
+    # bug fixes, or security patches). If you keep using Ingress, plan to migrate to
+    # Gateway API or another maintained ingress controller.
     # @schema
-    # deprecated: true
     # type: boolean
     # default: false
     # @schema
