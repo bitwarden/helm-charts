@@ -39,6 +39,14 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- if or .Values.component.admin.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.admin.affinity }}
+        {{ toYaml .Values.component.admin.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.admin.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.admin.nodeSelector }}
