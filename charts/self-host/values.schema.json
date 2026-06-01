@@ -2862,6 +2862,14 @@
           "title": "gateway",
           "type": "object"
         },
+        "imagePullSecrets": {
+          "description": "Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.",
+          "items": {
+            "required": []
+          },
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
         "ingress": {
           "properties": {
             "annotations": {

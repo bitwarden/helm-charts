@@ -147,6 +147,8 @@ general:
   # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
   nodeSelector: {}
   tolerations: []
+  # Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.
+  imagePullSecrets: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
