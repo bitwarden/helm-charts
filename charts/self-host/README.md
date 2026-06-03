@@ -898,6 +898,17 @@ kubectl get ingress -n bitwarden
 
 The public IP will be found on the Overview tab of the Application Gateway service in the Azure Portal.
 
+#### AWS ALB Deployments
+
+Find the ALB address to point your DNS record at by running:
+
+```shell
+kubectl get ingress -n bitwarden
+```
+
+Create a CNAME record for your domain pointing at the `ADDRESS` shown (the ALB DNS name).
+Once DNS resolves, browse to `https://REPLACEME.com` — HTTP requests are redirected to HTTPS automatically.
+
 ## Example Deployment on OpenShift
 
 This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform. We will provide some basic pointers.
@@ -1232,7 +1243,8 @@ Follow the instructions above for creating the namespace.
 
 ### Setup Nginx ingress
 
-The ALB ingress is not currently recommended since it does not support path rewrites with path-based routing. This example uses Nginx, but Traefik could also be used here.
+This example uses Nginx, but Traefik could also be used here. 
+AWS Load Balancer Controller v2.14+ is supported using rewrites with the `alb.ingress.kubernetes.io/transforms.<serviceName>` annotation, see [Setup AWS ALB ingress](#setup-aws-alb-ingress) below.
 
 #### Install the Nginx Ingress Controller
 
@@ -1320,6 +1332,148 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 ```
+
+### Setup AWS ALB ingress
+
+#### Install the AWS Load Balancer Controller
+
+Follow the [AWS Load Balancer Controller installation guide](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/).
+A few requirements specific to this setup:
+
+- Use controller **v2.14 or newer** — the `transforms` (URL rewrite) annotation is ignored by
+  older versions, so prefix-stripped routes such as `/api` would return `404`.
+- Tag the public subnets the internet-facing ALB should use with
+  `kubernetes.io/role/elb=1` (see
+  [subnet discovery](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/subnet_discovery/)).
+- Create (or import) an **AWS Certificate Manager certificate** for your domain in the ALB's
+  region. It must be `ISSUED`; you will reference its ARN below. Bitwarden requires HTTPS, so
+  this is not optional.
+
+#### Update the ingress section in my-values.yaml
+
+The following settings create an internet-facing ALB that terminates TLS with your ACM
+certificate, redirects HTTP to HTTPS, and uses `transforms` to strip path prefixes for the
+services that serve from root. Replace `REPLACEME.com` and the `certificate-arn` value.
+
+```yaml
+general:
+  domain: "REPLACEME.com"
+
+  ingress:
+    enabled: true
+    # Route through the AWS Load Balancer Controller.
+    className: "alb"
+
+    annotations:
+      # Public ALB, routing straight to pod IPs (no NodePort needed).
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      # HTTPS is required by Bitwarden (the server advertises https:// service URLs and the
+      # web vault needs a secure context for Web Crypto). HTTP:80 is kept only to redirect to 443.
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      # ARN of your ACM certificate (must be ISSUED, in the ALB's region).
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:REPLACEME:REPLACEME:certificate/REPLACEME"
+
+      # Health checks: all Bitwarden .NET services expose /alive on port 5000 (returns 200);
+      # the web (static) service does not, so accept 404 too. traffic-port (5000) is the default.
+      alb.ingress.kubernetes.io/healthcheck-path: "/alive"
+      alb.ingress.kubernetes.io/success-codes: "200-404"
+
+      # URL rewrites — strip the path prefix before forwarding, for services whose backend
+      # serves from root (this replaces the Nginx rewrite-target). The annotation suffix must
+      # equal the backend serviceName (release name + "self-host" + component). Services that
+      # keep their prefix (sso, identity, admin, web) get NO transform.
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-api: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/api/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-icons: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/icons/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-notifications: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/notifications/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-events: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/events/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-attachments: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/attachments/(.+)$","replace":"/$1"}]}}]
+
+    tls:
+      # TLS is terminated at the ALB via the certificate-arn above, so no in-cluster
+      # secret / cluster issuer is needed.
+      name: ""
+      clusterIssuer: ""
+
+    # Override the chart's Nginx-style regex paths with ALB-compatible prefix paths.
+    # ALB path patterns are NOT regex (only `*`/`?` wildcards); `pathType: Prefix` lets the
+    # controller generate `/x` + `/x/*` patterns and order them longest-prefix-first, so the
+    # `/` (web) catch-all is evaluated last even though it is listed first.
+    paths:
+      web:
+        path: /
+        pathType: Prefix
+      attachments:
+        path: /attachments
+        pathType: Prefix
+      api:
+        path: /api
+        pathType: Prefix
+      icons:
+        path: /icons
+        pathType: Prefix
+      notifications:
+        path: /notifications
+        pathType: Prefix
+      events:
+        path: /events
+        pathType: Prefix
+      sso:
+        path: /sso
+        pathType: Prefix
+      identity:
+        path: /identity
+        pathType: Prefix
+      admin:
+        path: /admin
+        pathType: Prefix
+```
+
+> The `transforms.<serviceName>` suffix and the `backend.service.name` are formed from your
+> Helm release name. The examples above assume a release named `bitwarden` (services
+> `bitwarden-self-host-api`, etc.). If you install under a different release name, adjust the
+> suffixes to match. If you enable SCIM (`component.scim.enabled: true`), add a `scim` path
+> (`path: /scim`, `pathType: Prefix`) and a matching `transforms.<release>-self-host-scim`
+> rewrite.
+
+If you are migrating from the Nginx example above, the settings map across as follows:
+
+| Nginx | AWS ALB |
+|---|---|
+| `nginx.ingress.kubernetes.io/ssl-redirect: "true"` | `alb.ingress.kubernetes.io/ssl-redirect: "443"` + HTTPS in `listen-ports` |
+| `nginx.ingress.kubernetes.io/use-regex: "true"` | Not needed — use `pathType: Prefix` (ALB patterns are wildcard `*`/`?`, not regex) |
+| `nginx.ingress.kubernetes.io/rewrite-target: /$1` | Per-service `alb.ingress.kubernetes.io/transforms.<serviceName>` URL rewrite |
+| TLS via the NLB / `tls.clusterIssuer` (Let's Encrypt) | ACM certificate on the ALB via `alb.ingress.kubernetes.io/certificate-arn` |
+| Paths `/(.*)`, `/api/(.*)`, … with `pathType: ImplementationSpecific` | Plain prefixes `/`, `/api`, … with `pathType: Prefix` |
+| Controller creates an AWS **NLB** | Controller creates an AWS **ALB** |
+
+A few things worth keeping in mind:
+
+- **Only the sub-path services that serve from root get a rewrite** — `api`, `icons`,
+  `notifications`, `events`, and `attachments`. `sso`, `identity`, `admin`, and `web` keep
+  their prefix, so they get no `transforms` annotation.
+- **Use `pathType: Prefix`** rather than the chart's default regex paths. The controller
+  orders rules longest-prefix-first, so the `/` (web) catch-all is evaluated last and does
+  not shadow the more specific routes.
+- **HTTPS is required.** The Bitwarden server advertises `https://` service URLs, and the web
+  vault's Web Crypto API only works in a secure context. An HTTP-only ALB will leave the UI
+  spinning — always configure the HTTPS listener with an ACM certificate.
+
+You can confirm the rendered ingress before deploying:
+
+```shell
+helm template bitwarden bitwarden/self-host -f my-values.yaml \
+  | sed -n '/kind: Ingress/,/^---/p'
+```
+
+Expect `ingressClassName: alb`, the plain prefix paths, and `transforms.*` annotations whose
+suffixes match the rendered `backend.service.name` values.
 
 ### Setup EFS storage class
 
