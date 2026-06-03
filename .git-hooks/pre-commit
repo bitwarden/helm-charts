@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook for the Bitwarden Helm charts repo. Enable it with:
+#   git config --local core.hooksPath .git-hooks
+#
+# Requires helm and the helm-schema plugin (https://github.com/dadav/helm-schema).
+set -euo pipefail
+
+# Lint the charts.
+helm lint charts/self-host charts/sm-operator
+
+# Regenerate values.schema.json for any chart whose values.yaml is staged, then
+# re-stage it so every commit carries a schema that matches its values.yaml.
+staged_values="$(git diff --cached --name-only --diff-filter=ACM -- 'charts/*/values.yaml')"
+if [ -n "${staged_values}" ]; then
+  for chart in $(printf '%s\n' "${staged_values}" | xargs -n1 dirname | sort -u); do
+    echo "pre-commit: regenerating ${chart}/values.schema.json"
+    helm schema --chart-search-root "${chart}" -k additionalProperties --skip-auto-generation required
+    git add "${chart}/values.schema.json"
+  done
+fi
