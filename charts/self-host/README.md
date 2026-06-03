@@ -907,8 +907,7 @@ kubectl get ingress -n bitwarden
 ```
 
 Create a CNAME record for your domain pointing at the `ADDRESS` shown (the ALB DNS name).
-Once DNS resolves, browse to `https://REPLACEME.com` — HTTP requests are redirected to HTTPS
-automatically.
+Once DNS resolves, browse to `https://REPLACEME.com` — HTTP requests are redirected to HTTPS automatically.
 
 ## Example Deployment on OpenShift
 
