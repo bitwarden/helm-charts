@@ -1243,7 +1243,8 @@ Follow the instructions above for creating the namespace.
 
 ### Setup Nginx ingress
 
-This example uses Nginx, but Traefik could also be used here. An AWS ALB is also a viable option: it previously could not do path rewrites with path-based routing, but the AWS Load Balancer Controller (v2.14+) now supports per-service URL rewrites via the `alb.ingress.kubernetes.io/transforms.<serviceName>` annotation — see [Setup AWS ALB ingress](#setup-aws-alb-ingress) below.
+This example uses Nginx, but Traefik could also be used here. 
+AWS Load Balancer Controller v2.14+ is supported using rewrites with the `alb.ingress.kubernetes.io/transforms.<serviceName>` annotation, see [Setup AWS ALB ingress](#setup-aws-alb-ingress) below.
 
 #### Install the Nginx Ingress Controller
 
