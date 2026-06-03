@@ -1335,10 +1335,6 @@ general:
 
 ### Setup AWS ALB ingress
 
-> **DEPRECATED (chart 2.0.0):** The Kubernetes `Ingress` resource shown in this section is deprecated and will be removed in a future major release. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
->
-> That said, if you are staying on Ingress for now, an AWS ALB is a viable alternative to Nginx. Earlier guidance noted that the ALB ingress was not recommended because it did not support path rewrites with path-based routing. That is no longer the case: AWS added [URL and host-header rewrite for ALB](https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-url-and-host-header-rewrite-with-aws-application-load-balancers/), exposed by the AWS Load Balancer Controller (**v2.14+**) through the `alb.ingress.kubernetes.io/transforms.<serviceName>` annotation. This provides the per-service path rewriting Bitwarden needs (for example, stripping `/api/` before forwarding to the API service), so an ALB can now be used in place of Nginx.
-
 #### Install the AWS Load Balancer Controller
 
 Follow the [AWS Load Balancer Controller installation guide](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/).
