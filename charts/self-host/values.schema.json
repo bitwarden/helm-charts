@@ -2862,6 +2862,14 @@
           "title": "gateway",
           "type": "object"
         },
+        "imagePullSecrets": {
+          "description": "Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.",
+          "items": {
+            "required": []
+          },
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
         "ingress": {
           "properties": {
             "annotations": {
@@ -2878,8 +2886,7 @@
             },
             "enabled": {
               "default": false,
-              "deprecated": true,
-              "description": "DEPRECATED (since chart 2.0.0): The Kubernetes Ingress resource is deprecated and will be\nremoved in a future major release. Migrate to Gateway API by setting\n`general.gateway.enabled: true` below. See the chart README (\"Gateway API\" section)\nfor migration guidance.",
+              "description": "Ingress is supported but is no longer the recommended default for this chart.\nGateway API is the preferred option for new deployments — set\n`general.gateway.enabled: true` below. See the chart README (\"Gateway API\" section).\n\nNOTE: This chart's default ingress controller is ingress-nginx (className: \"nginx\"),\nwhich the upstream Kubernetes project retired in March 2026 (no further releases,\nbug fixes, or security patches). If you keep using Ingress, plan to migrate to\nGateway API or another maintained ingress controller.",
               "title": "enabled",
               "type": "boolean"
             },

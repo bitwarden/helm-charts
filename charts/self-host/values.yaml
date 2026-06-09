@@ -10,12 +10,15 @@ general:
   #  - Requires globalSettings__postgreSql__connectionString to exist in the configured secret.
   databaseProvider: "mssql"
   ingress:
-    # DEPRECATED (since chart 2.0.0): The Kubernetes Ingress resource is deprecated and will be
-    # removed in a future major release. Migrate to Gateway API by setting
-    # `general.gateway.enabled: true` below. See the chart README ("Gateway API" section)
-    # for migration guidance.
+    # Ingress is supported but is no longer the recommended default for this chart.
+    # Gateway API is the preferred option for new deployments — set
+    # `general.gateway.enabled: true` below. See the chart README ("Gateway API" section).
+    #
+    # NOTE: This chart's default ingress controller is ingress-nginx (className: "nginx"),
+    # which the upstream Kubernetes project retired in March 2026 (no further releases,
+    # bug fixes, or security patches). If you keep using Ingress, plan to migrate to
+    # Gateway API or another maintained ingress controller.
     # @schema
-    # deprecated: true
     # type: boolean
     # default: false
     # @schema
@@ -144,6 +147,8 @@ general:
   # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
   nodeSelector: {}
   tolerations: []
+  # Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.
+  imagePullSecrets: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
