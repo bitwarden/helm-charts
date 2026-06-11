@@ -24,6 +24,11 @@
         },
         "manager": {
           "properties": {
+            "containerPort": {
+              "default": 8443,
+              "title": "containerPort",
+              "type": "integer"
+            },
             "enableLeaderElection": {
               "default": true,
               "description": "Enables leader election for the controller manager, should be enabled if there is more than one replica.",
