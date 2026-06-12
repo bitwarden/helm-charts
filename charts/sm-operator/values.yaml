@@ -39,6 +39,7 @@ containers:
         cpu: 10m
         memory: 64Mi
     terminationGracePeriodSeconds: 10
+    containerPort: 8443
 
   # Provide annotations for the service account
   serviceAccount:
