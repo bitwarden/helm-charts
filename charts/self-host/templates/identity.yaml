@@ -77,6 +77,8 @@ spec:
           mkdir -p /logs/identity
         ']
         image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.identity.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs

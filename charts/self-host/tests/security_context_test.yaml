@@ -1,0 +1,155 @@
+suite: test securityContext on init containers and the pre-install-secret-sql job
+templates:
+  - templates/helpers.tpl
+  - templates/admin.yaml
+  - templates/api.yaml
+  - templates/events.yaml
+  - templates/icons.yaml
+  - templates/identity.yaml
+  - templates/notifications.yaml
+  - templates/scim.yaml
+  - templates/sso.yaml
+  - templates/pre-install-secret-sql.yaml
+
+tests:
+  # admin
+  - it: admin - should render securityContext on the create-mount-subdir init container
+    template: templates/admin.yaml
+    set:
+      volume.logs.enabled: true
+      component.admin.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: create-mount-subdir
+        documentIndex: 0
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  - it: admin - should render an empty securityContext on the init container by default
+    template: templates/admin.yaml
+    set:
+      volume.logs.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext
+          value: {}
+        documentIndex: 0
+
+  # api
+  - it: api - should render securityContext on the create-mount-subdir init container
+    template: templates/api.yaml
+    set:
+      volume.logs.enabled: true
+      component.api.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # events
+  - it: events - should render securityContext on the create-mount-subdir init container
+    template: templates/events.yaml
+    set:
+      volume.logs.enabled: true
+      component.events.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # icons
+  - it: icons - should render securityContext on the create-mount-subdir init container
+    template: templates/icons.yaml
+    set:
+      volume.logs.enabled: true
+      component.icons.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # identity
+  - it: identity - should render securityContext on the create-mount-subdir init container
+    template: templates/identity.yaml
+    set:
+      volume.logs.enabled: true
+      component.identity.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # notifications
+  - it: notifications - should render securityContext on the create-mount-subdir init container
+    template: templates/notifications.yaml
+    set:
+      volume.logs.enabled: true
+      component.notifications.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # scim
+  - it: scim - should render securityContext on the create-mount-subdir init container
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: true
+      volume.logs.enabled: true
+      component.scim.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # sso
+  - it: sso - should render securityContext on the create-mount-subdir init container
+    template: templates/sso.yaml
+    set:
+      volume.logs.enabled: true
+      component.sso.securityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  # pre-install-secret-sql job
+  - it: secret-sql - should render pod securityContext from jobs.podSecurityContext
+    template: templates/pre-install-secret-sql.yaml
+    set:
+      jobs.podSecurityContext.runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.runAsNonRoot
+          value: true
+        documentIndex: 0
+
+  - it: secret-sql - should render container securityContext from jobs.securityContext
+    template: templates/pre-install-secret-sql.yaml
+    set:
+      jobs.securityContext.allowPrivilegeEscalation: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
+          value: false
+        documentIndex: 0
+
+  - it: secret-sql - should not render securityContext blocks when unset
+    template: templates/pre-install-secret-sql.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.securityContext
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.containers[0].securityContext
+        documentIndex: 0
