@@ -25,6 +25,15 @@ tests:
       - matchRegex:
           path: spec.template.spec.initContainers[0].args[0]
           pattern: "grep -q false"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "timeout=600"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "timed out after .* waiting for SQL"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "timed out after .* waiting for /db/vault\\.mdf"
       - notMatchRegex:
           path: spec.template.spec.initContainers[0].args[0]
           pattern: "!= .true."
@@ -60,6 +69,9 @@ tests:
       - notMatchRegex:
           path: spec.template.spec.initContainers[0].args[0]
           pattern: "DB Ready"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "timeout=600"
       - isEmpty:
           path: spec.template.spec.initContainers[0].volumeMounts
       - notContains:
@@ -90,6 +102,9 @@ tests:
       - notMatchRegex:
           path: spec.template.spec.initContainers[0].args[0]
           pattern: "vault\\.mdf"
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "timed out after .* waiting for Admin"
       - isEmpty:
           path: spec.template.spec.initContainers[0].volumeMounts
       - notContains:

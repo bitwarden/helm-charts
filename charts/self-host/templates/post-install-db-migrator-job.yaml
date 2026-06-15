@@ -62,24 +62,28 @@ spec:
           - "-c"
         {{- if .Values.database.enabled }}
         args: ['
-          until ready="$(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.mssql" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}")"; [ -n "$ready" ] && ! echo "$ready" | grep -q false; do sleep 1; done
+          timeout=600;
+
+          elapsed=0; until ready="$(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.mssql" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}")"; [ -n "$ready" ] && ! echo "$ready" | grep -q false; do [ "$elapsed" -ge "$timeout" ] && { echo "ERROR: timed out after ${timeout}s waiting for SQL to become ready"; exit 1; }; sleep 1; elapsed=$((elapsed + 1)); done
 
           echo "SQL Ready!"
 
-          until ready="$(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}")"; [ -n "$ready" ] && ! echo "$ready" | grep -q false; do sleep 1; done
+          elapsed=0; until ready="$(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}")"; [ -n "$ready" ] && ! echo "$ready" | grep -q false; do [ "$elapsed" -ge "$timeout" ] && { echo "ERROR: timed out after ${timeout}s waiting for Admin to become ready"; exit 1; }; sleep 1; elapsed=$((elapsed + 1)); done
 
           echo "Admin Ready!"
 
           {{- if (not (hasKey .Values.database.volume.data "accessMode")) }}
 
-          while [ ! -f /db/vault.mdf ]; do sleep 1; done
+          elapsed=0; while [ ! -f /db/vault.mdf ]; do [ "$elapsed" -ge "$timeout" ] && { echo "ERROR: timed out after ${timeout}s waiting for /db/vault.mdf"; exit 1; }; sleep 1; elapsed=$((elapsed + 1)); done
 
           echo "DB Ready!"
           {{- end }}
         ']
         {{- else }}
         args: ['
-          until ready="$(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}")"; [ -n "$ready" ] && ! echo "$ready" | grep -q false; do sleep 1; done
+          timeout=600;
+
+          elapsed=0; until ready="$(kubectl get pods -n {{ .Release.Namespace }} -l app={{ template "bitwarden.admin" . }} -o jsonpath="{.items[*].status.containerStatuses[*].ready}")"; [ -n "$ready" ] && ! echo "$ready" | grep -q false; do [ "$elapsed" -ge "$timeout" ] && { echo "ERROR: timed out after ${timeout}s waiting for Admin to become ready"; exit 1; }; sleep 1; elapsed=$((elapsed + 1)); done
 
           echo "Admin Ready!"
         ']
