@@ -39,9 +39,39 @@ EOF
     openssl x509 -in bitwarden.localhost.crt -out bitwarden.localhost.pem --passin pass:$cert_pass
     openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$cert_pass
 
-    #Ingress
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+    #Ingress (Traefik)
+    helm repo add traefik https://traefik.github.io/charts
+    helm repo update
+    cat > /tmp/traefik-values.yaml <<'EOF'
+service:
+  type: ClusterIP
+ports:
+  web:
+    hostPort: 80
+  websecure:
+    hostPort: 443
+nodeSelector:
+  ingress-ready: "true"
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+ingressClass:
+  enabled: true
+  name: traefik
+providers:
+  kubernetesIngress:
+    enabled: true
+  kubernetesCRD:
+    enabled: true
+EOF
+    helm install traefik traefik/traefik --version 40.3.0 \
+      --namespace traefik --create-namespace \
+      --wait --timeout 180s \
+      -f /tmp/traefik-values.yaml
     sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
 
     #Namespace

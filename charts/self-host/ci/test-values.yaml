@@ -8,17 +8,12 @@ general:
   ingress:
     # Set to false if using a custom ingress
     enabled: true
-    # Current supported values for ingress type include: nginx
-    className: "nginx"
+    # The strip-prefix Middleware (see rawManifests) strips /api, /attachments,
+    # /icons, /notifications, /events; leaves /, /sso, /identity, /admin untouched.
+    className: "traefik"
      ## - Annotations to add to the Ingress resource.
     annotations:
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
-      nginx.ingress.kubernetes.io/proxy-body-size: 500m
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+      traefik.ingress.kubernetes.io/router.middlewares: bitwarden-strip-prefix@kubernetescrd
     ## - Labels to add to the Ingress resource
     labels: {}
     # Certificate options
@@ -27,38 +22,38 @@ general:
       name: tls-secret
       # Cluster cert issuer (ex. Let's Encrypt) name if one exists
       clusterIssuer:
-    # Ingress path configuration - The samples provided are for Nginx. Examples with other Ingress providers are in the chart Readme on GitHub
+    # Ingress path configuration - plain prefixes; Traefik does longest-prefix matching.
     paths:
       web:
-        path: /(.*)
-        pathType: ImplementationSpecific
+        path: /
+        pathType: Prefix
       attachments:
-        path: /attachments/(.*)
-        pathType: ImplementationSpecific
+        path: /attachments
+        pathType: Prefix
       api:
-        path: /api/(.*)
-        pathType: ImplementationSpecific
+        path: /api
+        pathType: Prefix
       icons:
-        path: /icons/(.*)
-        pathType: ImplementationSpecific
+        path: /icons
+        pathType: Prefix
       notifications:
-        path: /notifications/(.*)
-        pathType: ImplementationSpecific
+        path: /notifications
+        pathType: Prefix
       events:
-        path: /events/(.*)
-        pathType: ImplementationSpecific
+        path: /events
+        pathType: Prefix
       scim:
-        path: /scim/(.*)
-        pathType: ImplementationSpecific
+        path: /scim
+        pathType: Prefix
       sso:
-        path: /(sso/.*)
-        pathType: ImplementationSpecific
+        path: /sso
+        pathType: Prefix
       identity:
-        path: /(identity/.*)
-        pathType: ImplementationSpecific
+        path: /identity
+        pathType: Prefix
       admin:
-        path: /(admin/?.*)
-        pathType: ImplementationSpecific
+        path: /admin
+        pathType: Prefix
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
@@ -109,10 +104,6 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/admin
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -128,10 +119,6 @@ component:
   api:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/api
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -167,10 +154,6 @@ component:
   attachments:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/attachments
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -186,10 +169,6 @@ component:
   events:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/events
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -205,10 +184,6 @@ component:
   icons:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/icons
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -224,10 +199,6 @@ component:
   identity:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/identity
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -243,10 +214,6 @@ component:
   notifications:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/notifications
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -262,10 +229,6 @@ component:
   scim:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/scim
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -281,10 +244,6 @@ component:
   sso:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/sso
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -300,10 +259,6 @@ component:
   web:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/web
-      tag: ""
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
@@ -316,20 +271,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-# Images used for jobs and init containers
-supportComponents:
-  dbMigrator:
-    image:
-      repository: ghcr.io/bitwarden/mssqlmigratorutility
-      tag: ""
-  certGenerator:
-    image:
-      repository: alpine/openssl
-      tag: 3.5.2
-  kubectl:
-    image:
-      repository: ghcr.io/bitwarden/helm-charts/kubectl
-      tag: 1.34
 # Data volume sizes for shared PVCs
 volume:
   dataprotection:
@@ -406,12 +347,6 @@ database:
   enabled: true
   # Labels to add to the MSSQL deployment
   labels: {}
-  # Image repository, tag, and pull policy
-  image:
-    repository: mcr.microsoft.com/mssql/server
-    tag: 2022-CU22-ubuntu-22.04
-    # Tag of the image to use. (Defaults to general.coreVersion)
-    # tag: 2022-CU12-ubuntu-22.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -464,6 +399,16 @@ database:
 # Please see the chart README in GitHub for more information and examples.
 rawManifests:
   preInstall:
+    # Traefik middleware: strip the path prefix for the services that expect to be
+    # served at root. Referenced by the Ingress via the router.middlewares annotation.
+    - apiVersion: traefik.io/v1alpha1
+      kind: Middleware
+      metadata:
+        name: strip-prefix
+      spec:
+        replacePathRegex:
+          regex: "^/(api|attachments|icons|notifications|events)/(.*)"
+          replacement: "/$2"
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
