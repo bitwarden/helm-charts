@@ -7,6 +7,11 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "bitwarden.localhost"
+  # Trust the kind pod network as a forwarded-headers proxy so backends honor the
+  # Gateway's X-Forwarded-Proto. Without this the admin app builds http:// redirect
+  # URLs (the Gateway, unlike ingress-nginx, does not rewrite the Location header),
+  # and the /admin smoke test fails. kind's cluster pod CIDR is 10.244.0.0/16.
+  knownNetworks: "10.244.0.0/16"
   ingress:
     # Non-default Ingress is explicitly disabled for this CI path.
     enabled: false
