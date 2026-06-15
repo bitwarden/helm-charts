@@ -93,16 +93,35 @@ jobs:
 
       - name: Diagnostics
         if: always()
+        shell: bash
         run: |
-          echo "*****DEPLOYMENTS*****"; kubectl get deployments -n bitwarden
-          echo "*****PODS*****";        kubectl get pods -n bitwarden
-          echo "*****SERVICES*****";    kubectl get svc -n bitwarden
-          echo "*****JOBS*****";        kubectl get jobs -n bitwarden
+          echo "*****DEPLOYMENTS*****"; kubectl get deployments -n bitwarden || true
+          echo "*****PODS*****";        kubectl get pods -n bitwarden -o wide || true
+          echo "*****SERVICES*****";    kubectl get svc -n bitwarden || true
+          echo "*****JOBS*****";        kubectl get jobs -n bitwarden || true
+
+          echo "*****EVENTS*****"
+          kubectl get events -n bitwarden --sort-by=.lastTimestamp || true
+
+          echo "*****DESCRIBE PODS*****"
+          kubectl describe pods -n bitwarden || true
+
+          echo "*****DESCRIBE JOBS*****"
+          kubectl describe jobs -n bitwarden || true
+
+          echo "*****POD LOGS*****"
+          for pod in $(kubectl get pods -n bitwarden -o jsonpath='{.items[*].metadata.name}'); do
+            echo "----- logs: $pod (current) -----"
+            kubectl logs "$pod" -n bitwarden --all-containers --tail=200 || true
+            echo "----- logs: $pod (previous, if crashed) -----"
+            kubectl logs "$pod" -n bitwarden --all-containers --previous --tail=200 || true
+          done
+
           if [ "${{ matrix.routing }}" = "gateway" ]; then
-            echo "*****GATEWAY*****";   kubectl describe gateway -n default ci-gateway
-            echo "*****HTTPROUTE*****"; kubectl describe httproute -n bitwarden
+            echo "*****GATEWAY*****";   kubectl describe gateway -n default ci-gateway || true
+            echo "*****HTTPROUTE*****"; kubectl describe httproute -n bitwarden || true
           else
-            echo "*****INGRESS*****";   kubectl describe ingress -n bitwarden
+            echo "*****INGRESS*****";   kubectl describe ingress -n bitwarden || true
           fi
 
       - name: Smoke tests
