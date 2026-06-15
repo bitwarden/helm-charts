@@ -6,9 +6,11 @@ on:
       - main
     paths:
       - "charts/self-host/**"
+      - "scripts/**"
   pull_request:
     paths:
       - "charts/self-host/**"
+      - "scripts/**"
       - ".github/workflows/self-host.yml"
       - ".github/workflows/_lint_chart.yml"
       - ".github/workflows/_test_chart.yml"
