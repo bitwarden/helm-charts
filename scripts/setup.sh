@@ -139,7 +139,7 @@ EOF
 function installSelfHost() {
     routing="${1:-ingress}"
     if [ "$routing" = "gateway" ]; then
-        values="charts/self-host/ci/test-values-gateway.yaml"
+        values="charts/self-host/ci/test-gateway-values.yaml"
     else
         values="charts/self-host/ci/test-values.yaml"
     fi

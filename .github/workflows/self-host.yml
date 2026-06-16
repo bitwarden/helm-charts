@@ -96,7 +96,7 @@ jobs:
           if [ "${{ matrix.routing }}" = "gateway" ]; then
             rm -f charts/self-host/ci/test-values.yaml
           else
-            rm -f charts/self-host/ci/test-values-gateway.yaml
+            rm -f charts/self-host/ci/test-gateway-values.yaml
           fi
 
       - name: Run chart-testing (install)
