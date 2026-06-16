@@ -116,11 +116,11 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
         memory: "256Mi"
-        cpu: "100m"
+        cpu: "125m"
+      limits:
+        memory: "384Mi"
+        cpu: "250m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -136,10 +136,10 @@ component:
     resources:
       requests:
         memory: "256Mi"
-        cpu: "50m"
-      limits:
-        memory: "512Mi"
         cpu: "100m"
+      limits:
+        memory: "384Mi"
+        cpu: "200m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -174,10 +174,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -212,10 +212,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -231,11 +231,11 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
-        memory: "256Mi"
+        memory: "192Mi"
         cpu: "100m"
+      limits:
+        memory: "384Mi"
+        cpu: "200m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -250,10 +250,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -269,10 +269,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "64Mi"
         cpu: "50m"
       limits:
-        memory: "256Mi"
+        memory: "128Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
@@ -307,10 +307,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "96Mi"
         cpu: "50m"
       limits:
-        memory: "248Mi"
+        memory: "192Mi"
         cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
