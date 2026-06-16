@@ -24,7 +24,11 @@ function setupCluster() {
     installation_id=$(uuidgen)
     echo $installation_id
     installation_key=$(openssl rand -base64 12)
-    sa_password=$(openssl rand -base64 12)
+    # Guarantee the MSSQL SA password meets SQL Server complexity rules (>=8 chars and 3 of
+    # 4 of upper/lower/digit/symbol). A bare `openssl rand -base64` occasionally lacks a digit
+    # AND a symbol, so SQL Server rejects it and the mssql container crash-loops. Strip
+    # +/=/ (avoid connection-string ambiguity) and append one of each required class.
+    sa_password="$(openssl rand -base64 18 | tr -dc 'A-Za-z0-9')Aa1#"
     cert_pass=$(openssl rand -base64 12)
 
     #TLS setup
