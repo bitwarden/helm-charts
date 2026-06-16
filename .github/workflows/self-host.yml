@@ -88,8 +88,19 @@ jobs:
       - name: Set up cluster
         run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}"
 
-      - name: Install self-host (${{ matrix.routing }})
-        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}"
+      # ct install has no flag to select a single ci/*-values.yaml — it installs every
+      # match in ci/. Remove the other routing's values file so this leg installs exactly
+      # one (ingress vs gateway). Safe: each matrix job runs on a fresh checkout.
+      - name: Select routing values file (${{ matrix.routing }})
+        run: |
+          if [ "${{ matrix.routing }}" = "gateway" ]; then
+            rm -f charts/self-host/ci/test-values.yaml
+          else
+            rm -f charts/self-host/ci/test-values-gateway.yaml
+          fi
+
+      - name: Run chart-testing (install)
+        run: ct install --charts charts/self-host --namespace bitwarden --skip-clean-up
 
       - name: Diagnostics
         if: always()
