@@ -76,6 +76,8 @@ spec:
           mkdir -p /logs/icons
         ']
         image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.icons.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs

@@ -78,6 +78,8 @@ spec:
           mkdir -p /logs/scim
         ']
         image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.scim.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
