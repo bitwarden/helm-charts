@@ -802,7 +802,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 3.5.6
+      tag: 3.5.7
   kubectl:
     image:
       repository: alpine/kubectl
@@ -810,7 +810,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 1.36.1
+      tag: 1.36.2
 
 # Data volume sizes for shared PVCs
 volume:
