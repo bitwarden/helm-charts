@@ -3,7 +3,6 @@ set -eo pipefail
 
 GATEWAY_API_VERSION="v1.3.0"   # standard channel CRDs — confirm against NGF 2.6.x supported version
 NGF_CHART_VERSION="2.6.3"      # oci://ghcr.io/nginx/charts/nginx-gateway-fabric
-MSSQL_IMAGE="mcr.microsoft.com/mssql/server:2022-CU22-ubuntu-22.04"  # keep in sync with charts/self-host/ci/test-values*.yaml (database.image)
 
 function createKindCluster() {
     routing="${1:-ingress}"
@@ -75,11 +74,15 @@ EOF
 
     # Pre-pull the large (~590MB) MSSQL image and side-load it into the kind node now,
     # so the pull cost is paid here rather than eating into the `helm install --wait`
-    # timeout window during installSelfHost. Derive the cluster name dynamically: locally
-    # it's "bitwarden" (createKindCluster), in CI it's helm/kind-action's default.
+    # timeout window during installSelfHost. Resolve the image from the chart itself
+    # (single source of truth: charts/self-host/values.yaml -> database.image) via helm
+    # template, so it never drifts from what the chart actually deploys.
+    mssql_image="$(helm template charts/self-host -s templates/mssql.yaml | awk -F'"' '/image:/{print $2; exit}')"
+    # Derive the cluster name dynamically: locally it's "bitwarden" (createKindCluster),
+    # in CI it's helm/kind-action's default.
     cluster_name="$(kind get clusters | head -n1)"
-    docker pull "$MSSQL_IMAGE"
-    kind load docker-image "$MSSQL_IMAGE" --name "$cluster_name"
+    docker pull "$mssql_image"
+    kind load docker-image "$mssql_image" --name "$cluster_name"
 
     if [ "$routing" = "gateway" ]; then
         setupGateway
