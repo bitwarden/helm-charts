@@ -7,6 +7,11 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "bitwarden.localhost"
+  # Trust the kind pod network as a forwarded-headers proxy so backends honor the
+  # Gateway's X-Forwarded-Proto. Without this the admin app builds http:// redirect
+  # URLs (the Gateway, unlike ingress-nginx, does not rewrite the Location header),
+  # and the /admin smoke test fails. kind's cluster pod CIDR is 10.244.0.0/16.
+  knownNetworks: "10.244.0.0/16"
   ingress:
     # Non-default Ingress is explicitly disabled for this CI path.
     enabled: false
@@ -69,14 +74,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/admin
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
-        memory: "256Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -88,14 +85,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/api
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "50m"
-      limits:
-        memory: "512Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -127,14 +116,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/attachments
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
-        memory: "128Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -146,14 +127,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/events
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
-        memory: "256Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -165,14 +138,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/icons
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
-        memory: "128Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -184,14 +149,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/identity
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
-        memory: "256Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -203,14 +160,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/notifications
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
-        memory: "128Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -222,14 +171,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/scim
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
-        memory: "256Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -241,14 +182,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/sso
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "128Mi"
-        cpu: "50m"
-      limits:
-        memory: "256Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
@@ -260,14 +193,6 @@ component:
     image:
       repository: ghcr.io/bitwarden/web
       tag: ""
-    # The pod resource requirements.  You can adjust these up and down for your environment
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
-        memory: "248Mi"
-        cpu: "100m"
     # This will set the Kubernetes container security context
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
