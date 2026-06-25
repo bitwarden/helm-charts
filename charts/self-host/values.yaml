@@ -144,7 +144,8 @@ general:
   podLabels: {}
   # Additional default pod annotations
   podAnnotations: {}
-  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  # affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  affinity: {}
   nodeSelector: {}
   tolerations: []
   # Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.
@@ -227,6 +228,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -284,6 +287,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -347,6 +352,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -401,6 +408,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -461,6 +470,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -515,6 +526,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -578,6 +591,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -635,6 +650,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -678,6 +695,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -739,6 +758,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -973,6 +994,7 @@ database:
   # Additional annotations to the MSSQL pod
   podAnnotations: {}
   # Optionally place deployment on specifc nodes
+  affinity: {}
   nodeSelector: {}
   # Optionally add taint tolerations
   tolerations: []
