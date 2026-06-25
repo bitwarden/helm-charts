@@ -26,7 +26,7 @@ tests:
     template: templates/api.yaml
     set:
       component.api.image.tag: "2025.12.0"
-      general.coreVersionOverride: "2025.12.0"
+      general.coreVersionOverride: "2025.11.0"
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
@@ -73,14 +73,44 @@ tests:
           path: kind
           value: Deployment
 
-  - it: should use database tag defaults
+  - it: should use global coreVersionOverride when database tag is empty for database
     template: templates/mssql.yaml
     set:
       database.enabled: true
+      database.image.tag: ""
+      general.coreVersionOverride: "2025.12.0"
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "mcr.microsoft.com/mssql/server:2022-CU22-ubuntu-22.04"
+          value: "ghcr.io/bitwarden/mssql:2025.12.0"
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should use component-specific tag for database when set (overrides coreVersionOverride)
+    template: templates/mssql.yaml
+    set:
+      database.enabled: true
+      database.image.tag: "2025.12.0"
+      general.coreVersionOverride: "2025.11.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/bitwarden/mssql:2025.12.0"
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should use custom repository when set for database
+    template: templates/mssql.yaml
+    set:
+      database.enabled: true
+      database.image.repository: "custom.com/bitwarden/mssql"
+      general.coreVersionOverride: "2025.12.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "custom.com/bitwarden/mssql:2025.12.0"
         documentSelector:
           path: kind
           value: StatefulSet

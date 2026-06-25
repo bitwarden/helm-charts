@@ -2368,12 +2368,12 @@
           "description": "Image repository, tag, and pull policy",
           "properties": {
             "repository": {
-              "default": "mcr.microsoft.com/mssql/server",
+              "default": "ghcr.io/bitwarden/mssql",
               "title": "repository",
               "type": "string"
             },
             "tag": {
-              "default": "2022-CU22-ubuntu-22.04",
+              "default": "",
               "title": "tag",
               "type": "string"
             }
