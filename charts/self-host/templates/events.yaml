@@ -43,6 +43,14 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if or .Values.component.events.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.events.affinity }}
+        {{ toYaml .Values.component.events.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.events.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.events.nodeSelector }}

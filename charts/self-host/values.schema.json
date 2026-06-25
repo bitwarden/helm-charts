@@ -7,6 +7,12 @@
         "admin": {
           "description": "The Admin component",
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -244,6 +250,12 @@
         },
         "api": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -501,6 +513,12 @@
         },
         "attachments": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -732,6 +750,12 @@
         },
         "events": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -970,6 +994,12 @@
         },
         "icons": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1201,6 +1231,12 @@
         },
         "identity": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1458,6 +1494,12 @@
         },
         "notifications": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1689,6 +1731,12 @@
         },
         "scim": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1862,6 +1910,12 @@
         },
         "sso": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -2114,6 +2168,12 @@
         },
         "web": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -2352,6 +2412,12 @@
     "database": {
       "description": "\nConfigure MSSQL Database Deployment\nThis section is only used when general.databaseProvider is \"mssql\"\nFor PostgreSQL deployments, users must bring their own\nPostgreSQL database and provide the connection string via secrets.secretName or one of the other configuration providers.\n",
       "properties": {
+        "affinity": {
+          "description": "Optionally place deployment on specifc nodes",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "annotations": {
           "description": "Annotations to add to the MSSQL deployment",
           "required": [],
@@ -2389,7 +2455,6 @@
           "type": "object"
         },
         "nodeSelector": {
-          "description": "Optionally place deployment on specifc nodes",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
@@ -2575,6 +2640,12 @@
           "description": "Comma-separated list of email addresses for Admin users",
           "title": "admins",
           "type": "string"
+        },
+        "affinity": {
+          "description": "affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
         },
         "annotations": {
           "description": "Custom annotations to add throughout the installation",
@@ -3112,7 +3183,6 @@
           "type": "object"
         },
         "nodeSelector": {
-          "description": "nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
