@@ -9,6 +9,7 @@
 
 ## These specific files are shared and are used in releases ##
 **/Chart.yaml
+charts/self-host/templates/helpers.tpl
 
 ## BRE team owns these workflows ##
 .github/workflows/release.yml @bitwarden/dept-bre
