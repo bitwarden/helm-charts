@@ -58,6 +58,8 @@ For routing, choose **one** of the following:
 
 Default Nginx values for the Ingress are still present in `values.yaml`. Some other ingress controller examples are provided later in this document and remain as reference material for users mid-migration.
 
+> **Behind a TLS-terminating reverse proxy (e.g. Traefik):** set `general.knownNetworks` to the CIDR range(s) your proxy connects from (for example `"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"`). This populates ASP.NET's forwarded-headers trusted-networks list so the backends honor `X-Forwarded-Proto` and generate `https` links/redirects. When the proxy terminates TLS and forwards to the backends over http, leaving this empty causes components such as the admin portal to emit `http` redirects.
+
 #### SCIM
 
 The SCIM pod is disabled by default. To enable the SCIM pod, set `component.scim.enabled` in `my-values.yaml` to `true`.
