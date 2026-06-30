@@ -144,7 +144,8 @@ general:
   podLabels: {}
   # Additional default pod annotations
   podAnnotations: {}
-  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  # affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  affinity: {}
   nodeSelector: {}
   tolerations: []
   # Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.
@@ -227,6 +228,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -284,6 +287,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -347,6 +352,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -401,6 +408,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -461,6 +470,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -515,6 +526,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -578,6 +591,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -635,6 +650,8 @@ component:
     # Additional pod annotations
     podAnnotations: {}
     # Optionally place deployment on specifc nodes
+    affinity: {}
+    # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
@@ -678,6 +695,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -739,6 +758,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -802,7 +823,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 3.5.6
+      tag: 3.5.7
   kubectl:
     image:
       repository: alpine/kubectl
@@ -810,7 +831,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 1.36.1
+      tag: 1.36.2
 
 # Data volume sizes for shared PVCs
 volume:
@@ -973,13 +994,14 @@ database:
   # Additional annotations to the MSSQL pod
   podAnnotations: {}
   # Optionally place deployment on specifc nodes
+  affinity: {}
   nodeSelector: {}
   # Optionally add taint tolerations
   tolerations: []
   # Image repository, tag, and pull policy
   image:
     repository: mcr.microsoft.com/mssql/server
-    tag: 2022-CU22-ubuntu-22.04
+    tag: 2025-CU5-ubuntu-24.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:

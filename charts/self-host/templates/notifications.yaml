@@ -42,6 +42,14 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if or .Values.component.notifications.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.notifications.affinity }}
+        {{ toYaml .Values.component.notifications.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.notifications.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.notifications.nodeSelector }}
@@ -76,6 +84,8 @@ spec:
           mkdir -p /logs/notifications
         ']
         image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.notifications.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs

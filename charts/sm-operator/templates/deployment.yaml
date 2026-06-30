@@ -53,12 +53,16 @@ spec:
       containers:      
       - args:
           - --health-probe-bind-address=:8081
-          - --metrics-bind-address=127.0.0.1:8080
+          - --metrics-bind-address=:{{ .Values.containers.manager.containerPort }}
         {{- if .Values.containers.manager.enableLeaderElection }}
           - --leader-elect
         {{- end }}
         command:
         - /manager
+        ports:
+        - name: https
+          containerPort: {{ .Values.containers.manager.containerPort }}
+          protocol: TCP
         envFrom:
         - configMapRef:
             name: {{ include "sm-operator.configmap" . }}
@@ -82,8 +86,7 @@ spec:
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
           failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
-        resources: {{- toYaml .Values.containers.manager.resources | nindent 10
-          }}
+        resources: {{- toYaml .Values.containers.manager.resources | nindent 10 }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

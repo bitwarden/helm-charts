@@ -6,9 +6,11 @@ on:
       - main
     paths:
       - "charts/self-host/**"
+      - "scripts/**"
   pull_request:
     paths:
       - "charts/self-host/**"
+      - "scripts/**"
       - ".github/workflows/self-host.yml"
       - ".github/workflows/_lint_chart.yml"
       - ".github/workflows/_test_chart.yml"
@@ -45,110 +47,82 @@ jobs:
       chart_name: self-host
   
   test-self-host-kind:
-    name: Test self-host chart with Kind
+    name: Test self-host chart with Kind (${{ matrix.routing }})
     runs-on: ubuntu-24.04
     permissions:
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        routing: [ingress, gateway]
     steps:
       - name: Checkout repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
           persist-credentials: false
 
       - name: Set up Helm
-        uses: Azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v4.2.0
 
       - name: Set up lynx
         run: sudo apt install lynx
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.14"
           check-latest: true
 
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
-        with:
-          yamale_version: "6.0.0"
-
       - name: Create kind cluster
         uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
         with:
-          config: scripts/cluster.yaml
+          config: ${{ matrix.routing == 'gateway' && 'scripts/cluster-gateway.yaml' || 'scripts/cluster.yaml' }}
 
       - name: Set up cluster
-        run: ./scripts/setup.sh setup-cluster
+        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}"
 
-      - name: Run chart-testing (install)
-        env:
-          _DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-        run: ct install --target-branch "${_DEFAULT_BRANCH}" --skip-clean-up --namespace bitwarden --charts charts/self-host
+      - name: Install self-host (${{ matrix.routing }})
+        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}"
 
-      - name: Test install (self-host)
+      - name: Diagnostics
+        if: always()
+        shell: bash
         run: |
-          #For review purposes
-          echo "*****DEPLOYMENTS*****"
-          kubectl get deployments
-          echo "*****PODS*****"
-          kubectl get pods
-          echo "*****SERVICES*****"
-          kubectl get svc
-          echo "*****JOBS*****"
-          kubectl get jobs
-          echo "*****INGRESS*****"
-          kubectl describe ingress
+          echo "*****DEPLOYMENTS*****"; kubectl get deployments -n bitwarden || true
+          echo "*****PODS*****";        kubectl get pods -n bitwarden -o wide || true
+          echo "*****SERVICES*****";    kubectl get svc -n bitwarden || true
+          echo "*****JOBS*****";        kubectl get jobs -n bitwarden || true
 
-          echo "*****HOME*****"
-          home=$(curl -Ls --proto '=https' --proto-redir '=https' https://bitwarden.localhost -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo "$home" | lynx -stdin -dump -width=100
-          httpCode=$(echo "${home}" | grep -Po 'httpcode=\K(\d\d\d)')
-          bodyCheck=$(echo "${home}" | grep -Pio 'Bitwarden Web Vault')
-          if [[ ${httpCode} -ne 200 ]]; then
-            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
-            exit 1
-          fi
-          if [[ "${bodyCheck,,}" != "bitwarden web vault" ]]; then
-            echo "::error::ERROR: Home page failed to load.  Please check body output above."
-            exit 1
-          fi
+          echo "*****EVENTS*****"
+          kubectl get events -n bitwarden --sort-by=.lastTimestamp || true
 
-          echo "Home OK."
+          echo "*****DESCRIBE PODS*****"
+          kubectl describe pods -n bitwarden || true
 
-          echo "*****API/CONFIG*****"
-          config=$(curl -Ls --proto '=https' --proto-redir '=https' https://bitwarden.localhost/api/config -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo "$config" | lynx -stdin -dump -width=100
-          httpCode=$(echo "${config}" | grep -Po 'httpcode=\K(\d\d\d)')
-          bodyCheck=$(echo "${config}" | grep -Po '\"vault\":\"https://bitwarden\.localhost\"')
-          if [[ ${httpCode} -ne 200 ]]; then
-            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
-            exit 1
-          fi
-          if [[ "$bodyCheck" != '"vault":"https://bitwarden.localhost"' ]]; then
-            echo "::error::ERROR: API/Config page failed to load.  Please check body output above."
-            exit 1
+          echo "*****DESCRIBE JOBS*****"
+          kubectl describe jobs -n bitwarden || true
+
+          echo "*****POD LOGS*****"
+          for pod in $(kubectl get pods -n bitwarden -o jsonpath='{.items[*].metadata.name}'); do
+            echo "----- logs: $pod (current) -----"
+            kubectl logs "$pod" -n bitwarden --all-containers --tail=200 || true
+            echo "----- logs: $pod (previous, if crashed) -----"
+            kubectl logs "$pod" -n bitwarden --all-containers --previous --tail=200 || true
+          done
+
+          if [ "${{ matrix.routing }}" = "gateway" ]; then
+            echo "*****GATEWAY*****";   kubectl describe gateway -n default ci-gateway || true
+            echo "*****HTTPROUTE*****"; kubectl describe httproute -n bitwarden || true
+          else
+            echo "*****INGRESS*****";   kubectl describe ingress -n bitwarden || true
           fi
 
-          echo "API/Config OK."
-
-          echo "*****ADMIN*****"
-          admin=$(curl -Ls --proto '=https' --proto-redir '=https' https://bitwarden.localhost/admin -w httpcode=%{http_code} --cacert rootCA.pem)
-          echo "$admin" | lynx -stdin -dump -width=100
-
-          httpCode=$(echo "${admin}" | grep -Po 'httpcode=\K(\d\d\d)')
-          bodyCheck=$(echo "${admin}" | grep -Po "We'll email you a secure login link")
-          if [[ ${httpCode} -ne 200 ]]; then
-            echo "::error::ERROR: Home page failed to load.  HTTP code was $httpCode"
-            exit 1
-          fi
-          if [[ "$bodyCheck" != "We'll email you a secure login link" ]]; then
-            echo "::error::ERROR: Admin page failed to load.  Please check body output above."
-            exit 1
-          fi
-
-          echo "Admin OK."
+      - name: Smoke tests
+        run: ./scripts/smoke-test.sh
 
   build-self-host:
     name: Build self-host chart

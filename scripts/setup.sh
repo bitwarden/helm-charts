@@ -1,19 +1,33 @@
 #!/bin/bash
 set -eo pipefail
 
+GATEWAY_API_VERSION="v1.3.0"   # standard channel CRDs — confirm against NGF 2.6.x supported version
+NGF_CHART_VERSION="2.6.3"      # oci://ghcr.io/nginx/charts/nginx-gateway-fabric
+
 function createKindCluster() {
+    routing="${1:-ingress}"
     dirname=$(dirname "$0")
     if [ -z "$dirname" ]; then
         dirname="."
     fi
-    kind create cluster --name bitwarden --config $dirname/cluster.yaml
+    if [ "$routing" = "gateway" ]; then
+        config="$dirname/cluster-gateway.yaml"
+    else
+        config="$dirname/cluster.yaml"
+    fi
+    kind create cluster --name bitwarden --config "$config"
 }
 
 function setupCluster() {
+    routing="${1:-ingress}"
     installation_id=$(uuidgen)
     echo $installation_id
     installation_key=$(openssl rand -base64 12)
-    sa_password=$(openssl rand -base64 12)
+    # Guarantee the MSSQL SA password meets SQL Server complexity rules (>=8 chars and 3 of
+    # 4 of upper/lower/digit/symbol). A bare `openssl rand -base64` occasionally lacks a digit
+    # AND a symbol, so SQL Server rejects it and the mssql container crash-loops. Strip
+    # +/=/ (avoid connection-string ambiguity) and append one of each required class.
+    sa_password="$(openssl rand -base64 18 | tr -dc 'A-Za-z0-9')Aa1#"
     cert_pass=$(openssl rand -base64 12)
 
     #TLS setup
@@ -96,23 +110,99 @@ EOF
     --from-literal=SA_PASSWORD=$sa_password
 
     kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
+
+    # Pre-pull the large (~590MB) MSSQL image and side-load it into the kind node now,
+    # so the pull cost is paid here rather than eating into the `helm install --wait`
+    # timeout window during installSelfHost. Resolve the image from the chart itself
+    # (single source of truth: charts/self-host/values.yaml -> database.image) via helm
+    # template, so it never drifts from what the chart actually deploys.
+    mssql_image="$(helm template charts/self-host -s templates/mssql.yaml | awk -F'"' '/image:/{print $2; exit}')"
+    # Derive the cluster name dynamically: locally it's "bitwarden" (createKindCluster),
+    # in CI it's helm/kind-action's default.
+    cluster_name="$(kind get clusters | head -n1)"
+    docker pull "$mssql_image"
+    kind load docker-image "$mssql_image" --name "$cluster_name"
+
+    if [ "$routing" = "gateway" ]; then
+        setupGateway
+    else
+        setupIngress
+    fi
+}
+
+function setupIngress() {
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+}
+
+function setupGateway() {
+    # 1. Gateway API standard-channel CRDs (pinned)
+    kubectl apply -f "https://github.com/kubernetes-sigs/gateway-api/releases/download/${GATEWAY_API_VERSION}/standard-install.yaml"
+    kubectl wait --for=condition=Established --timeout=60s \
+        crd/gateways.gateway.networking.k8s.io \
+        crd/gatewayclasses.gateway.networking.k8s.io \
+        crd/httproutes.gateway.networking.k8s.io
+
+    # 2. NGF control plane + NodePort data plane (chart auto-creates GatewayClass "nginx")
+    helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
+        --version "${NGF_CHART_VERSION}" -n nginx-gateway --create-namespace \
+        --set nginx.service.type=NodePort \
+        --set-json 'nginx.service.nodePorts=[{"port":30080,"listenerPort":80},{"port":30443,"listenerPort":443}]' \
+        --wait --timeout 300s
+
+    # 3. TLS secret in the Gateway's namespace (default) — certificateRefs resolve locally
+    kubectl create secret tls tls-secret -n default \
+        --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
+
+    # 4. Gateway referencing the chart-created "nginx" GatewayClass; allow cross-ns routes
+    kubectl apply -f - <<'EOF'
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ci-gateway
+  namespace: default
+spec:
+  gatewayClassName: nginx
+  listeners:
+  - name: https
+    protocol: HTTPS
+    port: 443
+    hostname: bitwarden.localhost
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: tls-secret
+    allowedRoutes:
+      namespaces:
+        from: All
+EOF
+
+    # 5. Real readiness gate — data-plane NodePort Service exists once Programmed
+    kubectl wait --for=condition=Programmed --timeout=180s -n default gateway/ci-gateway
 }
 
 function installSelfHost() {
-    time ct install --helm-extra-set-args '--timeout 500s'  --target-branch main --skip-clean-up --namespace bitwarden
+    routing="${1:-ingress}"
+    if [ "$routing" = "gateway" ]; then
+        values="charts/self-host/ci/test-gateway-values.yaml"
+    else
+        values="charts/self-host/ci/test-values.yaml"
+    fi
+    time helm install self-host charts/self-host -n bitwarden -f "$values" --timeout 900s --wait
 }
 
 if [ "$1" = "create-cluster" ]; then
-    createKindCluster
+    createKindCluster "$2"
 elif [ "$1" = "setup-cluster" ]; then
-    setupCluster
+    setupCluster "$2"
 elif [ "$1" = "install-self-host" ]; then
-    installSelfHost
+    installSelfHost "$2"
 elif [ "$1" = "all" ]; then
-    createKindCluster
-    setupCluster
-    installSelfHost
+    createKindCluster "$2"
+    setupCluster "$2"
+    installSelfHost "$2"
 else
-    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host}"
+    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host} [ingress|gateway]"
     exit 1
 fi
