@@ -40,9 +40,45 @@ EOF
     openssl x509 -in rootCA.crt -out rootCA.pem --passin pass:$cert_pass
 
     #Ingress
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-    kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
-    sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
+    #kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+    #kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+
+    #Ingress (Traefik with ingress-nginx compatibility provider)
+    helm repo add traefik https://traefik.github.io/charts
+    helm repo update
+
+    helm upgrade --install traefik traefik/traefik \
+      --namespace traefik --create-namespace \
+      --version 41.0.1 \
+      --wait --timeout 300s \
+      --set providers.kubernetesIngressNGINX.enabled=true \
+      --set providers.kubernetesIngressNGINX.ingressClass=nginx \
+      --set providers.kubernetesIngressNGINX.controllerClass=k8s.io/ingress-nginx \
+      --set providers.kubernetesIngressNGINX.ingressClassByName=true \
+      --set-string nodeSelector.ingress-ready=true \
+      --set 'tolerations[0].key=node-role.kubernetes.io/control-plane' \
+      --set 'tolerations[0].operator=Exists' \
+      --set 'tolerations[0].effect=NoSchedule' \
+      --set service.spec.type=ClusterIP \
+      --set 'ports.web.hostPort=80' \
+      --set 'ports.websecure.hostPort=443'
+
+    # Recreate the "nginx" IngressClass object that ingress-nginx used to own.
+    # Traefik's nginx provider matches Ingresses via an IngressClass OBJECT, and does not
+    # create one itself; without this, the chart's `ingressClassName: nginx` is orphaned (404).
+    kubectl apply -f - <<'EOF'
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: k8s.io/ingress-nginx
+EOF
+
+    # Wait for Traefik to be ready before installing the chart
+    kubectl -n traefik rollout status deployment/traefik --timeout=180s
+
+    #sudo echo "127.0.0.1 bitwarden.localhost" | sudo tee -a /etc/hosts
 
     #Namespace
     kubectl create ns bitwarden
