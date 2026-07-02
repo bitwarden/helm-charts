@@ -2,6 +2,11 @@ name: Update Versions - SM Operator
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Operator version to sync (e.g., 2.0.0). If omitted, the latest sm-kubernetes release is used."
+        required: false
+        type: string
 
 env:
   _BRANCH: main
@@ -26,6 +31,7 @@ jobs:
 
       - name: Get Latest Operator Version
         id: get-operator-version
+        if: inputs.version == ''
         uses: bitwarden/gh-actions/get-release-version@main
         with:
           repository: bitwarden/sm-kubernetes
@@ -34,7 +40,7 @@ jobs:
       - name: Check if operator needs updating
         id: operator-update
         env:
-          LATEST_OPERATOR_VERSION: ${{ steps.get-operator-version.outputs.version }}
+          LATEST_OPERATOR_VERSION: ${{ inputs.version != '' && inputs.version || steps.get-operator-version.outputs.version }}
         run: |
           OPERATOR_VERSION=$(sed -nE 's/^appVersion:\s+([^\s]+)/\1/p' Chart.yaml)
 
@@ -109,6 +115,24 @@ jobs:
           VERSION: ${{ needs.setup.outputs.operator_version }}
         run: "sed -i -e 's/appVersion:.*/appVersion: '$VERSION'/' Chart.yaml"
         working-directory: charts/sm-operator
+
+      - name: Sync BitwardenSecret CRD from operator release
+        env:
+          VERSION: ${{ needs.setup.outputs.operator_version }}
+        run: |
+          set -euo pipefail
+          SOURCE_URL="https://raw.githubusercontent.com/bitwarden/sm-kubernetes/v${VERSION}/config/crd/bases/k8s.bitwarden.com_bitwardensecrets.yaml"
+          TARGET="charts/sm-operator/templates/bitwardensecret-crd.yaml"
+          PLACEHOLDER="__SM_OPERATOR_HELM_LABELS__"
+
+          curl -fsSL -o /tmp/sm-operator-crd.yaml "$SOURCE_URL"
+
+          {
+            echo "# This file is synced from bitwarden/sm-kubernetes by the Update Versions - SM Operator workflow."
+            echo "# Do not edit manually. To resync, run the workflow against a new operator release tag."
+            yq -I 2 ".metadata.labels = \"$PLACEHOLDER\"" /tmp/sm-operator-crd.yaml \
+              | sed "s#  labels: $PLACEHOLDER#  labels:\n  {{- include \"sm-operator.labels\" . | nindent 4 }}#"
+          } > "$TARGET"
 
       - name: Commit updated files
         run: |
