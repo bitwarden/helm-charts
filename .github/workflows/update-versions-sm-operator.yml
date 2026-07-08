@@ -134,6 +134,12 @@ jobs:
               | sed "s#  labels: $PLACEHOLDER#  labels:\n  {{- include \"sm-operator.labels\" . | nindent 4 }}#"
           } > "$TARGET"
 
+      - name: Set up Helm
+        uses: Azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
+
+      - name: Validate synced CRD renders
+        run: helm template charts/sm-operator --show-only templates/bitwardensecret-crd.yaml
+
       - name: Commit updated files
         run: |
           git config --local user.name "$_BOT_NAME"
