@@ -46,6 +46,14 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.general.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -64,7 +72,7 @@ spec:
     {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
-          image: "{{ .Values.database.image.name | default .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
           imagePullPolicy: Always
           {{- if .Values.database.resources }}
           resources:

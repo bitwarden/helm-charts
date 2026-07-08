@@ -39,6 +39,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.sso.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.sso.affinity }}
+        {{ toYaml .Values.component.sso.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.sso.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.sso.nodeSelector }}
@@ -72,14 +84,16 @@ spec:
         args: ['
           mkdir -p /logs/sso
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.sso.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.sso" . }}
-        image: "{{ .Values.component.sso.image.name | default .Values.component.sso.image.repository }}:{{ .Values.component.sso.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.sso.image.repository }}:{{ .Values.component.sso.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

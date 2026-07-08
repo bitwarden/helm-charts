@@ -1,3 +1,5 @@
+# CI test values exercising the recommended Gateway API path.
+# Mirrors ci/test-values.yaml but routes via HTTPRoute instead of the non-default Ingress.
 # Optional - Override the chart name if desired
 fullnameOverride: ""
 nameOverride: ""
@@ -5,66 +7,19 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "bitwarden.localhost"
-  # Trust the proxy network so ASP.NET's forwarded-headers middleware honors
-  # X-Forwarded-Proto from Traefik (TLS is terminated at the proxy, backends are
-  # reached over http). Without this the admin app builds absolute redirects with
-  # an http scheme, which the https-only smoke test refuses to follow. Covers the
-  # Kind pod network (10.244.0.0/16).
-  knownNetworks: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  # Trust the kind pod network as a forwarded-headers proxy so backends honor the
+  # Gateway's X-Forwarded-Proto. Without this the admin app builds http:// redirect
+  # URLs (the Gateway, unlike ingress-nginx, does not rewrite the Location header),
+  # and the /admin smoke test fails. kind's cluster pod CIDR is 10.244.0.0/16.
+  knownNetworks: "10.244.0.0/16"
   ingress:
-    # Set to false if using a custom ingress
+    # Non-default Ingress is explicitly disabled for this CI path.
+    enabled: false
+  gateway:
     enabled: true
-    # Current supported values for ingress type include: nginx
-    className: "nginx"
-     ## - Annotations to add to the Ingress resource.
-    annotations:
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
-      nginx.ingress.kubernetes.io/proxy-body-size: 500m
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    ## - Labels to add to the Ingress resource
-    labels: {}
-    # Certificate options
-    tls:
-      # TLS certificate secret name
-      name: tls-secret
-      # Cluster cert issuer (ex. Let's Encrypt) name if one exists
-      clusterIssuer:
-    # Ingress path configuration - The samples provided are for Nginx. Examples with other Ingress providers are in the chart Readme on GitHub
-    paths:
-      web:
-        path: /(.*)
-        pathType: ImplementationSpecific
-      attachments:
-        path: /attachments/(.*)
-        pathType: ImplementationSpecific
-      api:
-        path: /api/(.*)
-        pathType: ImplementationSpecific
-      icons:
-        path: /icons/(.*)
-        pathType: ImplementationSpecific
-      notifications:
-        path: /notifications/(.*)
-        pathType: ImplementationSpecific
-      events:
-        path: /events/(.*)
-        pathType: ImplementationSpecific
-      scim:
-        path: /scim/(.*)
-        pathType: ImplementationSpecific
-      sso:
-        path: /(sso/.*)
-        pathType: ImplementationSpecific
-      identity:
-        path: /(identity/.*)
-        pathType: ImplementationSpecific
-      admin:
-        path: /(admin/?.*)
-        pathType: ImplementationSpecific
+    parentRefs:
+      - name: ci-gateway
+        namespace: default
 
   # Override application container version tags.  Theses will be versioned with the chart and need not be changed in most circumstances.
   coreVersionOverride: ""
@@ -115,7 +70,7 @@ component:
   admin:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/admin
       tag: ""
@@ -126,7 +81,7 @@ component:
   api:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/api
       tag: ""
@@ -157,7 +112,7 @@ component:
   attachments:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/attachments
       tag: ""
@@ -168,7 +123,7 @@ component:
   events:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/events
       tag: ""
@@ -179,7 +134,7 @@ component:
   icons:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/icons
       tag: ""
@@ -190,7 +145,7 @@ component:
   identity:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/identity
       tag: ""
@@ -201,7 +156,7 @@ component:
   notifications:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/notifications
       tag: ""
@@ -212,7 +167,7 @@ component:
   scim:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/scim
       tag: ""
@@ -223,7 +178,7 @@ component:
   sso:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/sso
       tag: ""
@@ -234,7 +189,7 @@ component:
   web:
     # Additional deployment labels
     labels: {}
-    # Image repository, tag, and pull policy
+    # Image name, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/web
       tag: ""

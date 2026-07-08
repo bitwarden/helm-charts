@@ -1,0 +1,45 @@
+suite: pre-install-job password generation
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-job.yaml
+
+# These tests lock in the fix for the three Go-template scoping bugs that
+# previously caused $identityCertPasswordTxtValue to render as the literal
+# string "map[]" instead of a random 32-character password.
+#
+# helm-unittest cannot stub the `lookup` function, so the existing-secret
+# reuse branch is not directly testable here; rendered-output regex on the
+# generate path is what catches a regression that re-introduces "map[]".
+
+tests:
+  - it: renders a 32-char alphanumeric password into the openssl initContainer
+    template: templates/pre-install-job.yaml
+    set:
+      secrets.identityCertificate.generate: true
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "pass:[A-Za-z0-9]{32};"
+      - notMatchRegex:
+          path: spec.template.spec.initContainers[0].args[0]
+          pattern: "pass:map\\[\\]"
+
+  - it: renders a 32-char alphanumeric password into the kubectl secret-create command
+    template: templates/pre-install-job.yaml
+    set:
+      secrets.identityCertificate.generate: true
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].args[0]
+          pattern: 'globalSettings__identityServer__certificatePassword="[A-Za-z0-9]{32}"'
+      - notMatchRegex:
+          path: spec.template.spec.containers[0].args[0]
+          pattern: "certificatePassword=.{0,4}map\\[\\]"
+
+  - it: renders nothing when secrets.identityCertificate.generate is false
+    template: templates/pre-install-job.yaml
+    set:
+      secrets.identityCertificate.generate: false
+    asserts:
+      - hasDocuments:
+          count: 0

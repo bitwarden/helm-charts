@@ -7,6 +7,12 @@
         "admin": {
           "description": "The Admin component",
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -244,6 +250,12 @@
         },
         "api": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -501,6 +513,12 @@
         },
         "attachments": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -732,6 +750,12 @@
         },
         "events": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -970,6 +994,12 @@
         },
         "icons": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1201,6 +1231,12 @@
         },
         "identity": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1458,6 +1494,12 @@
         },
         "notifications": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1689,6 +1731,12 @@
         },
         "scim": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1862,6 +1910,12 @@
         },
         "sso": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -2114,6 +2168,12 @@
         },
         "web": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -2352,6 +2412,12 @@
     "database": {
       "description": "\nConfigure MSSQL Database Deployment\nThis section is only used when general.databaseProvider is \"mssql\"\nFor PostgreSQL deployments, users must bring their own\nPostgreSQL database and provide the connection string via secrets.secretName or one of the other configuration providers.\n",
       "properties": {
+        "affinity": {
+          "description": "Optionally place deployment on specifc nodes",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "annotations": {
           "description": "Annotations to add to the MSSQL deployment",
           "required": [],
@@ -2367,19 +2433,13 @@
         "image": {
           "description": "Image repository, tag, and pull policy",
           "properties": {
-            "name": {
-              "default": "",
-              "deprecated": true,
-              "required": [],
-              "title": "name"
-            },
             "repository": {
               "default": "mcr.microsoft.com/mssql/server",
               "title": "repository",
               "type": "string"
             },
             "tag": {
-              "default": "2022-CU22-ubuntu-22.04",
+              "default": "2025-CU5-ubuntu-24.04",
               "title": "tag",
               "type": "string"
             }
@@ -2395,7 +2455,6 @@
           "type": "object"
         },
         "nodeSelector": {
-          "description": "Optionally place deployment on specifc nodes",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
@@ -2581,6 +2640,12 @@
           "description": "Comma-separated list of email addresses for Admin users",
           "title": "admins",
           "type": "string"
+        },
+        "affinity": {
+          "description": "affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
         },
         "annotations": {
           "description": "Custom annotations to add throughout the installation",
@@ -2868,6 +2933,14 @@
           "title": "gateway",
           "type": "object"
         },
+        "imagePullSecrets": {
+          "description": "Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.",
+          "items": {
+            "required": []
+          },
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
         "ingress": {
           "properties": {
             "annotations": {
@@ -2883,8 +2956,8 @@
               "type": "string"
             },
             "enabled": {
-              "default": true,
-              "description": "DEPRECATED: This Ingress resource is deprecated and will be removed in a future release.\nPlease migrate to Gateway API.",
+              "default": false,
+              "description": "Ingress is supported but is no longer the recommended default for this chart.\nGateway API is the preferred option for new deployments — set\n`general.gateway.enabled: true` below. See the chart README (\"Gateway API\" section).\n\nNOTE: This chart's default ingress controller is ingress-nginx (className: \"nginx\"),\nwhich the upstream Kubernetes project retired in March 2026 (no further releases,\nbug fixes, or security patches). If you keep using Ingress, plan to migrate to\nGateway API or another maintained ingress controller.",
               "title": "enabled",
               "type": "boolean"
             },
@@ -3110,7 +3183,6 @@
           "type": "object"
         },
         "nodeSelector": {
-          "description": "nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
@@ -3135,9 +3207,9 @@
               "title": "absoluteRefreshTokenLifetimeSeconds",
               "type": "string"
             },
-            "applyAbsoluteRefreshTokenOnRefreshToken": {
+            "applyAbsoluteExpirationOnRefreshToken": {
               "default": "true",
-              "title": "applyAbsoluteRefreshTokenOnRefreshToken",
+              "title": "applyAbsoluteExpirationOnRefreshToken",
               "type": "string"
             },
             "enabled": {
@@ -3654,12 +3726,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "alpine/openssl",
                   "title": "repository",
@@ -3688,12 +3754,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "ghcr.io/bitwarden/mssqlmigratorutility",
                   "title": "repository",
@@ -3722,12 +3782,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "alpine/kubectl",
                   "title": "repository",

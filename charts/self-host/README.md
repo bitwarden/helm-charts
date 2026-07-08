@@ -3,6 +3,8 @@
 
 The purpose of this chart is to enable the deployment of [Bitwarden](https://bitwarden.com/) to different Kubernetes environments. This chart is built for usage across multiple Kubernetes hosting scenarios.
 
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** instead — see the [Gateway API](#gateway-api) section. Be aware that this chart's default ingress controller, ingress-nginx (`className: "nginx"`), was retired by the upstream Kubernetes project in March 2026 and no longer receives updates or security patches, which is another reason to prefer Gateway API or another maintained controller. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; existing users upgrading from 1.x must explicitly set it to `true` in their values to keep using Ingress. The Ingress examples in this README are preserved as a reference for users mid-migration.
+
 ## Requirements
 
 - Kubectl
@@ -39,11 +41,6 @@ helm show values bitwarden/self-host > my-values.yaml
 Edit the `my-values.yaml` file and fill out the values. Required values that must be set:
 
 - general.domain
-- general.ingress.enabled (set to disbled if you are creating your own ingress)
-- general.ingress.className (nginx example provided)
-- general.ingress.annotations (nginx example provided)
-- general.ingress.paths (nginx example provided)
-- general.ingress.cert.tls.name
 - general.email.replyToEmail
 - general.email.smtpHost
 - general.emal.smtpPort
@@ -52,7 +49,16 @@ Edit the `my-values.yaml` file and fill out the values. Required values that mus
 - general.databaseProvider (set to "postgres" if using PostgreSQL, defaults to "mssql")
 - database.enabled (set to "false" if using an external SQL server or PostgreSQL)
 
-Note that default values for Nginx have been setup for the ingress in the values.yaml file. Some other ingress controller examples are provided later in this document.
+For routing, choose **one** of the following:
+
+- **Gateway API (recommended):** Set `general.gateway.enabled: true` and configure `general.gateway.parentRefs`. See the [Gateway API](#gateway-api) section below.
+- **Ingress:** Set `general.ingress.enabled: true` and configure `general.ingress.className`, `general.ingress.annotations`, `general.ingress.paths`, and `general.ingress.tls.name`. See the note below.
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. Note that this chart's default ingress controller, ingress-nginx (`className: "nginx"`), was retired by the upstream Kubernetes project in March 2026 and no longer receives updates or security patches. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
+
+Default Nginx values for the Ingress are still present in `values.yaml`. Some other ingress controller examples are provided later in this document and remain as reference material for users mid-migration.
+
+> **Behind a TLS-terminating reverse proxy (e.g. Traefik):** set `general.knownNetworks` to the CIDR range(s) your proxy connects from (for example `"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"`). This populates ASP.NET's forwarded-headers trusted-networks list so the backends honor `X-Forwarded-Proto` and generate `https` links/redirects. When the proxy terminates TLS and forwards to the backends over http, leaving this empty causes components such as the admin portal to emit `http` redirects.
 
 #### SCIM
 
@@ -289,6 +295,8 @@ rawManifests:
   postInstall: []
 ```
 
+> **Note:** The example below predates Gateway API support and is preserved as reference material. Ingress is supported but is no longer the recommended default for this chart; for new deployments prefer the [Gateway API](#gateway-api) section. Note that as of chart 2.0.0, `general.ingress.enabled` defaults to `false`, so the `enabled: false` step the example refers to is now the default.
+
 The example below shows how you can use the raw manifests to install Traefik's IngressRoute instead of using the Kubernetes Ingress controller. Note that you will want to disable the ingress controller under `general.ingress.enabled` to use this.
 
 ```yaml
@@ -415,6 +423,8 @@ Minimal required to get a running installation:
 
 #### Argo CD support
 
+> **Upgrading from chart 1.x to 2.0.0 with Argo CD:** Chart 2.0.0 flips the default of `general.ingress.enabled` from `true` to `false`. On the next sync after the upgrade, Argo CD will see the Ingress resource as `OutOfSync` and — if auto-prune is enabled — delete it, leaving Bitwarden unreachable. Either set `general.ingress.enabled: true` explicitly in your values before bumping the chart version, or complete the migration to Gateway API first (see the [Gateway API](#gateway-api) section). The same risk applies to Flux `HelmRelease` reconciles.
+
 To deploy the chart using Argo CD, you must use Argo CD sync phases and hooks to deploy resources in order. You can do this by setting the Argo CD annotations on the jobs and database resources in `my-values.yaml` and disabling the cleanup job.
 
 > Refer to the [Argo CD documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/) for details about sync phases and hooks.
@@ -453,6 +463,43 @@ database:
         argocd.argoproj.io/sync-wave: "-1"
 ```
 
+## Gateway API
+
+Gateway API (`gateway.networking.k8s.io/v1`) is recommended to use, opposed to the Ingress API. This chart renders an `HTTPRoute` when `general.gateway.enabled` is set to `true`. The `Gateway` resource itself is **not** managed by this chart — you (or your platform team) create and own it, and the chart's `HTTPRoute` attaches to it via `parentRefs`. TLS terminates on the Gateway, not on the HTTPRoute.
+
+### Prerequisites
+
+- A Gateway API controller installed in the cluster (e.g. Istio, Envoy Gateway, Contour, NGINX Gateway Fabric).
+- A `Gateway` resource you manage that listens for traffic on your Bitwarden domain.
+
+### Minimal values
+
+```yaml
+general:
+  domain: "vault.example.com"
+  ingress:
+    # Ingress is not the default; explicitly off (this is also the default as of chart 2.0.0)
+    enabled: false
+  gateway:
+    enabled: true
+    parentRefs:
+      - name: my-gateway
+        namespace: gateway-system
+        sectionName: https
+```
+
+See `general.gateway.*` in `values.yaml` for the full configuration surface, including per-service path overrides, annotations, and labels.
+
+### Migration from Ingress
+
+1. Stand up a `Gateway` resource and verify it accepts traffic for your Bitwarden domain.
+2. Add `general.gateway.enabled: true` and `general.gateway.parentRefs` to your `my-values.yaml`. Leave `general.ingress.enabled: true` for now so traffic is not interrupted.
+3. Run `helm upgrade`. The chart will render both an `Ingress` and an `HTTPRoute` in parallel during cutover.
+4. Repoint DNS (or your external load balancer) from the Ingress address to the Gateway address.
+5. Once traffic is flowing through the Gateway, set `general.ingress.enabled: false` (or remove the override entirely) and run `helm upgrade` again. The Ingress resource will be removed.
+
+---
+
 ## Example Deployment on AKS
 
 Below is an example of deploying this chart on AKS using various ingress controllers and cert-manager to provision the certificate from LetsEncrypt.
@@ -466,6 +513,8 @@ kubectl create ns bitwarden
 ### Deploy the ingress controller
 
 #### Nginx
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. The ingress-nginx controller used in this example was **retired by the upstream Kubernetes project in March 2026** and no longer receives updates or security patches — new deployments should use **Gateway API** (see the [Gateway API](#gateway-api) section) or another maintained controller. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 This is the simplest ingress to setup and has been provided as the default. You will need the ingress controller installed if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
 
@@ -490,6 +539,8 @@ general:
 These annotations can be used as-is.
 
 #### Azure Application Gateway
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 Azure customers might want to use an Azure Application Gateway as the ingress controller for their AKS cluster. You will want to [enable the Application Gateway ingress controller for your cluster](https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing) before making these configuration changes.
 
@@ -849,6 +900,17 @@ kubectl get ingress -n bitwarden
 
 The public IP will be found on the Overview tab of the Application Gateway service in the Azure Portal.
 
+#### AWS ALB Deployments
+
+Find the ALB address to point your DNS record at by running:
+
+```shell
+kubectl get ingress -n bitwarden
+```
+
+Create a CNAME record for your domain pointing at the `ADDRESS` shown (the ALB DNS name).
+Once DNS resolves, browse to `https://REPLACEME.com` — HTTP requests are redirected to HTTPS automatically.
+
 ## Example Deployment on OpenShift
 
 This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform. We will provide some basic pointers.
@@ -864,11 +926,13 @@ oc project bitwarden
 
 ### Setup ingress
 
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. This OpenShift example uses Routes (not Ingress), so it is unaffected; the explicit `general.ingress.enabled: false` step below is now the default as of chart 2.0.0. For an alternative based on Gateway API, see the [Gateway API](#gateway-api) section.
+
 We will use OpenShift Routes for our ingress in this example. Alternatively, ingress operators could be used.
 
 #### Disable default ingress
 
-In your `my-values.yaml`, disable the default ingress.
+In your `my-values.yaml`, disable the default ingress. As of chart 2.0.0 this is the default, but the explicit setting is shown for clarity.
 
 ```yaml
 general:
@@ -1181,7 +1245,8 @@ Follow the instructions above for creating the namespace.
 
 ### Setup Nginx ingress
 
-The ALB ingress is not currently recommended since it does not support path rewrites with path-based routing. This example uses Nginx, but Traefik could also be used here.
+This example uses Nginx, but Traefik could also be used here. 
+AWS Load Balancer Controller v2.14+ is supported using rewrites with the `alb.ingress.kubernetes.io/transforms.<serviceName>` annotation, see [Setup AWS ALB ingress](#setup-aws-alb-ingress) below.
 
 #### Install the Nginx Ingress Controller
 
@@ -1213,6 +1278,8 @@ helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
 ```
 
 #### Update the ingress section in my-values.yaml
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. The ingress-nginx controller used in this example was **retired by the upstream Kubernetes project in March 2026** and no longer receives updates or security patches — new deployments should use **Gateway API** (see the [Gateway API](#gateway-api) section) or another maintained controller. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 The following settings will create an Nginx ingress. These settings are specific to the Nginx ingress controller annotations we detailed earlier.
 
@@ -1267,6 +1334,148 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 ```
+
+### Setup AWS ALB ingress
+
+#### Install the AWS Load Balancer Controller
+
+Follow the [AWS Load Balancer Controller installation guide](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/).
+A few requirements specific to this setup:
+
+- Use controller **v2.14 or newer** — the `transforms` (URL rewrite) annotation is ignored by
+  older versions, so prefix-stripped routes such as `/api` would return `404`.
+- Tag the public subnets the internet-facing ALB should use with
+  `kubernetes.io/role/elb=1` (see
+  [subnet discovery](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/subnet_discovery/)).
+- Create (or import) an **AWS Certificate Manager certificate** for your domain in the ALB's
+  region. It must be `ISSUED`; you will reference its ARN below. Bitwarden requires HTTPS, so
+  this is not optional.
+
+#### Update the ingress section in my-values.yaml
+
+The following settings create an internet-facing ALB that terminates TLS with your ACM
+certificate, redirects HTTP to HTTPS, and uses `transforms` to strip path prefixes for the
+services that serve from root. Replace `REPLACEME.com` and the `certificate-arn` value.
+
+```yaml
+general:
+  domain: "REPLACEME.com"
+
+  ingress:
+    enabled: true
+    # Route through the AWS Load Balancer Controller.
+    className: "alb"
+
+    annotations:
+      # Public ALB, routing straight to pod IPs (no NodePort needed).
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      # HTTPS is required by Bitwarden (the server advertises https:// service URLs and the
+      # web vault needs a secure context for Web Crypto). HTTP:80 is kept only to redirect to 443.
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      # ARN of your ACM certificate (must be ISSUED, in the ALB's region).
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:REPLACEME:REPLACEME:certificate/REPLACEME"
+
+      # Health checks: all Bitwarden .NET services expose /alive on port 5000 (returns 200);
+      # the web (static) service does not, so accept 404 too. traffic-port (5000) is the default.
+      alb.ingress.kubernetes.io/healthcheck-path: "/alive"
+      alb.ingress.kubernetes.io/success-codes: "200-404"
+
+      # URL rewrites — strip the path prefix before forwarding, for services whose backend
+      # serves from root (this replaces the Nginx rewrite-target). The annotation suffix must
+      # equal the backend serviceName (release name + "self-host" + component). Services that
+      # keep their prefix (sso, identity, admin, web) get NO transform.
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-api: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/api/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-icons: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/icons/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-notifications: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/notifications/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-events: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/events/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-attachments: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/attachments/(.+)$","replace":"/$1"}]}}]
+
+    tls:
+      # TLS is terminated at the ALB via the certificate-arn above, so no in-cluster
+      # secret / cluster issuer is needed.
+      name: ""
+      clusterIssuer: ""
+
+    # Override the chart's Nginx-style regex paths with ALB-compatible prefix paths.
+    # ALB path patterns are NOT regex (only `*`/`?` wildcards); `pathType: Prefix` lets the
+    # controller generate `/x` + `/x/*` patterns and order them longest-prefix-first, so the
+    # `/` (web) catch-all is evaluated last even though it is listed first.
+    paths:
+      web:
+        path: /
+        pathType: Prefix
+      attachments:
+        path: /attachments
+        pathType: Prefix
+      api:
+        path: /api
+        pathType: Prefix
+      icons:
+        path: /icons
+        pathType: Prefix
+      notifications:
+        path: /notifications
+        pathType: Prefix
+      events:
+        path: /events
+        pathType: Prefix
+      sso:
+        path: /sso
+        pathType: Prefix
+      identity:
+        path: /identity
+        pathType: Prefix
+      admin:
+        path: /admin
+        pathType: Prefix
+```
+
+> The `transforms.<serviceName>` suffix and the `backend.service.name` are formed from your
+> Helm release name. The examples above assume a release named `bitwarden` (services
+> `bitwarden-self-host-api`, etc.). If you install under a different release name, adjust the
+> suffixes to match. If you enable SCIM (`component.scim.enabled: true`), add a `scim` path
+> (`path: /scim`, `pathType: Prefix`) and a matching `transforms.<release>-self-host-scim`
+> rewrite.
+
+If you are migrating from the Nginx example above, the settings map across as follows:
+
+| Nginx | AWS ALB |
+|---|---|
+| `nginx.ingress.kubernetes.io/ssl-redirect: "true"` | `alb.ingress.kubernetes.io/ssl-redirect: "443"` + HTTPS in `listen-ports` |
+| `nginx.ingress.kubernetes.io/use-regex: "true"` | Not needed — use `pathType: Prefix` (ALB patterns are wildcard `*`/`?`, not regex) |
+| `nginx.ingress.kubernetes.io/rewrite-target: /$1` | Per-service `alb.ingress.kubernetes.io/transforms.<serviceName>` URL rewrite |
+| TLS via the NLB / `tls.clusterIssuer` (Let's Encrypt) | ACM certificate on the ALB via `alb.ingress.kubernetes.io/certificate-arn` |
+| Paths `/(.*)`, `/api/(.*)`, … with `pathType: ImplementationSpecific` | Plain prefixes `/`, `/api`, … with `pathType: Prefix` |
+| Controller creates an AWS **NLB** | Controller creates an AWS **ALB** |
+
+A few things worth keeping in mind:
+
+- **Only the sub-path services that serve from root get a rewrite** — `api`, `icons`,
+  `notifications`, `events`, and `attachments`. `sso`, `identity`, `admin`, and `web` keep
+  their prefix, so they get no `transforms` annotation.
+- **Use `pathType: Prefix`** rather than the chart's default regex paths. The controller
+  orders rules longest-prefix-first, so the `/` (web) catch-all is evaluated last and does
+  not shadow the more specific routes.
+- **HTTPS is required.** The Bitwarden server advertises `https://` service URLs, and the web
+  vault's Web Crypto API only works in a secure context. An HTTP-only ALB will leave the UI
+  spinning — always configure the HTTPS listener with an ACM certificate.
+
+You can confirm the rendered ingress before deploying:
+
+```shell
+helm template bitwarden bitwarden/self-host -f my-values.yaml \
+  | sed -n '/kind: Ingress/,/^---/p'
+```
+
+Expect `ingressClassName: alb`, the plain prefix paths, and `transforms.*` annotations whose
+suffixes match the rendered `backend.service.name` values.
 
 ### Setup EFS storage class
 

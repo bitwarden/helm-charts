@@ -1,0 +1,64 @@
+suite: test Ingress
+templates:
+  - templates/helpers.tpl
+  - templates/ingress.yaml
+
+tests:
+  - it: should not create Ingress by default (opt-in only)
+    template: templates/ingress.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create Ingress when ingress is explicitly disabled
+    template: templates/ingress.yaml
+    set:
+      general.ingress.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create Ingress when explicitly enabled
+    template: templates/ingress.yaml
+    set:
+      general.ingress.enabled: true
+      general.domain: bitwarden.example.com
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: networking.k8s.io/v1
+      - isKind:
+          of: Ingress
+
+  - it: should set ingressClassName from values
+    template: templates/ingress.yaml
+    set:
+      general.ingress.enabled: true
+      general.ingress.className: custom-class
+      general.domain: bitwarden.example.com
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: custom-class
+
+  - it: should set host from general.domain
+    template: templates/ingress.yaml
+    set:
+      general.ingress.enabled: true
+      general.domain: bitwarden.example.com
+    asserts:
+      - equal:
+          path: spec.rules[0].host
+          value: bitwarden.example.com
+
+  - it: should include scim path when scim component is enabled
+    template: templates/ingress.yaml
+    set:
+      general.ingress.enabled: true
+      general.domain: bitwarden.example.com
+      component.scim.enabled: true
+    asserts:
+      - matchRegex:
+          path: spec.rules[0].http.paths[6].path
+          pattern: scim

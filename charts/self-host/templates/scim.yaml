@@ -40,6 +40,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.scim.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.scim.affinity }}
+        {{ toYaml .Values.component.scim.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.scim.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.scim.nodeSelector }}
@@ -73,14 +85,16 @@ spec:
         args: ['
           mkdir -p /logs/scim
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.scim.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.scim" . }}
-        image: "{{ .Values.component.scim.image.name | default .Values.component.scim.image.repository }}:{{ .Values.component.scim.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.scim.image.repository }}:{{ .Values.component.scim.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map

@@ -22,13 +22,13 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Helm
-        uses: Azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
 
       - name: Install Kubepug
         run: |
@@ -45,11 +45,13 @@ jobs:
           # Get last three stable versions
           VERSIONS=$(curl -L --silent --proto '=https' --proto-redir '=https' "https://api.github.com/repos/kubernetes/kubernetes/releases" | jq -r '[.[] | select(.prerelease == false) | .tag_name] | .[0:3] | @json')
 
-          # Test each chart with the last three stable versions
+          # Test each chart with the last three stable versions, across all CI values files
           echo "$VERSIONS" | jq -r '.[]' | while read -r version; do
-            echo "Testing chart: $chart with Kubernetes version: $version"
-            helm template "${_CHART_PATH}" --values "${_CHART_PATH}/ci/test-values.yaml" --api-versions "$version" \
-              | kubepug --error-on-deprecated --error-on-deleted --k8s-version "$version" --input-file /dev/stdin
+            for values_file in "${_CHART_PATH}"/ci/*.yaml; do
+              echo "Testing chart: ${_CHART_PATH} with values: ${values_file} on Kubernetes version: $version"
+              helm template "${_CHART_PATH}" --values "${values_file}" --api-versions "$version" \
+                | kubepug --error-on-deprecated --error-on-deleted --k8s-version "$version" --input-file /dev/stdin
+            done
           done
 
   helm-unit-test:
@@ -60,13 +62,13 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Helm
-        uses: Azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: 'v4.0.0'
       

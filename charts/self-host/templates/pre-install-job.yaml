@@ -1,10 +1,15 @@
 {{- if .Values.secrets.identityCertificate.generate }}
-{{- $identityCertPasswordTxtValue := ( randAlpha 32 ) }}
-{{- $currentIdentityCert := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert" ) }}
-{{- $identityCertPasswordTxtValue := ( lookup "v1" "Secret" .Release.Namespace "{{ .Release.Name }}-identity-cert-password" ) }}
+{{- $identityCertSecretName := printf "%s-identity-cert" .Release.Name }}
+{{- $identityCertPasswordSecretName := printf "%s-identity-cert-password" .Release.Name }}
+{{- $identityCertPasswordKey := "globalSettings__identityServer__certificatePassword" }}
 
-{{- if $currentIdentityCert }}
-{{- $identityCertPasswordTxtValue := index $currentIdentityCert.data "globalSettings__identityServer__certificatePassword" | b64dec }}
+{{- $identityCertPasswordTxtValue := randAlphaNum 32 }}
+
+{{- $currentIdentityCert := lookup "v1" "Secret" .Release.Namespace $identityCertSecretName }}
+{{- $existingPasswordSecret := lookup "v1" "Secret" .Release.Namespace $identityCertPasswordSecretName }}
+
+{{- if and $currentIdentityCert $existingPasswordSecret $existingPasswordSecret.data (hasKey $existingPasswordSecret.data $identityCertPasswordKey) }}
+{{-   $identityCertPasswordTxtValue = index $existingPasswordSecret.data $identityCertPasswordKey | b64dec }}
 {{- end }}
 ---
 apiVersion: batch/v1
@@ -41,6 +46,14 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.general.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -69,7 +82,7 @@ spec:
           chmod 777 /bitwarden/identity.pfx;
           echo Done;
         ']
-        image: "{{ .Values.supportComponents.certGenerator.image.name | default .Values.supportComponents.certGenerator.image.repository }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
+        image: "{{ .Values.supportComponents.certGenerator.image.repository }}:{{ .Values.supportComponents.certGenerator.image.tag }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
@@ -92,7 +105,7 @@ spec:
 {{- end }}
           echo "Done"
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}

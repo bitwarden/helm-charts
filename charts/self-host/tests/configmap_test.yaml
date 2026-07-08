@@ -23,3 +23,42 @@ tests:
       - isNull:
           path: data.globalSettings__knownNetworks
         documentIndex: 0
+
+  - it: should render ApplyAbsoluteExpirationOnRefreshToken env var when refreshTokens enabled
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.refreshTokens.enabled: true
+    asserts:
+      - equal:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken
+          value: "true"
+        documentIndex: 0
+      - isNull:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteRefreshTokenOnRefreshToken
+        documentIndex: 0
+
+  - it: should honor explicit applyAbsoluteExpirationOnRefreshToken override
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.refreshTokens.enabled: true
+      general.refreshTokens.applyAbsoluteExpirationOnRefreshToken: "false"
+    asserts:
+      - equal:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken
+          value: "false"
+        documentIndex: 0
+
+  - it: should not render refresh token env vars when refreshTokens disabled
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.refreshTokens.enabled: false
+    asserts:
+      - isNull:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken
+        documentIndex: 0
+      - isNull:
+          path: data.globalSettings__IdentityServer__AbsoluteRefreshTokenLifetimeSeconds
+        documentIndex: 0
