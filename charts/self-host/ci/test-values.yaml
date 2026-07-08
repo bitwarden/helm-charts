@@ -5,6 +5,12 @@ nameOverride: ""
 general:
   # Domain name for the service
   domain: "bitwarden.localhost"
+  # Trust the proxy network so ASP.NET's forwarded-headers middleware honors
+  # X-Forwarded-Proto from Traefik (TLS is terminated at the proxy, backends are
+  # reached over http). Without this the admin app builds absolute redirects with
+  # an http scheme, which the https-only smoke test refuses to follow. Covers the
+  # Kind pod network (10.244.0.0/16).
+  knownNetworks: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
   ingress:
     # Set to false if using a custom ingress
     enabled: true
