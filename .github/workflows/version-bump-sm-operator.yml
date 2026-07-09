@@ -7,59 +7,22 @@ on:
       version_number:
         description: "New Version"
         required: true
+        type: string
 
-env:
-  _BRANCH: main
-  _BOT_NAME: "bw-ghapp[bot]"
-  _BOT_EMAIL: "178206702+bw-ghapp[bot]@users.noreply.github.com"
+permissions: {}
 
 jobs:
-  bump_version:
+  bump:
     name: "Bump Version to ${{ inputs.version_number }}"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+      contents: read
+      id-token: write # Azure OIDC for the trigger-actions composite
     steps:
-
-      - name: Log in to Azure
-        uses: bitwarden/gh-actions/azure-login@main
-        with:
-          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          client_id: ${{ secrets.AZURE_CLIENT_ID }}
-
-      - name: Get Azure Key Vault secrets
-        id: get-kv-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@main
-        with:
-          keyvault: gh-org-bitwarden
-          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
-
-      - name: Log out from Azure
-        uses: bitwarden/gh-actions/azure-logout@main
-
-      - name: Generate GH App token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: app-token
-        with:
-          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
-          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-
-      - name: Checkout Branch
+      - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          ref: ${{ env._BRANCH }}
-          token:  ${{ steps.app-token.outputs.token }}
-          persist-credentials: true
-
-      - name: "Create version_bump_${{ inputs.version_number }} branch"
-        env:
-          VERSION_NUMBER: ${{ inputs.version_number }}
-        run: git switch -c "version_bump_$VERSION_NUMBER"
+          persist-credentials: false
 
       - name: Bump Version
         uses: bitwarden/gh-actions/version-bump@main
@@ -67,54 +30,33 @@ jobs:
           version: ${{ inputs.version_number }}
           file_path: "charts/sm-operator/Chart.yaml"
 
-      - name: Setup git
-        run: |
-          git config --local user.name "$_BOT_NAME"
-          git config --local user.email "$_BOT_EMAIL"
+      - name: Upload modified files
+        id: upload
+        uses: bitwarden/gh-actions/upload-modified-files@main
+        with:
+          artifact_name: modified-files
 
-      - name: Check if version changed
-        id: version-changed
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changes_to_commit=TRUE" >> "$GITHUB_OUTPUT"
-          else
-            echo "changes_to_commit=FALSE" >> "$GITHUB_OUTPUT"
-            echo "No changes to commit!";
-          fi
-
-      - name: Commit files
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
+      # Build the trigger payload with jq so the dispatcher-supplied version number is
+      # JSON-escaped, not interpolated into the data string (no break-out / key injection).
+      - name: Build trigger data
+        id: data
         env:
-          VERSION_NUMBER: ${{ inputs.version_number }}
-        run: git commit -m "Bumped version to $VERSION_NUMBER" -a
-
-      - name: Push changes
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          VERSION_NUMBER: ${{ inputs.version_number }}
-        run: git push -u origin "version_bump_$VERSION_NUMBER"
-
-      - name: Create Version PR
-        if: ${{ steps.version-changed.outputs.changes_to_commit == 'TRUE' }}
-        env:
-          PR_BRANCH: "version_bump_${{ inputs.version_number }}"
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          BASE_BRANCH: main
-          TITLE: "Bump version to ${{ inputs.version_number }}"
+          ARTIFACT_NAME: ${{ steps.upload.outputs.artifact_name }}
           VERSION_NUMBER: ${{ inputs.version_number }}
         run: |
-          gh pr create --title "$TITLE" \
-            --base "$BASE" \
-            --head "$PR_BRANCH" \
-            --label "version update" \
-            --label "automated pr" \
-            --body "
-              ## Type of change
-              - [ ] Bug fix
-              - [ ] New feature development
-              - [ ] Tech debt (refactoring, code cleanup, dependency upgrades, etc)
-              - [ ] Build/deploy pipeline
-              - [X] Other
+          JSON=$(jq -nc \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --arg target_branch "main" \
+            --arg pr_title "Bump version to $VERSION_NUMBER" \
+            --arg pr_body "Automated version bump to $VERSION_NUMBER" \
+            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body}')
+          echo "json=$JSON" >> "$GITHUB_OUTPUT"
 
-              ## Objective
-              Automated version bump to $VERSION_NUMBER"
+      - name: Trigger update
+        uses: bitwarden/gh-actions/trigger-actions@main
+        with:
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: update-repository
+          data: ${{ steps.data.outputs.json }}
