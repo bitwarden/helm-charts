@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["Self Host", "SM Operator"]
+    types: [completed]
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: release-helm-charts
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Trigger release
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write # Azure OIDC for trigger-actions
+    steps:
+      - name: Trigger release in deploy
+        uses: bitwarden/gh-actions/trigger-actions@main
+        with:
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: release-helm-charts

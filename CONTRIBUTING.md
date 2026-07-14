@@ -2,7 +2,9 @@
 
 Our [Contributing Guidelines](https://contributing.bitwarden.com/contributing/) are located in our [Contributing Documentation](https://contributing.bitwarden.com/). The documentation also includes recommended tooling, code style tips, and lots of other great information to get you started.
 
-## Version Labels
+## Versioning and Releases
+
+### Version Labels
 
 Pull requests should have **exactly one** version label applied. These labels determine the type of release generated and follow the principles of [Semantic Versioning (SemVer)](https://semver.org/).
 
@@ -22,7 +24,31 @@ Pull requests should have **exactly one** version label applied. These labels de
 > - Otherwise, use `version:patch` for **backwards-compatible fixes and maintenance**.
 > - Use `version:skip` only when the pull request should **not** trigger a release.
 
-## Pre-Commit Hooks
+### Release Flow
+
+Merging a labeled pull request into `main` releases the affected chart automatically. The version logic lives in this repository; the `deploy` repository has write access to apply the bump and commit it back.
+
+On merge, `cd.yml` reads the `version:*` label and determines which chart changed from the file paths. It computes the next version from that chart's `Chart.yaml` and hands the chart name and version to `deploy`. `deploy` checks that the new version is higher than the current one, writes it into `Chart.yaml`, and commits to `main`. chart-releaser then publishes that commit as a release.
+
+A `version:skip` label, or a pull request that touches no chart files, produces no release. A pull request that touches both charts bumps each at the label's type.
+
+```mermaid
+flowchart TD
+    subgraph helm["helm-charts"]
+        A["Labeled PR merged to main"] --> B["cd.yml: read the label,<br/>compute the next version"]
+        E["chart-releaser publishes the release"]
+    end
+    subgraph deploy["deploy"]
+        D["Bump the chart version, commit to main"]
+    end
+    B -->|"skip or no chart changed"| C["No release"]
+    B -->|"chart + version"| D
+    D --> E
+```
+
+## Local Development
+
+### Pre-Commit Hooks
 
 This repository ships git hooks in [`.git-hooks`](.git-hooks). Enable them once with:
 
@@ -32,7 +58,7 @@ git config --local core.hooksPath .git-hooks
 
 The pre-commit hook lints the charts with `helm lint` and regenerates `values.schema.json` for any chart whose `values.yaml` is staged. It requires [Helm](https://helm.sh/) and the [helm-schema](https://github.com/dadav/helm-schema) plugin.
 
-## Helm Schema
+### Helm Schema
 
 Helm chart schemas are generated from `values.yaml` files, and validated by CI. You can regenerate manually, or use the pre-commit hook:
 
@@ -43,7 +69,7 @@ helm plugin install https://github.com/dadav/helm-schema
 helm schema -k additionalProperties --skip-auto-generation required
 ```
 
-## Helm Testing
+### Helm Testing
 
 Helm charts are tested using [Helm Unittest](https://github.com/helm-unittest/helm-unittest). Tests are ran automatically in CI from the chart `tests` directory, but can also be ran locally:
 

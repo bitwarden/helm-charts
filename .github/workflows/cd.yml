@@ -1,0 +1,102 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  detect:
+    name: Detect release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      charts: ${{ steps.detect.outputs.charts }}
+      bump_type: ${{ steps.bump.outputs.type }}
+    steps:
+      - name: Resolve PR and bump type
+        id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          PR_NUMBER=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/pulls" --jq '.[0].number // empty')
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR associated with $SHA (e.g. the version-bump commit); skipping"
+            exit 0
+          fi
+          BUMP_TYPE=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json labels \
+            --jq '[.labels[].name | select(startswith("version:"))][0] // empty' | sed 's/^version://')
+          if [[ -z "$BUMP_TYPE" ]]; then
+            echo "::error::PR #$PR_NUMBER has no version:* label"
+            exit 1
+          fi
+          echo "pr=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
+
+      - name: Detect charts
+        id: detect
+        if: steps.bump.outputs.type != '' && steps.bump.outputs.type != 'skip'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.bump.outputs.pr }}
+        run: |
+          CHARTS=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json files \
+            --jq '[.files[].path | select(startswith("charts/")) | split("/")[1]] | map(select(. == "self-host" or . == "sm-operator")) | unique')
+          echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
+
+  version-bump:
+    name: Version bump (${{ matrix.chart }})
+    needs: detect
+    if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      matrix:
+        chart: ${{ fromJSON(needs.detect.outputs.charts) }}
+    steps:
+      - name: Check out chart
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Compute version
+        id: compute
+        env:
+          CHART: ${{ matrix.chart }}
+          BUMP_TYPE: ${{ needs.detect.outputs.bump_type }}
+        run: |
+          CURRENT=$(yq -r '.version' "charts/${CHART}/Chart.yaml")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          case "$BUMP_TYPE" in
+            major) NEXT="$((MAJOR + 1)).0.0" ;;
+            minor) NEXT="${MAJOR}.$((MINOR + 1)).0" ;;
+            patch) NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
+            *) echo "::error::Invalid bump type: $BUMP_TYPE"; exit 1 ;;
+          esac
+          echo "Chart $CHART: $CURRENT to $NEXT"
+          echo "version_number=$NEXT" >> "$GITHUB_OUTPUT"
+
+      - name: Build trigger data
+        id: data
+        env:
+          CHART: ${{ matrix.chart }}
+          VERSION_NUMBER: ${{ steps.compute.outputs.version_number }}
+        run: |
+          JSON=$(jq -nc --arg chart "$CHART" --arg version_number "$VERSION_NUMBER" \
+            '{chart: $chart, version_number: $version_number}')
+          echo "json=$JSON" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger version bump in deploy
+        uses: bitwarden/gh-actions/trigger-actions@main
+        with:
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: helm-charts-version-bump
+          data: ${{ steps.data.outputs.json }}
