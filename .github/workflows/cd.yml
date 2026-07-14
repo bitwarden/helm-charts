@@ -6,6 +6,11 @@ on:
 
 permissions: {}
 
+# Serialize runs so concurrent merges set the version against the latest main
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   detect:
     name: Detect release
@@ -57,12 +62,14 @@ jobs:
       contents: read
       id-token: write
     strategy:
+      max-parallel: 1 # one commit to main at a time when a PR touches both charts
       matrix:
         chart: ${{ fromJSON(needs.detect.outputs.charts) }}
     steps:
       - name: Check out chart
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
+          ref: main # compute from current main, not the pinned merge commit
           persist-credentials: false
 
       - name: Compute version
