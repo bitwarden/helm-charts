@@ -79,6 +79,10 @@ jobs:
           BUMP_TYPE: ${{ needs.detect.outputs.bump_type }}
         run: |
           CURRENT=$(yq -r '.version' "charts/${CHART}/Chart.yaml")
+          if [[ ! "$CURRENT" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::charts/${CHART}/Chart.yaml version '$CURRENT' must be MAJOR.MINOR.PATCH format"
+            exit 1
+          fi
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
           case "$BUMP_TYPE" in
             major) NEXT="$((MAJOR + 1)).0.0" ;;
