@@ -93,21 +93,39 @@ jobs:
           echo "Chart $CHART: $CURRENT to $NEXT"
           echo "version_number=$NEXT" >> "$GITHUB_OUTPUT"
 
+      - name: Bump chart version
+        uses: bitwarden/gh-actions/version-bump@main
+        with:
+          file_path: "charts/${{ matrix.chart }}/Chart.yaml"
+          version: ${{ steps.compute.outputs.version_number }}
+
+      - name: Upload modified files
+        id: upload
+        uses: bitwarden/gh-actions/upload-modified-files@main
+        with:
+          artifact_name: modified-files-${{ matrix.chart }}
+
       - name: Build trigger data
         id: data
         env:
+          ARTIFACT_NAME: ${{ steps.upload.outputs.artifact_name }}
           CHART: ${{ matrix.chart }}
           VERSION_NUMBER: ${{ steps.compute.outputs.version_number }}
         run: |
-          JSON=$(jq -nc --arg chart "$CHART" --arg version_number "$VERSION_NUMBER" \
-            '{chart: $chart, version_number: $version_number}')
+          JSON=$(jq -nc \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --arg target_branch "main" \
+            --arg pr_title "Bump $CHART chart version to $VERSION_NUMBER" \
+            --arg pr_body "Automated version bump to $VERSION_NUMBER" \
+            --arg pr_labels "version:skip" \
+            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body, pr_labels: $pr_labels}')
           echo "json=$JSON" >> "$GITHUB_OUTPUT"
 
-      - name: Trigger version bump in deploy
+      - name: Trigger update
         uses: bitwarden/gh-actions/trigger-actions@main
         with:
           azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
-          task: helm-charts-version-bump
+          task: update-repository
           data: ${{ steps.data.outputs.json }}

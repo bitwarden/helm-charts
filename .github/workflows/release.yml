@@ -8,17 +8,13 @@ on:
 
 permissions: {}
 
-concurrency:
-  group: release-helm-charts
-  cancel-in-progress: false
-
 jobs:
   release:
     name: Trigger release
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     permissions:
-      id-token: write # Azure OIDC for trigger-actions
+      id-token: write
     steps:
       - name: Trigger release in deploy
         uses: bitwarden/gh-actions/trigger-actions@main

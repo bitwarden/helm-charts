@@ -26,23 +26,23 @@ Pull requests should have **exactly one** version label applied. These labels de
 
 ### Release Flow
 
-Merging a labeled pull request into `main` releases the affected chart automatically. The version logic lives in this repository; the `deploy` repository has write access to apply the bump and commit it back.
+Merging a labeled pull request into `main` releases the affected chart automatically. The version is computed and written in this repository; the `deploy` repository has write access to commit it to `main`.
 
-On merge, `cd.yml` reads the `version:*` label and determines which chart changed from the file paths. It computes the next version from that chart's `Chart.yaml` and hands the chart name and version to `deploy`. `deploy` checks that the new version is higher than the current one, writes it into `Chart.yaml`, and commits to `main`. chart-releaser then publishes that commit as a release.
+On merge, `cd.yml` reads the `version:*` label and determines which chart changed from the file paths. It computes the next version and writes it into that chart's `Chart.yaml`, then hands the change to `deploy`, which commits it to `main`. chart-releaser then publishes that commit as a release.
 
 A `version:skip` label, or a pull request that touches no chart files, produces no release. A pull request that touches both charts bumps each at the label's type.
 
 ```mermaid
 flowchart TD
     subgraph helm["helm-charts"]
-        A["Labeled PR merged to main"] --> B["cd.yml: read the label,<br/>compute the next version"]
+        A["Labeled PR merged to main"] --> B["cd.yml: compute and write<br/>the next version"]
         E["chart-releaser publishes the release"]
     end
     subgraph deploy["deploy"]
-        D["Bump the chart version, commit to main"]
+        D["Commit the bump to main"]
     end
     B -->|"skip or no chart changed"| C["No release"]
-    B -->|"chart + version"| D
+    B -->|"modified Chart.yaml"| D
     D --> E
 ```
 
