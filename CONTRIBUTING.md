@@ -28,7 +28,7 @@ Pull requests should have **exactly one** version label applied. These labels de
 
 Merging a labeled pull request into `main` releases the affected chart automatically. The version is computed and written in this repository; the `deploy` repository has write access to commit it to `main`.
 
-On merge, `cd.yml` reads the `version:*` label and determines which chart changed from the file paths. It computes the next version and writes it into that chart's `Chart.yaml`, then hands the change to `deploy`, which commits it to `main`. chart-releaser then publishes that commit as a release.
+On merge, `cd.yml` reads the `version:*` label and determines which chart changed from the file paths. It computes the next version and writes it into that chart's `Chart.yaml`, then hands the change to `deploy`, which commits it to `main`. That commit rebuilds the chart, and once the build succeeds, `release.yml` triggers `deploy`'s `release-helm-charts` workflow (chart-releaser), which publishes the release.
 
 A `version:skip` label, or a pull request that touches no chart files, produces no release. A pull request that touches both charts bumps each at the label's type.
 
@@ -36,14 +36,14 @@ A `version:skip` label, or a pull request that touches no chart files, produces 
 flowchart TD
     subgraph helm["helm-charts"]
         A["Labeled PR merged to main"] --> B["cd.yml: compute and write<br/>the next version"]
-        E["chart-releaser publishes the release"]
+        F["release.yml: build succeeds"] --> E["chart-releaser publishes the release"]
     end
     subgraph deploy["deploy"]
         D["Commit the bump to main"]
     end
     B -->|"skip or no chart changed"| C["No release"]
     B -->|"modified Chart.yaml"| D
-    D --> E
+    D -->|"rebuild on main"| F
 ```
 
 ## Local Development
