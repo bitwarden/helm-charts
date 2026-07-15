@@ -26,9 +26,9 @@ Pull requests should have **exactly one** version label applied. These labels de
 
 ### Release Flow
 
-Merging a labeled pull request into `main` releases the affected chart automatically. The version is computed and written in this repository; the `deploy` repository has write access to commit it to `main`.
+Merging a labeled pull request into `main` releases the affected chart automatically. This repository computes and writes the new version; the `deploy` repository commits it to `main`.
 
-On merge, `cd.yml` reads the `version:*` label and determines which chart changed from the file paths. It computes the next version and writes it into that chart's `Chart.yaml`, then hands the change to `deploy`, which commits it to `main`. That commit rebuilds the chart, and once the build succeeds, `release.yml` triggers `deploy`'s `release-helm-charts` workflow (chart-releaser), which publishes the release.
+On merge, `cd.yml` reads the `version:*` label and works out which chart changed from the file paths. It computes the next version, writes it into that chart's `Chart.yaml`, and hands the change to `deploy`, which commits it to `main`. That commit rebuilds the chart, and when the build passes, `release.yml` triggers `deploy`'s `release-helm-charts` workflow (chart-releaser) to publish the release.
 
 A `version:skip` label, or a pull request that touches no chart files, produces no release. A pull request that touches both charts bumps each at the label's type.
 

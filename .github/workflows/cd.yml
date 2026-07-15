@@ -57,7 +57,7 @@ jobs:
     name: Version bump (${{ matrix.chart }})
     needs: detect
     if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
-    runs-on: ubuntu-24.04
+    uses: ./.github/workflows/_version-bump.yml
     permissions:
       contents: read
       id-token: write
@@ -65,67 +65,7 @@ jobs:
       max-parallel: 1 # one commit to main at a time when a PR touches both charts
       matrix:
         chart: ${{ fromJSON(needs.detect.outputs.charts) }}
-    steps:
-      - name: Check out chart
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          ref: main # compute from current main, not the pinned merge commit
-          persist-credentials: false
-
-      - name: Compute version
-        id: compute
-        env:
-          CHART: ${{ matrix.chart }}
-          BUMP_TYPE: ${{ needs.detect.outputs.bump_type }}
-        run: |
-          CURRENT=$(yq -r '.version' "charts/${CHART}/Chart.yaml")
-          if [[ ! "$CURRENT" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::charts/${CHART}/Chart.yaml version '$CURRENT' must be MAJOR.MINOR.PATCH format"
-            exit 1
-          fi
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
-          case "$BUMP_TYPE" in
-            major) NEXT="$((MAJOR + 1)).0.0" ;;
-            minor) NEXT="${MAJOR}.$((MINOR + 1)).0" ;;
-            patch) NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
-            *) echo "::error::Invalid bump type: $BUMP_TYPE"; exit 1 ;;
-          esac
-          echo "Chart $CHART: $CURRENT to $NEXT"
-          echo "version_number=$NEXT" >> "$GITHUB_OUTPUT"
-
-      - name: Bump chart version
-        uses: bitwarden/gh-actions/version-bump@main
-        with:
-          file_path: "charts/${{ matrix.chart }}/Chart.yaml"
-          version: ${{ steps.compute.outputs.version_number }}
-
-      - name: Upload modified files
-        id: upload
-        uses: bitwarden/gh-actions/upload-modified-files@main
-        with:
-          artifact_name: modified-files-${{ matrix.chart }}
-
-      - name: Build trigger data
-        id: data
-        env:
-          ARTIFACT_NAME: ${{ steps.upload.outputs.artifact_name }}
-          CHART: ${{ matrix.chart }}
-          VERSION_NUMBER: ${{ steps.compute.outputs.version_number }}
-        run: |
-          JSON=$(jq -nc \
-            --arg artifact_name "$ARTIFACT_NAME" \
-            --arg target_branch "main" \
-            --arg pr_title "Bump $CHART chart version to $VERSION_NUMBER" \
-            --arg pr_body "Automated version bump to $VERSION_NUMBER" \
-            --arg pr_labels "version:skip" \
-            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body, pr_labels: $pr_labels}')
-          echo "json=$JSON" >> "$GITHUB_OUTPUT"
-
-      - name: Trigger update
-        uses: bitwarden/gh-actions/trigger-actions@main
-        with:
-          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
-          task: update-repository
-          data: ${{ steps.data.outputs.json }}
+    with:
+      chart: ${{ matrix.chart }}
+      bump_type: ${{ needs.detect.outputs.bump_type }}
+    secrets: inherit

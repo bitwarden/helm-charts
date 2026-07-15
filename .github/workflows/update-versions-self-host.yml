@@ -2,26 +2,142 @@ name: Update Versions - Self Host
 
 on:
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "Dry run — skips committing to main"
-        required: false
-        default: false
-        type: boolean
 
 permissions: {}
 
 jobs:
-  trigger:
-    name: Trigger update versions
+  update-versions:
+    name: Update Versions
     runs-on: ubuntu-24.04
     permissions:
+      contents: read
       id-token: write
     steps:
-      - name: Trigger update versions
+      - name: Check out repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Get latest core version
+        id: get-core
+        uses: bitwarden/gh-actions/get-release-version@main
+        with:
+          repository: bitwarden/server
+          trim: true
+
+      - name: Get latest web version
+        id: get-web
+        uses: bitwarden/gh-actions/get-release-version@main
+        with:
+          repository: bitwarden/clients
+          monorepo: true
+          monorepo-project: web
+          trim: true
+
+      - name: Check if versions need updating
+        id: check
+        env:
+          LATEST_CORE_VERSION: ${{ steps.get-core.outputs.version }}
+          LATEST_WEB_VERSION: ${{ steps.get-web.outputs.version }}
+        working-directory: charts/self-host/templates
+        run: |
+          CORE_VERSION=$(sed -r -n '/define "bitwarden.coreVersionDefault"/!b;n;'\
+          's/\{\{- "([0-9]+\.[0-9]+\.[0-9]+)" -\}\}/\1/p' helpers.tpl)
+          WEB_VERSION=$(sed -r -n '/define "bitwarden.webVersionDefault"/!b;n;'\
+          's/\{\{- "([0-9]+\.[0-9]+\.[0-9]+)" -\}\}/\1/p' helpers.tpl)
+
+          echo "Core version: $CORE_VERSION -> $LATEST_CORE_VERSION"
+          echo "Web version:  $WEB_VERSION -> $LATEST_WEB_VERSION"
+          if [[ "$CORE_VERSION" != "$LATEST_CORE_VERSION" || "$WEB_VERSION" != "$LATEST_WEB_VERSION" ]]; then
+            echo "update=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "update=0" >> "$GITHUB_OUTPUT"
+            echo "Versions already current; nothing to do." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Verify image versions are on GHCR
+        if: ${{ steps.check.outputs.update == '1' }}
+        env:
+          COREVERSION: ${{ steps.get-core.outputs.version }}
+          WEBVERSION: ${{ steps.get-web.outputs.version }}
+        run: |
+          echo "Checking..."
+
+          coreimages=( "admin" "api" "attachments" "events" "icons" "identity" "notifications" "scim" "sso" "mssqlmigratorutility" )
+
+          test_image() {
+              image=$1
+              version=$2
+              tag=$(skopeo list-tags "docker://ghcr.io/bitwarden/$image" | jq '.Tags[]' | grep "$version")
+              if [[ -z "$tag" ]]; then
+                  echo "$image - $version - NOT FOUND!"
+                  echo "Stopping..."
+                  exit 1
+              else
+                  echo "$image - $tag - FOUND"
+              fi
+          }
+
+          echo "Core Images ($COREVERSION)..."
+          for image in "${coreimages[@]}"; do
+              test_image "$image" "$COREVERSION"
+          done
+
+          echo "Web Image ($WEBVERSION)..."
+          test_image "web" "$WEBVERSION"
+
+      - name: Update core version
+        if: ${{ steps.check.outputs.update == '1' }}
+        env:
+          VERSION: ${{ steps.get-core.outputs.version }}
+        working-directory: charts/self-host/templates
+        run: sed -i '/define "bitwarden.coreVersionDefault"/!b;n;c{{- "'"$VERSION"'" -}}' helpers.tpl
+
+      - name: Update web version
+        if: ${{ steps.check.outputs.update == '1' }}
+        env:
+          VERSION: ${{ steps.get-web.outputs.version }}
+        working-directory: charts/self-host/templates
+        run: sed -i '/define "bitwarden.webVersionDefault"/!b;n;c{{- "'"$VERSION"'" -}}' helpers.tpl
+
+      - name: Update chart appVersion
+        if: ${{ steps.check.outputs.update == '1' }}
+        env:
+          VERSION: ${{ steps.get-core.outputs.version }}
+        working-directory: charts/self-host
+        run: 'sed -i -e "s/appVersion:.*/appVersion: ${VERSION}/" Chart.yaml'
+
+      - name: Upload modified files
+        id: upload
+        if: ${{ steps.check.outputs.update == '1' }}
+        uses: bitwarden/gh-actions/upload-modified-files@main
+        with:
+          artifact_name: modified-files
+
+      # version:patch labels the PR so it auto-merges and releases through cd.yml.
+      - name: Build trigger data
+        id: data
+        if: ${{ steps.check.outputs.update == '1' }}
+        env:
+          ARTIFACT_NAME: ${{ steps.upload.outputs.artifact_name }}
+          CORE_VERSION: ${{ steps.get-core.outputs.version }}
+          WEB_VERSION: ${{ steps.get-web.outputs.version }}
+        run: |
+          JSON=$(jq -nc \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --arg target_branch "main" \
+            --arg pr_title "Update self-host versions: core $CORE_VERSION, web $WEB_VERSION" \
+            --arg pr_body "Automated update to core version \`$CORE_VERSION\` and web version \`$WEB_VERSION\`." \
+            --arg pr_labels "version:patch" \
+            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body, pr_labels: $pr_labels}')
+          echo "json=$JSON" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger update
+        if: ${{ steps.check.outputs.update == '1' }}
         uses: bitwarden/gh-actions/trigger-actions@main
         with:
           azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
-          task: helm-charts-update-versions
+          task: update-repository
+          data: ${{ steps.data.outputs.json }}
