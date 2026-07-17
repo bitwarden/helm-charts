@@ -1,0 +1,71 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+# Serialize runs so concurrent merges set the version against the latest main
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    name: Detect release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      charts: ${{ steps.detect.outputs.charts }}
+      bump_type: ${{ steps.bump.outputs.type }}
+    steps:
+      - name: Resolve PR and bump type
+        id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          PR_NUMBER=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/pulls" --jq '.[0].number // empty')
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR associated with $SHA (e.g. the version-bump commit); skipping"
+            exit 0
+          fi
+          BUMP_TYPE=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json labels \
+            --jq '[.labels[].name | select(startswith("version:"))][0] // empty' | sed 's/^version://')
+          if [[ -z "$BUMP_TYPE" ]]; then
+            echo "::error::PR #$PR_NUMBER has no version:* label"
+            exit 1
+          fi
+          echo "pr=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
+
+      - name: Detect charts
+        id: detect
+        if: steps.bump.outputs.type != '' && steps.bump.outputs.type != 'skip'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.bump.outputs.pr }}
+        run: |
+          CHARTS=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json files \
+            --jq '[.files[].path | select(startswith("charts/")) | split("/")[1]] | map(select(. == "self-host" or . == "sm-operator")) | unique')
+          echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
+
+  version-bump:
+    name: Version bump (${{ matrix.chart }})
+    needs: detect
+    if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
+    uses: ./.github/workflows/_version-bump.yml
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      max-parallel: 1 # one commit to main at a time when a PR touches both charts
+      matrix:
+        chart: ${{ fromJSON(needs.detect.outputs.charts) }}
+    with:
+      chart: ${{ matrix.chart }}
+      bump_type: ${{ needs.detect.outputs.bump_type }}
+    secrets: inherit

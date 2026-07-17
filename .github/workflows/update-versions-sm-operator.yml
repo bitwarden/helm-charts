@@ -70,7 +70,8 @@ jobs:
             --arg target_branch "main" \
             --arg pr_title "Update operator version to $VERSION" \
             --arg pr_body "Automated update to appVersion in charts/sm-operator/Chart.yaml" \
-            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body}')
+            --arg pr_labels "version:patch" \
+            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body, pr_labels: $pr_labels}')
           echo "json=$JSON" >> "$GITHUB_OUTPUT"
 
       - name: Trigger update

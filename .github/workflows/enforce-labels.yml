@@ -1,0 +1,27 @@
+name: Enforce PR labels
+
+on:
+  pull_request:
+    types: [labeled, unlabeled, opened, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  enforce-labels:
+    name: Enforce Labels
+    uses: bitwarden/gh-actions/.github/workflows/_enforce-labels.yml@main
+
+  enforce-version-label:
+    name: Enforce version label
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce a single version label
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          COUNT=$(echo "$LABELS" | jq '[.[] | select(startswith("version:"))] | length')
+          if [[ "$COUNT" -ne 1 ]]; then
+            echo "::error::PR must have exactly one version:* label (found $COUNT)."
+            echo "### :x: PR must have exactly one version:* label (found $COUNT)" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
