@@ -71,19 +71,27 @@ jobs:
       bump_type: ${{ needs.detect.outputs.bump_type }}
     secrets: inherit
 
-  release:
-    name: Release charts
+  # The deploy-side release-helm-charts publishes whatever the latest successful build
+  # uploaded, so release must wait until the build that packaged the bumped version has
+  # succeeded on main. One job per bumped chart waits independently for its build whose
+  # Chart.yaml version at the run's head commit matches the version now on main, rather than
+  # trusting a specific SHA (the bump may land as a squash or merge commit).
+  wait-for-build:
+    name: Wait for build (${{ matrix.chart }})
     needs:
       - detect
       - version-bump
     if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
     runs-on: ubuntu-24.04
     # KIND e2e in the build workflows is slow; give the wait plenty of headroom.
-    timeout-minutes: 90
+    timeout-minutes: 45
     permissions:
       actions: read # read build-workflow run status
       contents: read
-      id-token: write # Azure OIDC for the trigger-actions composite
+    strategy:
+      fail-fast: false
+      matrix:
+        chart: ${{ fromJSON(needs.detect.outputs.charts) }}
     steps:
       - name: Check out main
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -92,60 +100,51 @@ jobs:
           fetch-depth: 0 # need each build run's head commit to read its Chart.yaml version
           persist-credentials: false
 
-      # The deploy-side release-helm-charts publishes whatever the latest successful build
-      # uploaded, so it must run only after the build that packaged the bumped version has
-      # succeeded on main. Wait per bumped chart for a build whose Chart.yaml version at its
-      # head commit matches the version now on main, rather than trusting a specific SHA (the
-      # bump may land as a squash or merge commit).
-      - name: Wait for chart builds
+      - name: Wait for chart build
         env:
           GH_TOKEN: ${{ github.token }}
-          CHARTS: ${{ needs.detect.outputs.charts }}
+          CHART: ${{ matrix.chart }}
         run: |
-          for chart in $(jq -r '.[]' <<< "$CHARTS"); do
-            case "$chart" in
-              self-host)   workflow="self-host.yml" ;;
-              sm-operator) workflow="sm-operator.yml" ;;
-              *) echo "::error::Unknown chart '$chart'"; exit 1 ;;
-            esac
+          case "$CHART" in
+            self-host)   workflow="self-host.yml" ;;
+            sm-operator) workflow="sm-operator.yml" ;;
+            *) echo "::error::Unknown chart '$CHART'"; exit 1 ;;
+          esac
 
-            expected=$(yq -r '.version' "charts/${chart}/Chart.yaml")
-            echo "Waiting for '$workflow' build packaging $chart $expected on main..."
+          expected=$(yq -r '.version' "charts/${CHART}/Chart.yaml")
+          echo "Locating '$workflow' build packaging $CHART $expected on main..."
 
-            deadline=$(( SECONDS + 40 * 60 ))
-            ok=""
-            while (( SECONDS < deadline )); do
-              runs=$(gh run list --workflow "$workflow" --branch main --event push \
-                --limit 20 --json headSha,status,conclusion 2>/dev/null || echo '[]')
-
-              matched_conclusion=""
-              while read -r sha conclusion; do
-                [[ -z "$sha" ]] && continue
-                version=$(git show "${sha}:charts/${chart}/Chart.yaml" 2>/dev/null | yq -r '.version' 2>/dev/null || echo "")
-                if [[ "$version" == "$expected" ]]; then
-                  if [[ "$conclusion" == "success" ]]; then ok=1; break; fi
-                  matched_conclusion="$conclusion"
-                fi
-              done < <(jq -r '.[] | select(.status == "completed") | "\(.headSha) \(.conclusion)"' <<< "$runs")
-
-              if [[ -n "$ok" ]]; then
-                echo "$chart $expected build succeeded"
-                break
-              fi
-              if [[ -n "$matched_conclusion" ]]; then
-                echo "::error::'$workflow' build for $chart $expected concluded '$matched_conclusion'"
-                exit 1
-              fi
-              echo "  build not ready yet; retrying in 30s"
-              sleep 30
-            done
-
-            if [[ -z "$ok" ]]; then
-              echo "::error::Timed out waiting for '$workflow' build for $chart $expected"
-              exit 1
-            fi
+          # Find the run for the bumped version (not a stale pre-bump build), waiting for the
+          # bump commit's push to spawn it, then let gh run watch block until it succeeds.
+          run_id=""
+          deadline=$(( SECONDS + 15 * 60 ))
+          while (( SECONDS < deadline )); do
+            while read -r id sha; do
+              [[ -z "$id" ]] && continue
+              version=$(git show "${sha}:charts/${CHART}/Chart.yaml" 2>/dev/null | yq -r '.version' 2>/dev/null || echo "")
+              if [[ "$version" == "$expected" ]]; then run_id="$id"; break; fi
+            done < <(gh run list --workflow "$workflow" --branch main --event push --limit 20 \
+              --json databaseId,headSha --jq '.[] | "\(.databaseId) \(.headSha)"')
+            [[ -n "$run_id" ]] && break
+            echo "  build run not found yet; retrying in 20s"
+            sleep 20
           done
 
+          if [[ -z "$run_id" ]]; then
+            echo "::error::No '$workflow' build run found for $CHART $expected"
+            exit 1
+          fi
+
+          echo "Watching build run $run_id for $CHART $expected..."
+          gh run watch "$run_id" --exit-status --interval 30
+
+  release:
+    name: Release charts
+    needs: wait-for-build
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write # Azure OIDC for the trigger-actions composite
+    steps:
       - name: Trigger release in deploy
         uses: bitwarden/gh-actions/trigger-actions@main
         with:
