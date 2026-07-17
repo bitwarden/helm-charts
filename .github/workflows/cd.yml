@@ -51,6 +51,7 @@ jobs:
         run: |
           CHARTS=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json files \
             --jq '[.files[].path | select(startswith("charts/")) | split("/")[1]] | map(select(. == "self-host" or . == "sm-operator")) | unique')
+          echo "Detected charts: $CHARTS"
           echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
 
   version-bump:
@@ -69,3 +70,86 @@ jobs:
       chart: ${{ matrix.chart }}
       bump_type: ${{ needs.detect.outputs.bump_type }}
     secrets: inherit
+
+  release:
+    name: Release charts
+    needs:
+      - detect
+      - version-bump
+    if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
+    runs-on: ubuntu-24.04
+    # KIND e2e in the build workflows is slow; give the wait plenty of headroom.
+    timeout-minutes: 90
+    permissions:
+      actions: read # read build-workflow run status
+      contents: read
+      id-token: write # Azure OIDC for the trigger-actions composite
+    steps:
+      - name: Check out main
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main # the version bump has already landed here
+          fetch-depth: 0 # need each build run's head commit to read its Chart.yaml version
+          persist-credentials: false
+
+      # The deploy-side release-helm-charts publishes whatever the latest successful build
+      # uploaded, so it must run only after the build that packaged the bumped version has
+      # succeeded on main. Wait per bumped chart for a build whose Chart.yaml version at its
+      # head commit matches the version now on main, rather than trusting a specific SHA (the
+      # bump may land as a squash or merge commit).
+      - name: Wait for chart builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHARTS: ${{ needs.detect.outputs.charts }}
+        run: |
+          for chart in $(jq -r '.[]' <<< "$CHARTS"); do
+            case "$chart" in
+              self-host)   workflow="self-host.yml" ;;
+              sm-operator) workflow="sm-operator.yml" ;;
+              *) echo "::error::Unknown chart '$chart'"; exit 1 ;;
+            esac
+
+            expected=$(yq -r '.version' "charts/${chart}/Chart.yaml")
+            echo "Waiting for '$workflow' build packaging $chart $expected on main..."
+
+            deadline=$(( SECONDS + 40 * 60 ))
+            ok=""
+            while (( SECONDS < deadline )); do
+              runs=$(gh run list --workflow "$workflow" --branch main --event push \
+                --limit 20 --json headSha,status,conclusion 2>/dev/null || echo '[]')
+
+              matched_conclusion=""
+              while read -r sha conclusion; do
+                [[ -z "$sha" ]] && continue
+                version=$(git show "${sha}:charts/${chart}/Chart.yaml" 2>/dev/null | yq -r '.version' 2>/dev/null || echo "")
+                if [[ "$version" == "$expected" ]]; then
+                  if [[ "$conclusion" == "success" ]]; then ok=1; break; fi
+                  matched_conclusion="$conclusion"
+                fi
+              done < <(jq -r '.[] | select(.status == "completed") | "\(.headSha) \(.conclusion)"' <<< "$runs")
+
+              if [[ -n "$ok" ]]; then
+                echo "$chart $expected build succeeded"
+                break
+              fi
+              if [[ -n "$matched_conclusion" ]]; then
+                echo "::error::'$workflow' build for $chart $expected concluded '$matched_conclusion'"
+                exit 1
+              fi
+              echo "  build not ready yet; retrying in 30s"
+              sleep 30
+            done
+
+            if [[ -z "$ok" ]]; then
+              echo "::error::Timed out waiting for '$workflow' build for $chart $expected"
+              exit 1
+            fi
+          done
+
+      - name: Trigger release in deploy
+        uses: bitwarden/gh-actions/trigger-actions@main
+        with:
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: release-helm-charts
