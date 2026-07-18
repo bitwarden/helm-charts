@@ -20,6 +20,7 @@ jobs:
     name: Detect release
     runs-on: ubuntu-24.04
     permissions:
+      actions: write # cancel this run on a version:skip no-op
       contents: read
       pull-requests: read
     outputs:
@@ -57,6 +58,21 @@ jobs:
             --jq '[.files[].path | select(startswith("charts/")) | split("/")[1]] | map(select(. == "self-host" or . == "sm-operator")) | unique')
           echo "Detected charts: $CHARTS"
           echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
+
+      # A skip (version:skip label) is a normal no-op, not a release. Cancel the run so it
+      # reads as "cancelled" rather than a green success that implies a release happened.
+      - name: Cancel run when nothing to release
+        if: steps.bump.outputs.type == 'skip'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "No release needed — cancelling this run so it isn't marked successful." | tee -a "$GITHUB_STEP_SUMMARY"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel"
+          # Block until the cancellation lands so the run finalizes as "cancelled". If it never
+          # takes effect, fail rather than silently reporting success.
+          for _ in $(seq 1 60); do sleep 5; done
+          echo "::error::Cancellation did not take effect within 5 minutes."
+          exit 1
 
       - name: Check for chart changes
         id: check
