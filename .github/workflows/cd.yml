@@ -3,6 +3,10 @@ name: CD
 on:
   push:
     branches: [main]
+    # Only charts trigger a release; the bump commit also lives under charts/, so it still
+    # re-triggers and resolves to skip (see detect). Non-chart pushes never enter CD.
+    paths:
+      - charts/**
 
 permissions: {}
 
@@ -19,7 +23,7 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      charts: ${{ steps.detect.outputs.charts }}
+      charts: ${{ steps.check.outputs.charts || '[]' }}
       bump_type: ${{ steps.bump.outputs.type }}
     steps:
       - name: Resolve PR and bump type
@@ -54,10 +58,26 @@ jobs:
           echo "Detected charts: $CHARTS"
           echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
 
+      - name: Check for chart changes
+        id: check
+        if: steps.bump.outputs.type != '' && steps.bump.outputs.type != 'skip'
+        env:
+          CHARTS: ${{ steps.detect.outputs.charts }}
+          BUMP_TYPE: ${{ steps.bump.outputs.type }}
+        run: |
+          # Safety net: the charts/** path filter should guarantee a chart changed whenever a
+          # real version bump is requested, so this should never fire. Fail loudly rather than
+          # feed an empty matrix downstream or silently release nothing.
+          if [[ -z "$CHARTS" || "$(jq 'length' <<< "$CHARTS")" -eq 0 ]]; then
+            echo "::error::Version bump '$BUMP_TYPE' requested but no self-host/sm-operator chart changes were detected."
+            exit 1
+          fi
+          echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
+
   version-bump:
     name: Version bump (${{ matrix.chart }})
     needs: detect
-    if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
+    if: needs.detect.outputs.bump_type != '' && needs.detect.outputs.bump_type != 'skip'
     uses: ./.github/workflows/_version-bump.yml
     permissions:
       contents: read
@@ -81,7 +101,7 @@ jobs:
     needs:
       - detect
       - version-bump
-    if: needs.detect.outputs.charts != '' && needs.detect.outputs.charts != '[]'
+    if: needs.detect.outputs.bump_type != '' && needs.detect.outputs.bump_type != 'skip'
     runs-on: ubuntu-24.04
     # KIND e2e in the build workflows is slow; give the wait plenty of headroom.
     timeout-minutes: 45
