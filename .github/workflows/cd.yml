@@ -47,18 +47,6 @@ jobs:
           echo "pr=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
 
-      - name: Detect charts
-        id: detect
-        if: steps.bump.outputs.type != '' && steps.bump.outputs.type != 'skip'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ steps.bump.outputs.pr }}
-        run: |
-          CHARTS=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json files \
-            --jq '[.files[].path | select(startswith("charts/")) | split("/")[1]] | map(select(. == "self-host" or . == "sm-operator")) | unique')
-          echo "Detected charts: $CHARTS"
-          echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
-
       # A skip (version:skip label) is a normal no-op, not a release. Cancel the run so it
       # reads as "cancelled" rather than a green success that implies a release happened.
       - name: Cancel run when nothing to release
@@ -73,6 +61,18 @@ jobs:
           for _ in $(seq 1 60); do sleep 5; done
           echo "::error::Cancellation did not take effect within 5 minutes."
           exit 1
+
+      - name: Detect charts
+        id: detect
+        if: steps.bump.outputs.type != '' && steps.bump.outputs.type != 'skip'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.bump.outputs.pr }}
+        run: |
+          CHARTS=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json files \
+            --jq '[.files[].path | select(startswith("charts/")) | split("/")[1]] | map(select(. == "self-host" or . == "sm-operator")) | unique')
+          echo "Detected charts: $CHARTS"
+          echo "charts=$CHARTS" >> "$GITHUB_OUTPUT"
 
       - name: Check for chart changes
         id: check
