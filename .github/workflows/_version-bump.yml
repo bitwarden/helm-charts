@@ -1,0 +1,106 @@
+name: _version-bump
+
+on:
+  workflow_call:
+    inputs:
+      chart:
+        description: "Chart directory under charts/ to bump (e.g. self-host)."
+        required: true
+        type: string
+      bump_type:
+        description: "Semver bump to apply: major, minor, or patch."
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  bump:
+    name: Bump ${{ inputs.chart }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out chart
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main # compute from current main, not the pinned merge commit
+          persist-credentials: false
+
+      - name: Compute next version
+        id: compute
+        env:
+          CHART: ${{ inputs.chart }}
+          BUMP_TYPE: ${{ inputs.bump_type }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CURRENT=$(yq -r '.version' "charts/${CHART}/Chart.yaml")
+          if [[ ! "$CURRENT" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::charts/${CHART}/Chart.yaml version '$CURRENT' must be MAJOR.MINOR.PATCH format"
+            exit 1
+          fi
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          case "$BUMP_TYPE" in
+            major) NEXT="$((MAJOR + 1)).0.0" ;;
+            minor) NEXT="${MAJOR}.$((MINOR + 1)).0" ;;
+            patch) NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
+            *) echo "::error::Invalid bump type: $BUMP_TYPE"; exit 1 ;;
+          esac
+          echo "Chart $CHART: $CURRENT -> $NEXT" | tee -a "$GITHUB_STEP_SUMMARY"
+
+          # Skip if this chart release already exists (e.g. a re-run).
+          if gh release view "${CHART}-${NEXT}" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release ${CHART}-${NEXT} already exists — skipping." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "version=$NEXT" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate computed version
+        if: steps.compute.outputs.version != ''
+        uses: bitwarden/gh-actions/version-check@main
+        with:
+          version: ${{ steps.compute.outputs.version }}
+          validation_type: semver
+
+      - name: Bump chart version
+        if: steps.compute.outputs.version != ''
+        uses: bitwarden/gh-actions/version-bump@main
+        with:
+          file_path: "charts/${{ inputs.chart }}/Chart.yaml"
+          version: ${{ steps.compute.outputs.version }}
+
+      - name: Upload modified files
+        id: upload
+        if: steps.compute.outputs.version != ''
+        uses: bitwarden/gh-actions/upload-modified-files@main
+        with:
+          artifact_name: modified-files-${{ inputs.chart }}
+
+      - name: Build trigger data
+        id: data
+        if: steps.compute.outputs.version != ''
+        env:
+          ARTIFACT_NAME: ${{ steps.upload.outputs.artifact_name }}
+          CHART: ${{ inputs.chart }}
+          VERSION: ${{ steps.compute.outputs.version }}
+        run: |
+          JSON=$(jq -nc \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --arg target_branch "main" \
+            --arg pr_title "Bump $CHART chart version to $VERSION" \
+            --arg pr_body "Automated version bump to $VERSION" \
+            --arg pr_labels "version:skip" \
+            '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body, pr_labels: $pr_labels}')
+          echo "json=$JSON" >> "$GITHUB_OUTPUT"
+
+      # version:skip lets the bump PR pass enforce-labels; its merge resolves to skip in cd.yml.
+      - name: Land the bump on main
+        if: steps.compute.outputs.version != ''
+        uses: bitwarden/gh-actions/trigger-actions@main
+        with:
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: update-repository
+          data: ${{ steps.data.outputs.json }}

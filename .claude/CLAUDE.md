@@ -13,6 +13,7 @@
 
 - **NEVER** commit secrets or credentials: Installation IDs, keys, passwords must be provided via Kubernetes secrets or CSI secret providers
 - **NEVER** skip schema regeneration: After modifying values.yaml, always run `helm schema` to regenerate the JSON schema
+- **NEVER** manually bump a chart's `version:` in `Chart.yaml`: the label-driven CD (`cd.yml`) computes and applies it on merge. Apply exactly one `version:*` label to the PR instead (see CONTRIBUTING.md)
 - **ALWAYS** follow version resolution pattern: Component tag → coreVersionOverride → chart default
 - **ALWAYS** add helm-unittest tests for new components or template logic changes
 - **ALWAYS** use documentSelector in tests when templates produce multiple Kubernetes resources
