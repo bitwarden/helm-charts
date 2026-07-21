@@ -2,6 +2,11 @@ name: Update Versions - SM Operator
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Operator version to sync (e.g., 2.0.0). If omitted, the latest sm-kubernetes release is used."
+        required: false
+        type: string
 
 permissions: {}
 
@@ -20,6 +25,7 @@ jobs:
 
       - name: Get Latest Operator Version
         id: get-operator-version
+        if: inputs.version == ''
         uses: bitwarden/gh-actions/get-release-version@main
         with:
           repository: bitwarden/sm-kubernetes
@@ -28,7 +34,7 @@ jobs:
       - name: Check if operator needs updating
         id: operator-update
         env:
-          LATEST_OPERATOR_VERSION: ${{ steps.get-operator-version.outputs.version }}
+          LATEST_OPERATOR_VERSION: ${{ inputs.version != '' && inputs.version || steps.get-operator-version.outputs.version }}
         run: |
           OPERATOR_VERSION=$(sed -nE 's/^appVersion:\s+([^\s]+)/\1/p' Chart.yaml)
 
@@ -37,6 +43,7 @@ jobs:
           if [ "$OPERATOR_VERSION" != "$LATEST_OPERATOR_VERSION" ]; then
             echo "Needs Operator update!"
             echo "update=1" >> "$GITHUB_OUTPUT"
+            echo "version=$LATEST_OPERATOR_VERSION" >> "$GITHUB_OUTPUT"
           else
             echo "update=0" >> "$GITHUB_OUTPUT"
           fi
@@ -45,9 +52,36 @@ jobs:
       - name: Update Chart appVersion
         if: ${{ steps.operator-update.outputs.update == '1' }}
         env:
-          VERSION: ${{ steps.get-operator-version.outputs.version }}
+          VERSION: ${{ steps.operator-update.outputs.version }}
         run: 'sed -i -e "s/appVersion:.*/appVersion: ${VERSION}/" Chart.yaml'
         working-directory: charts/sm-operator
+
+      - name: Sync BitwardenSecret CRD from operator release
+        if: ${{ steps.operator-update.outputs.update == '1' }}
+        env:
+          VERSION: ${{ steps.operator-update.outputs.version }}
+        run: |
+          set -euo pipefail
+          SOURCE_URL="https://raw.githubusercontent.com/bitwarden/sm-kubernetes/v${VERSION}/config/crd/bases/k8s.bitwarden.com_bitwardensecrets.yaml"
+          TARGET="charts/sm-operator/templates/bitwardensecret-crd.yaml"
+          PLACEHOLDER="__SM_OPERATOR_HELM_LABELS__"
+
+          curl -fsSL -o /tmp/sm-operator-crd.yaml "$SOURCE_URL"
+
+          {
+            echo "# This file is synced from bitwarden/sm-kubernetes by the Update Versions - SM Operator workflow."
+            echo "# Do not edit manually. To resync, run the workflow against a new operator release tag."
+            yq -I 2 ".metadata.labels = \"$PLACEHOLDER\"" /tmp/sm-operator-crd.yaml \
+              | sed "s#  labels: $PLACEHOLDER#  labels:\n  {{- include \"sm-operator.labels\" . | nindent 4 }}#"
+          } > "$TARGET"
+
+      - name: Set up Helm
+        if: ${{ steps.operator-update.outputs.update == '1' }}
+        uses: Azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
+
+      - name: Validate synced CRD renders
+        if: ${{ steps.operator-update.outputs.update == '1' }}
+        run: helm template charts/sm-operator --show-only templates/bitwardensecret-crd.yaml
 
       - name: Upload modified files
         id: upload
@@ -63,13 +97,13 @@ jobs:
         if: ${{ steps.operator-update.outputs.update == '1' }}
         env:
           ARTIFACT_NAME: ${{ steps.upload.outputs.artifact_name }}
-          VERSION: ${{ steps.get-operator-version.outputs.version }}
+          VERSION: ${{ steps.operator-update.outputs.version }}
         run: |
           JSON=$(jq -nc \
             --arg artifact_name "$ARTIFACT_NAME" \
             --arg target_branch "main" \
             --arg pr_title "Update operator version to $VERSION" \
-            --arg pr_body "Automated update to appVersion in charts/sm-operator/Chart.yaml" \
+            --arg pr_body "Automated update to appVersion in charts/sm-operator/Chart.yaml and synced BitwardenSecret CRD" \
             --arg pr_labels "version:patch" \
             '{artifact_name: $artifact_name, target_branch: $target_branch, pr_title: $pr_title, pr_body: $pr_body, pr_labels: $pr_labels}')
           echo "json=$JSON" >> "$GITHUB_OUTPUT"
