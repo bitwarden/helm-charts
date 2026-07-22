@@ -285,6 +285,48 @@ component:
 
 You can override the image repository for any component.
 
+#### Extra Volumes
+
+Every long-running service under `component.<name>` accepts `extraVolumeMounts` (added to the container) and `extraVolumes` (added to the pod). The pre-/post-install hook and job pods share a single `jobs.extraVolumeMounts` / `jobs.extraVolumes` pair, and the database (MSSQL) pod uses `database.extraVolumeMounts` / `database.extraVolumes`. All default to `[]`, so leaving them unset changes nothing.
+
+This is useful for hardened deployments that set `readOnlyRootFilesystem: true`, where containers need writable scratch space (typically `/tmp`) mounted as an `emptyDir`. Supply the volume where it is needed instead of patching the chart:
+
+```yaml
+# Writable /tmp for the hardened app containers
+component:
+  api:
+    securityContext:
+      readOnlyRootFilesystem: true
+    extraVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+    extraVolumes:
+      - name: tmp
+        emptyDir: {}
+
+# Writable /tmp for every pre-/post-install hook and job pod
+jobs:
+  securityContext:
+    readOnlyRootFilesystem: true
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
+
+# Writable scratch for the MSSQL pod
+database:
+  extraVolumeMounts:
+    - name: mssql-secrets
+      mountPath: /var/opt/mssql/secrets
+  extraVolumes:
+    - name: mssql-secrets
+      emptyDir: {}
+```
+
+`extraVolumes` accepts any Kubernetes volume source (`emptyDir`, `configMap`, `secret`, `persistentVolumeClaim`, `csi`, etc.), and each `extraVolumeMounts` entry must reference a volume `name` defined in the corresponding `extraVolumes` list.
+
 #### Raw Manifests Files
 
 This chart allows you to include other Kubernetes manifest files either pre- or post-install. To do this, update the `rawManifests` section of the chart
