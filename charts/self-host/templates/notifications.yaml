@@ -66,6 +66,17 @@ spec:
         {{ toYaml .Values.general.tolerations | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if or .Values.component.notifications.dnsPolicy .Values.general.dnsPolicy }}
+      dnsPolicy: {{ default .Values.general.dnsPolicy .Values.component.notifications.dnsPolicy }}
+      {{- end }}
+      {{- if or .Values.component.notifications.dnsConfig .Values.general.dnsConfig }}
+      dnsConfig:
+        {{- if .Values.component.notifications.dnsConfig }}
+        {{ toYaml .Values.component.notifications.dnsConfig | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.dnsConfig | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.notifications.podServiceAccount }}
       serviceAccount: {{ .Values.component.notifications.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.notifications.podServiceAccount | quote }}

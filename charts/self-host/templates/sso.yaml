@@ -67,6 +67,17 @@ spec:
         {{ toYaml .Values.general.tolerations | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if or .Values.component.sso.dnsPolicy .Values.general.dnsPolicy }}
+      dnsPolicy: {{ default .Values.general.dnsPolicy .Values.component.sso.dnsPolicy }}
+      {{- end }}
+      {{- if or .Values.component.sso.dnsConfig .Values.general.dnsConfig }}
+      dnsConfig:
+        {{- if .Values.component.sso.dnsConfig }}
+        {{ toYaml .Values.component.sso.dnsConfig | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.dnsConfig | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.component.sso.podServiceAccount }}
       serviceAccount: {{ .Values.component.sso.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.component.sso.podServiceAccount | quote }}
