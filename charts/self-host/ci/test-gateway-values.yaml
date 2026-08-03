@@ -78,9 +78,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "1000m"
   api:
     # Additional deployment labels
     labels: {}
@@ -92,17 +89,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "1000m"
-    readinessProbe:
-      httpGet:
-        path: /alive
-        port: 5000
-      initialDelaySeconds: 10
-      periodSeconds: 5
-      failureThreshold: 30
-      timeoutSeconds: 3
     # Extra environment variables to add to the container
     extraEnv:
       - name: CUSTOM_VAR
@@ -134,9 +120,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
   events:
     # Additional deployment labels
     labels: {}
@@ -148,9 +131,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
   icons:
     # Additional deployment labels
     labels: {}
@@ -162,9 +142,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
   identity:
     # Additional deployment labels
     labels: {}
@@ -176,17 +153,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "1000m"
-    readinessProbe:
-      httpGet:
-        path: /alive
-        port: 5000
-      initialDelaySeconds: 10
-      periodSeconds: 5
-      failureThreshold: 30
-      timeoutSeconds: 3
   notifications:
     # Additional deployment labels
     labels: {}
@@ -198,9 +164,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
   scim:
     # Additional deployment labels
     labels: {}
@@ -212,9 +175,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
   sso:
     # Additional deployment labels
     labels: {}
@@ -226,9 +186,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
   web:
     # Additional deployment labels
     labels: {}
@@ -240,9 +197,6 @@ component:
     securityContext:
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount:
-    resources:
-      limits:
-        cpu: "500m"
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
@@ -340,7 +294,7 @@ database:
       cpu: "100m"
     limits:
       memory: "2G"
-      cpu: "2000m"
+      cpu: "500m"
   podSecurityContext:
     fsGroup: 10001
 

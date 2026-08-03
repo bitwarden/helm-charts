@@ -314,15 +314,15 @@ component:
       periodSeconds: 120
       failureThreshold: 5
       timeoutSeconds: 180
-    # Readiness probe configuration
+    # Readiness probe configuration.  Polls often so the pod is marked Ready close to when it actually is.
     readinessProbe:
       httpGet:
         path: /alive
         port: 5000
-      initialDelaySeconds: 120
-      periodSeconds: 120
-      failureThreshold: 5
-      timeoutSeconds: 180
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      failureThreshold: 6
+      timeoutSeconds: 5
     # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
     # (chart will fail render otherwise). See README "Scaling backend services" for details.
     replicas: 1
@@ -558,10 +558,10 @@ component:
       httpGet:
         path: /alive
         port: 5000
-      initialDelaySeconds: 60
-      periodSeconds: 120
-      failureThreshold: 3
-      timeoutSeconds: 60
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      failureThreshold: 6
+      timeoutSeconds: 5
     # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
     # (chart will fail render otherwise). See README "Scaling backend services" for details.
     replicas: 1
@@ -1010,6 +1010,11 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  # Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.
+  startupProbe:
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 60
 
   # The MSSQL volumes for the PVCs
   volume:

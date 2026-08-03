@@ -1,0 +1,169 @@
+suite: test probe timing on the startup critical path
+templates:
+  - templates/*.tpl
+  - templates/mssql.yaml
+  - templates/api.yaml
+  - templates/identity.yaml
+tests:
+  - it: should gate MSSQL startup on a polled budget rather than a fixed delay
+    template: templates/mssql.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].startupProbe.initialDelaySeconds
+        documentSelector:
+          path: kind
+          value: StatefulSet
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.periodSeconds
+          value: 5
+        documentSelector:
+          path: kind
+          value: StatefulSet
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.timeoutSeconds
+          value: 3
+        documentSelector:
+          path: kind
+          value: StatefulSet
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 60
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should keep the MSSQL startup probe an exec sqlcmd check
+    template: templates/mssql.yaml
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].startupProbe.exec.command[2]
+          pattern: sqlcmd .*-Q "SELECT 1"
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should allow operators to widen the MSSQL startup budget
+    template: templates/mssql.yaml
+    set:
+      database.startupProbe.periodSeconds: 10
+      database.startupProbe.failureThreshold: 90
+      database.startupProbe.timeoutSeconds: 5
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.periodSeconds
+          value: 10
+        documentSelector:
+          path: kind
+          value: StatefulSet
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 90
+        documentSelector:
+          path: kind
+          value: StatefulSet
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.timeoutSeconds
+          value: 5
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should render an MSSQL startup delay only when one is set
+    template: templates/mssql.yaml
+    set:
+      database.startupProbe.initialDelaySeconds: 45
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.initialDelaySeconds
+          value: 45
+        documentSelector:
+          path: kind
+          value: StatefulSet
+
+  - it: should mark api ready close to when it actually is
+    template: templates/api.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.initialDelaySeconds
+          value: 10
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.periodSeconds
+          value: 5
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.failureThreshold
+          value: 6
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.timeoutSeconds
+          value: 5
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should mark identity ready close to when it actually is
+    template: templates/identity.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.initialDelaySeconds
+          value: 10
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.periodSeconds
+          value: 5
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.failureThreshold
+          value: 6
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.timeoutSeconds
+          value: 5
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should leave api liveness timing conservative so a slow boot cannot restart the pod
+    template: templates/api.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.initialDelaySeconds
+          value: 120
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.periodSeconds
+          value: 120
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should leave identity liveness timing conservative
+    template: templates/identity.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.initialDelaySeconds
+          value: 120
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.periodSeconds
+          value: 60
+        documentSelector:
+          path: kind
+          value: Deployment
