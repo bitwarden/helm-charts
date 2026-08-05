@@ -400,10 +400,10 @@
               "type": "string"
             },
             "readinessProbe": {
-              "description": "Readiness probe configuration.  Polls often so the pod is marked Ready close to when it actually is.",
+              "description": "Readiness probe configuration",
               "properties": {
                 "failureThreshold": {
-                  "default": 6,
+                  "default": 5,
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -425,17 +425,17 @@
                   "type": "object"
                 },
                 "initialDelaySeconds": {
-                  "default": 10,
+                  "default": 120,
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
-                  "default": 5,
+                  "default": 120,
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
-                  "default": 5,
+                  "default": 180,
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
@@ -1384,7 +1384,7 @@
               "description": "Readiness probe configuration",
               "properties": {
                 "failureThreshold": {
-                  "default": 6,
+                  "default": 3,
                   "title": "failureThreshold",
                   "type": "integer"
                 },
@@ -1406,17 +1406,17 @@
                   "type": "object"
                 },
                 "initialDelaySeconds": {
-                  "default": 10,
+                  "default": 60,
                   "title": "initialDelaySeconds",
                   "type": "integer"
                 },
                 "periodSeconds": {
-                  "default": 5,
+                  "default": 120,
                   "title": "periodSeconds",
                   "type": "integer"
                 },
                 "timeoutSeconds": {
-                  "default": 5,
+                  "default": 60,
                   "title": "timeoutSeconds",
                   "type": "integer"
                 }
