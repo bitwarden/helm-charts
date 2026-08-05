@@ -75,6 +75,9 @@ data:
 {{- if .Values.general.knownNetworks }}
   globalSettings__knownNetworks: {{ .Values.general.knownNetworks | quote }}
 {{- end }}
+{{- if .Values.jobs.db.migrationTimeoutSeconds }}
+  globalSettings__sqlServer__migrationExecutionTimeoutSeconds: {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}
+{{- end }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"
   LOCAL_GID: "1000"

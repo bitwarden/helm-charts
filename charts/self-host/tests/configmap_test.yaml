@@ -62,3 +62,14 @@ tests:
       - isNull:
           path: data.globalSettings__IdentityServer__AbsoluteRefreshTokenLifetimeSeconds
         documentIndex: 0
+
+  - it: should include the migration timeout when migrationTimeoutSeconds is set
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - equal:
+          path: data.globalSettings__sqlServer__migrationExecutionTimeoutSeconds
+          value: "900"
+        documentIndex: 0

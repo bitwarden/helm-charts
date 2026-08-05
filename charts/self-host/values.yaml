@@ -888,6 +888,10 @@ jobs:
   podSecurityContext: {}
 
   db:
+    # Timeout seconds for MSSQL migrations.
+    # Default: 5 minutes
+    # A value of 0 can be used for unlimited timeout, useful for large databases
+    migrationTimeoutSeconds: ""
     preInstallMigrator:
       # Additional job labels
       labels: {}
