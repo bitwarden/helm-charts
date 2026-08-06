@@ -1010,6 +1010,11 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  # Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.
+  startupProbe:
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 60
 
   # The MSSQL volumes for the PVCs
   volume:
