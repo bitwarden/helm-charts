@@ -98,6 +98,9 @@ spec:
           - name: mssql-data
             mountPath: /db
           {{- end }}
+          {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 10 }}
+          {{- end }}
       containers:
       - name: migrate-db
         env:
@@ -129,6 +132,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         {{- if or ( not .Values.database.enabled ) ( and .Values.database.enabled .Release.IsUpgrade ) }}
         args: [ "-f", "DbScripts_transition", "-r"]
         {{- end }}
@@ -148,5 +154,8 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.jobs.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 {{- end }}

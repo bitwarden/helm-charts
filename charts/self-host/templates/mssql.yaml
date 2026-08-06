@@ -104,6 +104,9 @@ spec:
               mountPath: "/mnt/secrets-store"
               readOnly: true
             {{- end }}
+            {{- with .Values.database.extraVolumeMounts }}
+{{ toYaml . | indent 12 }}
+            {{- end }}
           livenessProbe:
             tcpSocket:
               port: mssql
@@ -147,6 +150,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.database.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

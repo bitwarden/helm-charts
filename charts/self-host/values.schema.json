@@ -2430,6 +2430,22 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the MSSQL container",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to the MSSQL pod",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "image": {
           "description": "Image repository, tag, and pull policy",
           "properties": {
@@ -3472,6 +3488,22 @@
           "required": [],
           "title": "db",
           "type": "object"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the pre- and post-install hook/job containers",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to the pre- and post-install hook/job pods",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumes",
+          "type": "array"
         },
         "podSecurityContext": {
           "required": [],
