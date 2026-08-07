@@ -1,0 +1,55 @@
+suite: test pre-install db migrator job
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-db-migrator-job.yaml
+tests:
+  - it: should pass the timeout when migrationTimeoutSeconds is set
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - isKind:
+          of: Job
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-upgrade
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value: ["-t", "900"]
+
+  - it: should pass the timeout when database is disabled
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      database.enabled: false
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install,pre-upgrade
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value: ["-t", "900"]
+
+  - it: should pass the timeout when migrationTimeoutSeconds is "0" for unlimited
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      jobs.db.migrationTimeoutSeconds: "0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value: ["-t", "0"]
+
+  - it: should not set args when no timeout is set
+    template: templates/pre-install-db-migrator-job.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].args
+
+  - it: should not render job when databaseProvider is postgres
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      general.databaseProvider: postgres
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - hasDocuments:
+          count: 0

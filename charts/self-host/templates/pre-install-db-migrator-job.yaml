@@ -94,6 +94,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- if .Values.jobs.db.migrationTimeoutSeconds }}
+        args: [ "-t", {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}]
+        {{- end }}
       restartPolicy: Never
       volumes:
         - name: migrator-extract-dir
