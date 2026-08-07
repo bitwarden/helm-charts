@@ -2532,7 +2532,7 @@
           "type": "object"
         },
         "startupProbe": {
-          "description": "Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.",
+          "description": "Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.\nSet initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.",
           "properties": {
             "failureThreshold": {
               "default": 60,
