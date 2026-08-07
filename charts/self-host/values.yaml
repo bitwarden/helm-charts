@@ -1010,6 +1010,12 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  # Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.
+  # Set initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.
+  startupProbe:
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 60
 
   # The MSSQL volumes for the PVCs
   volume:
