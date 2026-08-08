@@ -138,6 +138,13 @@ general:
     enforceSsoPolicyForAllUsers: false
   # Custom labels to add throughout the installation
   labels: {}
+  # Pod DNS policy for all components (override per component under component.<name>.dnsPolicy).
+  # Empty uses the Kubernetes default (ClusterFirst).
+  dnsPolicy: ""
+  # Pod DNS config for all components, mapped to a Pod's spec.dnsConfig (override per component).
+  # Use on clusters where the kubelet default ndots:5 plus corporate search domains break outbound
+  # resolution from the Alpine/musl images. Example: options ndots "2".
+  dnsConfig: {}
   # Custom annotations to add throughout the installation
   annotations: {}
   # Additional default pod labels

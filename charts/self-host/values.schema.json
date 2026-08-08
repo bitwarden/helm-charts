@@ -2710,6 +2710,18 @@
           "title": "distributedCache",
           "type": "object"
         },
+        "dnsConfig": {
+          "description": "Pod DNS config for all components, mapped to a Pod's spec.dnsConfig (override per component).\nUse on clusters where the kubelet default ndots:5 plus corporate search domains break outbound\nresolution from the Alpine/musl images. Example: options ndots \"2\".",
+          "required": [],
+          "title": "dnsConfig",
+          "type": "object"
+        },
+        "dnsPolicy": {
+          "default": "",
+          "description": "Pod DNS policy for all components (override per component under component.\u003cname\u003e.dnsPolicy).\nEmpty uses the Kubernetes default (ClusterFirst).",
+          "title": "dnsPolicy",
+          "type": "string"
+        },
         "domain": {
           "default": "REPLACE",
           "description": "Domain name for the service",
