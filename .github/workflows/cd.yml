@@ -124,6 +124,8 @@ jobs:
     permissions:
       actions: read # read build-workflow run status
       contents: read
+    outputs:
+      build_run_id: ${{ steps.wait.outputs.run_id }}
     strategy:
       fail-fast: false
       matrix:
@@ -137,6 +139,7 @@ jobs:
           persist-credentials: false
 
       - name: Wait for chart build
+        id: wait
         env:
           GH_TOKEN: ${{ github.token }}
           CHART: ${{ matrix.chart }}
@@ -174,6 +177,8 @@ jobs:
           echo "Watching build run $run_id for $CHART $expected..."
           gh run watch "$run_id" --exit-status --interval 30
 
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
   release:
     name: Release charts
     needs: wait-for-build
@@ -188,3 +193,4 @@ jobs:
           azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
           task: release-helm-charts
+          data: '{"build_run_id": "${{ needs.wait-for-build.outputs.build_run_id }}"}'
