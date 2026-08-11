@@ -325,7 +325,7 @@ Step 4 restarts the identity and sso pods, so expect a short interruption to sig
     Notes on these commands:
 
     - The `map[]` in `-passin` must be quoted — the brackets are shell glob characters.
-    - `NEW_PASSWORD` must be `export`ed, because `-passout env:NEW_PASSWORD` reads it from the environment. Using `env:` rather than `pass:` keeps the new password out of the process list, where any other user on the machine could read it.
+    - `NEW_PASSWORD` must be exported as an environment variable, because `-passout env:NEW_PASSWORD` reads it from the environment. Using `env:` rather than `pass:` keeps the new password out of the process list, where any other user on the machine could read it.
     - Run all three in the same shell session, or `NEW_PASSWORD` will be lost before step 3.
     - Each command is a single line. If you reflow them onto multiple lines with `\`, make sure no whitespace follows the backslash — that silently breaks the continuation and `openssl` will either reject the arguments or drop into an interactive password prompt.
 
