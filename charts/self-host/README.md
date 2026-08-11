@@ -262,7 +262,9 @@ __*NOTE: In this example, generic Kubernetes secrets were used. You can also cho
 
 Chart versions __earlier than 2.0.0__ contained a bug that generated the identity certificate password as the literal string `map[]` instead of a random value. If your deployment was originally installed with one of those versions and used the default `secrets.identityCertificate.generate: true`, your `identity.pfx` is encrypted with a publicly known password and must be rotated.
 
-Chart 2.x refuses to install or upgrade while this password is in place and points you at this section. Rotation is done with `kubectl` and `openssl` — it does not require Helm, so the block does not prevent you from fixing the problem.
+Charts that carry the detection check refuse to install or upgrade while this password is in place, and point you at this section. Rotation is done with `kubectl` and `openssl` — it does not require Helm, so the block does not prevent you from fixing the problem.
+
+> __Important:__ the check was added after 2.1.1, so chart versions from 2.0.0 up to and including 2.1.1 do __not__ perform it. If you upgraded on one of those versions and it succeeded, that is not evidence you are unaffected — run the command below to check.
 
 #### Check whether you are affected
 
