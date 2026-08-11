@@ -6,7 +6,7 @@ Chart versions earlier than 2.0.0 generated the password with a template that
 assigned the result of `lookup` (a map) to the password variable instead of a
 random string. On a fresh install the looked-up secret does not exist, so Go
 rendered the empty map as the literal string "map[]" and the identity.pfx was
-encrypted with that publicly known value. See SHOT-159 / VULN-553.
+encrypted with that publicly known value.
 
 Takes the password as an argument rather than reading it itself so the
 comparison can be unit-tested without a cluster.
