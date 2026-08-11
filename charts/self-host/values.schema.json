@@ -2531,6 +2531,29 @@
           "title": "securityContext",
           "type": "object"
         },
+        "startupProbe": {
+          "description": "Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.\nSet initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.",
+          "properties": {
+            "failureThreshold": {
+              "default": 60,
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 3,
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "tolerations": {
           "description": "Optionally add taint tolerations",
           "items": {
