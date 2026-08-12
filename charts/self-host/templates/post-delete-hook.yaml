@@ -83,5 +83,13 @@ spec:
         resources:
           {{- toYaml .Values.jobs.cleanup.resources | nindent 10 }}
         {{- end }}
+        {{- with .Values.jobs.extraVolumeMounts }}
+        volumeMounts:
+{{ toYaml . | indent 8 }}
+        {{- end }}
       restartPolicy: Never
+      {{- with .Values.jobs.extraVolumes }}
+      volumes:
+{{ toYaml . | indent 6 }}
+      {{- end }}
 {{- end }}
