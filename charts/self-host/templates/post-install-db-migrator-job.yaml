@@ -127,6 +127,10 @@ spec:
         volumeMounts:
         - name: migrator-extract-dir
           mountPath: "/migrator"
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          mountPath: /etc/bitwarden/ca-certificates
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -146,6 +150,11 @@ spec:
         - name: mssql-data
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
+        {{- end }}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.volume.caCertificates.configMapName }}
         {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline

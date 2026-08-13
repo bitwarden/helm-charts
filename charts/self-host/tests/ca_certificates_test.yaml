@@ -1,0 +1,66 @@
+suite: test caCertificates volume and mount on the DB migrator jobs
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-db-migrator-job.yaml
+  - templates/post-install-db-migrator-job.yaml
+
+tests:
+  - it: pre-install-db-migrator-job - should mount the CA bundle when enabled
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      volume.caCertificates.enabled: true
+      volume.caCertificates.configMapName: custom-ca-bundle
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ca-certificates
+            mountPath: /etc/bitwarden/ca-certificates
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ca-certificates
+            configMap:
+              name: custom-ca-bundle
+        documentIndex: 0
+
+  - it: pre-install-db-migrator-job - should not mount the CA bundle when disabled
+    template: templates/pre-install-db-migrator-job.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ca-certificates
+            mountPath: /etc/bitwarden/ca-certificates
+        documentIndex: 0
+
+  - it: post-install-db-migrator-job - should mount the CA bundle when enabled
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      volume.caCertificates.enabled: true
+      volume.caCertificates.configMapName: custom-ca-bundle
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ca-certificates
+            mountPath: /etc/bitwarden/ca-certificates
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ca-certificates
+            configMap:
+              name: custom-ca-bundle
+        documentIndex: 0
+
+  - it: post-install-db-migrator-job - should not mount the CA bundle when disabled
+    template: templates/post-install-db-migrator-job.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: ca-certificates
+            mountPath: /etc/bitwarden/ca-certificates
+        documentIndex: 0
