@@ -34,6 +34,12 @@ tests:
             name: ca-certificates
             mountPath: /etc/bitwarden/ca-certificates
         documentIndex: 0
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: ca-certificates
+          any: true
+        documentIndex: 0
 
   - it: post-install-db-migrator-job - should mount the CA bundle when enabled
     template: templates/post-install-db-migrator-job.yaml
@@ -63,4 +69,10 @@ tests:
           content:
             name: ca-certificates
             mountPath: /etc/bitwarden/ca-certificates
+        documentIndex: 0
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: ca-certificates
+          any: true
         documentIndex: 0
