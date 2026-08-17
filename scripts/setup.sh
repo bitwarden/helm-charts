@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-GATEWAY_API_VERSION="v1.3.0"   # standard channel CRDs — confirm against NGF 2.6.x supported version
+GATEWAY_API_VERSION="v1.4.0"   # standard channel CRDs — confirm against NGF 2.6.x supported version
 NGF_CHART_VERSION="2.6.3"      # oci://ghcr.io/nginx/charts/nginx-gateway-fabric
 
 function createKindCluster() {
