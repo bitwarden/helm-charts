@@ -30,20 +30,22 @@ helm repo update
 
 ### Create config file
 
-Run the following command to create a custom values file used for deployment:
+Create a `my-values.yaml` with only the values you override. Anything you leave out uses the chart default, including any default that changes in a later release.
+
+To list every value and its default:
 
 ```shell
-helm show values bitwarden/self-host > my-values.yaml
+helm show values bitwarden/self-host
 ```
 
 ### Update the config file
 
-Edit the `my-values.yaml` file and fill out the values. Required values that must be set:
+Set the values required for your environment:
 
 - general.domain
 - general.email.replyToEmail
 - general.email.smtpHost
-- general.emal.smtpPort
+- general.email.smtpPort
 - general.email.smtpSsl
 - sharedStorageClassName
 - general.databaseProvider (set to "postgres" if using PostgreSQL, defaults to "mssql")
@@ -57,6 +59,25 @@ For routing, choose **one** of the following:
 > **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. Note that this chart's default ingress controller, ingress-nginx (`className: "nginx"`), was retired by the upstream Kubernetes project in March 2026 and no longer receives updates or security patches. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 Default Nginx values for the Ingress are still present in `values.yaml`. Some other ingress controller examples are provided later in this document and remain as reference material for users mid-migration.
+
+A minimal `my-values.yaml` with Gateway API:
+
+```yaml
+general:
+  domain: "bitwarden.example.com"
+  email:
+    replyToEmail: "no-reply@example.com"
+    smtpHost: "smtp.example.com"
+    smtpPort: "587"
+    smtpSsl: "true"
+  gateway:
+    enabled: true
+    parentRefs:
+      - name: bitwarden-gateway
+        namespace: gateway-system
+
+sharedStorageClassName: "shared-storage"
+```
 
 > **Behind a TLS-terminating reverse proxy (e.g. Traefik):** set `general.knownNetworks` to the CIDR range(s) your proxy connects from (for example `"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"`). This populates ASP.NET's forwarded-headers trusted-networks list so the backends honor `X-Forwarded-Proto` and generate `https` links/redirects. When the proxy terminates TLS and forwards to the backends over http, leaving this empty causes components such as the admin portal to emit `http` redirects.
 
