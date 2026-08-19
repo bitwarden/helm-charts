@@ -2430,6 +2430,22 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the MSSQL container",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to the MSSQL pod",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "image": {
           "description": "Image repository, tag, and pull policy",
           "properties": {
@@ -2529,6 +2545,29 @@
           "description": "This will set the Kubernetes container security context",
           "required": [],
           "title": "securityContext",
+          "type": "object"
+        },
+        "startupProbe": {
+          "description": "Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.\nSet initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.",
+          "properties": {
+            "failureThreshold": {
+              "default": 60,
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 3,
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "tolerations": {
@@ -3478,6 +3517,22 @@
           "required": [],
           "title": "db",
           "type": "object"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the pre- and post-install hook/job containers",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to the pre- and post-install hook/job pods",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumes",
+          "type": "array"
         },
         "podSecurityContext": {
           "required": [],

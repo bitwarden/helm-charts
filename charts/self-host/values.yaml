@@ -887,6 +887,11 @@ jobs:
 
   podSecurityContext: {}
 
+  # Extra volume mounts to add to the pre- and post-install hook/job containers
+  extraVolumeMounts: []
+  # Extra volumes to add to the pre- and post-install hook/job pods
+  extraVolumes: []
+
   db:
     # Timeout seconds for MSSQL migrations.
     # Default: 5 minutes
@@ -1014,6 +1019,12 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  # Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.
+  # Set initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.
+  startupProbe:
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 60
 
   # The MSSQL volumes for the PVCs
   volume:
@@ -1056,6 +1067,10 @@ database:
   podSecurityContext: {}
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount: ""
+  # Extra volume mounts to add to the MSSQL container
+  extraVolumeMounts: []
+  # Extra volumes to add to the MSSQL pod
+  extraVolumes: []
 
 # You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
 # Please see the chart README in GitHub for more information and examples.

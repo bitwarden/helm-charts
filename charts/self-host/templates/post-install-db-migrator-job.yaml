@@ -98,6 +98,9 @@ spec:
           - name: mssql-data
             mountPath: /db
           {{- end }}
+          {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 10 }}
+          {{- end }}
       containers:
       - name: migrate-db
         env:
@@ -124,10 +127,17 @@ spec:
         volumeMounts:
         - name: migrator-extract-dir
           mountPath: "/migrator"
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          mountPath: /etc/bitwarden/ca-certificates
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
+        {{- end }}
+        {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
         {{- end }}
         {{- if or ( not .Values.database.enabled ) ( and .Values.database.enabled .Release.IsUpgrade ) }}
         args: [ "-f", "DbScripts_transition", "-r"{{ if .Values.jobs.db.migrationTimeoutSeconds }}, "-t", {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}{{ end }}]
@@ -143,6 +153,11 @@ spec:
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.mssqlData" . ) .Values.database.volume.data.existingClaim }}
         {{- end }}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.volume.caCertificates.configMapName }}
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
@@ -150,5 +165,8 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.jobs.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 {{- end }}
