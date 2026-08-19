@@ -6,8 +6,8 @@
 
 1. @../README.md
 2. @../CONTRIBUTING.md
-3. @../charts/self-host/README.md
-4. @../charts/sm-operator/README.md
+3. `charts/self-host/README.md` (read on demand for the self-host chart values)
+4. `charts/sm-operator/README.md` (read on demand for the sm-operator chart values)
 
 ## Critical Rules
 
