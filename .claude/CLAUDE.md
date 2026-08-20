@@ -4,10 +4,10 @@
 
 **Read these files before making changes to ensure you fully understand the project and contributing guidelines**
 
-1. @README.md
-2. @CONTRIBUTING.md
-3. @charts/self-host/README.md
-4. @charts/sm-operator/README.md
+1. @../README.md
+2. `CONTRIBUTING.md` (read on demand for contributing guidelines)
+3. `charts/self-host/README.md` (read on demand for the self-host chart values)
+4. `charts/sm-operator/README.md` (read on demand for the sm-operator chart values)
 
 ## Critical Rules
 
