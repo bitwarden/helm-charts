@@ -140,7 +140,9 @@ spec:
 {{ toYaml . | indent 8 }}
         {{- end }}
         {{- if or ( not .Values.database.enabled ) ( and .Values.database.enabled .Release.IsUpgrade ) }}
-        args: [ "-f", "DbScripts_transition", "-r"]
+        args: [ "-f", "DbScripts_transition", "-r"{{ if .Values.jobs.db.migrationTimeoutSeconds }}, "-t", {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}{{ end }}]
+        {{- else if .Values.jobs.db.migrationTimeoutSeconds }}
+        args: [ "-t", {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}]
         {{- end }}
       restartPolicy: Never
       volumes:
