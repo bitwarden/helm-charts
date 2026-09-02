@@ -823,7 +823,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 3.5.7
+      tag: 3.5.8
   kubectl:
     image:
       repository: alpine/kubectl
@@ -831,7 +831,7 @@ supportComponents:
       # type: [string, number]
       # default: ""
       # @schema
-      tag: 1.36.3
+      tag: 1.37.0
 
 # Data volume sizes for shared PVCs
 volume:
@@ -893,6 +893,10 @@ jobs:
   extraVolumes: []
 
   db:
+    # Timeout seconds for MSSQL migrations.
+    # Default: 5 minutes
+    # A value of "0" can be used for unlimited timeout, useful for large databases
+    migrationTimeoutSeconds: ""
     preInstallMigrator:
       # Additional job labels
       labels: {}

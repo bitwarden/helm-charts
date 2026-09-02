@@ -3381,6 +3381,12 @@
         },
         "db": {
           "properties": {
+            "migrationTimeoutSeconds": {
+              "default": "",
+              "description": "Timeout seconds for MSSQL migrations.\nDefault: 5 minutes\nA value of \"0\" can be used for unlimited timeout, useful for large databases",
+              "title": "migrationTimeoutSeconds",
+              "type": "string"
+            },
             "postInstallMigrator": {
               "properties": {
                 "annotations": {

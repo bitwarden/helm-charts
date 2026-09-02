@@ -101,6 +101,9 @@ spec:
         {{- with .Values.jobs.extraVolumeMounts }}
 {{ toYaml . | indent 8 }}
         {{- end }}
+        {{- if .Values.jobs.db.migrationTimeoutSeconds }}
+        args: [ "-t", {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}]
+        {{- end }}
       restartPolicy: Never
       volumes:
         - name: migrator-extract-dir

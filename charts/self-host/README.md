@@ -640,6 +640,7 @@ Gateway API (`gateway.networking.k8s.io/v1`) is recommended to use, opposed to t
 
 ### Prerequisites
 
+- Gateway API CRDs v1.4.0 or later installed in the cluster.
 - A Gateway API controller installed in the cluster (e.g. Istio, Envoy Gateway, Contour, NGINX Gateway Fabric).
 - A `Gateway` resource you manage that listens for traffic on your Bitwarden domain.
 
