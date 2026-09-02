@@ -22,21 +22,31 @@ helm repo update
 
 ### Create config file
 
-Run the following command to create a custom values file used for deployment:
+Create a `my-values.yaml` with only the values you override. Anything you leave out uses the chart default, including any default that changes in a later release.
+
+To list every value and its default:
 
 ```shell
-helm show values bitwarden/sm-operator > my-values.yaml
+helm show values bitwarden/sm-operator
 ```
 
 ### Update the config file
 
-Edit the `my-values.yaml` file and fill out the values. Required values that must be set.  The values included can be used as is, but you should verify the following values make sense for your installation.  More information on each setting is found in `values.yaml`
+The defaults work against Bitwarden Cloud US with no overrides. Check these against your environment and set the ones that differ:
 
-- settings.bwSecretsManagerRefreshInterval
-- settings.cloudRegion
+- settings.bwSecretsManagerRefreshInterval (defaults to 300 seconds)
+- settings.cloudRegion (defaults to US)
 - settings.bwApiUrlOverride (if you are self-hosting Bitwarden)
 - settings.bwIdentityUrlOverride (if you are self-hosting Bitwarden)
-- containers.enableSeccompProfileRuntimeDefault
+- containers.enableSeccompProfileRuntimeDefault (defaults to true)
+
+To point the operator at a self-hosted Bitwarden server:
+
+```yaml
+settings:
+  bwApiUrlOverride: "https://bitwarden.example.com/api"
+  bwIdentityUrlOverride: "https://bitwarden.example.com/identity"
+```
 
 __NOTE: If you are testing this chart via the DevContainer and trying to point to a locally running copy of Bitwarden server, you will need to use the `host.docker.internal` hostname.__
 
