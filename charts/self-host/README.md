@@ -1365,7 +1365,7 @@ component:
         type: RuntimeDefault
 ```
 
-Apply the same block under each `component.<name>`, and under `jobs.securityContext`/`jobs.podSecurityContext` for the pre- and post-install hook jobs. Don't apply it to `database`: the bundled MSSQL pod can't start under a restricted context (see [Exceptions](#exceptions) below).
+Apply the same block under each `component.<name>`, and under `jobs.securityContext` for the pre- and post-install hook jobs. `jobs.podSecurityContext` is pod-level and only takes `runAsNonRoot` and `seccompProfile` from it; `capabilities` and `allowPrivilegeEscalation` are container-only fields. Don't apply it to `database`: the bundled MSSQL pod can't start under a restricted context (see [Exceptions](#exceptions) below).
 
 Don't set `runAsUser`. `restricted-v2` requires the UID to come from the project's own allocated range (`oc get project <project> -o yaml`, annotation `openshift.io/sa.scc.uid-range`), which differs per project and isn't known ahead of time. Leave `runAsUser` unset and OpenShift assigns a UID from that range automatically. A hardcoded UID outside the range needs the more permissive `nonroot-v2` SCC. `nonroot-v2` isn't granted to any user or service account by default, so a normal user's pod is rejected (`ALLOWED BY: <none>`); only `cluster-admin` can create it.
 
