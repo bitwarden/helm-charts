@@ -47,7 +47,7 @@ jobs:
       chart_name: self-host
   
   test-self-host-kind:
-    name: Test self-host chart with Kind (${{ matrix.routing }})
+    name: Test self-host chart with Kind (${{ matrix.routing }}${{ matrix.database != 'mssql' && format(', {0}', matrix.database) || '' }})
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -55,6 +55,12 @@ jobs:
       fail-fast: false
       matrix:
         routing: [ingress, gateway]
+        database: [mssql]
+        # Postgres is independent of routing, so it runs once rather than across the full matrix.
+        # database overrides the matrix value, so this adds a combination instead of extending one.
+        include:
+          - routing: ingress
+            database: postgres
     steps:
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,10 +90,10 @@ jobs:
           config: ${{ matrix.routing == 'gateway' && 'scripts/cluster-gateway.yaml' || 'scripts/cluster.yaml' }}
 
       - name: Set up cluster
-        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}"
+        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}"
 
-      - name: Install self-host (${{ matrix.routing }})
-        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}"
+      - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }})
+        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}"
 
       - name: Diagnostics
         if: always()
@@ -124,6 +130,10 @@ jobs:
 
       - name: Smoke tests
         run: ./scripts/smoke-test.sh
+
+      - name: Verify Postgres migrations
+        if: matrix.database == 'postgres'
+        run: ./scripts/setup.sh verify-postgres
 
   build-self-host:
     name: Build self-host chart

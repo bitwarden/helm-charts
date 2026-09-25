@@ -1,0 +1,10 @@
+# Overlay for the Kind install's postgres scenario, layered on top of test-values.yaml or
+# test-gateway-values.yaml by scripts/setup.sh.
+# The database is an external PostgreSQL deployed by setup.sh (scripts/postgres.yaml); the
+# connection string is provided through globalSettings__postgreSql__connectionString in custom-secret.
+general:
+  databaseProvider: "postgres"
+
+database:
+  # Don't deploy the bundled MSSQL pod.
+  enabled: false

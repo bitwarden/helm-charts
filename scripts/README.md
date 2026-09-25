@@ -8,3 +8,8 @@
 ## Usage
 Run the `setup.sh` script from the root of the repository for `ct` (chart-testing) to correctly run differing.
 Example: `$(git rev-parse --show-toplevel)/scripts/setup.sh`
+
+Optional arguments select the routing (`ingress` or `gateway`, default `ingress`) and the database
+(`mssql` or `postgres`, default `mssql`). The `postgres` option deploys an external PostgreSQL
+(`scripts/postgres.yaml`) and installs the chart with `databaseProvider: postgres`.
+Example: `$(git rev-parse --show-toplevel)/scripts/setup.sh all ingress postgres`
