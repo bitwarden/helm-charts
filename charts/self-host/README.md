@@ -1348,16 +1348,43 @@ oc create secret generic custom-secret -n bitwarden \
     # --from-literal=globalSettings__sqlServer__connectionString="REPLACE" # If using your own SQL server
 ```
 
-### Create a service account
+### Set a security context
 
-Bitwarden currently requires the use of a service account in OpenShift due to each container's need to run elevated commands on start-up. These commands are blocked by OpenShift's restricted SCCs. We need to create a service account and assign it to the `anyuid` SCC.
+Bitwarden's containers can run under OpenShift's default `restricted-v2` SCC once you set a `securityContext` that drops all Linux capabilities and disables privilege escalation.
+
+```yaml
+component:
+  # The Admin component
+  admin:
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+```
+
+Apply the same block under each `component.<name>`, plus `database` if you're using the bundled MSSQL pod (see the exception below).
+
+Do not set `runAsUser`. `restricted-v2` requires the UID to come from the project's own allocated range (`oc get project <project> -o yaml`, annotation `openshift.io/sa.scc.uid-range`), which differs per project and isn't known ahead of time. Leave `runAsUser` unset and OpenShift assigns a UID from that range automatically. A hardcoded UID outside the range, such as the .NET `APP_UID` used in the AKS/PSA guidance elsewhere in this doc, needs the more permissive `nonroot-v2` SCC. `nonroot-v2` isn't granted to any user or service account by default, so a normal user's pod is rejected (`ALLOWED BY: <none>`); only `cluster-admin` can create it.
+
+If you choose to set `readOnlyRootFilesystem: true`, the .NET containers need a writable `/tmp`. Mount it as an `emptyDir` following the [Extra Volumes](#extra-volumes) section.
+
+#### Exceptions
+
+The bundled MSSQL image crashloops under a restricted context with `sqlservr: Operation not permitted`. For a fully rootless install, set `database.enabled: false` and bring your own database (see [Connect to an External MSSQL Database](https://bitwarden.com/help/external-db/)).
+
+#### Custom SCC escape hatch
+
+Some clusters enforce their own SCC requirements. If yours does, assign a dedicated service account to any component instead of relying on the default `restricted-v2` SCC:
 
 ```shell
 oc create sa bitwarden-sa
-oc adm policy add-scc-to-user anyuid -z bitwarden-sa
+oc adm policy add-scc-to-user <your-scc> -z bitwarden-sa
 ```
 
-Next, update `my-values.yaml` to use this service account. Note that this is a different service account from the one in the `serviceAccount` section of the values YAML file. Instead, set the following keys to the name of the service account created:
+Then set the matching `podServiceAccount` key(s) to the name of that service account:
 
 - component.admin.podServiceAccount
 - component.api.podServiceAccount
@@ -1371,31 +1398,7 @@ Next, update `my-values.yaml` to use this service account. Note that this is a d
 - component.web.podServiceAccount
 - database.podServiceAccount
 
-#### Example
-
-```yaml
-component:
-  # The Admin component
-  admin:
-    # Additional deployment labels
-    labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/admin
-      tag: ""
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
-        memory: "128Mi"
-        cpu: "100m"
-    securityContext:
-    podSecurityContext:
-    podServiceAccount: bitwarden-sa
-```
-
-__*NOTE: You can create your own SSC to fine-tune the security of these pods. [Managing SSCs in OpenShift](https://cloud.redhat.com/blog/managing-sccs-in-openshift) describes the out-of-the-box SSCs and how to create your own if desired.*__
+__*NOTE: You can create your own SCC to fine-tune the security of these pods. [Managing SCCs in OpenShift](https://cloud.redhat.com/blog/managing-sccs-in-openshift) describes the out-of-the-box SCCs and how to create your own if desired.*__
 
 ### Update other settings
 
