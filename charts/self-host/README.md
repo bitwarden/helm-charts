@@ -1375,9 +1375,9 @@ If you choose to set `readOnlyRootFilesystem: true`, the .NET containers need a 
 
 The bundled MSSQL image crashloops under a restricted context with `sqlservr: Operation not permitted`. For a fully rootless install, set `database.enabled: false` and bring your own database (see [Connect to an External MSSQL Database](https://bitwarden.com/help/external-db/)).
 
-#### Custom SCC escape hatch
+#### Custom SCC
 
-Some clusters enforce their own SCC requirements. If yours does, assign a dedicated service account to any component instead of relying on the default `restricted-v2` SCC:
+For clusters that enforce their own SCC requirements, assign a dedicated service account to any component instead of relying on the default `restricted-v2` SCC:
 
 ```shell
 oc create sa bitwarden-sa
