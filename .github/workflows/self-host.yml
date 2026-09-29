@@ -54,6 +54,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Postgres and BYOS don't depend on routing, so each runs once instead of on every routing.
+        # Give a new entry all four keys: a missing one falls back to the setup.sh default.
         include:
           - name: ingress
             routing: ingress
