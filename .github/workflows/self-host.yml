@@ -65,7 +65,7 @@ jobs:
           - routing: ingress
             database: postgres
             secrets: generate
-          - routing: ingress
+          - routing: gateway
             database: mssql
             secrets: byos
     steps:
