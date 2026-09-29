@@ -1,7 +1,4 @@
-# Overlay for the Kind install's BYOS (bring your own secrets) scenario, layered on top of
-# test-values.yaml or test-gateway-values.yaml by scripts/setup.sh.
-# setup.sh creates the encryption keys (in custom-secret) and custom-identity-cert before the
-# install, so the chart generates neither.
+# Layered on the test values by scripts/setup.sh, which pre-creates these secrets.
 secrets:
   secretKeys:
     generate: false

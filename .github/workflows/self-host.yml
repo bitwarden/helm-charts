@@ -47,25 +47,28 @@ jobs:
       chart_name: self-host
   
   test-self-host-kind:
-    name: Test self-host chart with Kind (${{ matrix.routing }}${{ matrix.database != 'mssql' && format(', {0}', matrix.database) || '' }}${{ matrix.secrets != 'generate' && format(', {0}', matrix.secrets) || '' }})
+    name: Test self-host chart with Kind (${{ matrix.name }})
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
-        routing: [ingress, gateway]
-        database: [mssql]
-        secrets: [generate]
-        # Postgres and BYOS don't depend on routing, so each runs once instead of across the full
-        # matrix. Each entry overrides a matrix value (database or secrets), which adds a job. An
-        # entry that only added a new key would merge into the existing ingress job. Added jobs
-        # don't inherit axis values, so the Postgres entry sets secrets explicitly.
         include:
-          - routing: ingress
+          - name: ingress
+            routing: ingress
+            database: mssql
+            secrets: generate
+          - name: gateway
+            routing: gateway
+            database: mssql
+            secrets: generate
+          - name: ingress, postgres
+            routing: ingress
             database: postgres
             secrets: generate
-          - routing: gateway
+          - name: gateway, byos
+            routing: gateway
             database: mssql
             secrets: byos
     steps:
