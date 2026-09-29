@@ -47,7 +47,7 @@ jobs:
       chart_name: self-host
   
   test-self-host-kind:
-    name: Test self-host chart with Kind (${{ matrix.routing }}${{ matrix.database != 'mssql' && format(', {0}', matrix.database) || '' }})
+    name: Test self-host chart with Kind (${{ matrix.routing }}${{ matrix.database != 'mssql' && format(', {0}', matrix.database) || '' }}${{ matrix.secrets != 'generate' && format(', {0}', matrix.secrets) || '' }})
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -56,11 +56,18 @@ jobs:
       matrix:
         routing: [ingress, gateway]
         database: [mssql]
-        # Postgres is independent of routing, so it runs once rather than across the full matrix.
-        # database overrides the matrix value, so this adds a combination instead of extending one.
+        secrets: [generate]
+        # Postgres and BYOS don't depend on routing, so each runs once instead of across the full
+        # matrix. Each entry overrides a matrix value (database or secrets), which adds a job. An
+        # entry that only added a new key would merge into the existing ingress job. Added jobs
+        # don't inherit axis values, so the Postgres entry sets secrets explicitly.
         include:
           - routing: ingress
             database: postgres
+            secrets: generate
+          - routing: ingress
+            database: mssql
+            secrets: byos
     steps:
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -90,10 +97,10 @@ jobs:
           config: ${{ matrix.routing == 'gateway' && 'scripts/cluster-gateway.yaml' || 'scripts/cluster.yaml' }}
 
       - name: Set up cluster
-        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}"
+        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}"
 
-      - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }})
-        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}"
+      - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }}, ${{ matrix.secrets }})
+        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}"
 
       - name: Diagnostics
         if: always()
