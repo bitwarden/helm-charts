@@ -20,6 +20,7 @@ function createKindCluster() {
 
 function setupCluster() {
     routing="${1:-ingress}"
+    database="${2:-mssql}"
     installation_id=$(uuidgen)
     echo $installation_id
     installation_key=$(openssl rand -base64 12)
@@ -59,6 +60,13 @@ EOF
     kubectl config set-context --current --namespace=bitwarden
 
     #Secrets
+    database_secret_args=()
+    if [ "$database" = "postgres" ]; then
+        # External PostgreSQL deployed by setupPostgres; the chart reads the connection string
+        # from the configured secret (see charts/self-host/values.yaml general.databaseProvider).
+        pg_password=$(openssl rand -hex 24)
+        database_secret_args+=(--from-literal=globalSettings__postgreSql__connectionString="Host=postgres.bitwarden.svc.cluster.local;Port=5432;Database=vault;Username=bitwarden;Password=$pg_password")
+    fi
     kubectl create secret generic custom-secret \
     --from-literal=globalSettings__installation__id=$installation_id \
     --from-literal=globalSettings__installation__key=$installation_key \
@@ -66,27 +74,58 @@ EOF
     --from-literal=globalSettings__mail__smtp__password="REPLACE" \
     --from-literal=globalSettings__yubico__clientId="REPLACE" \
     --from-literal=globalSettings__yubico__key="REPLACE" \
-    --from-literal=SA_PASSWORD=$sa_password
+    --from-literal=SA_PASSWORD=$sa_password \
+    "${database_secret_args[@]}"
 
     kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
 
-    # Pre-pull the large (~590MB) MSSQL image and side-load it into the kind node now,
-    # so the pull cost is paid here rather than eating into the `helm install --wait`
-    # timeout window during installSelfHost. Resolve the image from the chart itself
-    # (single source of truth: charts/self-host/values.yaml -> database.image) via helm
-    # template, so it never drifts from what the chart actually deploys.
-    mssql_image="$(helm template charts/self-host -s templates/mssql.yaml | awk -F'"' '/image:/{print $2; exit}')"
-    # Derive the cluster name dynamically: locally it's "bitwarden" (createKindCluster),
-    # in CI it's helm/kind-action's default.
-    cluster_name="$(kind get clusters | head -n1)"
-    docker pull "$mssql_image"
-    kind load docker-image "$mssql_image" --name "$cluster_name"
+    if [ "$database" = "postgres" ]; then
+        setupPostgres "$pg_password"
+    else
+        # Pre-pull the large (~590MB) MSSQL image and side-load it into the kind node now,
+        # so the pull cost is paid here rather than eating into the `helm install --wait`
+        # timeout window during installSelfHost. Resolve the image from the chart itself
+        # (single source of truth: charts/self-host/values.yaml -> database.image) via helm
+        # template, so it never drifts from what the chart actually deploys.
+        mssql_image="$(helm template charts/self-host -s templates/mssql.yaml | awk -F'"' '/image:/{print $2; exit}')"
+        # Derive the cluster name dynamically: locally it's "bitwarden" (createKindCluster),
+        # in CI it's helm/kind-action's default.
+        cluster_name="$(kind get clusters | head -n1)"
+        docker pull "$mssql_image"
+        kind load docker-image "$mssql_image" --name "$cluster_name"
+    fi
 
     if [ "$routing" = "gateway" ]; then
         setupGateway
     else
         setupIngress
     fi
+}
+
+function setupPostgres() {
+    pg_password="$1"
+    dirname=$(dirname "$0")
+
+    kubectl create secret generic postgres-credentials --from-literal=POSTGRES_PASSWORD="$pg_password"
+    kubectl apply -f "$dirname/postgres.yaml"
+
+    # Wait for Postgres to accept connections before the chart is installed. The Admin service
+    # runs the Postgres migrations at startup and retries for only ~3 minutes, and its liveness
+    # probe can restart it if that startup runs long, so don't spend that budget on the database.
+    kubectl rollout status deployment/postgres --timeout=300s
+}
+
+function verifyPostgresMigrations() {
+    # With databaseProvider: postgres the chart renders no migrator Job; the Admin service applies
+    # the EF Core migrations at startup. Assert they actually landed in the database.
+    if ! count=$(kubectl -n bitwarden exec deploy/postgres -- psql -U bitwarden -d vault -tAc 'SELECT count(*) FROM "__EFMigrationsHistory";'); then
+        echo "::error::ERROR: Could not read __EFMigrationsHistory - the Admin service has not migrated the database."; exit 1
+    fi
+    if [[ ! "$count" =~ ^[0-9]+$ ]] || [ "$count" -lt 1 ]; then
+        echo "::error::ERROR: No Postgres migrations applied (count: '$count')."; exit 1
+    fi
+    latest=$(kubectl -n bitwarden exec deploy/postgres -- psql -U bitwarden -d vault -tAc 'SELECT max("MigrationId") FROM "__EFMigrationsHistory";')
+    echo "Postgres migrations applied: $count (latest: $latest)"
 }
 
 function setupIngress() {
@@ -175,25 +214,39 @@ EOF
 
 function installSelfHost() {
     routing="${1:-ingress}"
+    database="${2:-mssql}"
     if [ "$routing" = "gateway" ]; then
-        values="charts/self-host/ci/test-gateway-values.yaml"
+        values=(-f "charts/self-host/ci/test-gateway-values.yaml")
     else
-        values="charts/self-host/ci/test-values.yaml"
+        values=(-f "charts/self-host/ci/test-values.yaml")
     fi
-    time helm install self-host charts/self-host -n bitwarden -f "$values" --timeout 900s --wait
+    if [ "$database" = "postgres" ]; then
+        values+=(-f "charts/self-host/ci/test-postgres-values.yaml")
+    fi
+    time helm install self-host charts/self-host -n bitwarden "${values[@]}" --timeout 900s --wait
 }
+
+if [ -n "$3" ] && [ "$3" != "mssql" ] && [ "$3" != "postgres" ]; then
+    echo "Unknown database '$3'. Expected mssql or postgres."
+    exit 1
+fi
 
 if [ "$1" = "create-cluster" ]; then
     createKindCluster "$2"
 elif [ "$1" = "setup-cluster" ]; then
-    setupCluster "$2"
+    setupCluster "$2" "$3"
 elif [ "$1" = "install-self-host" ]; then
-    installSelfHost "$2"
+    installSelfHost "$2" "$3"
+elif [ "$1" = "verify-postgres" ]; then
+    verifyPostgresMigrations
 elif [ "$1" = "all" ]; then
     createKindCluster "$2"
-    setupCluster "$2"
-    installSelfHost "$2"
+    setupCluster "$2" "$3"
+    installSelfHost "$2" "$3"
+    if [ "$3" = "postgres" ]; then
+        verifyPostgresMigrations
+    fi
 else
-    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host} [ingress|gateway]"
+    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host|verify-postgres} [ingress|gateway] [mssql|postgres]"
     exit 1
 fi
