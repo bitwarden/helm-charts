@@ -62,6 +62,13 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+    {{- with .Values.general.dnsPolicy }}
+      dnsPolicy: {{ . }}
+    {{- end }}
+    {{- with .Values.general.dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- if .Values.database.podServiceAccount }}
       serviceAccount: {{ .Values.database.podServiceAccount | quote }}
       serviceAccountName: {{ .Values.database.podServiceAccount | quote }}

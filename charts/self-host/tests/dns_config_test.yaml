@@ -11,6 +11,12 @@ templates:
   - templates/scim.yaml
   - templates/sso.yaml
   - templates/web.yaml
+  - templates/mssql.yaml
+  - templates/pre-install-job.yaml
+  - templates/pre-install-secret-sql.yaml
+  - templates/pre-install-db-migrator-job.yaml
+  - templates/post-install-db-migrator-job.yaml
+  - templates/post-delete-hook.yaml
 
 tests:
   # --- Neither value set: dnsPolicy and dnsConfig absent ---
@@ -299,6 +305,84 @@ tests:
     set:
       general.dnsPolicy: ClusterFirst
       component.api.dnsPolicy: None
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: None
+        documentIndex: 0
+
+  # --- Non-component pods: general.dnsConfig/dnsPolicy reaches them too ---
+
+  - it: mssql - should not render dnsPolicy or dnsConfig when unset
+    template: templates/mssql.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: mssql - should render general dnsConfig
+    template: templates/mssql.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "2"
+        documentIndex: 0
+
+  - it: mssql - should render general dnsPolicy
+    template: templates/mssql.yaml
+    set:
+      general.dnsPolicy: None
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: None
+        documentIndex: 0
+
+  - it: post-delete-hook - should not render dnsPolicy or dnsConfig when unset
+    template: templates/post-delete-hook.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: post-delete-hook - should render general dnsConfig
+    template: templates/post-delete-hook.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "2"
+        documentIndex: 0
+
+  - it: pre-install-db-migrator - should render general dnsPolicy
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      general.dnsPolicy: None
     asserts:
       - equal:
           path: spec.template.spec.dnsPolicy
