@@ -25,6 +25,18 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
+              "type": "string"
+            },
             "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
@@ -266,6 +278,18 @@
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
+              "type": "string"
+            },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
               "type": "string"
             },
             "extraEnv": {
@@ -531,6 +555,18 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
+              "type": "string"
+            },
             "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
@@ -766,6 +802,18 @@
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
+              "type": "string"
+            },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
               "type": "string"
             },
             "extraEnv": {
@@ -1012,6 +1060,18 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
+              "type": "string"
+            },
             "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
@@ -1247,6 +1307,18 @@
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
+              "type": "string"
+            },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
               "type": "string"
             },
             "extraEnv": {
@@ -1510,6 +1582,18 @@
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
+              "type": "string"
+            },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
               "type": "string"
             },
             "extraEnv": {
@@ -1928,6 +2012,18 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
+              "type": "string"
+            },
             "extraEnv": {
               "description": "Extra environment variables to add to the container",
               "items": {
@@ -2184,6 +2280,18 @@
               "default": "RollingUpdate",
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
+              "type": "string"
+            },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "title": "dnsPolicy",
               "type": "string"
             },
             "extraEnv": {

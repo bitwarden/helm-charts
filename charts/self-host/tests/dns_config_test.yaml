@@ -1,0 +1,306 @@
+suite: test dnsPolicy and dnsConfig
+templates:
+  - templates/helpers.tpl
+  - templates/admin.yaml
+  - templates/api.yaml
+  - templates/attachments.yaml
+  - templates/events.yaml
+  - templates/icons.yaml
+  - templates/identity.yaml
+  - templates/notifications.yaml
+  - templates/scim.yaml
+  - templates/sso.yaml
+  - templates/web.yaml
+
+tests:
+  # --- Neither value set: dnsPolicy and dnsConfig absent ---
+
+  - it: admin - should not render dnsPolicy or dnsConfig when unset
+    template: templates/admin.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: api - should not render dnsPolicy or dnsConfig when unset
+    template: templates/api.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: attachments - should not render dnsPolicy or dnsConfig when unset
+    template: templates/attachments.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: events - should not render dnsPolicy or dnsConfig when unset
+    template: templates/events.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: icons - should not render dnsPolicy or dnsConfig when unset
+    template: templates/icons.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: identity - should not render dnsPolicy or dnsConfig when unset
+    template: templates/identity.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: notifications - should not render dnsPolicy or dnsConfig when unset
+    template: templates/notifications.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: scim - should not render dnsPolicy or dnsConfig when unset
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: true
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: sso - should not render dnsPolicy or dnsConfig when unset
+    template: templates/sso.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  - it: web - should not render dnsPolicy or dnsConfig when unset
+    template: templates/web.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+        documentIndex: 0
+      - isNull:
+          path: spec.template.spec.dnsConfig
+        documentIndex: 0
+
+  # --- general.dnsConfig only: rendered on every component ---
+
+  - it: admin - should render general dnsConfig
+    template: templates/admin.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "2"
+        documentIndex: 0
+
+  - it: api - should render general dnsConfig
+    template: templates/api.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "2"
+        documentIndex: 0
+
+  - it: identity - should render general dnsConfig
+    template: templates/identity.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "2"
+        documentIndex: 0
+
+  - it: web - should render general dnsConfig
+    template: templates/web.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "2"
+        documentIndex: 0
+
+  # --- general.dnsPolicy: rendered on every component ---
+
+  - it: admin - should render general dnsPolicy
+    template: templates/admin.yaml
+    set:
+      general.dnsPolicy: None
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: None
+        documentIndex: 0
+
+  - it: api - should render general dnsPolicy
+    template: templates/api.yaml
+    set:
+      general.dnsPolicy: None
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: None
+        documentIndex: 0
+
+  # --- Per-component dnsConfig overrides general ---
+
+  - it: admin - component dnsConfig overrides general
+    template: templates/admin.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+      component.admin.dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "1"
+        documentIndex: 0
+
+  - it: api - component dnsConfig overrides general
+    template: templates/api.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+      component.api.dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "1"
+        documentIndex: 0
+
+  - it: identity - component dnsConfig overrides general
+    template: templates/identity.yaml
+    values:
+      - ../values.yaml
+    set:
+      general.dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+      component.identity.dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig
+          value:
+            options:
+              - name: ndots
+                value: "1"
+        documentIndex: 0
+
+  # --- Per-component dnsPolicy overrides general ---
+
+  - it: admin - component dnsPolicy overrides general
+    template: templates/admin.yaml
+    set:
+      general.dnsPolicy: ClusterFirst
+      component.admin.dnsPolicy: None
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: None
+        documentIndex: 0
+
+  - it: api - component dnsPolicy overrides general
+    template: templates/api.yaml
+    set:
+      general.dnsPolicy: ClusterFirst
+      component.api.dnsPolicy: None
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: None
+        documentIndex: 0

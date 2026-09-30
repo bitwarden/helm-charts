@@ -240,6 +240,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/admin
@@ -300,6 +304,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/api
@@ -364,6 +372,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/attachments
@@ -421,6 +433,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/events
@@ -482,6 +498,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/icons
@@ -539,6 +559,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/identity
@@ -603,6 +627,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/notifications
@@ -662,6 +690,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/scim
@@ -708,6 +740,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/sso
@@ -771,6 +807,10 @@ component:
     nodeSelector: {}
     # Optionally add taint tolerations
     tolerations: []
+    # Pod DNS policy (overrides general.dnsPolicy for this component)
+    dnsPolicy: ""
+    # Pod DNS config (overrides general.dnsConfig for this component)
+    dnsConfig: {}
     # Image repository, tag, and pull policy
     image:
       repository: ghcr.io/bitwarden/web
