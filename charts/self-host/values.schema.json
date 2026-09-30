@@ -7,6 +7,12 @@
         "admin": {
           "description": "The Admin component",
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -18,6 +24,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -143,6 +181,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -206,6 +250,12 @@
         },
         "api": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -217,6 +267,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -362,6 +444,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -373,7 +461,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "256Mi",
+                      "default": "384Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -390,7 +478,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -425,6 +513,12 @@
         },
         "attachments": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -436,6 +530,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -572,7 +698,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -589,7 +715,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -624,6 +750,12 @@
         },
         "events": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -635,6 +767,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -761,6 +925,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -772,7 +942,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -789,7 +959,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -824,6 +994,12 @@
         },
         "icons": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -835,6 +1011,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -971,7 +1179,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -988,7 +1196,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1023,6 +1231,12 @@
         },
         "identity": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1034,6 +1248,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1179,6 +1425,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -1190,7 +1442,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "256Mi",
+                      "default": "384Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1207,7 +1459,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1242,6 +1494,12 @@
         },
         "notifications": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1253,6 +1511,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1389,7 +1679,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1406,7 +1696,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1441,6 +1731,12 @@
         },
         "scim": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1458,6 +1754,38 @@
               "description": "SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path",
               "title": "enabled",
               "type": "boolean"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1512,6 +1840,12 @@
               "description": "Run the pod under a service account you create.  This is especially useful for OpenShift deployments",
               "title": "podServiceAccount",
               "type": "string"
+            },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
             },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
@@ -1576,6 +1910,12 @@
         },
         "sso": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1587,6 +1927,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1727,6 +2099,12 @@
               "title": "readinessProbe",
               "type": "object"
             },
+            "replicas": {
+              "default": 1,
+              "description": "Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true\n(chart will fail render otherwise). See README \"Scaling backend services\" for details.",
+              "title": "replicas",
+              "type": "integer"
+            },
             "resources": {
               "description": "The pod resource requirements.  You can adjust these up and down for your environment",
               "properties": {
@@ -1738,7 +2116,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "256Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1755,7 +2133,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "128Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1790,6 +2168,12 @@
         },
         "web": {
           "properties": {
+            "affinity": {
+              "description": "Optionally place deployment on specifc nodes",
+              "required": [],
+              "title": "affinity",
+              "type": "object"
+            },
             "annotations": {
               "description": "Additional deployment annotations",
               "required": [],
@@ -1801,6 +2185,38 @@
               "description": "Specifies the strategy used to replace old Pods by new ones. The value can be \"Recreate\" or \"RollingUpdate\". \"RollingUpdate\" is the default value.",
               "title": "deploymentStrategy",
               "type": "string"
+            },
+            "extraEnv": {
+              "description": "Extra environment variables to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnv",
+              "type": "array"
+            },
+            "extraEnvFrom": {
+              "description": "Extra environment variables from secrets or configmaps to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraEnvFrom",
+              "type": "array"
+            },
+            "extraVolumeMounts": {
+              "description": "Extra volume mounts to add to the container",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "Extra volumes to add to the pod",
+              "items": {
+                "required": []
+              },
+              "title": "extraVolumes",
+              "type": "array"
             },
             "image": {
               "description": "Image repository, tag, and pull policy",
@@ -1938,7 +2354,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "128Mi",
+                      "default": "192Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1955,7 +2371,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "64Mi",
+                      "default": "96Mi",
                       "title": "memory",
                       "type": "string"
                     }
@@ -1996,6 +2412,12 @@
     "database": {
       "description": "\nConfigure MSSQL Database Deployment\nThis section is only used when general.databaseProvider is \"mssql\"\nFor PostgreSQL deployments, users must bring their own\nPostgreSQL database and provide the connection string via secrets.secretName or one of the other configuration providers.\n",
       "properties": {
+        "affinity": {
+          "description": "Optionally place deployment on specifc nodes",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "annotations": {
           "description": "Annotations to add to the MSSQL deployment",
           "required": [],
@@ -2008,22 +2430,32 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the MSSQL container",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to the MSSQL pod",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumes",
+          "type": "array"
+        },
         "image": {
           "description": "Image repository, tag, and pull policy",
           "properties": {
-            "name": {
-              "default": "",
-              "deprecated": true,
-              "required": [],
-              "title": "name"
-            },
             "repository": {
               "default": "mcr.microsoft.com/mssql/server",
               "title": "repository",
               "type": "string"
             },
             "tag": {
-              "default": "2022-CU12-ubuntu-22.04",
+              "default": "2025-CU5-ubuntu-24.04",
               "title": "tag",
               "type": "string"
             }
@@ -2039,7 +2471,6 @@
           "type": "object"
         },
         "nodeSelector": {
-          "description": "Optionally place deployment on specifc nodes",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
@@ -2114,6 +2545,29 @@
           "description": "This will set the Kubernetes container security context",
           "required": [],
           "title": "securityContext",
+          "type": "object"
+        },
+        "startupProbe": {
+          "description": "Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.\nSet initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.",
+          "properties": {
+            "failureThreshold": {
+              "default": 60,
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 5,
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 3,
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "tolerations": {
@@ -2226,6 +2680,12 @@
           "title": "admins",
           "type": "string"
         },
+        "affinity": {
+          "description": "affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
         "annotations": {
           "description": "Custom annotations to add throughout the installation",
           "required": [],
@@ -2255,6 +2715,39 @@
           "description": "Disable account registration on web vault",
           "title": "disableUserRegistration",
           "type": "string"
+        },
+        "distributedCache": {
+          "description": "Distributed cache configuration.\nWhen enabled, Bitwarden services will use Redis for distributed caching.\nRequired when running multiple replicas of API, Identity, SSO, etc. for\nsession/token coordination and rate-limit state.\nThe chart does NOT deploy Redis -- provide your own (e.g. ElastiCache, Azure Cache for Redis, Memorystore).",
+          "properties": {
+            "redis": {
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Set to true to inject globalSettings__distributedCache__redis__connectionString\ninto all backend service deployments.",
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "secretKey": {
+                  "default": "globalSettings__distributedCache__redis__connectionString",
+                  "description": "Key inside the secret. Override only if your secret uses a different key name.",
+                  "title": "secretKey",
+                  "type": "string"
+                },
+                "secretName": {
+                  "default": "",
+                  "description": "Name of the Kubernetes Secret containing the connection string key.\nDefaults to secrets.secretName when empty.",
+                  "title": "secretName",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "redis",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "distributedCache",
+          "type": "object"
         },
         "domain": {
           "default": "REPLACE",
@@ -2317,6 +2810,176 @@
           "title": "enableCloudCommunication",
           "type": "boolean"
         },
+        "gateway": {
+          "description": "Gateway API HTTPRoute configuration\nUse this as an alternative to general.ingress when using Gateway API (gateway.networking.k8s.io/v1)\nTLS is handled at the Gateway resource level, not on the HTTPRoute",
+          "properties": {
+            "annotations": {
+              "description": "Annotations to add to the HTTPRoute resource",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Set to true to create an HTTPRoute resource",
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "description": "Labels to add to the HTTPRoute resource",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "Gateway reference(s) that this HTTPRoute attaches to.\nSet parentRefs to attach to an externally managed Gateway.",
+              "items": {
+                "required": []
+              },
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "paths": {
+              "description": "Path configuration for each service (PathPrefix matching)",
+              "properties": {
+                "admin": {
+                  "properties": {
+                    "path": {
+                      "default": "/admin",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "admin",
+                  "type": "object"
+                },
+                "api": {
+                  "properties": {
+                    "path": {
+                      "default": "/api",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "api",
+                  "type": "object"
+                },
+                "attachments": {
+                  "properties": {
+                    "path": {
+                      "default": "/attachments",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "attachments",
+                  "type": "object"
+                },
+                "events": {
+                  "properties": {
+                    "path": {
+                      "default": "/events",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "events",
+                  "type": "object"
+                },
+                "icons": {
+                  "properties": {
+                    "path": {
+                      "default": "/icons",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "icons",
+                  "type": "object"
+                },
+                "identity": {
+                  "properties": {
+                    "path": {
+                      "default": "/identity",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "identity",
+                  "type": "object"
+                },
+                "notifications": {
+                  "properties": {
+                    "path": {
+                      "default": "/notifications",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "notifications",
+                  "type": "object"
+                },
+                "scim": {
+                  "properties": {
+                    "path": {
+                      "default": "/scim",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "scim",
+                  "type": "object"
+                },
+                "sso": {
+                  "properties": {
+                    "path": {
+                      "default": "/sso",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "sso",
+                  "type": "object"
+                },
+                "web": {
+                  "properties": {
+                    "path": {
+                      "default": "/",
+                      "title": "path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "web",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "paths",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "gateway",
+          "type": "object"
+        },
+        "imagePullSecrets": {
+          "description": "Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.",
+          "items": {
+            "required": []
+          },
+          "title": "imagePullSecrets",
+          "type": "array"
+        },
         "ingress": {
           "properties": {
             "annotations": {
@@ -2332,8 +2995,8 @@
               "type": "string"
             },
             "enabled": {
-              "default": true,
-              "description": "Set to false if using a custom ingress",
+              "default": false,
+              "description": "Ingress is supported but is no longer the recommended default for this chart.\nGateway API is the preferred option for new deployments — set\n`general.gateway.enabled: true` below. See the chart README (\"Gateway API\" section).\n\nNOTE: This chart's default ingress controller is ingress-nginx (className: \"nginx\"),\nwhich the upstream Kubernetes project retired in March 2026 (no further releases,\nbug fixes, or security patches). If you keep using Ingress, plan to migrate to\nGateway API or another maintained ingress controller.",
               "title": "enabled",
               "type": "boolean"
             },
@@ -2546,6 +3209,12 @@
           "title": "ingress",
           "type": "object"
         },
+        "knownNetworks": {
+          "default": "",
+          "description": "Optional: Comma-separated list of CIDR ranges for trusted proxy networks.\nConfigures ASP.NET's forwarded headers middleware (X-Forwarded-For trust).\nExample: \"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16\"",
+          "title": "knownNetworks",
+          "type": "string"
+        },
         "labels": {
           "description": "Custom labels to add throughout the installation",
           "required": [],
@@ -2553,7 +3222,6 @@
           "type": "object"
         },
         "nodeSelector": {
-          "description": "nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden",
           "required": [],
           "title": "nodeSelector",
           "type": "object"
@@ -2578,9 +3246,9 @@
               "title": "absoluteRefreshTokenLifetimeSeconds",
               "type": "string"
             },
-            "applyAbsoluteRefreshTokenOnRefreshToken": {
+            "applyAbsoluteExpirationOnRefreshToken": {
               "default": "true",
-              "title": "applyAbsoluteRefreshTokenOnRefreshToken",
+              "title": "applyAbsoluteExpirationOnRefreshToken",
               "type": "string"
             },
             "enabled": {
@@ -2713,6 +3381,12 @@
         },
         "db": {
           "properties": {
+            "migrationTimeoutSeconds": {
+              "default": "",
+              "description": "Timeout seconds for MSSQL migrations.\nDefault: 5 minutes\nA value of \"0\" can be used for unlimited timeout, useful for large databases",
+              "title": "migrationTimeoutSeconds",
+              "type": "string"
+            },
             "postInstallMigrator": {
               "properties": {
                 "annotations": {
@@ -2843,6 +3517,22 @@
           "required": [],
           "title": "db",
           "type": "object"
+        },
+        "extraVolumeMounts": {
+          "description": "Extra volume mounts to add to the pre- and post-install hook/job containers",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumeMounts",
+          "type": "array"
+        },
+        "extraVolumes": {
+          "description": "Extra volumes to add to the pre- and post-install hook/job pods",
+          "items": {
+            "required": []
+          },
+          "title": "extraVolumes",
+          "type": "array"
         },
         "podSecurityContext": {
           "required": [],
@@ -3017,6 +3707,38 @@
     "secrets": {
       "description": "Secrets are required.  Review the chart README on GitHub for details on creating these secrets",
       "properties": {
+        "identityCertificate": {
+          "description": "Identity certificate configuration\nBy default, the chart generates an identity certificate and password.\nSet generate to false if you want to provide your own certificate.",
+          "properties": {
+            "generate": {
+              "default": true,
+              "title": "generate",
+              "type": "boolean"
+            },
+            "secretName": {
+              "default": "",
+              "description": "The name of the secret that contains BOTH the identity.pfx certificate file\nAND the certificate password (globalSettings__identityServer__certificatePassword).",
+              "title": "secretName",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "identityCertificate",
+          "type": "object"
+        },
+        "secretKeys": {
+          "description": "Encryption keys configuration\nBy default, the chart generates encryption keys (internalIdentityKey, oidcIdentityClientKey, duo__aKey).\nSet generate to false if you want to provide these keys in the secretName provided above.",
+          "properties": {
+            "generate": {
+              "default": true,
+              "title": "generate",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "secretKeys",
+          "type": "object"
+        },
         "secretName": {
           "default": "custom-secret",
           "title": "secretName",
@@ -3065,19 +3787,13 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "alpine/openssl",
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
-                  "default": "3.5.2",
+                  "default": "",
                   "required": [],
                   "title": "tag",
                   "type": [
@@ -3099,12 +3815,6 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
                   "default": "ghcr.io/bitwarden/mssqlmigratorutility",
                   "title": "repository",
@@ -3133,19 +3843,13 @@
           "properties": {
             "image": {
               "properties": {
-                "name": {
-                  "default": "",
-                  "deprecated": true,
-                  "required": [],
-                  "title": "name"
-                },
                 "repository": {
-                  "default": "ghcr.io/bitwarden/helm-charts/kubectl",
+                  "default": "alpine/kubectl",
                   "title": "repository",
                   "type": "string"
                 },
                 "tag": {
-                  "default": 1.34,
+                  "default": "",
                   "required": [],
                   "title": "tag",
                   "type": [

@@ -1,0 +1,432 @@
+suite: test component extraEnv, extraEnvFrom, extraVolumeMounts, and extraVolumes
+templates:
+  - templates/helpers.tpl
+  - templates/admin.yaml
+  - templates/api.yaml
+  - templates/attachments.yaml
+  - templates/events.yaml
+  - templates/icons.yaml
+  - templates/identity.yaml
+  - templates/notifications.yaml
+  - templates/scim.yaml
+  - templates/sso.yaml
+  - templates/web.yaml
+
+tests:
+  # api
+  - it: api - should render extraEnv
+    template: templates/api.yaml
+    set:
+      component.api.extraEnv[0].name: VAR
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+
+  - it: api - should not render extraEnv when empty
+    template: templates/api.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: ASPNETCORE_URLS
+              value: http://+:5000
+        documentIndex: 0
+
+  - it: api - should render extraEnvFrom
+    template: templates/api.yaml
+    set:
+      component.api.extraEnvFrom[0].secretRef.name: extra-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+
+  - it: api - should not render extraEnvFrom when empty
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+
+  - it: api - should render extraVolumeMounts
+    template: templates/api.yaml
+    set:
+      component.api.extraVolumeMounts[0].mountPath: /etc/custom/config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+
+  - it: api - should not render extra volume mounts when empty
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+
+  - it: api - should render extraVolumes
+    template: templates/api.yaml
+    set:
+      component.api.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: api - should not render extra volumes when empty
+    template: templates/api.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: api - should render all four extras together
+    template: templates/api.yaml
+    set:
+      component.api.extraEnv[0].name: VAR
+      component.api.extraEnvFrom[0].configMapRef.name: extra-configmap
+      component.api.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.api.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: extra-configmap
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # admin
+  - it: admin - should render all four extras together
+    template: templates/admin.yaml
+    set:
+      component.admin.extraEnv[0].name: VAR
+      component.admin.extraEnvFrom[0].secretRef.name: extra-secret
+      component.admin.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.admin.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # attachments
+  - it: attachments - should render all four extras together
+    template: templates/attachments.yaml
+    set:
+      component.attachments.extraEnv[0].name: VAR
+      component.attachments.extraEnvFrom[0].secretRef.name: extra-secret
+      component.attachments.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.attachments.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # events
+  - it: events - should render all four extras together
+    template: templates/events.yaml
+    set:
+      component.events.extraEnv[0].name: VAR
+      component.events.extraEnvFrom[0].secretRef.name: extra-secret
+      component.events.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.events.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # icons
+  - it: icons - should render all four extras together
+    template: templates/icons.yaml
+    set:
+      component.icons.extraEnv[0].name: VAR
+      component.icons.extraEnvFrom[0].secretRef.name: extra-secret
+      component.icons.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.icons.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # identity
+  - it: identity - should render all four extras together
+    template: templates/identity.yaml
+    set:
+      component.identity.extraEnv[0].name: VAR
+      component.identity.extraEnvFrom[0].secretRef.name: extra-secret
+      component.identity.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.identity.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # notifications
+  - it: notifications - should render all four extras together
+    template: templates/notifications.yaml
+    set:
+      component.notifications.extraEnv[0].name: VAR
+      component.notifications.extraEnvFrom[0].secretRef.name: extra-secret
+      component.notifications.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.notifications.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # scim
+  - it: scim - should render all four extras together
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: true
+      component.scim.extraEnv[0].name: VAR
+      component.scim.extraEnvFrom[0].secretRef.name: extra-secret
+      component.scim.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.scim.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # sso - extraEnv must not disrupt the identityCertificate env vars that follow
+  - it: sso - should render all four extras together
+    template: templates/sso.yaml
+    set:
+      component.sso.extraEnv[0].name: VAR
+      component.sso.extraEnvFrom[0].secretRef.name: extra-secret
+      component.sso.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.sso.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: sso - extraEnv should not remove ASPNETCORE_URLS from env
+    template: templates/sso.yaml
+    set:
+      component.sso.extraEnv[0].name: VAR
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ASPNETCORE_URLS
+            value: http://+:5000
+        documentIndex: 0
+
+  # web
+  - it: web - should render all four extras together
+    template: templates/web.yaml
+    set:
+      component.web.extraEnv[0].name: VAR
+      component.web.extraEnvFrom[0].secretRef.name: extra-secret
+      component.web.extraVolumeMounts[0].mountPath: /etc/custom/config
+      component.web.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: VAR
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: extra-secret
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0

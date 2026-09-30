@@ -1,4 +1,5 @@
 ---
+{{- include "bitwarden.requireRedisForReplicas" (dict "name" "admin" "replicas" .Values.component.admin.replicas "redisEnabled" .Values.general.distributedCache.redis.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +18,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.component.admin.replicas }}
   strategy:
     type: {{ .Values.component.admin.deploymentStrategy | quote }}
   selector:
@@ -38,6 +39,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.admin.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.admin.affinity }}
+        {{ toYaml .Values.component.admin.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.admin.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.admin.nodeSelector }}
@@ -66,33 +79,48 @@ spec:
       initContainers:
       - name: create-mount-subdir
         command:
-          - "/bin/bash"
+          - "/bin/sh"
           - "-c"
         args: ['
           mkdir -p /logs/admin
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.admin.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.admin" . }}
-        image: "{{ .Values.component.admin.image.name | default .Values.component.admin.image.repository }}:{{ .Values.component.admin.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.admin.image.repository }}:{{ .Values.component.admin.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.admin.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.admin.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         {{- with .Values.component.admin.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -124,6 +152,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.component.admin.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.admin.securityContext | indent 10 }}
       volumes:
@@ -150,6 +181,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.component.admin.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

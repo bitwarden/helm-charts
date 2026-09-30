@@ -38,6 +38,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.icons.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.icons.affinity }}
+        {{ toYaml .Values.component.icons.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.icons.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.icons.nodeSelector }}
@@ -66,33 +78,41 @@ spec:
       initContainers:
       - name: create-mount-subdir
         command:
-          - "/bin/bash"
+          - "/bin/sh"
           - "-c"
         args: ['
           mkdir -p /logs/icons
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.icons.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.icons" . }}
-        image: "{{ .Values.component.icons.image.name | default .Values.component.icons.image.repository }}:{{ .Values.component.icons.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.icons.image.repository }}:{{ .Values.component.icons.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
               name: "{{ .Values.secrets.secretName }}"
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.icons.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.icons.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.icons.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -118,6 +138,9 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: icons
         {{- end }}
+        {{- with .Values.component.icons.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.component.icons.resources | indent 10 }}
         securityContext:
@@ -140,6 +163,9 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- with .Values.component.icons.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

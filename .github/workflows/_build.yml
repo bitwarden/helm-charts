@@ -30,14 +30,14 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
           fetch-tags: true
 
       - name: Set up Helm
-        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: 'v4.0.0'
 
@@ -180,7 +180,7 @@ jobs:
         run: |
           helm package \
             --sign \
-            --key "DevOps Team" \
+            --key "BRE Team" \
             --keyring private.gpg \
             --passphrase-file .passphrase \
             "charts/${_CHART_NAME}"
@@ -193,7 +193,7 @@ jobs:
         run: helm verify "${_HELM_OUTPUT_NAME}" --keyring public.gpg
 
       - name: Upload Helm chart artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ inputs.chart_name }}
           path: |

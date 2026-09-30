@@ -46,6 +46,14 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.general.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -64,7 +72,7 @@ spec:
     {{- end }}
       containers:
         - name: {{ template "bitwarden.mssql" . }}
-          image: "{{ .Values.database.image.name | default .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
           imagePullPolicy: Always
           {{- if .Values.database.resources }}
           resources:
@@ -74,9 +82,13 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-config-map
             - secretRef:
-                name: {{ .Values.secrets.secretName | quote }}
-            - secretRef:
                 name: {{ .Release.Name }}-sql-connection-string
+          env:
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.secretName | quote }}
+                  key: SA_PASSWORD
           ports:
             - name: mssql
               containerPort: 1433
@@ -91,6 +103,9 @@ spec:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+            {{- end }}
+            {{- with .Values.database.extraVolumeMounts }}
+{{ toYaml . | indent 12 }}
             {{- end }}
           livenessProbe:
             tcpSocket:
@@ -109,10 +124,13 @@ spec:
               command:
                 - '/bin/sh'
                 - '-c'
-                - '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SA_PASSWORD} -Q "SELECT 1" || exit 1'
-            initialDelaySeconds: 120
-            periodSeconds: 10
-            timeoutSeconds: 3
+                - 'if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "${SA_PASSWORD}" -Q "SELECT 1" || exit 1; else /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${SA_PASSWORD}" -Q "SELECT 1" || exit 1; fi'
+            {{- with .Values.database.startupProbe.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+            periodSeconds: {{ .Values.database.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.database.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.database.startupProbe.failureThreshold }}
           {{- if .Values.database.securityContext }}
           securityContext:
 {{ toYaml .Values.database.securityContext | indent 12 }}
@@ -135,6 +153,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.database.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

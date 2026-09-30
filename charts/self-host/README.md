@@ -3,6 +3,8 @@
 
 The purpose of this chart is to enable the deployment of [Bitwarden](https://bitwarden.com/) to different Kubernetes environments. This chart is built for usage across multiple Kubernetes hosting scenarios.
 
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** instead — see the [Gateway API](#gateway-api) section. Be aware that this chart's default ingress controller, ingress-nginx (`className: "nginx"`), was retired by the upstream Kubernetes project in March 2026 and no longer receives updates or security patches, which is another reason to prefer Gateway API or another maintained controller. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; existing users upgrading from 1.x must explicitly set it to `true` in their values to keep using Ingress. The Ingress examples in this README are preserved as a reference for users mid-migration.
+
 ## Requirements
 
 - Kubectl
@@ -28,31 +30,56 @@ helm repo update
 
 ### Create config file
 
-Run the following command to create a custom values file used for deployment:
+Create a `my-values.yaml` with only the values you override. Anything you leave out uses the chart default, including any default that changes in a later release.
+
+To list every value and its default:
 
 ```shell
-helm show values bitwarden/self-host > my-values.yaml
+helm show values bitwarden/self-host
 ```
 
 ### Update the config file
 
-Edit the `my-values.yaml` file and fill out the values. Required values that must be set:
+Set the values required for your environment:
 
 - general.domain
-- general.ingress.enabled (set to disbled if you are creating your own ingress)
-- general.ingress.className (nginx example provided)
-- general.ingress.annotations (nginx example provided)
-- general.ingress.paths (nginx example provided)
-- general.ingress.cert.tls.name
 - general.email.replyToEmail
 - general.email.smtpHost
-- general.emal.smtpPort
+- general.email.smtpPort
 - general.email.smtpSsl
 - sharedStorageClassName
 - general.databaseProvider (set to "postgres" if using PostgreSQL, defaults to "mssql")
 - database.enabled (set to "false" if using an external SQL server or PostgreSQL)
 
-Note that default values for Nginx have been setup for the ingress in the values.yaml file. Some other ingress controller examples are provided later in this document.
+For routing, choose **one** of the following:
+
+- **Gateway API (recommended):** Set `general.gateway.enabled: true` and configure `general.gateway.parentRefs`. See the [Gateway API](#gateway-api) section below.
+- **Ingress:** Set `general.ingress.enabled: true` and configure `general.ingress.className`, `general.ingress.annotations`, `general.ingress.paths`, and `general.ingress.tls.name`. See the note below.
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. Note that this chart's default ingress controller, ingress-nginx (`className: "nginx"`), was retired by the upstream Kubernetes project in March 2026 and no longer receives updates or security patches. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
+
+Default Nginx values for the Ingress are still present in `values.yaml`. Some other ingress controller examples are provided later in this document and remain as reference material for users mid-migration.
+
+A minimal `my-values.yaml` with Gateway API:
+
+```yaml
+general:
+  domain: "bitwarden.example.com"
+  email:
+    replyToEmail: "no-reply@example.com"
+    smtpHost: "smtp.example.com"
+    smtpPort: "587"
+    smtpSsl: "true"
+  gateway:
+    enabled: true
+    parentRefs:
+      - name: bitwarden-gateway
+        namespace: gateway-system
+
+sharedStorageClassName: "shared-storage"
+```
+
+> **Behind a TLS-terminating reverse proxy (e.g. Traefik):** set `general.knownNetworks` to the CIDR range(s) your proxy connects from (for example `"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"`). This populates ASP.NET's forwarded-headers trusted-networks list so the backends honor `X-Forwarded-Proto` and generate `https` links/redirects. When the proxy terminates TLS and forwards to the backends over http, leaving this empty causes components such as the admin portal to emit `http` redirects.
 
 #### SCIM
 
@@ -77,6 +104,7 @@ Create a secret to set the following values.
 - SA_PASSWORD (if using the Bitwarden SQL pod)
 - globalSettings__sqlServer__connectionString (if using your own SQL server)
 - globalSettings__postgreSql__connectionString (if using PostgreSQL database)
+- globalSettings__distributedCache__redis__connectionString (if `general.distributedCache.redis.enabled` is true; required when running multiple replicas of the backend services)
 
 Here we document the process of creating the secret using the command line. However, you can also use a CSI secret provider class, which we document an example of under "Installing the Azure Key Vault CSI Driver" later in this README.
 
@@ -128,6 +156,237 @@ __*NOTE: These commands are recorded in your shell history. To avoid this, consi
 
 Set `secrets.secretName` to the name of the secret created above.
 
+#### Distributed Cache (Redis)
+
+When running multiple replicas of the backend services (API, Identity, Admin, SSO, Notifications, Events, SCIM), an external Redis is required for distributed caching, rate-limit coordination, and the SignalR backplane. The chart does not deploy Redis — bring your own (e.g. AWS ElastiCache, Azure Cache for Redis, Google Memorystore, or a self-managed Redis).
+
+To enable, set the following in `values.yaml`:
+
+```yaml
+general:
+  distributedCache:
+    redis:
+      enabled: true
+      # Optional: override which Kubernetes Secret holds the connection string.
+      # Defaults to secrets.secretName when empty.
+      secretName: ""
+```
+
+Then add the connection string key to the referenced Secret:
+
+```shell
+kubectl create secret generic custom-secret -n bitwarden\
+    --from-literal=globalSettings__distributedCache__redis__connectionString="<redis-host>:6379,password=<password>,ssl=True,abortConnect=False" \
+    ...other keys as above
+```
+
+The same key can also be supplied via your CSI secret provider class.
+
+#### Scaling backend services
+
+Once the distributed cache is enabled, the following backend deployments support horizontal scaling via a per-component `replicas` field:
+
+- `component.api.replicas`
+- `component.identity.replicas`
+- `component.admin.replicas`
+- `component.sso.replicas`
+- `component.events.replicas`
+- `component.scim.replicas`
+
+Each defaults to `1`. Example:
+
+```yaml
+general:
+  distributedCache:
+    redis:
+      enabled: true
+component:
+  api:
+    replicas: 3
+  identity:
+    replicas: 3
+```
+
+The chart will fail render with a clear error if any of these is set above `1` while `general.distributedCache.redis.enabled` is `false`, since coordinated session, token, and rate-limit state would otherwise diverge across pods.
+
+`notifications` is not yet covered by this scaling support — its SignalR backplane requires a separate Redis env var that will be wired in a follow-up. Other components (`web`, `icons`, `attachments`, `mssql`) remain single-replica via this chart.
+
+#### Custom Encryption Keys and Certificate
+
+By default, the chart generates encryption keys and an identity certificate. You may also provide your own if desired.
+
+__Generated (default):__
+
+- Encryption keys: `globalSettings__internalIdentityKey`, `globalSettings__oidcIdentityClientKey`, `globalSettings__duo__aKey`
+- Identity certificate: Self-signed certificate for the identity server
+
+__Providing your own encryption keys and certificate:__
+
+To provide your own encryption keys and identity certificate, you'll create __two Kubernetes secrets__:
+
+1. Main configuration secret as shown in the previous section.
+2. Certificate secret which contains the .pfx certificate along with the certificate password.
+
+Steps to create the secrets:
+
+Generate three random 64-character hex strings for the encryption keys:
+
+   ```shell
+   openssl rand -hex 64 # Repeat three times
+   ```
+
+1. Generate a `identity.pfx` certificate for the identity service. You can use OpenSSL or any other certificate tool to generate a self-signed certificate.
+
+    Example using OpenSSL:
+
+    ```shell
+      openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout identity.key -out identity.crt -subj "/CN=Bitwarden IdentityServer" -days 10950
+
+      openssl pkcs12 -export -out ./identity/identity.pfx -inkey identity.key -in identity.crt -passout pass:<your-pfx-password>
+    ```
+
+    Replace `<your-pfx-password>` with a strong password for the .pfx file.
+
+2. Create the main configuration secret with the encryption keys and secrets from the previous section:
+
+   ```shell
+   kubectl create secret generic custom-secret -n bitwarden \
+       --from-literal=globalSettings__internalIdentityKey="<64-char-hex-key-1>" \
+       --from-literal=globalSettings__oidcIdentityClientKey="<64-char-hex-key-2>" \
+       --from-literal=globalSettings__duo__aKey="<64-char-hex-key-3>" \
+       ... (other required fields from the Secrets section above)
+   ```
+
+3. Create the certificate secret with the .pfx file and password:
+
+   ```shell
+   kubectl create secret generic custom-certificate-secret -n bitwarden \
+       --from-literal=globalSettings__identityServer__certificatePassword="<your-pfx-password>" \
+       --from-file=identity.pfx=./path/to/your/identity.pfx
+   ```
+
+4. Configure `my-values.yaml` to use your custom secrets:
+
+   ```yaml
+   secrets:
+     secretName: "custom-secret"
+     secretKeys:
+       generate: false
+     identityCertificate:
+       generate: false
+       secretName: "custom-certificate-secret"
+   ```
+
+__*NOTE: In this example, generic Kubernetes secrets were used. You can also choose to provide these secrets with a SecretProviderClass for integration with external secret management systems. See [Installing the Azure Key Vault CSI Driver](#installing-the-azure-key-vault-csi-driver) or [Setting secrets using AWS Secrets Manager](#setting-secrets-using-aws-secrets-manager) for examples of other CSI secret provider classes.
+
+### Rotating a vulnerable identity certificate password
+
+Chart versions __earlier than 2.0.0__ contained a bug that generated the identity certificate password as the literal string `map[]` instead of a random value. If your deployment was originally installed with one of those versions and used the default `secrets.identityCertificate.generate: true`, your `identity.pfx` is encrypted with a publicly known password and must be rotated.
+
+Charts that carry the detection check refuse to install or upgrade while this password is in place, and point you at this section. Rotation is done with `kubectl` and `openssl` — it does not require Helm, so the block does not prevent you from fixing the problem.
+
+> __Important:__ the check was added after 2.2.0, so chart versions from 2.0.0 up to and including 2.2.0 do __not__ perform it. If you upgraded on one of those versions and it succeeded, that is not evidence you are unaffected — run the command below to check.
+
+#### Check whether you are affected
+
+```shell
+kubectl get secret <release-name>-identity-cert-password -n bitwarden -o jsonpath='{.data.globalSettings__identityServer__certificatePassword}' | base64 -d; echo
+```
+
+If this prints `map[]`, rotate using the steps below. If it prints a 32-character random string, or the secret does not exist, no action is needed.
+
+If the password secret exists but the certificate secret does not:
+
+```shell
+kubectl get secret <release-name>-identity-cert -n bitwarden
+```
+
+then the password is an orphan left behind by a previous release — there is no certificate to re-encrypt. Delete it rather than rotating, and the install or upgrade will proceed:
+
+```shell
+kubectl delete secret <release-name>-identity-cert-password -n bitwarden
+```
+
+> __Note:__ the chart reads this secret with the Helm `lookup` function, which uses __your__ kubeconfig credentials and returns nothing during `helm template` or `--dry-run`. A clean `helm template` run does not mean the deployment is clean — run the `kubectl` command above to be sure.
+
+#### Rotate the password
+
+These steps re-encrypt the __existing__ certificate under a new password rather than issuing a new one. Because the signing certificate is unchanged, access tokens already issued to your users remain verifiable — unlike generating a replacement certificate, which invalidates every issued token and signs everyone out.
+
+Step 4 restarts the identity and sso pods, so expect a short interruption to sign-in and token refresh while they roll. Plan a maintenance window, and verify users can still sign in before considering the rotation complete.
+
+1. Export the current certificate from the cluster. Note this is the `-identity-cert` secret, __not__ `-identity-cert-password` — the certificate and the password live in two different secrets:
+
+    ```shell
+    kubectl get secret <release-name>-identity-cert -n bitwarden -o jsonpath='{.data.identity\.pfx}' | base64 -d > identity.pfx
+    ```
+
+    For a release named `self-host`:
+
+    ```shell
+    kubectl get secret self-host-identity-cert -n bitwarden -o jsonpath='{.data.identity\.pfx}' | base64 -d > identity.pfx
+    ```
+
+    Check the file is not empty before continuing:
+
+    ```shell
+    wc -c < identity.pfx
+    ```
+
+    A size of `0` means the secret or the `identity.pfx` key was not found — usually a typo in the secret name. Fix that before moving on: `openssl` reports nothing at all when handed an empty file, so the next step would fail silently and step 3 would then complain about a missing `identity.pem`.
+
+2. Generate a new password and re-encrypt the certificate with it:
+
+    ```shell
+    export NEW_PASSWORD=$(openssl rand -base64 24)
+    openssl pkcs12 -in identity.pfx -out identity.pem -nodes -passin pass:'map[]'
+    openssl pkcs12 -export -out identity-rotated.pfx -in identity.pem -passout env:NEW_PASSWORD
+    ```
+
+    Notes on these commands:
+
+    - The `map[]` in `-passin` must be quoted — the brackets are shell glob characters.
+    - `NEW_PASSWORD` must be exported as an environment variable, because `-passout env:NEW_PASSWORD` reads it from the environment. Using `env:` rather than `pass:` keeps the new password out of the process list, where any other user on the machine could read it.
+    - Run all three in the same shell session, or `NEW_PASSWORD` will be lost before step 3.
+    - Each command is a single line. If you reflow them onto multiple lines with `\`, make sure no whitespace follows the backslash — that silently breaks the continuation and `openssl` will either reject the arguments or drop into an interactive password prompt.
+
+3. Update both secrets in place:
+
+    ```shell
+    kubectl create secret generic <release-name>-identity-cert -n bitwarden --from-file=identity.pfx=./identity-rotated.pfx --dry-run=client -o yaml | kubectl apply -f -
+    kubectl create secret generic <release-name>-identity-cert-password -n bitwarden --from-literal=globalSettings__identityServer__certificatePassword="$NEW_PASSWORD" --dry-run=client -o yaml | kubectl apply -f -
+    ```
+
+    Both commands print a warning like `resource secrets/... is missing the kubectl.kubernetes.io/last-applied-configuration annotation`. This is expected and harmless — the chart's pre-install hook creates these secrets imperatively with `kubectl create secret`, so they have never carried the annotation that `kubectl apply` maintains. kubectl adds it automatically and applies the update; the warning does not appear on subsequent runs. Look for `secret/... configured` on the following line to confirm it worked.
+
+    Confirm the password secret now holds the new value rather than `map[]`:
+
+    ```shell
+    kubectl get secret <release-name>-identity-cert-password -n bitwarden -o jsonpath='{.data.globalSettings__identityServer__certificatePassword}' | base64 -d; echo
+    ```
+
+4. Restart the components that consume the certificate:
+
+    ```shell
+    kubectl rollout restart deployment/<release-name>-identity -n bitwarden
+    kubectl rollout restart deployment/<release-name>-sso -n bitwarden
+
+    kubectl rollout status deployment/<release-name>-identity -n bitwarden
+    kubectl rollout status deployment/<release-name>-sso -n bitwarden
+    ```
+
+    If either rollout does not complete, the new certificate is not loading. Check `kubectl logs deployment/<release-name>-identity -n bitwarden` for certificate errors — the previous secret values are recoverable from your `identity.pfx` export in step 1 if you need to roll back.
+
+5. Once both rollouts have completed successfully, delete the local working files — `identity.pem` in particular contains the unencrypted private key:
+
+    ```shell
+    rm identity.pfx identity.pem identity-rotated.pfx
+    ```
+
+`helm upgrade` will now proceed as normal.
+
+> __If step 2 fails__ because the certificate cannot be read, you can generate a replacement certificate instead using the `openssl req` command from the previous section and load it into the same two secrets. Be aware that a __new certificate invalidates every issued token__ — all users will be signed out and will need to log in again. Only do this if re-encrypting is not possible.
+
 ### Optional Values
 
 Replace any optional values in `my-values.yaml` to best fit your cluster. This includes changing of resource limits and requests.
@@ -155,6 +414,48 @@ component:
 
 You can override the image repository for any component.
 
+#### Extra Volumes
+
+Every long-running service under `component.<name>` accepts `extraVolumeMounts` (added to the container) and `extraVolumes` (added to the pod). The pre-/post-install hook and job pods share a single `jobs.extraVolumeMounts` / `jobs.extraVolumes` pair, and the database (MSSQL) pod uses `database.extraVolumeMounts` / `database.extraVolumes`. All default to `[]`, so leaving them unset changes nothing.
+
+This is useful for hardened deployments that set `readOnlyRootFilesystem: true`, where containers need writable scratch space (typically `/tmp`) mounted as an `emptyDir`. Supply the volume where it is needed instead of patching the chart:
+
+```yaml
+# Writable /tmp for the hardened app containers
+component:
+  api:
+    securityContext:
+      readOnlyRootFilesystem: true
+    extraVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+    extraVolumes:
+      - name: tmp
+        emptyDir: {}
+
+# Writable /tmp for every pre-/post-install hook and job pod
+jobs:
+  securityContext:
+    readOnlyRootFilesystem: true
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
+
+# Writable scratch for the MSSQL pod
+database:
+  extraVolumeMounts:
+    - name: mssql-secrets
+      mountPath: /var/opt/mssql/secrets
+  extraVolumes:
+    - name: mssql-secrets
+      emptyDir: {}
+```
+
+`extraVolumes` accepts any Kubernetes volume source (`emptyDir`, `configMap`, `secret`, `persistentVolumeClaim`, `csi`, etc.), and each `extraVolumeMounts` entry must reference a volume `name` defined in the corresponding `extraVolumes` list.
+
 #### Raw Manifests Files
 
 This chart allows you to include other Kubernetes manifest files either pre- or post-install. To do this, update the `rawManifests` section of the chart
@@ -164,6 +465,8 @@ rawManifests:
   preInstall: []
   postInstall: []
 ```
+
+> **Note:** The example below predates Gateway API support and is preserved as reference material. Ingress is supported but is no longer the recommended default for this chart; for new deployments prefer the [Gateway API](#gateway-api) section. Note that as of chart 2.0.0, `general.ingress.enabled` defaults to `false`, so the `enabled: false` step the example refers to is now the default.
 
 The example below shows how you can use the raw manifests to install Traefik's IngressRoute instead of using the Kubernetes Ingress controller. Note that you will want to disable the ingress controller under `general.ingress.enabled` to use this.
 
@@ -291,6 +594,8 @@ Minimal required to get a running installation:
 
 #### Argo CD support
 
+> **Upgrading from chart 1.x to 2.0.0 with Argo CD:** Chart 2.0.0 flips the default of `general.ingress.enabled` from `true` to `false`. On the next sync after the upgrade, Argo CD will see the Ingress resource as `OutOfSync` and — if auto-prune is enabled — delete it, leaving Bitwarden unreachable. Either set `general.ingress.enabled: true` explicitly in your values before bumping the chart version, or complete the migration to Gateway API first (see the [Gateway API](#gateway-api) section). The same risk applies to Flux `HelmRelease` reconciles.
+
 To deploy the chart using Argo CD, you must use Argo CD sync phases and hooks to deploy resources in order. You can do this by setting the Argo CD annotations on the jobs and database resources in `my-values.yaml` and disabling the cleanup job.
 
 > Refer to the [Argo CD documentation](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/) for details about sync phases and hooks.
@@ -329,6 +634,44 @@ database:
         argocd.argoproj.io/sync-wave: "-1"
 ```
 
+## Gateway API
+
+Gateway API (`gateway.networking.k8s.io/v1`) is recommended to use, opposed to the Ingress API. This chart renders an `HTTPRoute` when `general.gateway.enabled` is set to `true`. The `Gateway` resource itself is **not** managed by this chart — you (or your platform team) create and own it, and the chart's `HTTPRoute` attaches to it via `parentRefs`. TLS terminates on the Gateway, not on the HTTPRoute.
+
+### Prerequisites
+
+- Gateway API CRDs v1.4.0 or later installed in the cluster.
+- A Gateway API controller installed in the cluster (e.g. Istio, Envoy Gateway, Contour, NGINX Gateway Fabric).
+- A `Gateway` resource you manage that listens for traffic on your Bitwarden domain.
+
+### Minimal values
+
+```yaml
+general:
+  domain: "vault.example.com"
+  ingress:
+    # Ingress is not the default; explicitly off (this is also the default as of chart 2.0.0)
+    enabled: false
+  gateway:
+    enabled: true
+    parentRefs:
+      - name: my-gateway
+        namespace: gateway-system
+        sectionName: https
+```
+
+See `general.gateway.*` in `values.yaml` for the full configuration surface, including per-service path overrides, annotations, and labels.
+
+### Migration from Ingress
+
+1. Stand up a `Gateway` resource and verify it accepts traffic for your Bitwarden domain.
+2. Add `general.gateway.enabled: true` and `general.gateway.parentRefs` to your `my-values.yaml`. Leave `general.ingress.enabled: true` for now so traffic is not interrupted.
+3. Run `helm upgrade`. The chart will render both an `Ingress` and an `HTTPRoute` in parallel during cutover.
+4. Repoint DNS (or your external load balancer) from the Ingress address to the Gateway address.
+5. Once traffic is flowing through the Gateway, set `general.ingress.enabled: false` (or remove the override entirely) and run `helm upgrade` again. The Ingress resource will be removed.
+
+---
+
 ## Example Deployment on AKS
 
 Below is an example of deploying this chart on AKS using various ingress controllers and cert-manager to provision the certificate from LetsEncrypt.
@@ -342,6 +685,8 @@ kubectl create ns bitwarden
 ### Deploy the ingress controller
 
 #### Nginx
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. The ingress-nginx controller used in this example was **retired by the upstream Kubernetes project in March 2026** and no longer receives updates or security patches — new deployments should use **Gateway API** (see the [Gateway API](#gateway-api) section) or another maintained controller. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 This is the simplest ingress to setup and has been provided as the default. You will need the ingress controller installed if you have not already done so. Follow the basic configuration found at ["Create an unmanaged ingress controller"](https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#basic-configuration).
 
@@ -366,6 +711,8 @@ general:
 These annotations can be used as-is.
 
 #### Azure Application Gateway
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. New deployments should use **Gateway API** — see the [Gateway API](#gateway-api) section. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 Azure customers might want to use an Azure Application Gateway as the ingress controller for their AKS cluster. You will want to [enable the Application Gateway ingress controller for your cluster](https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing) before making these configuration changes.
 
@@ -697,8 +1044,10 @@ We will need to finish the rewrite set on the Application Gateway we created ear
      - Server variable: uri_path
      - Case-sensitive: No
      - Operator: equal (=)
-     - Pattern to match: `^(\/(?!admin)(?!identity)(?!sso)[^\/]*)\/(.*)`
+     - Pattern to match: `^/(api|attachments|icons|notifications|events)/(.*)$`
      - Click OK
+
+     > **Note**: This pattern matches paths for services that need the first path segment removed before routing to the backend. It explicitly targets `/api/*`, `/attachments/*`, `/icons/*`, `/notifications/*`, and `/events/*` paths, which are rewritten to remove the first segment (e.g., `/api/accounts` → `/accounts`). Admin, Identity, and SSO paths are not matched and will pass through unchanged.
   7. Add an action and set the following values:
      - Rewrite type: URL
      - Action type: Set
@@ -723,6 +1072,17 @@ kubectl get ingress -n bitwarden
 
 The public IP will be found on the Overview tab of the Application Gateway service in the Azure Portal.
 
+#### AWS ALB Deployments
+
+Find the ALB address to point your DNS record at by running:
+
+```shell
+kubectl get ingress -n bitwarden
+```
+
+Create a CNAME record for your domain pointing at the `ADDRESS` shown (the ALB DNS name).
+Once DNS resolves, browse to `https://REPLACEME.com` — HTTP requests are redirected to HTTPS automatically.
+
 ## Example Deployment on OpenShift
 
 This section will walk through an example of hosting Bitwarden on OpenShift. Note that there are many different permutations of how you can host Bitwarden on this platform. We will provide some basic pointers.
@@ -738,11 +1098,13 @@ oc project bitwarden
 
 ### Setup ingress
 
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. This OpenShift example uses Routes (not Ingress), so it is unaffected; the explicit `general.ingress.enabled: false` step below is now the default as of chart 2.0.0. For an alternative based on Gateway API, see the [Gateway API](#gateway-api) section.
+
 We will use OpenShift Routes for our ingress in this example. Alternatively, ingress operators could be used.
 
 #### Disable default ingress
 
-In your `my-values.yaml`, disable the default ingress.
+In your `my-values.yaml`, disable the default ingress. As of chart 2.0.0 this is the default, but the explicit setting is shown for clarity.
 
 ```yaml
 general:
@@ -986,16 +1348,43 @@ oc create secret generic custom-secret -n bitwarden \
     # --from-literal=globalSettings__sqlServer__connectionString="REPLACE" # If using your own SQL server
 ```
 
-### Create a service account
+### Set a security context
 
-Bitwarden currently requires the use of a service account in OpenShift due to each container's need to run elevated commands on start-up. These commands are blocked by OpenShift's restricted SCCs. We need to create a service account and assign it to the `anyuid` SCC.
+Bitwarden's containers can run under OpenShift's default `restricted-v2` SCC once you set a `securityContext` that drops all Linux capabilities and disables privilege escalation.
+
+```yaml
+component:
+  # The Admin component
+  admin:
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+```
+
+Apply the same block under each `component.<name>`, and under `jobs.securityContext` for the pre- and post-install hook jobs. `jobs.podSecurityContext` is pod-level and only takes `runAsNonRoot` and `seccompProfile` from it; `capabilities` and `allowPrivilegeEscalation` are container-only fields. Don't apply it to `database`: the bundled MSSQL pod can't start under a restricted context (see [Exceptions](#exceptions) below).
+
+Don't set `runAsUser`. `restricted-v2` requires the UID to come from the project's own allocated range (`oc get project <project> -o yaml`, annotation `openshift.io/sa.scc.uid-range`), which differs per project and isn't known ahead of time. Leave `runAsUser` unset and OpenShift assigns a UID from that range automatically. A hardcoded UID outside the range needs the more permissive `nonroot-v2` SCC. `nonroot-v2` isn't granted to any user or service account by default, so a normal user's pod is rejected (`ALLOWED BY: <none>`); only `cluster-admin` can create it.
+
+If you choose to set `readOnlyRootFilesystem: true`, the .NET containers need a writable `/tmp`. Mount it as an `emptyDir` following the [Extra Volumes](#extra-volumes) section.
+
+#### Exceptions
+
+The bundled MSSQL image crashloops under a restricted context with `sqlservr: Operation not permitted`. For a fully rootless install, set `database.enabled: false` and bring your own database (see [Connect to an External MSSQL Database](https://bitwarden.com/help/external-db/)).
+
+#### Custom SCC
+
+For clusters that enforce their own SCC requirements, assign a dedicated service account to any component instead of relying on the default `restricted-v2` SCC:
 
 ```shell
 oc create sa bitwarden-sa
-oc adm policy add-scc-to-user anyuid -z bitwarden-sa
+oc adm policy add-scc-to-user <your-scc> -z bitwarden-sa
 ```
 
-Next, update `my-values.yaml` to use this service account. Note that this is a different service account from the one in the `serviceAccount` section of the values YAML file. Instead, set the following keys to the name of the service account created:
+Then set the matching `podServiceAccount` key(s) to the name of that service account:
 
 - component.admin.podServiceAccount
 - component.api.podServiceAccount
@@ -1009,31 +1398,7 @@ Next, update `my-values.yaml` to use this service account. Note that this is a d
 - component.web.podServiceAccount
 - database.podServiceAccount
 
-#### Example
-
-```yaml
-component:
-  # The Admin component
-  admin:
-    # Additional deployment labels
-    labels: {}
-    # Image repository, tag, and pull policy
-    image:
-      repository: ghcr.io/bitwarden/admin
-      tag: ""
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "50m"
-      limits:
-        memory: "128Mi"
-        cpu: "100m"
-    securityContext:
-    podSecurityContext:
-    podServiceAccount: bitwarden-sa
-```
-
-__*NOTE: You can create your own SSC to fine-tune the security of these pods. [Managing SSCs in OpenShift](https://cloud.redhat.com/blog/managing-sccs-in-openshift) describes the out-of-the-box SSCs and how to create your own if desired.*__
+__*NOTE: You can create your own SCC to fine-tune the security of these pods. [Managing SCCs in OpenShift](https://cloud.redhat.com/blog/managing-sccs-in-openshift) describes the out-of-the-box SCCs and how to create your own if desired.*__
 
 ### Update other settings
 
@@ -1055,7 +1420,8 @@ Follow the instructions above for creating the namespace.
 
 ### Setup Nginx ingress
 
-The ALB ingress is not currently recommended since it does not support path rewrites with path-based routing. This example uses Nginx, but Traefik could also be used here.
+This example uses Nginx, but Traefik could also be used here. 
+AWS Load Balancer Controller v2.14+ is supported using rewrites with the `alb.ingress.kubernetes.io/transforms.<serviceName>` annotation, see [Setup AWS ALB ingress](#setup-aws-alb-ingress) below.
 
 #### Install the Nginx Ingress Controller
 
@@ -1087,6 +1453,8 @@ helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
 ```
 
 #### Update the ingress section in my-values.yaml
+
+> **Note:** Ingress is supported but is no longer the recommended default for this chart. The ingress-nginx controller used in this example was **retired by the upstream Kubernetes project in March 2026** and no longer receives updates or security patches — new deployments should use **Gateway API** (see the [Gateway API](#gateway-api) section) or another maintained controller. The example below is preserved as a reference for users mid-migration. As of chart 2.0.0, `general.ingress.enabled` defaults to `false`; set it explicitly to `true` to keep using Ingress.
 
 The following settings will create an Nginx ingress. These settings are specific to the Nginx ingress controller annotations we detailed earlier.
 
@@ -1141,6 +1509,148 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 ```
+
+### Setup AWS ALB ingress
+
+#### Install the AWS Load Balancer Controller
+
+Follow the [AWS Load Balancer Controller installation guide](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/).
+A few requirements specific to this setup:
+
+- Use controller **v2.14 or newer** — the `transforms` (URL rewrite) annotation is ignored by
+  older versions, so prefix-stripped routes such as `/api` would return `404`.
+- Tag the public subnets the internet-facing ALB should use with
+  `kubernetes.io/role/elb=1` (see
+  [subnet discovery](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/subnet_discovery/)).
+- Create (or import) an **AWS Certificate Manager certificate** for your domain in the ALB's
+  region. It must be `ISSUED`; you will reference its ARN below. Bitwarden requires HTTPS, so
+  this is not optional.
+
+#### Update the ingress section in my-values.yaml
+
+The following settings create an internet-facing ALB that terminates TLS with your ACM
+certificate, redirects HTTP to HTTPS, and uses `transforms` to strip path prefixes for the
+services that serve from root. Replace `REPLACEME.com` and the `certificate-arn` value.
+
+```yaml
+general:
+  domain: "REPLACEME.com"
+
+  ingress:
+    enabled: true
+    # Route through the AWS Load Balancer Controller.
+    className: "alb"
+
+    annotations:
+      # Public ALB, routing straight to pod IPs (no NodePort needed).
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      # HTTPS is required by Bitwarden (the server advertises https:// service URLs and the
+      # web vault needs a secure context for Web Crypto). HTTP:80 is kept only to redirect to 443.
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      # ARN of your ACM certificate (must be ISSUED, in the ALB's region).
+      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:REPLACEME:REPLACEME:certificate/REPLACEME"
+
+      # Health checks: all Bitwarden .NET services expose /alive on port 5000 (returns 200);
+      # the web (static) service does not, so accept 404 too. traffic-port (5000) is the default.
+      alb.ingress.kubernetes.io/healthcheck-path: "/alive"
+      alb.ingress.kubernetes.io/success-codes: "200-404"
+
+      # URL rewrites — strip the path prefix before forwarding, for services whose backend
+      # serves from root (this replaces the Nginx rewrite-target). The annotation suffix must
+      # equal the backend serviceName (release name + "self-host" + component). Services that
+      # keep their prefix (sso, identity, admin, web) get NO transform.
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-api: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/api/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-icons: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/icons/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-notifications: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/notifications/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-events: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/events/(.+)$","replace":"/$1"}]}}]
+      alb.ingress.kubernetes.io/transforms.bitwarden-self-host-attachments: >
+        [{"type":"url-rewrite","urlRewriteConfig":{"rewrites":[{"regex":"^/attachments/(.+)$","replace":"/$1"}]}}]
+
+    tls:
+      # TLS is terminated at the ALB via the certificate-arn above, so no in-cluster
+      # secret / cluster issuer is needed.
+      name: ""
+      clusterIssuer: ""
+
+    # Override the chart's Nginx-style regex paths with ALB-compatible prefix paths.
+    # ALB path patterns are NOT regex (only `*`/`?` wildcards); `pathType: Prefix` lets the
+    # controller generate `/x` + `/x/*` patterns and order them longest-prefix-first, so the
+    # `/` (web) catch-all is evaluated last even though it is listed first.
+    paths:
+      web:
+        path: /
+        pathType: Prefix
+      attachments:
+        path: /attachments
+        pathType: Prefix
+      api:
+        path: /api
+        pathType: Prefix
+      icons:
+        path: /icons
+        pathType: Prefix
+      notifications:
+        path: /notifications
+        pathType: Prefix
+      events:
+        path: /events
+        pathType: Prefix
+      sso:
+        path: /sso
+        pathType: Prefix
+      identity:
+        path: /identity
+        pathType: Prefix
+      admin:
+        path: /admin
+        pathType: Prefix
+```
+
+> The `transforms.<serviceName>` suffix and the `backend.service.name` are formed from your
+> Helm release name. The examples above assume a release named `bitwarden` (services
+> `bitwarden-self-host-api`, etc.). If you install under a different release name, adjust the
+> suffixes to match. If you enable SCIM (`component.scim.enabled: true`), add a `scim` path
+> (`path: /scim`, `pathType: Prefix`) and a matching `transforms.<release>-self-host-scim`
+> rewrite.
+
+If you are migrating from the Nginx example above, the settings map across as follows:
+
+| Nginx | AWS ALB |
+|---|---|
+| `nginx.ingress.kubernetes.io/ssl-redirect: "true"` | `alb.ingress.kubernetes.io/ssl-redirect: "443"` + HTTPS in `listen-ports` |
+| `nginx.ingress.kubernetes.io/use-regex: "true"` | Not needed — use `pathType: Prefix` (ALB patterns are wildcard `*`/`?`, not regex) |
+| `nginx.ingress.kubernetes.io/rewrite-target: /$1` | Per-service `alb.ingress.kubernetes.io/transforms.<serviceName>` URL rewrite |
+| TLS via the NLB / `tls.clusterIssuer` (Let's Encrypt) | ACM certificate on the ALB via `alb.ingress.kubernetes.io/certificate-arn` |
+| Paths `/(.*)`, `/api/(.*)`, … with `pathType: ImplementationSpecific` | Plain prefixes `/`, `/api`, … with `pathType: Prefix` |
+| Controller creates an AWS **NLB** | Controller creates an AWS **ALB** |
+
+A few things worth keeping in mind:
+
+- **Only the sub-path services that serve from root get a rewrite** — `api`, `icons`,
+  `notifications`, `events`, and `attachments`. `sso`, `identity`, `admin`, and `web` keep
+  their prefix, so they get no `transforms` annotation.
+- **Use `pathType: Prefix`** rather than the chart's default regex paths. The controller
+  orders rules longest-prefix-first, so the `/` (web) catch-all is evaluated last and does
+  not shadow the more specific routes.
+- **HTTPS is required.** The Bitwarden server advertises `https://` service URLs, and the web
+  vault's Web Crypto API only works in a secure context. An HTTP-only ALB will leave the UI
+  spinning — always configure the HTTPS listener with an ACM certificate.
+
+You can confirm the rendered ingress before deploying:
+
+```shell
+helm template bitwarden bitwarden/self-host -f my-values.yaml \
+  | sed -n '/kind: Ingress/,/^---/p'
+```
+
+Expect `ingressClassName: alb`, the plain prefix paths, and `transforms.*` annotations whose
+suffixes match the rendered `backend.service.name` values.
 
 ### Setup EFS storage class
 

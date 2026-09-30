@@ -22,19 +22,19 @@ jobs:
       contents: read
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Helm
-        uses: Azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: 'v4.0.0'
 
       - name: Install Helm plugins
         env:
-          HELM_SCHEMA_VERSION: 0.20.0-1 # To regenerate the schema if the linter fails on version update, see: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md#helm-schema
+          HELM_SCHEMA_VERSION: 0.23.5 # To regenerate the schema if the linter fails on version update, see: https://github.com/bitwarden/helm-charts/blob/main/CONTRIBUTING.md#helm-schema
         run: helm plugin install https://github.com/dadav/helm-schema --version "${HELM_SCHEMA_VERSION}" --verify=false # see: https://github.com/dadav/helm-schema/issues/156
 
       - name: Set up chart-testing

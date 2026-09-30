@@ -1,0 +1,262 @@
+suite: test Gateway API HTTPRoute
+templates:
+  - templates/helpers.tpl
+  - templates/httproute.yaml
+
+tests:
+  - it: should not create HTTPRoute when gateway is disabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create HTTPRoute when gateway is enabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isAPIVersion:
+          of: gateway.networking.k8s.io/v1
+      - isKind:
+          of: HTTPRoute
+
+  - it: should set correct parentRefs
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+          namespace: gateway-ns
+          sectionName: https
+    asserts:
+      - equal:
+          path: spec.parentRefs[0].name
+          value: my-gateway
+      - equal:
+          path: spec.parentRefs[0].namespace
+          value: gateway-ns
+      - equal:
+          path: spec.parentRefs[0].sectionName
+          value: https
+
+  - it: should set hostname from general.domain
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.hostnames[0]
+          value: bitwarden.example.com
+
+  - it: should have 9 rules by default (no SCIM)
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - lengthEqual:
+          path: spec.rules
+          count: 9
+
+  - it: should have 10 rules when SCIM is enabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      component.scim.enabled: true
+    asserts:
+      - lengthEqual:
+          path: spec.rules
+          count: 10
+
+  - it: should place web catch-all route last
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[8].matches[0].path.value
+          value: /
+
+  - it: should name every rule so policies can target them by sectionName
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[0].name
+          value: attachments
+      - equal:
+          path: spec.rules[1].name
+          value: api
+      - equal:
+          path: spec.rules[2].name
+          value: icons
+      - equal:
+          path: spec.rules[3].name
+          value: notifications
+      - equal:
+          path: spec.rules[4].name
+          value: events
+      - equal:
+          path: spec.rules[5].name
+          value: sso
+      - equal:
+          path: spec.rules[6].name
+          value: identity
+      - equal:
+          path: spec.rules[7].name
+          value: admin
+      - equal:
+          path: spec.rules[8].name
+          value: web
+
+  - it: should name the scim rule when SCIM is enabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      component.scim.enabled: true
+    asserts:
+      - equal:
+          path: spec.rules[5].name
+          value: scim
+      - equal:
+          path: spec.rules[9].name
+          value: web
+
+  - it: should apply custom annotations
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      general.gateway.annotations:
+        custom-annotation: custom-value
+    asserts:
+      - equal:
+          path: metadata.annotations.custom-annotation
+          value: custom-value
+
+  - it: should apply custom labels
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      general.gateway.labels:
+        custom-label: custom-value
+    asserts:
+      - equal:
+          path: metadata.labels.custom-label
+          value: custom-value
+
+  - it: should apply URLRewrite filter to api rule to strip path prefix
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[1].filters[0].type
+          value: URLRewrite
+      - equal:
+          path: spec.rules[1].filters[0].urlRewrite.path.type
+          value: ReplacePrefixMatch
+      - equal:
+          path: spec.rules[1].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+
+  - it: should apply URLRewrite filter to attachments, icons, notifications, and events rules
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[0].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+      - equal:
+          path: spec.rules[2].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+      - equal:
+          path: spec.rules[3].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+      - equal:
+          path: spec.rules[4].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+
+  - it: should not apply filters to sso, identity, admin, or web rules
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - notExists:
+          path: spec.rules[5].filters
+      - notExists:
+          path: spec.rules[6].filters
+      - notExists:
+          path: spec.rules[7].filters
+      - notExists:
+          path: spec.rules[8].filters
+
+  - it: should apply URLRewrite filter to scim rule when SCIM is enabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      component.scim.enabled: true
+    asserts:
+      - equal:
+          path: spec.rules[5].filters[0].type
+          value: URLRewrite
+      - equal:
+          path: spec.rules[5].filters[0].urlRewrite.path.replacePrefixMatch
+          value: /
+
+  - it: should respect custom paths
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      general.gateway.paths.api.path: /custom-api
+    asserts:
+      - equal:
+          path: spec.rules[1].matches[0].path.value
+          value: /custom-api

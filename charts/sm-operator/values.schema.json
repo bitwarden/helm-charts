@@ -24,6 +24,11 @@
         },
         "manager": {
           "properties": {
+            "containerPort": {
+              "default": 8443,
+              "title": "containerPort",
+              "type": "integer"
+            },
             "enableLeaderElection": {
               "default": true,
               "description": "Enables leader election for the controller manager, should be enabled if there is more than one replica.",
@@ -249,6 +254,12 @@
       "required": [],
       "title": "readinessProbe",
       "type": "object"
+    },
+    "revisionHistoryLimit": {
+      "default": "",
+      "description": "Amount of old ReplicaSets to retain.\nMore info: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy",
+      "title": "revisionHistoryLimit",
+      "type": "string"
     },
     "settings": {
       "properties": {

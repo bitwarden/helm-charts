@@ -1,4 +1,5 @@
 ---
+{{- include "bitwarden.requireRedisForReplicas" (dict "name" "sso" "replicas" .Values.component.sso.replicas "redisEnabled" .Values.general.distributedCache.redis.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +18,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.component.sso.replicas }}
   strategy:
     type: {{ .Values.component.sso.deploymentStrategy | quote }}
   selector:
@@ -38,6 +39,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.sso.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.sso.affinity }}
+        {{ toYaml .Values.component.sso.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.sso.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.sso.nodeSelector }}
@@ -66,35 +79,61 @@ spec:
       initContainers:
       - name: create-mount-subdir
         command:
-          - "/bin/bash"
+          - "/bin/sh"
           - "-c"
         args: ['
           mkdir -p /logs/sso
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.sso.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.sso" . }}
-        image: "{{ .Values.component.sso.image.name | default .Values.component.sso.image.repository }}:{{ .Values.component.sso.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.sso.image.repository }}:{{ .Values.component.sso.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
-          - secretRef:
-              name: {{ .Release.Name }}-identity-cert-password
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.sso.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.sso.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
+          {{- if .Values.secrets.identityCertificate.generate }}
+          - name: globalSettings__identityServer__certificatePassword
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-identity-cert-password
+                key: globalSettings__identityServer__certificatePassword
+          {{- else }}
+          - name: globalSettings__identityServer__certificatePassword
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "bitwarden.identityCertSecretName" . }}
+                key: globalSettings__identityServer__certificatePassword
+          {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         {{- with .Values.component.sso.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -128,12 +167,20 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.component.sso.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.sso.securityContext | indent 10 }}
       volumes:
         - name: identity
           secret:
-            secretName: {{ .Release.Name }}-identity-cert
+            secretName: {{ template "bitwarden.identityCertSecretName" . }}
+            {{- if not .Values.secrets.identityCertificate.generate }}
+            items:
+              - key: identity.pfx
+                path: identity.pfx
+            {{- end }}
         - name: dataprotection
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.dataprotection" . ) .Values.volume.dataprotection.existingClaim }}
@@ -157,6 +204,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.component.sso.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

@@ -1,4 +1,5 @@
 ---
+{{- include "bitwarden.requireRedisForReplicas" (dict "name" "events" "replicas" .Values.component.events.replicas "redisEnabled" .Values.general.distributedCache.redis.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +18,7 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.component.events.replicas }}
   strategy:
     type: {{ .Values.component.events.deploymentStrategy | quote }}
   selector:
@@ -38,6 +39,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.events.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.events.affinity }}
+        {{ toYaml .Values.component.events.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.events.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.events.nodeSelector }}
@@ -66,33 +79,48 @@ spec:
       initContainers:
       - name: create-mount-subdir
         command:
-          - "/bin/bash"
+          - "/bin/sh"
           - "-c"
         args: ['
           mkdir -p /logs/events
         ']
-        image: "{{ .Values.supportComponents.kubectl.image.name | default .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        image: "{{ .Values.supportComponents.kubectl.image.repository }}:{{ .Values.supportComponents.kubectl.image.tag }}"
+        securityContext:
+{{ toYaml .Values.component.events.securityContext | indent 10 }}
         volumeMounts:
           - name: applogs
             mountPath: /logs
     {{- end }}
       containers:
       - name: {{ template "bitwarden.events" . }}
-        image: "{{ .Values.component.events.image.name | default .Values.component.events.image.repository }}:{{ .Values.component.events.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.component.events.image.repository }}:{{ .Values.component.events.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.events.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.events.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
+        {{- if .Values.general.distributedCache.redis.enabled }}
+          - name: globalSettings__distributedCache__redis__connectionString
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "bitwarden.distributedCacheSecretName" . }}
+                key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
+        {{- end }}
         {{- with .Values.component.events.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -120,6 +148,9 @@ spec:
           mountPath: /etc/bitwarden/logs
           subPath: events
         {{- end }}
+        {{- with .Values.component.events.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.events.securityContext | indent 10 }}
       volumes:
@@ -140,6 +171,9 @@ spec:
         - name: applogs
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.applogs" . ) .Values.volume.logs.existingClaim }}
+        {{- end }}
+        {{- with .Values.component.events.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

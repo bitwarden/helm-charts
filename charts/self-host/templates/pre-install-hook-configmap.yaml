@@ -44,7 +44,7 @@ data:
   globalSettings__logDirectory: "/dev/null"
 {{- end }}
 {{- if (.Values.general.refreshTokens.enabled) }}
-  globalSettings__IdentityServer__ApplyAbsoluteRefreshTokenOnRefreshToken: {{ .Values.general.refreshTokens.applyAbsoluteRefreshTokenOnRefreshToken | default "false" | quote }}
+  globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken: {{ .Values.general.refreshTokens.applyAbsoluteExpirationOnRefreshToken | default "false" | quote }}
   globalSettings__IdentityServer__AbsoluteRefreshTokenLifetimeSeconds: {{
   .Values.general.refreshTokens.absoluteRefreshTokenLifetimeSeconds | default "0" | quote }}
   globalSettings__IdentityServer__SlidingRefreshTokenLifetimeSeconds: {{
@@ -60,9 +60,23 @@ data:
 {{- if eq .Values.general.cloudRegion "EU" }}
   globalSettings__installation__identityUri: "https://identity.bitwarden.eu"
   globalSettings__installation__apiUri: "https://api.bitwarden.eu"
+  {{- if .Values.general.pushRelayBaseUri }}
+  globalSettings__pushRelayBaseUri: "{{ .Values.general.pushRelayBaseUri }}"
+  {{- else }}
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.eu"
+  {{- end }}
 {{- else }}
+  {{- if .Values.general.pushRelayBaseUri }}
+  globalSettings__pushRelayBaseUri: "{{ .Values.general.pushRelayBaseUri }}"
+  {{- else }}
   globalSettings__pushRelayBaseUri: "https://push.bitwarden.com"
+  {{- end }}
+{{- end }}
+{{- if .Values.general.knownNetworks }}
+  globalSettings__knownNetworks: {{ .Values.general.knownNetworks | quote }}
+{{- end }}
+{{- if .Values.jobs.db.migrationTimeoutSeconds }}
+  globalSettings__sqlServer__migrationExecutionTimeoutSeconds: {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}
 {{- end }}
   adminSettings__admins: {{ .Values.general.admins | quote }}
   LOCAL_UID: "1000"

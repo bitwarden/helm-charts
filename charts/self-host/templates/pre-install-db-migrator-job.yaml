@@ -40,6 +40,14 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+    {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.general.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- with .Values.general.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -69,7 +77,7 @@ spec:
               key: globalSettings__sqlServer__connectionString
         - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
           value: /migrator
-        image: "{{ .Values.supportComponents.dbMigrator.image.name | default .Values.supportComponents.dbMigrator.image.repository }}:{{ .Values.supportComponents.dbMigrator.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
+        image: "{{ .Values.supportComponents.dbMigrator.image.repository }}:{{ .Values.supportComponents.dbMigrator.image.tag | default .Values.general.coreVersionOverride | default (include "bitwarden.coreVersionDefault" nil) }}"
         {{- if .Values.jobs.securityContext }}
         securityContext:
           {{- toYaml .Values.jobs.securityContext | nindent 10 }}
@@ -81,15 +89,30 @@ spec:
         volumeMounts:
         - name: migrator-extract-dir
           mountPath: "/migrator"
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          mountPath: /etc/bitwarden/ca-certificates
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
+        {{- if .Values.jobs.db.migrationTimeoutSeconds }}
+        args: [ "-t", {{ .Values.jobs.db.migrationTimeoutSeconds | quote }}]
+        {{- end }}
       restartPolicy: Never
       volumes:
         - name: migrator-extract-dir
           emptyDir: {}
+        {{- if .Values.volume.caCertificates.enabled }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.volume.caCertificates.configMapName }}
+        {{- end }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
@@ -97,5 +120,8 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.jobs.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 {{- end }}

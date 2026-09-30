@@ -1,8 +1,8 @@
 {{- define "bitwarden.coreVersionDefault" -}}
-{{- "2026.1.0" -}}
+{{- "2026.9.0" -}}
 {{- end -}}
 {{- define "bitwarden.webVersionDefault" -}}
-{{- "2026.1.0" -}}
+{{- "2026.9.0" -}}
 {{- end -}}
 
 {{/*
@@ -241,6 +241,13 @@ Name of Ingress components
 {{- end -}}
 
 {{/*
+Name of HTTPRoute components
+*/}}
+{{- define "bitwarden.httproute" -}}
+{{ template "bitwarden.fullname" . }}-httproute
+{{- end -}}
+
+{{/*
 Name of Feature Flag configMap
 */}}
 {{- define "bitwarden.featureflags" -}}
@@ -259,4 +266,48 @@ Name of the keys secret
 */}}
 {{- define "bitwarden.keyssecret" -}}
 {{ template "bitwarden.fullname" . }}-secretkeys
+{{- end -}}
+
+{{/*
+Name of the keys secret (generated or provided by the user)
+*/}}
+{{- define "bitwarden.keyssecretName" -}}
+{{- if .Values.secrets.secretKeys.generate -}}
+{{ template "bitwarden.keyssecret" . }}
+{{- else -}}
+{{ .Values.secrets.secretName }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Name of the secret holding the Redis distributed cache connection string.
+Defaults to secrets.secretName when general.distributedCache.redis.secretName is empty.
+*/}}
+{{- define "bitwarden.distributedCacheSecretName" -}}
+{{- default .Values.secrets.secretName .Values.general.distributedCache.redis.secretName -}}
+{{- end -}}
+
+{{/*
+Fail render when a backend component is configured with replicas > 1
+while general.distributedCache.redis.enabled is false. Multiple replicas
+of api/identity/admin/sso/events/scim require Redis for session, token,
+and rate-limit coordination.
+
+Args (dict): name, replicas, redisEnabled
+*/}}
+{{- define "bitwarden.requireRedisForReplicas" -}}
+{{- if and (gt (int .replicas) 1) (not .redisEnabled) -}}
+{{- fail (printf "component.%s.replicas is %v but general.distributedCache.redis.enabled is false. Running more than one replica of api/identity/admin/sso/events/scim requires Redis distributed cache for session, token, and rate-limit coordination. Set general.distributedCache.redis.enabled=true and provide a connection string secret." .name .replicas) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Name of the identity cert secret (for volume mount and password)
+*/}}
+{{- define "bitwarden.identityCertSecretName" -}}
+{{- if .Values.secrets.identityCertificate.generate -}}
+{{ .Release.Name }}-identity-cert
+{{- else -}}
+{{ required "secrets.identityCertificate.secretName is required when generate is false. This secret should contain both identity.pfx and the certificate password." .Values.secrets.identityCertificate.secretName }}
+{{- end -}}
 {{- end -}}

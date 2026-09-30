@@ -1,0 +1,141 @@
+suite: Backend service replica scaling
+templates:
+  - templates/helpers.tpl
+  - templates/api.yaml
+  - templates/identity.yaml
+  - templates/admin.yaml
+  - templates/sso.yaml
+  - templates/events.yaml
+  - templates/scim.yaml
+tests:
+  - it: should default api replicas to 1
+    template: templates/api.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should default identity replicas to 1
+    template: templates/identity.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should default admin replicas to 1
+    template: templates/admin.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should default sso replicas to 1
+    template: templates/sso.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should default events replicas to 1
+    template: templates/events.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should scale api when redis distributed cache is enabled
+    template: templates/api.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+      component.api.replicas: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should scale identity when redis distributed cache is enabled
+    template: templates/identity.yaml
+    set:
+      general.distributedCache.redis.enabled: true
+      component.identity.replicas: 2
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should render scim with replicas when enabled and redis is on
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: true
+      general.distributedCache.redis.enabled: true
+      component.scim.replicas: 2
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should fail render when api replicas > 1 without redis
+    template: templates/api.yaml
+    set:
+      component.api.replicas: 2
+    asserts:
+      - failedTemplate:
+          errorMessage: "component.api.replicas is 2 but general.distributedCache.redis.enabled is false. Running more than one replica of api/identity/admin/sso/events/scim requires Redis distributed cache for session, token, and rate-limit coordination. Set general.distributedCache.redis.enabled=true and provide a connection string secret."
+
+  - it: should fail render when identity replicas > 1 without redis
+    template: templates/identity.yaml
+    set:
+      component.identity.replicas: 5
+    asserts:
+      - failedTemplate:
+          errorMessage: "component.identity.replicas is 5 but general.distributedCache.redis.enabled is false. Running more than one replica of api/identity/admin/sso/events/scim requires Redis distributed cache for session, token, and rate-limit coordination. Set general.distributedCache.redis.enabled=true and provide a connection string secret."
+
+  - it: should fail render when sso replicas > 1 without redis
+    template: templates/sso.yaml
+    set:
+      component.sso.replicas: 2
+    asserts:
+      - failedTemplate:
+          errorMessage: "component.sso.replicas is 2 but general.distributedCache.redis.enabled is false. Running more than one replica of api/identity/admin/sso/events/scim requires Redis distributed cache for session, token, and rate-limit coordination. Set general.distributedCache.redis.enabled=true and provide a connection string secret."
+
+  - it: should fail render when scim replicas > 1 without redis (and scim enabled)
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: true
+      component.scim.replicas: 2
+    asserts:
+      - failedTemplate:
+          errorMessage: "component.scim.replicas is 2 but general.distributedCache.redis.enabled is false. Running more than one replica of api/identity/admin/sso/events/scim requires Redis distributed cache for session, token, and rate-limit coordination. Set general.distributedCache.redis.enabled=true and provide a connection string secret."
+
+  - it: should not validate scim replicas when scim is disabled
+    template: templates/scim.yaml
+    set:
+      component.scim.enabled: false
+      component.scim.replicas: 5
+    asserts:
+      - hasDocuments:
+          count: 0

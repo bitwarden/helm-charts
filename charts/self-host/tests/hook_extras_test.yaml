@@ -1,0 +1,237 @@
+suite: test hook/job and mssql extraVolumeMounts and extraVolumes
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-job.yaml
+  - templates/pre-install-secret-sql.yaml
+  - templates/pre-install-db-migrator-job.yaml
+  - templates/post-install-db-migrator-job.yaml
+  - templates/post-delete-hook.yaml
+  - templates/mssql.yaml
+
+tests:
+  # pre-install-job (setup) - jobs.* on the create-resources container and
+  # the generate-identity-cert init container
+  - it: pre-install-job - should render jobs.extraVolumeMounts on both containers
+    template: templates/pre-install-job.yaml
+    set:
+      secrets.identityCertificate.generate: true
+      jobs.extraVolumeMounts[0].mountPath: /etc/custom/config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+
+  - it: pre-install-job - should render jobs.extraVolumes on the pod
+    template: templates/pre-install-job.yaml
+    set:
+      secrets.identityCertificate.generate: true
+      jobs.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: pre-install-job - should not render extra volumes when empty
+    template: templates/pre-install-job.yaml
+    set:
+      secrets.identityCertificate.generate: true
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # pre-install-secret-sql (secret) - jobs.* on the create-resources container
+  - it: pre-install-secret-sql - should render jobs.extraVolumeMounts and extraVolumes
+    template: templates/pre-install-secret-sql.yaml
+    set:
+      database.enabled: true
+      jobs.extraVolumeMounts[0].mountPath: /etc/custom/config
+      jobs.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: pre-install-secret-sql - should not render extra volumes when empty
+    template: templates/pre-install-secret-sql.yaml
+    set:
+      database.enabled: true
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+
+  # pre-install-db-migrator-job - jobs.* on the migrate-db container
+  - it: pre-install-db-migrator-job - should render jobs.extraVolumeMounts and extraVolumes
+    template: templates/pre-install-db-migrator-job.yaml
+    set:
+      jobs.extraVolumeMounts[0].mountPath: /etc/custom/config
+      jobs.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: pre-install-db-migrator-job - should not render extra volumes when empty
+    template: templates/pre-install-db-migrator-job.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+
+  # post-install-db-migrator-job - jobs.* on both the wait-for-db init
+  # container and the migrate-db container
+  - it: post-install-db-migrator-job - should render jobs.extraVolumeMounts on both containers
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+      jobs.extraVolumeMounts[0].mountPath: /etc/custom/config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+
+  - it: post-install-db-migrator-job - should render jobs.extraVolumes on the pod
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+      jobs.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: post-install-db-migrator-job - should not render extra volumes when empty
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  # post-delete-hook (cleanup) - jobs.* on the delete-resources container;
+  # this template has no volumeMounts/volumes by default
+  - it: post-delete-hook - should render jobs.extraVolumeMounts and extraVolumes
+    template: templates/post-delete-hook.yaml
+    set:
+      jobs.cleanup.enabled: true
+      jobs.extraVolumeMounts[0].mountPath: /etc/custom/config
+      jobs.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: post-delete-hook - should not render volumeMounts or volumes when empty
+    template: templates/post-delete-hook.yaml
+    set:
+      jobs.cleanup.enabled: true
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts
+        documentIndex: 0
+      - notExists:
+          path: spec.template.spec.volumes
+        documentIndex: 0
+
+  # mssql - database.* on the mssql container and pod
+  - it: mssql - should render database.extraVolumeMounts and extraVolumes
+    template: templates/mssql.yaml
+    set:
+      database.enabled: true
+      database.extraVolumeMounts[0].mountPath: /etc/custom/config
+      database.extraVolumes[0].configMap.name: extra-configmap
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0
+
+  - it: mssql - should not render extra volumes when empty
+    template: templates/mssql.yaml
+    set:
+      database.enabled: true
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            mountPath: /etc/custom/config
+        documentIndex: 0
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            configMap:
+              name: extra-configmap
+        documentIndex: 0

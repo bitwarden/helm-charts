@@ -1,0 +1,86 @@
+# External PostgreSQL for the self-host Kind install (databaseProvider: postgres).
+# Deployed outside the chart by setup.sh, the way a customer would provide their own database.
+#
+# setup.sh creates the "postgres-credentials" secret (POSTGRES_PASSWORD) before applying this file.
+# Postgres 18+ images keep data under /var/lib/postgresql/<major>/docker, so the volume is mounted at
+# /var/lib/postgresql rather than /var/lib/postgresql/data.
+#
+# Runs as the image's postgres user (999) under the restricted Pod Security Standard, so it can also
+# serve scenarios with restricted Pod Security Admission. The root filesystem is read-only; Postgres
+# needs /var/run/postgresql (socket lock file) and /tmp writable, so both are emptyDir mounts.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app.kubernetes.io/name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: postgres
+          image: postgres:18.6@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: bitwarden
+            - name: POSTGRES_DB
+              value: vault
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "bitwarden", "-d", "vault"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql
+            - name: run
+              mountPath: /var/run/postgresql
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app.kubernetes.io/name: postgres
+spec:
+  selector:
+    app.kubernetes.io/name: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

@@ -1,0 +1,75 @@
+suite: test configmap conditional settings
+templates:
+  - templates/helpers.tpl
+  - templates/pre-install-hook-configmap.yaml
+
+tests:
+  - it: should include globalSettings__knownNetworks when knownNetworks is set
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.knownNetworks: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+    asserts:
+      - equal:
+          path: data.globalSettings__knownNetworks
+          value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+        documentIndex: 0
+
+  - it: should not include globalSettings__knownNetworks when knownNetworks is empty
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+    asserts:
+      - isNull:
+          path: data.globalSettings__knownNetworks
+        documentIndex: 0
+
+  - it: should render ApplyAbsoluteExpirationOnRefreshToken env var when refreshTokens enabled
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.refreshTokens.enabled: true
+    asserts:
+      - equal:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken
+          value: "true"
+        documentIndex: 0
+      - isNull:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteRefreshTokenOnRefreshToken
+        documentIndex: 0
+
+  - it: should honor explicit applyAbsoluteExpirationOnRefreshToken override
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.refreshTokens.enabled: true
+      general.refreshTokens.applyAbsoluteExpirationOnRefreshToken: "false"
+    asserts:
+      - equal:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken
+          value: "false"
+        documentIndex: 0
+
+  - it: should not render refresh token env vars when refreshTokens disabled
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      general.refreshTokens.enabled: false
+    asserts:
+      - isNull:
+          path: data.globalSettings__IdentityServer__ApplyAbsoluteExpirationOnRefreshToken
+        documentIndex: 0
+      - isNull:
+          path: data.globalSettings__IdentityServer__AbsoluteRefreshTokenLifetimeSeconds
+        documentIndex: 0
+
+  - it: should include the migration timeout when migrationTimeoutSeconds is set
+    template: templates/pre-install-hook-configmap.yaml
+    set:
+      general.domain: "example.com"
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - equal:
+          path: data.globalSettings__sqlServer__migrationExecutionTimeoutSeconds
+          value: "900"
+        documentIndex: 0

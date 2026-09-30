@@ -38,6 +38,18 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
     spec:
+      {{- with .Values.general.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.component.web.affinity .Values.general.affinity }}
+      affinity:
+        {{- if .Values.component.web.affinity }}
+        {{ toYaml .Values.component.web.affinity | nindent 8 }}
+        {{- else }}
+        {{ toYaml .Values.general.affinity | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.component.web.nodeSelector .Values.general.nodeSelector }}
       nodeSelector:
         {{- if .Values.component.web.nodeSelector }}
@@ -64,21 +76,27 @@ spec:
     {{- end }}
       containers:
       - name: {{ template "bitwarden.web" . }}
-        image: "{{ .Values.component.web.image.name | default .Values.component.web.image.repository }}:{{ .Values.component.web.image.tag | default .Values.general.webVersionOverride | default (include "bitwarden.webVersionDefault" nil) }}"
+        image: "{{ .Values.component.web.image.repository }}:{{ .Values.component.web.image.tag | default .Values.general.webVersionOverride | default (include "bitwarden.webVersionDefault" nil) }}"
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-config-map
           - secretRef:
               name: {{ .Values.secrets.secretName | quote }}
           - secretRef:
-              name: {{ template "bitwarden.keyssecret" . }}
+              name: {{ template "bitwarden.keyssecretName" . }}
           {{- if .Values.database.enabled }}
           - secretRef:
               name: {{ .Release.Name }}-sql-connection-string
           {{- end }}
+        {{- with .Values.component.web.extraEnvFrom }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           - name: ASPNETCORE_URLS
             value: http://+:5000
+        {{- with .Values.component.web.extraEnv }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.web.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
@@ -99,6 +117,9 @@ spec:
           mountPath: "/mnt/secrets-store"
           readOnly: true
         {{- end }}
+        {{- with .Values.component.web.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
         securityContext:
 {{ toYaml .Values.component.web.securityContext | indent 10 }}
       volumes:
@@ -112,6 +133,9 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.secrets.secretProviderClass }}
+        {{- end }}
+        {{- with .Values.component.web.extraVolumes }}
+{{ toYaml . | indent 8 }}
         {{- end }}
 
 ---

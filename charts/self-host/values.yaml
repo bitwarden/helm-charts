@@ -10,8 +10,19 @@ general:
   #  - Requires globalSettings__postgreSql__connectionString to exist in the configured secret.
   databaseProvider: "mssql"
   ingress:
-    # Set to false if using a custom ingress
-    enabled: true
+    # Ingress is supported but is no longer the recommended default for this chart.
+    # Gateway API is the preferred option for new deployments — set
+    # `general.gateway.enabled: true` below. See the chart README ("Gateway API" section).
+    #
+    # NOTE: This chart's default ingress controller is ingress-nginx (className: "nginx"),
+    # which the upstream Kubernetes project retired in March 2026 (no further releases,
+    # bug fixes, or security patches). If you keep using Ingress, plan to migrate to
+    # Gateway API or another maintained ingress controller.
+    # @schema
+    # type: boolean
+    # default: false
+    # @schema
+    enabled: false
     # Current supported values for ingress type include: nginx
     className: "nginx"
      ## - Annotations to add to the Ingress resource.
@@ -64,6 +75,42 @@ general:
         path: /(admin/?.*)
         pathType: ImplementationSpecific
 
+  # Gateway API HTTPRoute configuration
+  # Use this as an alternative to general.ingress when using Gateway API (gateway.networking.k8s.io/v1)
+  # TLS is handled at the Gateway resource level, not on the HTTPRoute
+  gateway:
+    # Set to true to create an HTTPRoute resource
+    enabled: false
+    # Gateway reference(s) that this HTTPRoute attaches to.
+    # Set parentRefs to attach to an externally managed Gateway.
+    parentRefs: []
+    # Annotations to add to the HTTPRoute resource
+    annotations: {}
+    # Labels to add to the HTTPRoute resource
+    labels: {}
+    # Path configuration for each service (PathPrefix matching)
+    paths:
+      web:
+        path: /
+      attachments:
+        path: /attachments
+      api:
+        path: /api
+      icons:
+        path: /icons
+      notifications:
+        path: /notifications
+      events:
+        path: /events
+      scim:
+        path: /scim
+      sso:
+        path: /sso
+      identity:
+        path: /identity
+      admin:
+        path: /admin
+
   # Override application container version tags. These will be versioned with the chart and need not be changed in most circumstances.
   # If both are empty, the chart's default version is used
   coreVersionOverride: ""
@@ -97,9 +144,12 @@ general:
   podLabels: {}
   # Additional default pod annotations
   podAnnotations: {}
-  # nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  # affinity, nodeSelector and tolerations defined here will apply to all templates in the Helm chart. They can be individually overridden
+  affinity: {}
   nodeSelector: {}
   tolerations: []
+  # Image pull secret(s) applied to all pods. Secret(s) must already exist in the release namespace.
+  imagePullSecrets: []
   # Specifies the access mode for persistent volume claims.  This should not be changed in most cases, and the allowable
   # values are only ReadWriteMany and ReadWriteOnce.  Please read https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # to better understand these options before changing this value.
@@ -108,12 +158,35 @@ general:
   enableCloudCommunication: false
   # Cloud region for sync.  Please see: https://bitwarden.com/help/families-for-enterprise-self-hosted/#step-1-enable-cloud-communication
   cloudRegion: US
+  # Uncomment but leave as an empty string if deploying offline or in an air-gap environment
+  # pushRelayBaseUri: " "
+
+  # Distributed cache configuration.
+  # When enabled, Bitwarden services will use Redis for distributed caching.
+  # Required when running multiple replicas of API, Identity, SSO, etc. for
+  # session/token coordination and rate-limit state.
+  # The chart does NOT deploy Redis -- provide your own (e.g. ElastiCache, Azure Cache for Redis, Memorystore).
+  distributedCache:
+    redis:
+      # Set to true to inject globalSettings__distributedCache__redis__connectionString
+      # into all backend service deployments.
+      enabled: false
+      # Name of the Kubernetes Secret containing the connection string key.
+      # Defaults to secrets.secretName when empty.
+      secretName: ""
+      # Key inside the secret. Override only if your secret uses a different key name.
+      secretKey: "globalSettings__distributedCache__redis__connectionString"
+
+  # Optional: Comma-separated list of CIDR ranges for trusted proxy networks.
+  # Configures ASP.NET's forwarded headers middleware (X-Forwarded-For trust).
+  # Example: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  knownNetworks: ""
 
   # Refresh token variables https://bitwarden.com/help/environment-variables/#refresh-token-variables
   refreshTokens:
     # Set to true to enable refresh tokens.  Recommended for production environments.
     enabled: false
-    applyAbsoluteRefreshTokenOnRefreshToken: "true"
+    applyAbsoluteExpirationOnRefreshToken: "true"
     absoluteRefreshTokenLifetimeSeconds: "30"
     slidingRefreshTokenLifetimeSeconds: ""
 
@@ -127,6 +200,21 @@ secrets:
   # Secrets can either be created via 'kubectl create secrets' or by using a secret provider class.  If using the latter, specify the name here
   secretProviderClass: ""
 
+  # Encryption keys configuration
+  # By default, the chart generates encryption keys (internalIdentityKey, oidcIdentityClientKey, duo__aKey).
+  # Set generate to false if you want to provide these keys in the secretName provided above.
+  secretKeys:
+    generate: true
+
+  # Identity certificate configuration
+  # By default, the chart generates an identity certificate and password.
+  # Set generate to false if you want to provide your own certificate.
+  identityCertificate:
+    generate: true
+    # The name of the secret that contains BOTH the identity.pfx certificate file
+    # AND the certificate password (globalSettings__identityServer__certificatePassword).
+    secretName: ""
+
 # Settings for individual service containers
 component:
   # The Admin component
@@ -139,6 +227,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -169,6 +259,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -177,6 +270,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   api:
     # Additional deployment labels
     labels: {}
@@ -186,6 +287,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -197,10 +300,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
       limits:
-        memory: "256Mi"
+        memory: "384Mi"
         cpu: "200m"
     # Liveness probe configuration
     livenessProbe:
@@ -220,6 +323,9 @@ component:
       periodSeconds: 120
       failureThreshold: 5
       timeoutSeconds: 180
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -228,6 +334,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   attachments:
     # Additional deployment labels
     labels: {}
@@ -237,6 +351,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -248,10 +364,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -275,6 +391,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   events:
     # Additional deployment labels
     labels: {}
@@ -284,6 +408,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -296,10 +422,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -315,6 +441,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -323,6 +452,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   icons:
     # Additional deployment labels
     labels: {}
@@ -332,6 +469,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -343,10 +482,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -370,6 +509,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   identity:
     # Additional deployment labels
     labels: {}
@@ -379,6 +526,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -390,10 +539,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
       limits:
-        memory: "256Mi"
+        memory: "384Mi"
         cpu: "200m"
     # Liveness probe configuration
     livenessProbe:
@@ -413,6 +562,9 @@ component:
       periodSeconds: 120
       failureThreshold: 3
       timeoutSeconds: 60
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -421,6 +573,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   notifications:
     # Additional deployment labels
     labels: {}
@@ -430,6 +590,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -441,10 +603,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -468,6 +630,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   scim:
     # SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path
     enabled: false
@@ -479,6 +649,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -495,6 +667,9 @@ component:
       limits:
         memory: "128Mi"
         cpu: "100m"
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -503,6 +678,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   sso:
     # Additional deployment labels
     labels: {}
@@ -512,6 +695,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -523,10 +708,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "128Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "256Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -545,6 +730,9 @@ component:
       initialDelaySeconds: 5
       periodSeconds: 5
       failureThreshold: 3
+    # Number of pod replicas. Setting above 1 requires general.distributedCache.redis.enabled=true
+    # (chart will fail render otherwise). See README "Scaling backend services" for details.
+    replicas: 1
     # Specifies the strategy used to replace old Pods by new ones. The value can be "Recreate" or "RollingUpdate". "RollingUpdate" is the default value.
     deploymentStrategy: RollingUpdate
     # This will set the Kubernetes container security context
@@ -553,6 +741,14 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
   web:
     # Additional deployment labels
     labels: {}
@@ -562,6 +758,8 @@ component:
     podLabels: {}
     # Additional pod annotations
     podAnnotations: {}
+    # Optionally place deployment on specifc nodes
+    affinity: {}
     # Optionally place deployment on specifc nodes
     nodeSelector: {}
     # Optionally add taint tolerations
@@ -574,10 +772,10 @@ component:
     # The pod resource requirements.  You can adjust these up and down for your environment
     resources:
       requests:
-        memory: "64Mi"
+        memory: "96Mi"
         cpu: "50m"
       limits:
-        memory: "128Mi"
+        memory: "192Mi"
         cpu: "100m"
     # Liveness probe configuration
     livenessProbe:
@@ -601,14 +799,18 @@ component:
     podSecurityContext: {}
     # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
     podServiceAccount: ""
+    # Extra environment variables to add to the container
+    extraEnv: []
+    # Extra environment variables from secrets or configmaps to add to the container
+    extraEnvFrom: []
+    # Extra volume mounts to add to the container
+    extraVolumeMounts: []
+    # Extra volumes to add to the pod
+    extraVolumes: []
 # Images used for jobs and init containers
 supportComponents:
   dbMigrator:
     image:
-      # @schema
-      # deprecated: true
-      # @schema
-      name: ""
       repository: ghcr.io/bitwarden/mssqlmigratorutility
       # @schema
       # type: [string, number]
@@ -616,26 +818,20 @@ supportComponents:
       tag: ""
   certGenerator:
     image:
-      # @schema
-      # deprecated: true
-      # @schema
-      name: ""
       repository: alpine/openssl
       # @schema
       # type: [string, number]
+      # default: ""
       # @schema
-      tag: 3.5.2
+      tag: 3.5.8
   kubectl:
     image:
-      # @schema
-      # deprecated: true
-      # @schema
-      name: ""
-      repository: ghcr.io/bitwarden/helm-charts/kubectl
+      repository: alpine/kubectl
       # @schema
       # type: [string, number]
+      # default: ""
       # @schema
-      tag: 1.34
+      tag: 1.37.1
 
 # Data volume sizes for shared PVCs
 volume:
@@ -691,7 +887,16 @@ jobs:
 
   podSecurityContext: {}
 
+  # Extra volume mounts to add to the pre- and post-install hook/job containers
+  extraVolumeMounts: []
+  # Extra volumes to add to the pre- and post-install hook/job pods
+  extraVolumes: []
+
   db:
+    # Timeout seconds for MSSQL migrations.
+    # Default: 5 minutes
+    # A value of "0" can be used for unlimited timeout, useful for large databases
+    migrationTimeoutSeconds: ""
     preInstallMigrator:
       # Additional job labels
       labels: {}
@@ -798,17 +1003,14 @@ database:
   # Additional annotations to the MSSQL pod
   podAnnotations: {}
   # Optionally place deployment on specifc nodes
+  affinity: {}
   nodeSelector: {}
   # Optionally add taint tolerations
   tolerations: []
   # Image repository, tag, and pull policy
   image:
-    # @schema
-    # deprecated: true
-    # @schema
-    name: ""
     repository: mcr.microsoft.com/mssql/server
-    tag: 2022-CU12-ubuntu-22.04
+    tag: 2025-CU5-ubuntu-24.04
   # The container is limited to the resources below.  Adjust for your environment.
   resources:
     requests:
@@ -817,6 +1019,12 @@ database:
     limits:
       memory: "2G"
       cpu: "500m"
+  # Startup probe timing.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for slow storage.
+  # Set initialDelaySeconds to hold off the first check; unset by default so the probe starts polling immediately.
+  startupProbe:
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 60
 
   # The MSSQL volumes for the PVCs
   volume:
@@ -859,6 +1067,10 @@ database:
   podSecurityContext: {}
   # Run the pod under a service account you create.  This is especially useful for OpenShift deployments
   podServiceAccount: ""
+  # Extra volume mounts to add to the MSSQL container
+  extraVolumeMounts: []
+  # Extra volumes to add to the MSSQL pod
+  extraVolumes: []
 
 # You can specify raw Kubernetes manifests that will be applied before or after the base Helm install.
 # Please see the chart README in GitHub for more information and examples.

@@ -13,6 +13,7 @@ on:
       - ".github/workflows/_lint_chart.yml"
       - ".github/workflows/_test_chart.yml"
       - ".github/workflows/_build.yml"
+      - ".github/config/sample-bw-secret.yaml" # SM test secret
   workflow_dispatch:
   workflow_call:
     secrets:
@@ -52,20 +53,21 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
           persist-credentials: false
+          allow-unsafe-pr-checkout: true
 
       - name: Set up Helm
-        uses: Azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
 
       - name: Set up lynx
         run: sudo apt install lynx
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
           check-latest: true
@@ -76,7 +78,7 @@ jobs:
           yamale_version: "6.0.0"
 
       - name: Create kind cluster
-        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
+        uses: helm/kind-action@06c1ae10762d3b9c1644e7fe69596ae519e015a2 # v1.15.0
         with:
           config: scripts/cluster.yaml
 
