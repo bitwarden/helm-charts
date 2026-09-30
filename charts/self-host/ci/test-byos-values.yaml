@@ -1,0 +1,7 @@
+# Layered on the test values by scripts/setup.sh, which pre-creates these secrets.
+secrets:
+  secretKeys:
+    generate: false
+  identityCertificate:
+    generate: false
+    secretName: custom-identity-cert

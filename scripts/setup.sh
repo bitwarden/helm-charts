@@ -21,6 +21,7 @@ function createKindCluster() {
 function setupCluster() {
     routing="${1:-ingress}"
     database="${2:-mssql}"
+    secrets="${3:-generate}"
     installation_id=$(uuidgen)
     echo $installation_id
     installation_key=$(openssl rand -base64 12)
@@ -67,6 +68,12 @@ EOF
         pg_password=$(openssl rand -hex 24)
         database_secret_args+=(--from-literal=globalSettings__postgreSql__connectionString="Host=postgres.bitwarden.svc.cluster.local;Port=5432;Database=vault;Username=bitwarden;Password=$pg_password")
     fi
+    if [ "$secrets" = "byos" ]; then
+        # With secretKeys.generate false, the chart reads the encryption keys from custom-secret.
+        for key in internalIdentityKey oidcIdentityClientKey duo__aKey; do
+            database_secret_args+=("--from-literal=globalSettings__${key}=$(openssl rand -hex 32)")
+        done
+    fi
     kubectl create secret generic custom-secret \
     --from-literal=globalSettings__installation__id=$installation_id \
     --from-literal=globalSettings__installation__key=$installation_key \
@@ -78,6 +85,10 @@ EOF
     "${database_secret_args[@]}"
 
     kubectl create secret tls tls-secret --cert=bitwarden.localhost.pem --key=bitwarden.localhost.key
+
+    if [ "$secrets" = "byos" ]; then
+        setupIdentityCert
+    fi
 
     if [ "$database" = "postgres" ]; then
         setupPostgres "$pg_password"
@@ -100,6 +111,16 @@ EOF
     else
         setupIngress
     fi
+}
+
+function setupIdentityCert() {
+    # Secret for secrets.identityCertificate.secretName, holding identity.pfx and its password.
+    identity_cert_pass=$(openssl rand -hex 16)
+    openssl req -x509 -newkey rsa:2048 -nodes -days 1 -keyout identity.key -out identity.crt -subj "/CN=Bitwarden Identity"
+    openssl pkcs12 -export -out identity.pfx -inkey identity.key -in identity.crt -passout "pass:$identity_cert_pass"
+    kubectl create secret generic custom-identity-cert \
+    --from-file=identity.pfx=identity.pfx \
+    --from-literal=globalSettings__identityServer__certificatePassword="$identity_cert_pass"
 }
 
 function setupPostgres() {
@@ -215,6 +236,7 @@ EOF
 function installSelfHost() {
     routing="${1:-ingress}"
     database="${2:-mssql}"
+    secrets="${3:-generate}"
     if [ "$routing" = "gateway" ]; then
         values=(-f "charts/self-host/ci/test-gateway-values.yaml")
     else
@@ -223,6 +245,9 @@ function installSelfHost() {
     if [ "$database" = "postgres" ]; then
         values+=(-f "charts/self-host/ci/test-postgres-values.yaml")
     fi
+    if [ "$secrets" = "byos" ]; then
+        values+=(-f "charts/self-host/ci/test-byos-values.yaml")
+    fi
     time helm install self-host charts/self-host -n bitwarden "${values[@]}" --timeout 900s --wait
 }
 
@@ -230,23 +255,27 @@ if [ -n "$3" ] && [ "$3" != "mssql" ] && [ "$3" != "postgres" ]; then
     echo "Unknown database '$3'. Expected mssql or postgres."
     exit 1
 fi
+if [ -n "$4" ] && [ "$4" != "generate" ] && [ "$4" != "byos" ]; then
+    echo "Unknown secrets mode '$4'. Expected generate or byos."
+    exit 1
+fi
 
 if [ "$1" = "create-cluster" ]; then
     createKindCluster "$2"
 elif [ "$1" = "setup-cluster" ]; then
-    setupCluster "$2" "$3"
+    setupCluster "$2" "$3" "$4"
 elif [ "$1" = "install-self-host" ]; then
-    installSelfHost "$2" "$3"
+    installSelfHost "$2" "$3" "$4"
 elif [ "$1" = "verify-postgres" ]; then
     verifyPostgresMigrations
 elif [ "$1" = "all" ]; then
     createKindCluster "$2"
-    setupCluster "$2" "$3"
-    installSelfHost "$2" "$3"
+    setupCluster "$2" "$3" "$4"
+    installSelfHost "$2" "$3" "$4"
     if [ "$3" = "postgres" ]; then
         verifyPostgresMigrations
     fi
 else
-    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host|verify-postgres} [ingress|gateway] [mssql|postgres]"
+    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host|verify-postgres} [ingress|gateway] [mssql|postgres] [generate|byos]"
     exit 1
 fi
