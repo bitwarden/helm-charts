@@ -26,14 +26,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -281,14 +281,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -556,14 +556,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -805,14 +805,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -1061,14 +1061,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -1310,14 +1310,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -1585,14 +1585,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -1833,6 +1833,18 @@
               "title": "deploymentStrategy",
               "type": "string"
             },
+            "dnsConfig": {
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
+              "required": [],
+              "title": "dnsConfig",
+              "type": "object"
+            },
+            "dnsPolicy": {
+              "default": "",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
+              "title": "dnsPolicy",
+              "type": "string"
+            },
             "enabled": {
               "default": false,
               "description": "SCIM is disabled by default.  To use this service, enable it below and set an appropriate Ingress path",
@@ -2013,14 +2025,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
@@ -2283,14 +2295,14 @@
               "type": "string"
             },
             "dnsConfig": {
-              "description": "Pod DNS config (overrides general.dnsConfig for this component).",
+              "description": "Pod DNS config (overrides general.dnsConfig for this component)",
               "required": [],
               "title": "dnsConfig",
               "type": "object"
             },
             "dnsPolicy": {
               "default": "",
-              "description": "Pod DNS policy (overrides general.dnsPolicy for this component).",
+              "description": "Pod DNS policy (overrides general.dnsPolicy for this component)",
               "title": "dnsPolicy",
               "type": "string"
             },
