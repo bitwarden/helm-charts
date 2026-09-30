@@ -145,6 +145,13 @@ jobs:
             echo "*****INGRESS*****";   kubectl describe ingress -n bitwarden || true
           fi
 
+          if [ "${{ matrix.podSecurity }}" = "restricted" ]; then
+            echo "*****POSTGRES*****"
+            kubectl get pods -n database -o wide || true
+            kubectl describe pods -n database || true
+            kubectl logs deploy/postgres -n database --tail=200 || true
+          fi
+
       - name: Smoke tests
         run: ./scripts/smoke-test.sh
 
