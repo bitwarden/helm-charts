@@ -1,0 +1,98 @@
+# Enforced by the restricted Pod Security Standard in the Kind install; see the chart README.
+component:
+  admin:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  api:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  attachments:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  events:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  icons:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  identity:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  notifications:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  scim:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  sso:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+  web:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: RuntimeDefault
+
+# The jobs default covers everything except seccomp.
+jobs:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
