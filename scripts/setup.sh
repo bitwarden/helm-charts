@@ -289,7 +289,7 @@ elif [ "$1" = "setup-cluster" ]; then
 elif [ "$1" = "install-self-host" ]; then
     installSelfHost "$2" "$3" "$4" "$5"
 elif [ "$1" = "verify-postgres" ]; then
-    verifyPostgresMigrations "$2"
+    verifyPostgresMigrations "$5"
 elif [ "$1" = "all" ]; then
     createKindCluster "$2"
     setupCluster "$2" "$3" "$4" "$5"

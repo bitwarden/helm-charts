@@ -157,7 +157,7 @@ jobs:
 
       - name: Verify Postgres migrations
         if: matrix.database == 'postgres'
-        run: ./scripts/setup.sh verify-postgres "${{ matrix.podSecurity }}"
+        run: ./scripts/setup.sh verify-postgres "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
 
   build-self-host:
     name: Build self-host chart
