@@ -96,6 +96,58 @@ tests:
           path: spec.rules[8].matches[0].path.value
           value: /
 
+  - it: should name every rule so policies can target them by sectionName
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+    asserts:
+      - equal:
+          path: spec.rules[0].name
+          value: attachments
+      - equal:
+          path: spec.rules[1].name
+          value: api
+      - equal:
+          path: spec.rules[2].name
+          value: icons
+      - equal:
+          path: spec.rules[3].name
+          value: notifications
+      - equal:
+          path: spec.rules[4].name
+          value: events
+      - equal:
+          path: spec.rules[5].name
+          value: sso
+      - equal:
+          path: spec.rules[6].name
+          value: identity
+      - equal:
+          path: spec.rules[7].name
+          value: admin
+      - equal:
+          path: spec.rules[8].name
+          value: web
+
+  - it: should name the scim rule when SCIM is enabled
+    template: templates/httproute.yaml
+    set:
+      general.gateway.enabled: true
+      general.domain: bitwarden.example.com
+      general.gateway.parentRefs:
+        - name: my-gateway
+      component.scim.enabled: true
+    asserts:
+      - equal:
+          path: spec.rules[5].name
+          value: scim
+      - equal:
+          path: spec.rules[9].name
+          value: web
+
   - it: should apply custom annotations
     template: templates/httproute.yaml
     set:

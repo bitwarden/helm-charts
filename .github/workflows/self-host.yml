@@ -47,7 +47,7 @@ jobs:
       chart_name: self-host
   
   test-self-host-kind:
-    name: Test self-host chart with Kind (${{ matrix.routing }})
+    name: Test self-host chart with Kind (${{ matrix.routing }}${{ matrix.database != 'mssql' && format(', {0}', matrix.database) || '' }})
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -55,13 +55,20 @@ jobs:
       fail-fast: false
       matrix:
         routing: [ingress, gateway]
+        database: [mssql]
+        # Postgres is independent of routing, so it runs once rather than across the full matrix.
+        # database overrides the matrix value, so this adds a combination instead of extending one.
+        include:
+          - routing: ingress
+            database: postgres
     steps:
       - name: Checkout repo
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
           persist-credentials: false
+          allow-unsafe-pr-checkout: true
 
       - name: Set up Helm
         uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
@@ -72,21 +79,21 @@ jobs:
         run: sudo apt install lynx
 
       - name: Set up Python
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14"
           check-latest: true
 
       - name: Create kind cluster
-        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
+        uses: helm/kind-action@06c1ae10762d3b9c1644e7fe69596ae519e015a2 # v1.15.0
         with:
           config: ${{ matrix.routing == 'gateway' && 'scripts/cluster-gateway.yaml' || 'scripts/cluster.yaml' }}
 
       - name: Set up cluster
-        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}"
+        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}"
 
-      - name: Install self-host (${{ matrix.routing }})
-        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}"
+      - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }})
+        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}"
 
       - name: Diagnostics
         if: always()
@@ -123,6 +130,10 @@ jobs:
 
       - name: Smoke tests
         run: ./scripts/smoke-test.sh
+
+      - name: Verify Postgres migrations
+        if: matrix.database == 'postgres'
+        run: ./scripts/setup.sh verify-postgres
 
   build-self-host:
     name: Build self-host chart

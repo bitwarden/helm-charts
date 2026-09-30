@@ -105,3 +105,31 @@ tests:
     asserts:
       - hasDocuments:
           count: 0
+
+  - it: should append the timeout to the transition args when migrationTimeoutSeconds is set
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: false
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value: ["-f", "DbScripts_transition", "-r", "-t", "900"]
+
+  - it: should pass only the timeout when transition args are not rendered
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+      jobs.db.migrationTimeoutSeconds: "900"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value: ["-t", "900"]
+
+  - it: should not set args when database is enabled and no timeout is set
+    template: templates/post-install-db-migrator-job.yaml
+    set:
+      database.enabled: true
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].args

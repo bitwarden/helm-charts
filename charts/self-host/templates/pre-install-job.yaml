@@ -90,6 +90,9 @@ spec:
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
+        {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
 {{- end }}
       containers:
       - name: create-resources
@@ -117,9 +120,15 @@ spec:
         volumeMounts:
         - name: temp
           mountPath: "/bitwarden"
+        {{- with .Values.jobs.extraVolumeMounts }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
       restartPolicy: Never
       volumes:
         - name: temp
           emptyDir:
             medium: Memory
+        {{- with .Values.jobs.extraVolumes }}
+{{ toYaml . | indent 8 }}
+        {{- end }}
 {{- end }}

@@ -34,7 +34,8 @@ spec:
   hostnames:
     - {{ .Values.general.domain }}
   rules:
-    - matches:
+    - name: attachments
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.attachments.path }}
@@ -47,7 +48,8 @@ spec:
       backendRefs:
         - name: {{ template "bitwarden.attachments" . }}
           port: 5000
-    - matches:
+    - name: api
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.api.path }}
@@ -60,7 +62,8 @@ spec:
       backendRefs:
         - name: {{ template "bitwarden.api" . }}
           port: 5000
-    - matches:
+    - name: icons
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.icons.path }}
@@ -73,7 +76,8 @@ spec:
       backendRefs:
         - name: {{ template "bitwarden.icons" . }}
           port: 5000
-    - matches:
+    - name: notifications
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.notifications.path }}
@@ -86,7 +90,8 @@ spec:
       backendRefs:
         - name: {{ template "bitwarden.notifications" . }}
           port: 5000
-    - matches:
+    - name: events
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.events.path }}
@@ -100,7 +105,8 @@ spec:
         - name: {{ template "bitwarden.events" . }}
           port: 5000
     {{- if .Values.component.scim.enabled }}
-    - matches:
+    - name: scim
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.scim.path }}
@@ -114,28 +120,32 @@ spec:
         - name: {{ template "bitwarden.scim" . }}
           port: 5000
     {{- end }}
-    - matches:
+    - name: sso
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.sso.path }}
       backendRefs:
         - name: {{ template "bitwarden.sso" . }}
           port: 5000
-    - matches:
+    - name: identity
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.identity.path }}
       backendRefs:
         - name: {{ template "bitwarden.identity" . }}
           port: 5000
-    - matches:
+    - name: admin
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.admin.path }}
       backendRefs:
         - name: {{ template "bitwarden.admin" . }}
           port: 5000
-    - matches:
+    - name: web
+      matches:
         - path:
             type: PathPrefix
             value: {{ .Values.general.gateway.paths.web.path }}
