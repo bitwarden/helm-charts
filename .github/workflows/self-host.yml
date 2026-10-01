@@ -127,8 +127,10 @@ jobs:
         if: always()
         shell: bash
         run: |
-          echo "*****MIGRATOR LOGS*****"
-          tail -n +1 /tmp/migrator-logs/*.log || true
+          if compgen -G "/tmp/migrator-logs/*.log" > /dev/null; then
+            echo "*****MIGRATOR LOGS*****"
+            tail -n +1 /tmp/migrator-logs/*.log
+          fi
 
           echo "*****DEPLOYMENTS*****"; kubectl get deployments -n bitwarden || true
           echo "*****PODS*****";        kubectl get pods -n bitwarden -o wide || true
