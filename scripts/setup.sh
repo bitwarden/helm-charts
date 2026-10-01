@@ -22,6 +22,8 @@ function setupCluster() {
     routing="${1:-ingress}"
     database="${2:-mssql}"
     secrets="${3:-generate}"
+    # none or restricted: enforce the restricted Pod Security Standard on the bitwarden namespace
+    pod_security="${4:-none}"
     installation_id=$(uuidgen)
     echo $installation_id
     installation_key=$(openssl rand -base64 12)
@@ -60,13 +62,20 @@ EOF
 
     kubectl config set-context --current --namespace=bitwarden
 
+    # Postgres goes in its own namespace, outside the restricted one, like an external database.
+    pg_namespace="bitwarden"
+    if [ "$pod_security" = "restricted" ]; then
+        kubectl label ns bitwarden pod-security.kubernetes.io/enforce=restricted
+        pg_namespace="database"
+    fi
+
     #Secrets
     database_secret_args=()
     if [ "$database" = "postgres" ]; then
         # External PostgreSQL deployed by setupPostgres; the chart reads the connection string
         # from the configured secret (see charts/self-host/values.yaml general.databaseProvider).
         pg_password=$(openssl rand -hex 24)
-        database_secret_args+=(--from-literal=globalSettings__postgreSql__connectionString="Host=postgres.bitwarden.svc.cluster.local;Port=5432;Database=vault;Username=bitwarden;Password=$pg_password")
+        database_secret_args+=(--from-literal=globalSettings__postgreSql__connectionString="Host=postgres.$pg_namespace.svc.cluster.local;Port=5432;Database=vault;Username=bitwarden;Password=$pg_password")
     fi
     if [ "$secrets" = "byos" ]; then
         # With secretKeys.generate false, the chart reads the encryption keys from custom-secret.
@@ -91,7 +100,7 @@ EOF
     fi
 
     if [ "$database" = "postgres" ]; then
-        setupPostgres "$pg_password"
+        setupPostgres "$pg_password" "$pg_namespace"
     else
         # Pre-pull the large (~590MB) MSSQL image and side-load it into the kind node now,
         # so the pull cost is paid here rather than eating into the `helm install --wait`
@@ -125,27 +134,35 @@ function setupIdentityCert() {
 
 function setupPostgres() {
     pg_password="$1"
+    pg_namespace="$2"
     dirname=$(dirname "$0")
 
-    kubectl create secret generic postgres-credentials --from-literal=POSTGRES_PASSWORD="$pg_password"
-    kubectl apply -f "$dirname/postgres.yaml"
+    if [ "$pg_namespace" != "bitwarden" ]; then
+        kubectl create ns "$pg_namespace"
+    fi
+    kubectl create secret generic postgres-credentials -n "$pg_namespace" --from-literal=POSTGRES_PASSWORD="$pg_password"
+    kubectl apply -n "$pg_namespace" -f "$dirname/postgres.yaml"
 
     # Wait for Postgres to accept connections before the chart is installed. The Admin service
     # runs the Postgres migrations at startup and retries for only ~3 minutes, and its liveness
     # probe can restart it if that startup runs long, so don't spend that budget on the database.
-    kubectl rollout status deployment/postgres --timeout=300s
+    kubectl rollout status -n "$pg_namespace" deployment/postgres --timeout=300s
 }
 
 function verifyPostgresMigrations() {
+    pg_namespace="bitwarden"
+    if [ "$1" = "restricted" ]; then
+        pg_namespace="database"
+    fi
     # With databaseProvider: postgres the chart renders no migrator Job; the Admin service applies
     # the EF Core migrations at startup. Assert they actually landed in the database.
-    if ! count=$(kubectl -n bitwarden exec deploy/postgres -- psql -U bitwarden -d vault -tAc 'SELECT count(*) FROM "__EFMigrationsHistory";'); then
+    if ! count=$(kubectl -n "$pg_namespace" exec deploy/postgres -- psql -U bitwarden -d vault -tAc 'SELECT count(*) FROM "__EFMigrationsHistory";'); then
         echo "::error::ERROR: Could not read __EFMigrationsHistory - the Admin service has not migrated the database."; exit 1
     fi
     if [[ ! "$count" =~ ^[0-9]+$ ]] || [ "$count" -lt 1 ]; then
         echo "::error::ERROR: No Postgres migrations applied (count: '$count')."; exit 1
     fi
-    latest=$(kubectl -n bitwarden exec deploy/postgres -- psql -U bitwarden -d vault -tAc 'SELECT max("MigrationId") FROM "__EFMigrationsHistory";')
+    latest=$(kubectl -n "$pg_namespace" exec deploy/postgres -- psql -U bitwarden -d vault -tAc 'SELECT max("MigrationId") FROM "__EFMigrationsHistory";')
     echo "Postgres migrations applied: $count (latest: $latest)"
 }
 
@@ -237,6 +254,8 @@ function installSelfHost() {
     routing="${1:-ingress}"
     database="${2:-mssql}"
     secrets="${3:-generate}"
+    # none or restricted: enforce the restricted Pod Security Standard on the bitwarden namespace
+    pod_security="${4:-none}"
     if [ "$routing" = "gateway" ]; then
         values=(-f "charts/self-host/ci/test-gateway-values.yaml")
     else
@@ -247,6 +266,9 @@ function installSelfHost() {
     fi
     if [ "$secrets" = "byos" ]; then
         values+=(-f "charts/self-host/ci/test-byos-values.yaml")
+    fi
+    if [ "$pod_security" = "restricted" ]; then
+        values+=(-f "charts/self-host/ci/test-restricted-values.yaml")
     fi
     time helm install self-host charts/self-host -n bitwarden "${values[@]}" --timeout 900s --wait
 }
@@ -263,19 +285,19 @@ fi
 if [ "$1" = "create-cluster" ]; then
     createKindCluster "$2"
 elif [ "$1" = "setup-cluster" ]; then
-    setupCluster "$2" "$3" "$4"
+    setupCluster "$2" "$3" "$4" "$5"
 elif [ "$1" = "install-self-host" ]; then
-    installSelfHost "$2" "$3" "$4"
+    installSelfHost "$2" "$3" "$4" "$5"
 elif [ "$1" = "verify-postgres" ]; then
-    verifyPostgresMigrations
+    verifyPostgresMigrations "$5"
 elif [ "$1" = "all" ]; then
     createKindCluster "$2"
-    setupCluster "$2" "$3" "$4"
-    installSelfHost "$2" "$3" "$4"
+    setupCluster "$2" "$3" "$4" "$5"
+    installSelfHost "$2" "$3" "$4" "$5"
     if [ "$3" = "postgres" ]; then
-        verifyPostgresMigrations
+        verifyPostgresMigrations "$5"
     fi
 else
-    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host|verify-postgres} [ingress|gateway] [mssql|postgres] [generate|byos]"
+    echo "Usage: $0 {all|create-cluster|setup-cluster|install-self-host|verify-postgres} [ingress|gateway] [mssql|postgres] [generate|byos] [none|restricted]"
     exit 1
 fi

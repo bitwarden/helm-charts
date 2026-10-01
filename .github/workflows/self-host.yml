@@ -69,6 +69,11 @@ jobs:
             routing: ingress
             database: postgres
             secrets: generate
+          - name: gateway, postgres, restricted pod security
+            routing: gateway
+            database: postgres
+            secrets: generate
+            podSecurity: restricted
           - name: gateway, byos
             routing: gateway
             database: mssql
@@ -102,10 +107,10 @@ jobs:
           config: ${{ matrix.routing == 'gateway' && 'scripts/cluster-gateway.yaml' || 'scripts/cluster.yaml' }}
 
       - name: Set up cluster
-        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}"
+        run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
 
       - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }}, ${{ matrix.secrets }})
-        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}"
+        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
 
       - name: Diagnostics
         if: always()
@@ -140,12 +145,19 @@ jobs:
             echo "*****INGRESS*****";   kubectl describe ingress -n bitwarden || true
           fi
 
+          if [ "${{ matrix.podSecurity }}" = "restricted" ]; then
+            echo "*****POSTGRES*****"
+            kubectl get pods -n database -o wide || true
+            kubectl describe pods -n database || true
+            kubectl logs deploy/postgres -n database --tail=200 || true
+          fi
+
       - name: Smoke tests
         run: ./scripts/smoke-test.sh
 
       - name: Verify Postgres migrations
         if: matrix.database == 'postgres'
-        run: ./scripts/setup.sh verify-postgres
+        run: ./scripts/setup.sh verify-postgres "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
 
   build-self-host:
     name: Build self-host chart
