@@ -115,7 +115,8 @@ jobs:
           mkdir -p /tmp/migrator-logs
           (while true; do
             for pod in $(kubectl get pods -n bitwarden -l app.kubernetes.io/component=post-install-db-migrator-job -o name 2>/dev/null); do
-              kubectl logs "$pod" -n bitwarden --all-containers > "/tmp/migrator-logs/${pod#pod/}.log" 2>&1 || true
+              kubectl logs "$pod" -n bitwarden --all-containers > "/tmp/migrator-logs/${pod#pod/}.tmp" 2>&1 \
+                && mv "/tmp/migrator-logs/${pod#pod/}.tmp" "/tmp/migrator-logs/${pod#pod/}.log" || true
             done
             sleep 5
           done) &
