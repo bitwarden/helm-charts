@@ -111,11 +111,11 @@ jobs:
 
       - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }}, ${{ matrix.secrets }})
         run: |
-          # Helm deletes the migrator pods when the hook fails, so save their logs as the install runs.
+          # Helm deletes the migrator pods when the hook fails, so save their logs and pod details as the install runs.
           mkdir -p /tmp/migrator-logs
           (while true; do
             for pod in $(kubectl get pods -n bitwarden -l app.kubernetes.io/component=post-install-db-migrator-job -o name 2>/dev/null); do
-              kubectl logs "$pod" -n bitwarden --all-containers > "/tmp/migrator-logs/${pod#pod/}.tmp" 2>&1 \
+              { kubectl logs "$pod" -n bitwarden --all-containers && kubectl describe "$pod" -n bitwarden; } > "/tmp/migrator-logs/${pod#pod/}.tmp" 2>&1 \
                 && mv "/tmp/migrator-logs/${pod#pod/}.tmp" "/tmp/migrator-logs/${pod#pod/}.log" || true
             done
             sleep 5
