@@ -110,12 +110,29 @@ jobs:
         run: ./scripts/setup.sh setup-cluster "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
 
       - name: Install self-host (${{ matrix.routing }}, ${{ matrix.database }}, ${{ matrix.secrets }})
-        run: ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
+        run: |
+          # Helm deletes the migrator pods when the hook fails, so save their logs and pod details as the install runs.
+          mkdir -p /tmp/migrator-logs
+          (while true; do
+            for pod in $(kubectl get pods -n bitwarden -l app.kubernetes.io/component=post-install-db-migrator-job -o name 2>/dev/null); do
+              name="/tmp/migrator-logs/${pod#pod/}"
+              kubectl logs "$pod" -n bitwarden --all-containers > "$name.tmp" 2>&1 && mv "$name.tmp" "$name.log" || true
+              kubectl describe "$pod" -n bitwarden > "$name.tmp" 2>&1 && mv "$name.tmp" "$name-describe.log" || true
+            done
+            sleep 5
+          done) &
+          trap 'kill $!' EXIT
+          ./scripts/setup.sh install-self-host "${{ matrix.routing }}" "${{ matrix.database }}" "${{ matrix.secrets }}" "${{ matrix.podSecurity }}"
 
       - name: Diagnostics
         if: always()
         shell: bash
         run: |
+          if compgen -G "/tmp/migrator-logs/*.log" > /dev/null; then
+            echo "*****MIGRATOR LOGS*****"
+            tail -n +1 /tmp/migrator-logs/*.log
+          fi
+
           echo "*****DEPLOYMENTS*****"; kubectl get deployments -n bitwarden || true
           echo "*****PODS*****";        kubectl get pods -n bitwarden -o wide || true
           echo "*****SERVICES*****";    kubectl get svc -n bitwarden || true
