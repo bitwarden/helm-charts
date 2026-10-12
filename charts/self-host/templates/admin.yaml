@@ -132,6 +132,10 @@ spec:
                 name: {{ include "bitwarden.distributedCacheSecretName" . }}
                 key: {{ .Values.general.distributedCache.redis.secretKey | quote }}
         {{- end }}
+        {{- with .Values.component.admin.startupProbe }}
+        startupProbe:
+{{ toYaml . | indent 10 }}
+        {{- end }}
         {{- with .Values.component.admin.livenessProbe }}
         livenessProbe:
 {{ toYaml . | indent 10 }}
