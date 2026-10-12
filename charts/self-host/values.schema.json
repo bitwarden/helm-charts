@@ -210,7 +210,7 @@
                       "type": "string"
                     },
                     "memory": {
-                      "default": "384Mi",
+                      "default": "768Mi",
                       "title": "memory",
                       "type": "string"
                     }
