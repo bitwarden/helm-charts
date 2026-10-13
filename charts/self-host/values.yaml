@@ -256,6 +256,13 @@ component:
       limits:
         memory: "384Mi"
         cpu: "250m"
+    # Startup probe configuration.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for a slow database.
+    startupProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      periodSeconds: 10
+      failureThreshold: 60
     # Liveness probe configuration
     livenessProbe:
       httpGet:

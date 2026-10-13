@@ -247,6 +247,41 @@
               "title": "securityContext",
               "type": "object"
             },
+            "startupProbe": {
+              "description": "Startup probe configuration.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for a slow database.",
+              "properties": {
+                "failureThreshold": {
+                  "default": 60,
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "properties": {
+                    "path": {
+                      "default": "/alive",
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 5000,
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "periodSeconds": {
+                  "default": 10,
+                  "title": "periodSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "startupProbe",
+              "type": "object"
+            },
             "tolerations": {
               "description": "Optionally add taint tolerations",
               "items": {
