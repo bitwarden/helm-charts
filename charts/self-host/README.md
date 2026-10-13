@@ -414,6 +414,17 @@ component:
 
 You can override the image repository for any component.
 
+#### Admin Startup Probe
+
+The Admin container has a startup probe on `/alive`, and the liveness probe starts only after it passes. With `databaseProvider: postgres`, Admin applies the database migrations at startup, so a slow database or migration needs a longer startup budget. The default budget is 600 seconds (`periodSeconds` x `failureThreshold`). Raise `failureThreshold` to extend it:
+
+```yaml
+component:
+  admin:
+    startupProbe:
+      failureThreshold: 120
+```
+
 #### Extra Volumes
 
 Every long-running service under `component.<name>` accepts `extraVolumeMounts` (added to the container) and `extraVolumes` (added to the pod). The pre-/post-install hook and job pods share a single `jobs.extraVolumeMounts` / `jobs.extraVolumes` pair, and the database (MSSQL) pod uses `database.extraVolumeMounts` / `database.extraVolumes`. All default to `[]`, so leaving them unset changes nothing.

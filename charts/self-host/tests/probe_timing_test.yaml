@@ -2,6 +2,7 @@ suite: test probe timing on the startup critical path
 templates:
   - templates/*.tpl
   - templates/mssql.yaml
+  - templates/admin.yaml
 tests:
   - it: should gate MSSQL startup on a polled budget rather than a fixed delay
     template: templates/mssql.yaml
@@ -77,3 +78,36 @@ tests:
         documentSelector:
           path: kind
           value: StatefulSet
+
+  - it: should give Admin a startup probe so slow migrations are not killed by liveness
+    template: templates/admin.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe
+          value:
+            httpGet:
+              path: /alive
+              port: 5000
+            periodSeconds: 10
+            failureThreshold: 60
+        documentSelector:
+          path: kind
+          value: Deployment
+
+  - it: should allow operators to widen the Admin startup budget
+    template: templates/admin.yaml
+    set:
+      component.admin.startupProbe.failureThreshold: 120
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 120
+        documentSelector:
+          path: kind
+          value: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.path
+          value: /alive
+        documentSelector:
+          path: kind
+          value: Deployment
