@@ -254,7 +254,7 @@ component:
         memory: "256Mi"
         cpu: "125m"
       limits:
-        memory: "384Mi"
+        memory: "768Mi"
         cpu: "250m"
     # Startup probe configuration.  The startup budget is periodSeconds * failureThreshold; raise failureThreshold for a slow database.
     startupProbe:
