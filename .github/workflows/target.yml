@@ -2,6 +2,9 @@
 # This workflow will run in the context of the target of the PR and have access to secrets.
 # This should only be done after reviewing the PR to ensure that no malicious code has been introduced,
 # as it could allow the code on the forked branch to have access to workflow secrets. 
+#
+# The self-host chart is not tested here: self-host.yml already lints and tests fork PRs in its normal
+# pull_request run, which has no secrets.
 
 name: Test Helm Charts (Fork PR)
 
@@ -25,20 +28,6 @@ jobs:
       contents: read
     name: Check PR run
     uses: bitwarden/gh-actions/.github/workflows/check-run.yml@main
-
-  run-self-host-workflow:
-    permissions:
-      contents: read
-      id-token: write
-      pull-requests: write
-    name: Self Host
-    needs: check-run
-    if: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
-    uses: ./.github/workflows/self-host.yml
-    secrets:
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
 
   run-sm-operator-workflow:
     permissions:
