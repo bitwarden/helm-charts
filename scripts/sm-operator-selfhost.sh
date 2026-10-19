@@ -85,7 +85,7 @@ function seedScene() {
     if ! response="$(curl -sS --fail-with-body -X POST "http://localhost:$SEEDER_PORT/seed" \
         -H 'Content-Type: application/json' -H "Authorization: Basic $seeder_auth" \
         -H "X-Play-Id: $play_id" -d "{\"template\":\"$template\",\"arguments\":$args}")"; then
-        echo "::error::Seeding $template failed: $response"
+        echo "::error::Seeding $template failed: $response" >&2
         return 1
     fi
     jq -c '.result' <<< "$response"
