@@ -7,3 +7,5 @@ values/*
 rootCA.*
 bitwarden.localhost.*
 /identity.*
+# Seeded Secrets Manager values written by scripts/sm-operator-selfhost.sh seed
+sm-operator.env
