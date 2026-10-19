@@ -9,9 +9,10 @@ OPERATOR_NAMESPACE="${OPERATOR_NAMESPACE:-$NAMESPACE}"
 TIMEOUT="${TIMEOUT:-90}"
 # Must match the operator's bwSecretsManagerRefreshInterval.
 REFRESH_INTERVAL="${REFRESH_INTERVAL:-300}"
-# Defaults match .github/config/sample-bw-secret.yaml.
-ORG_ID="${ORG_ID:-0cbc2036-7ee5-420f-8a13-b40a01153cba}"
-read -r -a SECRET_IDS <<< "${SECRET_IDS:-af795aef-1605-4b51-92c0-b40c0130ff5f d489d8d3-a7d6-4820-a3a8-b40c0131106d 431a070e-35b1-4ed1-b8ac-b40c01311e8d}"
+# Defaults come from the cloud test org fixture.
+FIXTURE="$(dirname "$0")/../.github/config/sample-bw-secret.yaml"
+ORG_ID="${ORG_ID:-$(awk -F'"' '/organizationId:/ {print $2}' "$FIXTURE")}"
+read -r -a SECRET_IDS <<< "${SECRET_IDS:-$(awk '/bwSecretId:/ {print $NF}' "$FIXTURE" | paste -sd' ')}"
 
 created=()
 
