@@ -199,7 +199,8 @@ jobs:
           # This only shows that the chart installs with the setting off.
           release=$(helm list --namespace bitwarden --short | head -n 1)
           helm upgrade "$release" charts/sm-operator --namespace bitwarden \
-            --reuse-values --set containers.enableSeccompProfileRuntimeDefault=false \
+            --values charts/sm-operator/ci/test-values.yaml \
+            --set containers.enableSeccompProfileRuntimeDefault=false \
             --wait --timeout 120s
 
           seccomp=$(kubectl get deployment --namespace bitwarden -l app.kubernetes.io/name=sm-operator \
