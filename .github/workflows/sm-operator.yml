@@ -14,6 +14,8 @@ on:
       - ".github/workflows/_test_chart.yml"
       - ".github/workflows/_build.yml"
       - ".github/config/sample-bw-secret.yaml" # SM test secret
+      - "scripts/sm-operator-failure-paths.sh"
+      - "scripts/sm-operator-selfhost.sh"
   workflow_dispatch:
   workflow_call:
     secrets:
@@ -186,6 +188,93 @@ jobs:
         env:
           AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
+      - name: Test failure paths (sm-operator)
+        run: ./scripts/sm-operator-failure-paths.sh all
+        env:
+          AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
+
+
+  test-sm-operator-selfhost-kind:
+    name: Test sm-operator failure paths against self-host with Kind
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          persist-credentials: false
+          allow-unsafe-pr-checkout: true
+
+      # SeederApi must match the self-host database schema.
+      - name: Get self-host version
+        id: self-host
+        run: echo "version=$(yq '.appVersion' charts/self-host/Chart.yaml)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout server
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: bitwarden/server
+          ref: v${{ steps.self-host.outputs.version }}
+          path: server
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: Azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v4.2.0
+
+      - name: Create kind cluster
+        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        with:
+          config: scripts/cluster.yaml
+
+      - name: Set up cluster
+        run: ./scripts/setup.sh setup-cluster ingress postgres
+
+      - name: Build SeederApi
+        run: ./scripts/sm-operator-selfhost.sh build-seeder server
+
+      - name: Install self-host
+        run: ./scripts/setup.sh install-self-host ingress postgres
+
+      - name: Deploy SeederApi
+        run: ./scripts/sm-operator-selfhost.sh deploy-seeder
+
+      - name: Seed Secrets Manager
+        run: ./scripts/sm-operator-selfhost.sh seed "$GITHUB_ENV"
+
+      - name: Install sm-operator against self-host
+        run: ./scripts/sm-operator-selfhost.sh install-operator
+
+      - name: Test failure paths (self-host)
+        run: ./scripts/sm-operator-failure-paths.sh all
+        env:
+          OPERATOR_NAMESPACE: sm-operator
+
+      - name: Test deleted upstream secret (self-host)
+        run: ./scripts/sm-operator-failure-paths.sh deleted-secret
+        env:
+          OPERATOR_NAMESPACE: sm-operator
+          REFRESH_INTERVAL: 180
+          API_URL: https://bitwarden.localhost/api
+          IDENTITY_URL: https://bitwarden.localhost/identity
+          CURL_CA_BUNDLE: ${{ github.workspace }}/rootCA.pem
+
+      - name: Diagnostics
+        if: failure()
+        run: |
+          echo "*****PODS*****"; kubectl get pods -A -o wide || true
+          echo "*****BITWARDENSECRETS*****"; kubectl get bitwardensecrets -n bitwarden -o yaml || true
+          echo "*****OPERATOR LOGS*****"
+          kubectl logs -n sm-operator -l app.kubernetes.io/name=sm-operator -c manager --tail=200 || true
+          echo "*****SEEDERAPI LOGS*****"; kubectl logs -n bitwarden seederapi --tail=100 || true
+          echo "*****SELF-HOST API AND IDENTITY LOGS*****"
+          kubectl logs -n bitwarden deploy/self-host-api --tail=100 || true
+          kubectl logs -n bitwarden deploy/self-host-identity --tail=100 || true
+          echo "*****INGRESS*****"; kubectl describe ingress -n bitwarden || true
 
   build-sm-operator:
     name: Build sm-operator chart
@@ -199,6 +288,7 @@ jobs:
       - lint-sm-operator
       - test-sm-operator
       - test-sm-operator-kind
+      - test-sm-operator-selfhost-kind
     secrets:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
