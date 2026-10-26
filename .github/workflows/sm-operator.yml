@@ -193,6 +193,24 @@ jobs:
         env:
           AUTH_TOKEN: ${{ steps.retrieve-secrets.outputs.helm-sm-operator-ci-test-access-token }}
 
+      - name: Test install with seccomp profile disabled (sm-operator)
+        run: |
+          # Kind accepts seccompProfile with or without the setting.
+          # This only shows that the chart installs with the setting off.
+          release=$(helm list --namespace bitwarden --short | head -n 1)
+          helm upgrade "$release" charts/sm-operator --namespace bitwarden \
+            --values charts/sm-operator/ci/test-values.yaml \
+            --set containers.enableSeccompProfileRuntimeDefault=false \
+            --wait --timeout 120s
+
+          seccomp=$(kubectl get deployment --namespace bitwarden -l app.kubernetes.io/name=sm-operator \
+            -o jsonpath='{.items[0].spec.template.spec.securityContext.seccompProfile}')
+
+          if [[ -n "$seccomp" ]]; then
+            echo "::error::seccompProfile is set, but enableSeccompProfileRuntimeDefault is false: $seccomp"
+            exit 1
+          fi
+
 
   test-sm-operator-selfhost-kind:
     name: Test sm-operator failure paths against self-host with Kind
