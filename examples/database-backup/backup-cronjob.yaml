@@ -1,0 +1,77 @@
+---
+# Same backup script as backup-job.yaml. Keep the two in sync.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "bitwarden-backup"
+  labels:
+    app.kubernetes.io/component: bitwarden-backup
+    app: bitwarden-backup
+spec:
+  schedule: "0 0 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: bitwarden-backup
+            app: bitwarden-backup-scheduled
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            fsGroup: 10001
+          containers:
+            - name: backup-db
+              image: "mcr.microsoft.com/mssql/server:2025-CU5-ubuntu-24.04"
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                - name: MSSQL_CONN_STRING
+                  valueFrom:
+                    secretKeyRef:
+                      name: bitwarden-sql-connection-string
+                      key: globalSettings__sqlServer__connectionString
+                - name: BACKUP_RETENTION_DAYS
+                  value: "32"
+              volumeMounts:
+                - name: mssql-backups
+                  mountPath: /backups
+              command:
+                - "/bin/bash"
+                - "-c"
+              args:
+                - |
+                  svr="$(echo "${MSSQL_CONN_STRING}" | grep -Po "Data Source=tcp:\K[^,]*(?=.*)")"
+                  pass="$(echo "${MSSQL_CONN_STRING}" | grep -Po ".*Password=\K[^;]*(?=.*)")"
+                  if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then SQLCMD='/opt/mssql-tools18/bin/sqlcmd -C'; else SQLCMD=/opt/mssql-tools/bin/sqlcmd; fi
+                  now=$(date +%Y%m%d_%H%M%S)
+                  file="vault_FULL_${now}.BAK"
+
+                  # Without -b, sqlcmd exits 0 when BACKUP fails.
+                  echo "$pass" | $SQLCMD -b -S "$svr" -U SA -Q "BACKUP DATABASE [vault] TO DISK = '/var/opt/mssql/backups/${file}' WITH NOFORMAT, INIT, NAME = 'vault full backup for ${now}', NOSKIP"
+                  if [ $? -ne 0 ] || [ ! -s "/backups/${file}" ]; then
+                    echo "Backup failed. vault.bak and existing backups have not been changed." >&2
+                    exit 1
+                  fi
+
+                  if [ -f /backups/vault.bak ] && [ ! -L /backups/vault.bak ]; then
+                    mv /backups/vault.bak "/backups/vault.bak.$(date -r /backups/vault.bak -u +'%Y-%m-%dT%H:%M:%SZ')"
+                  fi
+                  ln -sfn "${file}" /backups/vault.bak
+                  find /backups/ -mindepth 1 -maxdepth 1 -type f -name 'vault_FULL_*.BAK' -mtime "+${BACKUP_RETENTION_DAYS:-32}" -delete
+                  echo "Backup written to ${file}. vault.bak now points to it."
+          volumes:
+            - name: mssql-backups
+              persistentVolumeClaim:
+                claimName: bitwarden-self-host-mssqlbackups

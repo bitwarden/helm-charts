@@ -24,7 +24,7 @@ spec:
             secretKeyRef:
               name: bitwarden-sql-connection-string
               key: globalSettings__sqlServer__connectionString
-        image: "mcr.microsoft.com/mssql-tools"
+        image: "mcr.microsoft.com/mssql/server:2025-CU5-ubuntu-24.04"
         volumeMounts:
           - name: mssql-backups
             mountPath: /backups
