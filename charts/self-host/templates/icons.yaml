@@ -135,6 +135,8 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
+        - name: dataprotection
+          mountPath: /home/app/.aspnet/DataProtection-Keys
         {{- if .Values.volume.caCertificates.enabled }}
         - name: ca-certificates
           mountPath: /etc/bitwarden/ca-certificates
@@ -157,6 +159,9 @@ spec:
         securityContext:
 {{ toYaml .Values.component.icons.securityContext | indent 10 }}
       volumes:
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ default ( include "bitwarden.dataprotection" . ) .Values.volume.dataprotection.existingClaim }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
