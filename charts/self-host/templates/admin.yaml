@@ -151,6 +151,8 @@ spec:
         volumeMounts:
         - name: dataprotection
           mountPath: /etc/bitwarden/core/aspnet-dataprotection
+        - name: attachments
+          mountPath: /etc/bitwarden/core/attachments
         - name: licenses
           mountPath: /etc/bitwarden/core/licenses
         {{- if .Values.volume.logs.enabled }}
@@ -176,6 +178,9 @@ spec:
         - name: dataprotection
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.dataprotection" . ) .Values.volume.dataprotection.existingClaim }}
+        - name: attachments
+          persistentVolumeClaim:
+            claimName: {{ default ( include "bitwarden.attachments" . ) .Values.volume.attachments.existingClaim }}
         - name: licenses
           persistentVolumeClaim:
             claimName: {{ default ( include "bitwarden.licenses" . ) .Values.volume.licenses.existingClaim }}

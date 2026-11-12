@@ -145,6 +145,8 @@ spec:
         resources:
 {{ toYaml .Values.component.events.resources | indent 10 }}
         volumeMounts:
+        - name: dataprotection
+          mountPath: /etc/bitwarden/core/aspnet-dataprotection
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
@@ -165,6 +167,9 @@ spec:
         securityContext:
 {{ toYaml .Values.component.events.securityContext | indent 10 }}
       volumes:
+        - name: dataprotection
+          persistentVolumeClaim:
+            claimName: {{ default ( include "bitwarden.dataprotection" . ) .Values.volume.dataprotection.existingClaim }}
         {{- if .Values.secrets.secretProviderClass }}
         - name: secrets-store-inline
           csi:
